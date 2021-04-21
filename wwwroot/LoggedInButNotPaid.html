@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Subless Checkout</title>
+    <meta name="description" content="Your subscription for any media" />
+
+    <link rel="icon" href="img/favicon.ico" type="image/x-icon" />
+    <link rel="stylesheet" href="css/normalize.css" />
+    <link rel="stylesheet" href="css/global.css" />
+    <!-- Load Stripe.js on your website. -->
+    <script src="https://js.stripe.com/v3/"></script>
+    <script src="./checkout.js" defer></script>
+</head>
+
+<body>
+    <div class="subless-background"></div>
+    <div class="sr-root">
+        <div class="sr-main">
+            <h1>Choose a plan</h1>
+            <div class="price-table-container">
+                <section>
+                    <img src="/img/SublessLogoOnly.png"
+                         width="120"
+                         height="120" />
+                    <div class="name">Donation Plan</div>
+
+                    <div class="price">$5</div>
+                    <div class="duration">per month</div>
+                    <button id="basic-plan-btn">Select</button>
+                </section>
+            </div>
+
+        </div>
+    </div>
+    <div id="error-message" class="error-message"></div>
+</body>
+</html>
