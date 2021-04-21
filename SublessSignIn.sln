@@ -1,18 +1,25 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26124.0
-MinimumVisualStudioVersion = 15.0.26124.0
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31129.286
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SublessSignIn", "SublessSignIn.csproj", "{D6363103-FC34-4948-8A86-2EACC2A91D3D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
-		Debug|x64 = Debug|x64
-		Debug|x86 = Debug|x86
 		Release|Any CPU = Release|Any CPU
-		Release|x64 = Release|x64
-		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D6363103-FC34-4948-8A86-2EACC2A91D3D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D6363103-FC34-4948-8A86-2EACC2A91D3D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D6363103-FC34-4948-8A86-2EACC2A91D3D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D6363103-FC34-4948-8A86-2EACC2A91D3D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7C62C5D2-6203-4084-9F76-C34B08F7DA1E}
 	EndGlobalSection
 EndGlobal
