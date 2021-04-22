@@ -1,4 +1,5 @@
 using System;
+<<<<<<< HEAD
 using System.Collections.Generic;
 using System.Linq;
 using System.IO;
@@ -8,15 +9,15 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.Extensions.FileProviders;
 using System.Threading.Tasks;
+=======
+>>>>>>> main
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using SublessSignIn.Models;
 
 namespace SublessSignIn
 {
@@ -32,7 +33,14 @@ namespace SublessSignIn
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
+            services.Configure<StripeConfig>(options =>
+            {
+                options.PublishableKey = Environment.GetEnvironmentVariable("STRIPE_PUBLISHABLE_KEY");
+                options.SecretKey = Environment.GetEnvironmentVariable("STRIPE_SECRET_KEY");
+                options.WebhookSecret = Environment.GetEnvironmentVariable("STRIPE_WEBHOOK_SECRET");
+                options.BasicPrice = Environment.GetEnvironmentVariable("BASIC_PRICE_ID");
+                options.Domain = Environment.GetEnvironmentVariable("DOMAIN");
+            });
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
