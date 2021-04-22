@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace SublessSignIn.Models
+﻿namespace SublessSignIn.Models
 {
     public class StripeConfig
     {
