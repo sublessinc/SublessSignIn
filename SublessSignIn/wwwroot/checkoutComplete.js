@@ -1,5 +1,5 @@
 const urlParams = new URLSearchParams(window.location.search);
-const sessionId = urlParams.get("session_id")
+const sessionId = urlParams.get("sessionId")
 let customerId;
 
 if (sessionId) {
@@ -18,7 +18,6 @@ if (sessionId) {
       customerId = session.customer;
 
         var sessionJSON = JSON.stringify(session, null, 2);
-        notifyUserSuccess(session);
       document.querySelector("pre").textContent = sessionJSON;
     })
     .catch(function(err){
@@ -49,19 +48,6 @@ if (sessionId) {
       });
   });
 }
-// Create a Checkout Session with the selected plan ID
-var notifyUserSuccess = function (responseData) {
-    let user = sessionStorage.getItem("user_info");
-    responseData["userid"] = JSON.parse(user).sub;
-    responseData["username"] = JSON.parse(user).username;
-    return fetch("/api/Checkout/save-customer", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(responseData)
-    }).then(handleFetchResult);
-};
 
 var handleFetchResult = function (result) {
     if (!result.ok) {

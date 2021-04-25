@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -87,6 +88,31 @@ namespace SublessSignIn.Controllers
                 Console.WriteLine(e.StripeError.Message);
                 return BadRequest();
             }
+        }
+
+        [HttpPost("customer-portal")]
+        public async Task<IActionResult> CustomerPortal()
+        {
+            // TODO: Switch this to loading the session ID based on the cognito user id
+            // For demonstration purposes, we're using the Checkout session to retrieve the customer ID. 
+            // Typically this is stored alongside the authenticated user in your database.
+            var checkoutSessionId = _userRepository.Users.First().StripeId; // <-- this is fake as hell fix this when we have an IDP
+            var checkoutService = new SessionService(_client);
+            var checkoutSession = await checkoutService.GetAsync( checkoutSessionId);
+
+            // This is the URL to which your customer will return after
+            // they are done managing billing in the Customer Portal.
+            var returnUrl = _stripeConfig.Value.Domain;
+
+            var options = new Stripe.BillingPortal.SessionCreateOptions
+            {
+                Customer = checkoutSession.CustomerId,
+                ReturnUrl = $"{returnUrl}/PayingCustomer.html?sessionId?{_userRepository.Users.First().StripeId}",
+            };
+            var service = new Stripe.BillingPortal.SessionService(_client);
+            var session = await service.CreateAsync(options);
+
+            return Ok(session);
         }
 
         /// <summary>

@@ -13,7 +13,7 @@
     --accent-color: #F72585;
     --body-font-family: -apple-system, BlinkMacSystemFont, sans-serif;
     --radius: 6px;
-    --logo-image: url("/img/SublessLogoOnly.png");
+    --logo-image: url("../img/SublessLogoOnly.png");
 }
 
 /* Base */
@@ -351,16 +351,16 @@ pre {
     display: block;
   }
 
-  .sr-main {
-    width: auto;
-  }
+    .sr-main-unpaid {
+        width: auto;
+    }
 }
 
 /* Pasha styles – Brand-overrides, can split these out */
 :root {
     --accent-color: var(--green-dark);
     --headline-color: #ffffff;
-    --logo-image: url("./img/favicon.ico");
+    --logo-image: url("../img/favicon.ico");
 }
 
 .subless-background {
