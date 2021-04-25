@@ -358,9 +358,9 @@ pre {
 
 /* Pasha styles – Brand-overrides, can split these out */
 :root {
-  --accent-color: var(--green-dark);
-  --headline-color: #ffffff;
-  --logo-image: url("/favicon.ico");
+    --accent-color: var(--green-dark);
+    --headline-color: #ffffff;
+    --logo-image: url("./img/favicon.ico");
 }
 
 .subless-background {
