@@ -25,9 +25,9 @@ namespace SublessSignIn
             Configuration = configuration;
             AuthSettings = new AuthSettings
             {
-                Region = Environment.GetEnvironmentVariable("region"),
-                PoolId = Environment.GetEnvironmentVariable("userPoolId"),
-                AppClientId = Environment.GetEnvironmentVariable("appClientId")
+                Region = Environment.GetEnvironmentVariable("region") ?? throw new ArgumentNullException("region"),
+                PoolId = Environment.GetEnvironmentVariable("userPoolId") ?? throw new ArgumentNullException("userPoolId"),
+                AppClientId = Environment.GetEnvironmentVariable("appClientId") ?? throw new ArgumentNullException("appClientId")
             };
             AuthSettings.IssuerUrl = "https://auth.subless.com";
             AuthSettings.CognitoUrl = $"https://cognito-idp.{AuthSettings.Region}.amazonaws.com/{AuthSettings.PoolId}";
@@ -45,15 +45,15 @@ namespace SublessSignIn
 
             services.Configure<StripeConfig>(options =>
             {
-                options.PublishableKey = Environment.GetEnvironmentVariable("STRIPE_PUBLISHABLE_KEY");
-                options.SecretKey = Environment.GetEnvironmentVariable("STRIPE_SECRET_KEY");
-                options.WebhookSecret = Environment.GetEnvironmentVariable("STRIPE_WEBHOOK_SECRET");
-                options.BasicPrice = Environment.GetEnvironmentVariable("BASIC_PRICE_ID");
-                options.Domain = Environment.GetEnvironmentVariable("DOMAIN");
+                options.PublishableKey = Environment.GetEnvironmentVariable("STRIPE_PUBLISHABLE_KEY") ?? throw new ArgumentNullException("STRIPE_PUBLISHABLE_KEY");
+                options.SecretKey = Environment.GetEnvironmentVariable("STRIPE_SECRET_KEY") ?? throw new ArgumentNullException("STRIPE_SECRET_KEY");
+                options.WebhookSecret = Environment.GetEnvironmentVariable("STRIPE_WEBHOOK_SECRET") ?? throw new ArgumentNullException("STRIPE_WEBHOOK_SECRET");
+                options.BasicPrice = Environment.GetEnvironmentVariable("BASIC_PRICE_ID") ?? throw new ArgumentNullException("BASIC_PRICE_ID");
+                options.Domain = Environment.GetEnvironmentVariable("DOMAIN") ?? throw new ArgumentNullException("DOMAIN");
             });
             services.Configure<DatabaseSettings>(options =>
             {
-                options.ConnectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING");
+                options.ConnectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING") ?? throw new ArgumentNullException("CONNECTION_STRING");
             });
             services.Configure<AuthSettings>(options =>
             {
