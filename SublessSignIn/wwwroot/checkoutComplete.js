@@ -3,7 +3,10 @@ const sessionId = urlParams.get("sessionId")
 let customerId;
 
 if (sessionId) {
-    fetch("/api/Checkout/checkout-session?sessionId=" + sessionId)
+    fetch("/api/Checkout/checkout-session?sessionId=" + sessionId, {
+        headers: {
+            "Authorization": "Bearer " + sessionStorage.getItem('id_token')
+        }})
     .then(function(result){
       return result.json()
     })
@@ -18,7 +21,7 @@ if (sessionId) {
       customerId = session.customer;
 
         var sessionJSON = JSON.stringify(session, null, 2);
-      document.querySelector("pre").textContent = sessionJSON;
+        document.querySelector("pre").textContent = sessionJSON;
     })
     .catch(function(err){
       console.log('Error when fetching Checkout session', err);
@@ -33,7 +36,8 @@ if (sessionId) {
       fetch('/api/Checkout/customer-portal', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
+          'Content-Type': 'application/json',
+          "Authorization": "Bearer " + sessionStorage.getItem('id_token')
       },
       body: JSON.stringify({
         sessionId: sessionId

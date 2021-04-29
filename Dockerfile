@@ -7,15 +7,17 @@ EXPOSE 7070
 
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 WORKDIR /src
-COPY ["./SublessSignIn.csproj", ""]
-RUN dotnet restore "./SublessSignIn.csproj"
+COPY ["./Subless.Data/Subless.Data.csproj", "./Subless.Data/"]
+RUN dotnet restore "./Subless.Data/Subless.Data.csproj"
+COPY ["./SublessSignIn/SublessSignIn.csproj", "./SublessSignIn/"]
+RUN dotnet restore "./SublessSignIn/SublessSignIn.csproj"
 
 COPY . .
 WORKDIR "/src/."
-RUN dotnet build "./SublessSignIn.csproj" -c Release -o /app/build
+RUN dotnet build "./SublessSignIn/SublessSignIn.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "./SublessSignIn.csproj" -c Release -o /app/publish
+RUN dotnet publish "./SublessSignIn/SublessSignIn.csproj" -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app

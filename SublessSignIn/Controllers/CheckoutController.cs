@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Stripe;
@@ -13,12 +15,12 @@ namespace SublessSignIn.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class CheckoutController : ControllerBase
     {
         private readonly IOptions<StripeConfig> _stripeConfig;
         private readonly IStripeClient _client;
         private readonly IUserRepository _userRepository;
-
         public CheckoutController(IOptions<StripeConfig> stripeConfig, IUserRepository userRepository)
         {
             _stripeConfig = stripeConfig ?? throw new ArgumentNullException(nameof(stripeConfig));
@@ -29,7 +31,6 @@ namespace SublessSignIn.Controllers
             _ = stripeConfig.Value.WebhookSecret ?? throw new ArgumentNullException(nameof(stripeConfig.Value.WebhookSecret));
             _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
             _client = new StripeClient(_stripeConfig.Value.SecretKey);
-
         }
 
         /// <summary>
@@ -50,6 +51,7 @@ namespace SublessSignIn.Controllers
         /// Asks stripe server to create a new transaction, 
         /// and then provides the frontend with a link to that transaction checkout
         /// </summary>
+        /// 
         [HttpPost("create-checkout-session")]
         public async Task<IActionResult> CreateCheckoutSession([FromBody] CreateCheckoutSessionRequest req)
         {

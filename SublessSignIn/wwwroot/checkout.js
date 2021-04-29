@@ -18,7 +18,8 @@ var createCheckoutSession = function(priceId) {
     return fetch("/api/Checkout/create-checkout-session", {
     method: "POST",
     headers: {
-      "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + sessionStorage.getItem('id_token')
     },
     body: JSON.stringify({
       priceId: priceId
@@ -40,7 +41,11 @@ var showErrorMessage = function(message) {
 };
 
 /* Get your Stripe publishable key to initialize Stripe.js */
-fetch("/api/Checkout/setup")
+fetch("/api/Checkout/setup", {
+    headers: {
+        "Authorization": "Bearer " + sessionStorage.getItem('id_token')
+    }
+})
   .then(handleFetchResult)
   .then(function(json) {
     var publishableKey = json.publishableKey;
