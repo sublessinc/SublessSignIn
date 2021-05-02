@@ -9,6 +9,8 @@ FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 WORKDIR /src
 COPY ["./Subless.Data/Subless.Data.csproj", "./Subless.Data/"]
 RUN dotnet restore "./Subless.Data/Subless.Data.csproj"
+COPY ["./Subless.Models/Subless.Models.csproj", "./Subless.Models/"]
+RUN dotnet restore "./Subless.Models/Subless.Models.csproj"
 COPY ["./SublessSignIn/SublessSignIn.csproj", "./SublessSignIn/"]
 RUN dotnet restore "./SublessSignIn/SublessSignIn.csproj"
 
@@ -22,5 +24,5 @@ RUN dotnet publish "./SublessSignIn/SublessSignIn.csproj" -c Release -o /app/pub
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-COPY ./wwwroot /app/wwwroot
+COPY ./SublessSignIn/wwwroot /app/wwwroot
 ENTRYPOINT ["dotnet", "SublessSignIn.dll"]
