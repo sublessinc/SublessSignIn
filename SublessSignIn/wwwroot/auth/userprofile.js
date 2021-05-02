@@ -104,19 +104,28 @@ async function main(settings) {
                 return response.json();
             })
             .then((data) => {
-                // Verify id_token
-                tokens = data;
-                var idVerified = verifyToken(tokens.id_token, settings);
-                Promise.resolve(idVerified).then(function (value) {
-                    if (value.localeCompare("verified")) {
-                        alert("Invalid ID Token - " + value);
-                        return;
-                    }
-                });
-                // set tokens
+                tokens = data; 
                 sessionStorage.setItem("id_token", tokens.id_token);
                 sessionStorage.setItem("access_token", tokens.access_token);
-                window.location.replace(baseURI + "/LoggedInButNotPaid.html");
+                fetch("/api/Authorization/redirect", {
+                    headers: {
+                        "Authorization": "Bearer " + sessionStorage.getItem('id_token')
+                    }
+                }).then(function (resp) {
+                    resp.json().then(function (json) {
+                        redirect = json;
+                        switch (redirect) {
+                            case 1:
+                                window.location.replace(baseURI + "/LoggedInButNotPaid.html");
+                                break;
+                            case 2:
+                                window.location.replace(baseURI + "/PayingCustomer.html");
+                                break;
+                            default:
+
+                        }
+                    })
+                });
             });
         }
     }

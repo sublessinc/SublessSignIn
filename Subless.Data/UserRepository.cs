@@ -2,13 +2,14 @@
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using Subless.Models;
 
 namespace Subless.Data
 {
     public class UserRepository : DbContext, IUserRepository
     {
         private readonly IOptions<DatabaseSettings> _options;
-        public DbSet<User> Users { get; set; }
+        internal DbSet<User> Users { get; set; }
 
         public UserRepository(IOptions<DatabaseSettings> options)
         {
@@ -21,15 +22,21 @@ namespace Subless.Data
             optionsBuilder.UseNpgsql(_options.Value.ConnectionString);
         }
 
+        public User GetUserByCognitoId(string id)
+        {
+            return Users.FirstOrDefault(x => x.CognitoId == id);
+        }
+
         public User GetUserByStripeId(string id)
         {
             return Users.FirstOrDefault(x => x.StripeId == id);
         }
 
-        public void AddUser(User user)
+        public Guid AddUser(User user)
         {
             Users.Add(user);
             SaveChanges();
+            return user.Id;
         }
 
         public void UpdateUser(User user)
