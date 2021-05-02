@@ -15,6 +15,8 @@ using Microsoft.IdentityModel.Tokens;
 using System.Net;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using Subless.Services;
+using Subless.Models;
 
 namespace SublessSignIn
 {
@@ -66,6 +68,7 @@ namespace SublessSignIn
             });
             services.AddTransient<IUserRepository, UserRepository>();
             services.AddTransient<UserRepository, UserRepository>();
+            services.AddTransient<IUserService, UserService>();
             services.AddDbContext<UserRepository>(options => options.UseNpgsql(Environment.GetEnvironmentVariable("CONNECTION_STRING")));
             services.AddControllers();
             services.AddSwaggerGen(c =>

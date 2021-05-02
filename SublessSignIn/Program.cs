@@ -15,13 +15,16 @@ namespace SublessSignIn
             Log.Logger = new LoggerConfiguration()
                 .Enrich.FromLogContext()
                 .WriteTo.Console()
-                .CreateLogger();
+                .CreateLogger(); 
+            Log.Logger.Information("Subless bootstrapping...");
+
             var host = CreateHostBuilder(args).Build();
             using (var scope = host.Services.CreateScope())
             {
                 var services = scope.ServiceProvider;
                 using (var context = services.GetService<UserRepository>())
                 {
+                    Log.Logger.Information("Running migrations");
                     context.Database.Migrate();
                     context.SaveChanges();
                 }

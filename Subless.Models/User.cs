@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Subless.Data
+namespace Subless.Models
 {
     public class User
     {

@@ -1,4 +1,4 @@
-﻿namespace SublessSignIn.Models
+﻿namespace Subless.Models
 {
     public class StripeConfig
     {
