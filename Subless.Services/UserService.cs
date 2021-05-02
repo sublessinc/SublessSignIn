@@ -1,6 +1,7 @@
 ﻿using System;
 using Subless.Data;
 using Subless.Models;
+using SublessSignIn.Models;
 
 namespace Subless.Services
 {
@@ -12,7 +13,7 @@ namespace Subless.Services
             _userRepo = userRepo ?? throw new ArgumentNullException(nameof(userRepo));
         }
 
-        public RedirectionPath LoginWorkflow(string cognitoId)
+        public Redirection LoginWorkflow(string cognitoId)
         {
             var user = _userRepo.GetUserByCognitoId(cognitoId);
             if (user == null)
@@ -22,10 +23,17 @@ namespace Subless.Services
 
             if (user.StripeId == null)
             {
-                return RedirectionPath.Payment;
+                return new Redirection()
+                {
+                    RedirectionPath = RedirectionPath.Payment
+                };
             }
 
-            return RedirectionPath.Profile;            
+            return new Redirection()
+            {
+                RedirectionPath = RedirectionPath.Profile,
+                SessionId = user.StripeId
+            };
         }
 
         public string GetStripeIdFromCognitoId(string cognitoId)
