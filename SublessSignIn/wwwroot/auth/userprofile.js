@@ -114,12 +114,12 @@ async function main(settings) {
                 }).then(function (resp) {
                     resp.json().then(function (json) {
                         redirect = json;
-                        switch (redirect) {
+                        switch (redirect.redirectionPath) {
                             case 1:
                                 window.location.replace(baseURI + "/LoggedInButNotPaid.html");
                                 break;
                             case 2:
-                                window.location.replace(baseURI + "/PayingCustomer.html");
+                                window.location.replace(baseURI + "/PayingCustomer.html?sessionId="+redirect.sessionId);
                                 break;
                             default:
 
