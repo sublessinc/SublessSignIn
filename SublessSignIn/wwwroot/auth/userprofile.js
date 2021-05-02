@@ -3,7 +3,7 @@ myHeaders.set('Cache-Control', 'no-store');
 var urlParams = new URLSearchParams(window.location.search);
 
 var baseURI = location.protocol + '//' + window.location.hostname + (location.port ? ':' + location.port : '');
-var redirectURI = baseURI + "/Login.html";
+var redirectURI = baseURI + "/index.html";
 
 
 
