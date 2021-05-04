@@ -11,28 +11,36 @@
     <!-- Load Stripe.js on your website. -->
     <script src="https://js.stripe.com/v3/"></script>
     <script src="./checkout.js" defer></script>
+    <script src="./Logout.js" defer></script>
 </head>
 
 <body>
+
     <div class="subless-background"></div>
-    <div class="sr-root">
-        <div class="sr-main sr-main-unpaid">
-            <h1>Choose a plan</h1>
-            <div class="price-table-container">
-                <section>
-                    <img src="/img/SublessLogoOnly.png"
-                         width="120"
-                         height="120" />
-                    <div class="name">Donation Plan</div>
+    <div id="bodyWrapper">
 
-                    <div class="price">$5</div>
-                    <div class="duration">per month</div>
-                    <button id="basic-plan-btn">Select</button>
-                </section>
+        <div class="sr-root">
+            <div class="sr-main sr-main-unpaid">
+                <h1>Choose a plan</h1>
+                <div class="price-table-container">
+                    <section>
+                        <img src="/img/SublessLogoOnly.png"
+                             width="120"
+                             height="120" />
+                        <div class="name">Donation Plan</div>
+
+                        <div class="price">$5</div>
+                        <div class="duration">per month</div>
+                        <button id="basic-plan-btn">Select</button>
+                    </section>
+                </div>
+
             </div>
-
         </div>
+        <button id="logout" class="logoutBtn">Logout</button>
+
+        <div id="error-message" class="error-message"></div>
+
     </div>
-    <div id="error-message" class="error-message"></div>
 </body>
 </html>

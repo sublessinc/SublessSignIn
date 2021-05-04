@@ -49,9 +49,19 @@ h4 {
   font-size: 14px;
   color: var(--gray-light);
 }
+#bodyWrapper {
+    display: flex;
+    flex-direction: row;
+}
 
+#logout {
+    z-index:4;
+    margin: 10px;
+    align-self: flex-start;
+}
 /* Layout */
 .sr-root {
+  align-self: flex-end;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -297,6 +307,8 @@ button:disabled {
   cursor: none;
 }
 
+
+
 .sr-payment-form button,
 .fullwidth {
   width: 100%;
@@ -368,6 +380,7 @@ pre {
 }
 
 .subless-background {
+    z-index: 0;
   position: fixed;
   top: 0;
   left: 0;
@@ -632,3 +645,4 @@ input[type="number"]::-webkit-outer-spin-button {
     transform: scale(1);
   }
 }
+

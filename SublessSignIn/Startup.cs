@@ -100,7 +100,7 @@ namespace SublessSignIn
 
             //app.UseHttpsRedirection();
 
-            app.UseStaticFiles();
+            app.UseFileServer();
 
             app.UseAuthentication();
             app.UseRouting();
