@@ -66,6 +66,14 @@ namespace SublessSignIn
                 options.PoolId = AuthSettings.PoolId;
                 options.Region = AuthSettings.Region;
             });
+
+            // TODO: See if mars catches this in code review, and also see if we can restrict this 
+            services.AddCors(o => o.AddPolicy("Unrestricted", builder =>
+            {
+                builder.AllowAnyOrigin()
+                       .AllowAnyMethod()
+                       .AllowAnyHeader();
+            }));
             services.AddTransient<IUserRepository, UserRepository>();
             services.AddTransient<UserRepository, UserRepository>();
             services.AddTransient<IUserService, UserService>();
@@ -104,6 +112,7 @@ namespace SublessSignIn
 
             app.UseAuthentication();
             app.UseRouting();
+            app.UseCors();
             app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
