@@ -7,9 +7,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Subless.Data", "Subless.Dat
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SublessSignIn", "SublessSignIn\SublessSignIn.csproj", "{2F0392CF-4567-4DBD-B963-8EF5E432B2ED}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Subless.Services", "Subless.Services\Subless.Services.csproj", "{150594FA-717F-4BA2-9052-068D4FDEAFD0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Subless.Services", "Subless.Services\Subless.Services.csproj", "{150594FA-717F-4BA2-9052-068D4FDEAFD0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Subless.Models", "Subless.Models\Subless.Models.csproj", "{1A317B24-E58C-4E46-A64A-F82DACBD4A92}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Subless.Models", "Subless.Models\Subless.Models.csproj", "{1A317B24-E58C-4E46-A64A-F82DACBD4A92}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Subless.Services.Tests", "Subless.Services.Tests\Subless.Services.Tests.csproj", "{118FD61D-DD10-484A-BEC2-AFD5D6690B0D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{1A317B24-E58C-4E46-A64A-F82DACBD4A92}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1A317B24-E58C-4E46-A64A-F82DACBD4A92}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1A317B24-E58C-4E46-A64A-F82DACBD4A92}.Release|Any CPU.Build.0 = Release|Any CPU
+		{118FD61D-DD10-484A-BEC2-AFD5D6690B0D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{118FD61D-DD10-484A-BEC2-AFD5D6690B0D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{118FD61D-DD10-484A-BEC2-AFD5D6690B0D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{118FD61D-DD10-484A-BEC2-AFD5D6690B0D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

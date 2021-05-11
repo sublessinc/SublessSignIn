@@ -10,6 +10,7 @@ namespace Subless.Data
     {
         private readonly IOptions<DatabaseSettings> _options;
         internal DbSet<User> Users { get; set; }
+        internal DbSet<Hit> Hits { get; set; }
 
         public UserRepository(IOptions<DatabaseSettings> options)
         {
@@ -42,6 +43,12 @@ namespace Subless.Data
         public void UpdateUser(User user)
         {
             Users.Update(user);
+            SaveChanges();
+        }
+
+        public void SaveHit(Hit hit)
+        {
+            Hits.Add(hit);
             SaveChanges();
         }
     }
