@@ -4,7 +4,7 @@ var urlParams = new URLSearchParams(window.location.search);
 
 var baseURI = location.protocol + '//' + window.location.hostname + (location.port ? ':' + location.port : '');
 var redirectURI = baseURI;
-
+var sublessURI = "http://localhost:7070"
 
 
 //Convert Payload from Base64-URL to JSON
@@ -114,7 +114,7 @@ async function main(settings) {
         }
 }
 
-fetch("http://localhost:7070/api/Authorization/settings")
+fetch(sublessURI + "/api/Authorization/settings")
     .then(function (resp) {
         var json = resp.json().then(json => {
             main(json);
@@ -126,7 +126,7 @@ function phoneHome() {
     var token = sessionStorage.getItem('id_token');
     if (token) {
         var body = 
-        fetch("http://localhost:7070/api/hit", {
+        fetch(sublessURI + "/api/hit", {
             method: "POST",
             headers: {
                 "Authorization": "Bearer " + token,
@@ -134,9 +134,7 @@ function phoneHome() {
             },
             body: window.location.href
         })
-            .then(function (resp) {
-                console.log("Phoned home");
-            });
+            
     }
 }
 

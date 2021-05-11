@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Subless.Services;
 
 namespace SublessSignIn.Controllers
 {
@@ -14,9 +15,11 @@ namespace SublessSignIn.Controllers
     public class HitController : ControllerBase
     {
         private ILogger _logger;
-        public HitController(ILoggerFactory loggerFactory)
+        private IHitService _hitService;
+        public HitController(ILoggerFactory loggerFactory, IHitService hitService)
         {
             _logger = loggerFactory?.CreateLogger<HitController>() ?? throw new ArgumentNullException(nameof(loggerFactory));
+            _hitService = hitService ?? throw new ArgumentNullException(nameof(hitService));
         }
 
         [HttpPost]
@@ -41,6 +44,11 @@ namespace SublessSignIn.Controllers
                 {
                     return BadRequest("Could not read source url");
                 }
+                if (User.FindFirst("cognito:username")?.Value == null)
+                {
+                    return Unauthorized("User could not be ");
+                }
+                _hitService.SaveHit(User.FindFirst("cognito:username").Value, hitSource);
             }
             return Ok();
         }

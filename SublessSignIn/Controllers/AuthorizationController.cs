@@ -50,9 +50,6 @@ namespace SublessSignIn.Controllers
                 return Unauthorized();
             }
             return _userService.LoginWorkflow(cognitoId);
-
         }
-
-
     }
 }
