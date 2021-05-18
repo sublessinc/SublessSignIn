@@ -31,4 +31,8 @@
     <ProjectReference Include="..\Subless.Services\Subless.Services.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\dist\" />
+  </ItemGroup>
+
 </Project>

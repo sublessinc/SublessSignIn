@@ -2,8 +2,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Cors.Infrastructure;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -29,8 +33,10 @@ namespace SublessSignIn.Controllers
         }
 
         [HttpGet("settings")]
+        [EnableCors("Unrestricted")]
         public AuthSettings Get()
         {
+            
             return _authSettings;
         }
 
@@ -44,7 +50,6 @@ namespace SublessSignIn.Controllers
                 return Unauthorized();
             }
             return _userService.LoginWorkflow(cognitoId);
-
         }
     }
 }
