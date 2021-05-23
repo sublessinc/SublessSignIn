@@ -1,10 +1,10 @@
-﻿var myHeaders = new Headers();
+var myHeaders = new Headers();
 myHeaders.set('Cache-Control', 'no-store');
 var urlParams = new URLSearchParams(window.location.search);
 
-var baseURI = location.protocol + '//' + window.location.hostname + (location.port ? ':' + location.port : '');
+var baseURI = location.protocol + '//' + window.location.hostname + (location.port ? ':' + location.port : '') + window.location.pathname;
 var redirectURI = baseURI;
-var sublessURI = "https://pay.subless.com/";
+var sublessURI = "https://pay.subless.com";
 
 
 //Convert Payload from Base64-URL to JSON

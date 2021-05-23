@@ -11,5 +11,6 @@ namespace Subless.Models
         public Guid Id { get; set; }
         public string CognitoId { get; set; }
         public string StripeId { get; set; }
+        public ICollection<Creator> Creators {get; set;}
     }
 }

@@ -11,6 +11,7 @@ using Subless.Services;
 
 namespace SublessSignIn.Controllers
 {
+    [ApiController]
     [Route("api/[controller]")]
     public class HitController : ControllerBase
     {

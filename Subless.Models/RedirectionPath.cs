@@ -9,6 +9,7 @@ namespace Subless.Models
     {
         Unknown = 0,
         Payment = 1,
-        Profile= 2
+        Profile= 2,
+        ActivatedCreator = 3
     }
 }

@@ -11,6 +11,8 @@ namespace Subless.Data
         private readonly IOptions<DatabaseSettings> _options;
         internal DbSet<User> Users { get; set; }
         internal DbSet<Hit> Hits { get; set; }
+        internal DbSet<Partner> Partners { get; set; }
+        internal DbSet<Creator> Creators { get; set; }
 
         public UserRepository(IOptions<DatabaseSettings> options)
         {
@@ -50,6 +52,34 @@ namespace Subless.Data
         {
             Hits.Add(hit);
             SaveChanges();
+        }
+
+        public Creator GetCreatorByActivationCode(Guid code)
+        {
+            return Creators.FirstOrDefault(creator => creator.ActivationCode == code);
+        }
+
+        public void SaveCreator(Creator creator)
+        {
+            Creators.Add(creator);
+            SaveChanges();
+        }
+
+        public void UpdateCreator(Creator creator)
+        {
+            Creators.Update(creator);
+            SaveChanges();
+        }
+
+        public void AddPartner(Partner partner)
+        {
+            Partners.Add(partner);
+            SaveChanges();
+        }
+
+        public Partner GetPartnerByCognitoId(string partnerClientId)
+        {
+            return Partners.FirstOrDefault(x => x.CognitoAppClientId == partnerClientId);
         }
     }
 }

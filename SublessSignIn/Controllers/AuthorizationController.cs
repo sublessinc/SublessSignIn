@@ -36,20 +36,20 @@ namespace SublessSignIn.Controllers
         [EnableCors("Unrestricted")]
         public AuthSettings Get()
         {
-            
+
             return _authSettings;
         }
 
         [Authorize]
         [HttpGet("redirect")]
-        public ActionResult<Redirection> GetPath()
+        public ActionResult<Redirection> GetPath([FromHeader] string Activation)
         {
             var cognitoId = User.FindFirst("cognito:username")?.Value;
             if (cognitoId == null)
             {
                 return Unauthorized();
             }
-            return _userService.LoginWorkflow(cognitoId);
+            return _userService.LoginWorkflow(cognitoId, Activation);
         }
     }
 }
