@@ -4,7 +4,7 @@ var urlParams = new URLSearchParams(window.location.search);
 
 var baseURI = location.protocol + '//' + window.location.hostname + (location.port ? ':' + location.port : '') + window.location.pathname;
 var redirectURI = baseURI;
-var sublessURI = "http://localhost:7070";
+var sublessURI = "https://pay.subless.com";
 
 
 //Convert Payload from Base64-URL to JSON
