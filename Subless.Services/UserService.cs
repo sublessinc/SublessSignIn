@@ -8,17 +8,28 @@ namespace Subless.Services
     public class UserService : IUserService
     {
         private IUserRepository _userRepo;
-        public UserService(IUserRepository userRepo)
+        private ICreatorService _creatorService;
+        public UserService(IUserRepository userRepo, ICreatorService creatorService)
         {
             _userRepo = userRepo ?? throw new ArgumentNullException(nameof(userRepo));
+            _creatorService = creatorService ?? throw new ArgumentNullException(nameof(creatorService));
         }
 
-        public Redirection LoginWorkflow(string cognitoId)
+        public Redirection LoginWorkflow(string cognitoId, string activationCode)
         {
             var user = _userRepo.GetUserByCognitoId(cognitoId);
             if (user == null)
             {
                 user = CreateUserByCognitoId(cognitoId);
+            }
+
+            if (activationCode != null && Guid.TryParse(activationCode, out Guid code))
+            {
+                _creatorService.ActivateCreator(user.Id, code);
+                return new Redirection()
+                {
+                    RedirectionPath = RedirectionPath.ActivatedCreator
+                };
             }
 
             if (user.StripeId == null)
@@ -54,9 +65,15 @@ namespace Subless.Services
 
         public void AddStripeSessionId(string cognitoId, string stripeId)
         {
-            var user = _userRepo.GetUserByCognitoId(cognitoId);
+            var user = GetUserByCognitoId(cognitoId);
             user.StripeId = stripeId;
             _userRepo.UpdateUser(user);
+        }
+
+        public User GetUserByCognitoId(string cognitoId)
+        {
+            return  _userRepo.GetUserByCognitoId(cognitoId);
+
         }
     }
 }

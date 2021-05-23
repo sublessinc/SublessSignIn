@@ -17,6 +17,8 @@ using Newtonsoft.Json;
 using System.Collections.Generic;
 using Subless.Services;
 using Subless.Models;
+using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 
 namespace SublessSignIn
 {
@@ -34,16 +36,16 @@ namespace SublessSignIn
             AuthSettings.IssuerUrl = "https://auth.subless.com";
             AuthSettings.CognitoUrl = $"https://cognito-idp.{AuthSettings.Region}.amazonaws.com/{AuthSettings.PoolId}";
             AuthSettings.JwtKeySetUrl = AuthSettings.CognitoUrl + "/.well-known/jwks.json";
-            
+
         }
-        
+
 
         public AuthSettings AuthSettings { get; set; }
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
-        { 
+        {
 
             services.Configure<StripeConfig>(options =>
             {
@@ -76,6 +78,8 @@ namespace SublessSignIn
             }));
             services.AddTransient<IUserRepository, UserRepository>();
             services.AddTransient<UserRepository, UserRepository>();
+            services.AddTransient<IPartnerService, PartnerService>();
+            services.AddTransient<ICreatorService, CreatorService>();
             services.AddTransient<IHitService, HitService>();
             services.AddTransient<IUserService, UserService>();
             services.AddDbContext<UserRepository>(options => options.UseNpgsql(Environment.GetEnvironmentVariable("CONNECTION_STRING")));
@@ -141,8 +145,31 @@ namespace SublessSignIn
                 ValidateIssuerSigningKey = true,
                 ValidateIssuer = true,
                 ValidateLifetime = true,
-                ValidAudience = AuthSettings.AppClientId
+                AudienceValidator = AudienceValidator,
             };
         }
+
+        public bool AudienceValidator(IEnumerable<string> audiences, SecurityToken securityToken, TokenValidationParameters validationParameters)
+        {
+            if (securityToken is JwtSecurityToken)
+            {
+                var token = (JwtSecurityToken)securityToken;
+                var tokenUse = token.Claims.FirstOrDefault(x=> x.Type == "token_use")?.Value;
+                if (tokenUse == null)
+                {
+                    return false;
+                }
+                if (tokenUse == "access")
+                {
+                    return true;
+                }
+                if (tokenUse == "id")
+                {
+                    return AuthSettings.AppClientId == audiences.First();
+                }
+            }
+            return false;
+        }
+
     }
 }

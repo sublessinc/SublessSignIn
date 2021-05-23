@@ -65,10 +65,13 @@ const hashToBase64url = arrayBuffer => {
 // Main Function
 async function main(settings) {
     var code = urlParams.get('code');
-
+    var activation = urlParams.get('activation');
     //If code not present then request code else request tokens
     if (code == null) {
-
+        if (activation) {
+            sessionStorage.removeItem('activation');
+            sessionStorage.setItem("activation", activation);
+        }
         // Create random "state"
         var state = getRandomString();
         sessionStorage.setItem("pkce_state", state);
@@ -109,9 +112,11 @@ async function main(settings) {
                 sessionStorage.setItem("access_token", tokens.access_token);
                 fetch("/api/Authorization/redirect", {
                     headers: {
-                        "Authorization": "Bearer " + sessionStorage.getItem('id_token')
+                        "Authorization": "Bearer " + sessionStorage.getItem('id_token'),
+                        "Activation": sessionStorage.getItem('activation')
                     }
                 }).then(function (resp) {
+                    sessionStorage.removeItem('activation');
                     resp.json().then(function (json) {
                         redirect = json;
                         switch (redirect.redirectionPath) {
@@ -120,6 +125,9 @@ async function main(settings) {
                                 break;
                             case 2:
                                 window.location.replace(baseURI + "/PayingCustomer.html?sessionId="+redirect.sessionId);
+                                break;
+                            case 3:
+                                window.location.replace(baseURI + "/Activated.html");
                                 break;
                             default:
 

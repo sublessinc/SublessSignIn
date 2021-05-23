@@ -7,9 +7,10 @@ namespace Subless.Services
 {
     public interface IUserService
     {
-        Redirection LoginWorkflow(string cognitoId);
         User CreateUserByCognitoId(string cognitoId);
         void AddStripeSessionId(string cognitoId, string stripeId);
         string GetStripeIdFromCognitoId(string cognitoId);
+        User GetUserByCognitoId(string cognitoId);
+        Redirection LoginWorkflow(string cognitoId, string activation);
     }
 }
