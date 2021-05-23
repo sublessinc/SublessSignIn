@@ -10,5 +10,11 @@ namespace Subless.Data
         User GetUserByStripeId(string id);
         void UpdateUser(User user);
         User GetUserByCognitoId(string id);
+        void SaveCreator(Creator creator);
+        void AddPartner(Partner partner);
+        Creator GetCreatorByActivationCode(Guid code);
+        void UpdateCreator(Creator creator);
+        Partner GetPartnerByCognitoId(string partnerClientId);
+
     }
 }
