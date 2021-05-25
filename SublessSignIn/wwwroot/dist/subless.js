@@ -63,7 +63,7 @@ const hashToBase64url = arrayBuffer => {
 }
 
 // Main Function
-async function main(settings) {
+async function executeSublessLogin(settings) {
     var code = urlParams.get('code');
     var token = sessionStorage.getItem('id_token');
 
@@ -114,15 +114,17 @@ async function main(settings) {
         }
 }
 
-fetch(sublessURI + "/api/Authorization/settings")
-    .then(function (resp) {
-        var json = resp.json().then(json => {
-            main(json);
+function sublessLogin() {
+    fetch(sublessURI + "/api/Authorization/settings")
+        .then(function (resp) {
+            var json = resp.json().then(json => {
+                executeSublessLogin(json);
+            });
         });
-    });
+}
 
 
-function phoneHome() {
+function hitSubless() {
     var token = sessionStorage.getItem('id_token');
     if (token) {
         var body = 
@@ -138,4 +140,4 @@ function phoneHome() {
     }
 }
 
-phoneHome();
+hitSubless();
