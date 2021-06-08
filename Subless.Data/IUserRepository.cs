@@ -15,6 +15,7 @@ namespace Subless.Data
         Creator GetCreatorByActivationCode(Guid code);
         void UpdateCreator(Creator creator);
         Partner GetPartnerByCognitoId(string partnerClientId);
+        Creator GetCreatorByPartnerAndUsername(string partnerCognitoId, string username);
 
     }
 }

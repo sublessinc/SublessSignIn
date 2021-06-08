@@ -18,7 +18,7 @@ namespace Subless.Services
         public void ActivateCreator(Guid userId, Guid activationCode)
         {
             var creator = _userRepository.GetCreatorByActivationCode(activationCode);
-            if (creator == null)
+            if (creator == null || creator.ActivationExpiration < DateTime.UtcNow)
             {
                 throw new UnauthorizedAccessException();
             }

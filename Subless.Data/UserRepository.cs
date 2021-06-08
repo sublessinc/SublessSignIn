@@ -59,6 +59,11 @@ namespace Subless.Data
             return Creators.FirstOrDefault(creator => creator.ActivationCode == code);
         }
 
+        public Creator GetCreatorByPartnerAndUsername(string partnerCognitoId, string username)
+        {
+            return Partners.Where(x => x.CognitoAppClientId == partnerCognitoId).Single().Creators.FirstOrDefault(y => y.Username == username);
+        }
+
         public void SaveCreator(Creator creator)
         {
             Creators.Add(creator);

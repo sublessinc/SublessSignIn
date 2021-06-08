@@ -15,18 +15,22 @@ namespace Subless.Services
         {
             _userRepository = userRepository;
         }
-        public Guid CreatePartnerLink(string cognitoClientId, string creatorUsername)
+        public Guid GenerateCreatorActivationLink(string cognitoClientId, string creatorUsername)
         {
             var partnerId = CreatePartnerIfNew(cognitoClientId);
-            var code = Guid.NewGuid();
-            var creator = new Creator()
+            var creator = _userRepository.GetCreatorByPartnerAndUsername(cognitoClientId, creatorUsername);
+            if (creator == null)
             {
-                PartnerId = partnerId,
-                Active = false,
-                ActivationCode = code,
-                Username = creatorUsername
-            };
-
+                creator = new Creator()
+                {
+                    PartnerId = partnerId,
+                    Active = false,
+                    Username = creatorUsername
+                };
+            }
+            var code = Guid.NewGuid();
+            creator.ActivationCode = code;
+            creator.ActivationExpiration = DateTime.UtcNow.AddMinutes(10);
             _userRepository.SaveCreator(creator);
             return code;
         }

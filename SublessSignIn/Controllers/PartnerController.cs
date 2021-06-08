@@ -40,7 +40,7 @@ namespace SublessSignIn.Controllers
                 return Unauthorized();
             }          
 
-            return _partnerService.CreatePartnerLink(cognitoClientId, username).ToString();
+            return _partnerService.GenerateCreatorActivationLink(cognitoClientId, username).ToString();
         }
     }
 }

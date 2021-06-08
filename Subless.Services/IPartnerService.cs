@@ -4,6 +4,6 @@ namespace Subless.Services
 {
     public interface IPartnerService
     {
-        Guid CreatePartnerLink(string cognitoClientId, string creatorUsername);
+        Guid GenerateCreatorActivationLink(string cognitoClientId, string creatorUsername);
     }
 }
