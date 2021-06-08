@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Subless.Models;
 
@@ -15,6 +16,10 @@ namespace Subless.Data
         Creator GetCreatorByActivationCode(Guid code);
         void UpdateCreator(Creator creator);
         Partner GetPartnerByCognitoId(string partnerClientId);
-
+        Guid? GetAdminKey();
+        void SetAdminKey(Guid? key);
+        List<User> GetAdmins();
+        User GetUserById(Guid id);
+        bool IsUserAdmin(string cognitoId);
     }
 }

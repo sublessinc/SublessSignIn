@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -13,7 +14,7 @@ namespace Subless.Data
         internal DbSet<Hit> Hits { get; set; }
         internal DbSet<Partner> Partners { get; set; }
         internal DbSet<Creator> Creators { get; set; }
-
+        internal DbSet<RuntimeConfiguration> Configurations {get;set;}
         public UserRepository(IOptions<DatabaseSettings> options)
         {
             _options = options ?? throw new ArgumentNullException(nameof(options));
@@ -80,6 +81,45 @@ namespace Subless.Data
         public Partner GetPartnerByCognitoId(string partnerClientId)
         {
             return Partners.FirstOrDefault(x => x.CognitoAppClientId == partnerClientId);
+        }
+
+        public void SetAdminKey(Guid? key)
+        {
+            if (Configurations.Any())
+            {
+                var config = Configurations.Single();
+                config.AdminKey = key;
+                Configurations.Update(config);
+            }
+            else
+            {
+                var config = new RuntimeConfiguration
+                {
+                    AdminKey = key
+                };
+                Configurations.Add(config);
+            }
+            SaveChanges();
+        }
+
+        public Guid? GetAdminKey()
+        {
+            return Configurations.FirstOrDefault()?.AdminKey;
+        }
+
+        public List<User> GetAdmins()
+        {
+            return Users.Where(user => user.IsAdmin).ToList();
+        }
+
+        public User GetUserById(Guid id)
+        {
+            return Users.Find(id);
+        }
+
+        public bool IsUserAdmin(string cognitoId)
+        {
+            return Users.Any(x => x.CognitoId == cognitoId && x.IsAdmin);
         }
     }
 }
