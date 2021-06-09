@@ -78,6 +78,7 @@ namespace SublessSignIn
             }));
             services.AddTransient<IUserRepository, UserRepository>();
             services.AddTransient<UserRepository, UserRepository>();
+            services.AddTransient<IAdministrationService, AdministrationService>();
             services.AddTransient<IPartnerService, PartnerService>();
             services.AddTransient<ICreatorService, CreatorService>();
             services.AddTransient<IHitService, HitService>();
