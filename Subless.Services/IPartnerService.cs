@@ -1,9 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
+using Subless.Models;
 
 namespace Subless.Services
 {
     public interface IPartnerService
     {
-        Guid CreatePartnerLink(string cognitoClientId, string creatorUsername);
+        Guid CreatePartner(Partner partner);
+        Guid GenerateCreatorActivationLink(string cognitoClientId, string creatorUsername);
+        List<Partner> GetPartners();
+        void UpdatePartner(Partner partner);
     }
 }

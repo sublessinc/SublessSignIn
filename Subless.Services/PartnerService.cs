@@ -15,34 +15,46 @@ namespace Subless.Services
         {
             _userRepository = userRepository;
         }
-        public Guid CreatePartnerLink(string cognitoClientId, string creatorUsername)
-        {
-            var partnerId = CreatePartnerIfNew(cognitoClientId);
-            var code = Guid.NewGuid();
-            var creator = new Creator()
-            {
-                PartnerId = partnerId,
-                Active = false,
-                ActivationCode = code,
-                Username = creatorUsername
-            };
-
-            _userRepository.SaveCreator(creator);
-            return code;
-        }
-
-        public Guid CreatePartnerIfNew(string cognitoClientId)
+        public Guid GenerateCreatorActivationLink(string cognitoClientId, string creatorUsername)
         {
             var partner = _userRepository.GetPartnerByCognitoId(cognitoClientId);
             if (partner == null)
             {
-                partner = new Partner()
-                {
-                    CognitoAppClientId = cognitoClientId
-                };
-                _userRepository.AddPartner(partner);
+                throw new UnauthorizedAccessException("Partner not found. Partner may not have been activated yet.");
             }
+            var partnerId = partner.Id;
+            var creator = _userRepository.GetCreatorByPartnerAndUsername(cognitoClientId, creatorUsername);
+            if (creator == null)
+            {
+                creator = new Creator()
+                {
+                    PartnerId = partnerId,
+                    Active = false,
+                    Username = creatorUsername
+                };
+            }
+            var code = Guid.NewGuid();
+            creator.ActivationCode = code;
+            creator.ActivationExpiration = DateTime.UtcNow.AddMinutes(10);
+            _userRepository.SaveCreator(creator);
+            return code;
+        }
+
+        public Guid CreatePartner(Partner partner)
+        {
+            _userRepository.AddPartner(partner);
             return partner.Id;
+        }
+
+
+        public void UpdatePartner(Partner partner)
+        {
+            _userRepository.UpdatePartner(partner);
+        }
+
+        public List<Partner> GetPartners()
+        {
+            return _userRepository.GetPartners();
         }
     }
 }
