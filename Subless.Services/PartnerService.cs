@@ -17,7 +17,12 @@ namespace Subless.Services
         }
         public Guid GenerateCreatorActivationLink(string cognitoClientId, string creatorUsername)
         {
-            var partnerId = CreatePartnerIfNew(cognitoClientId);
+            var partner = _userRepository.GetPartnerByCognitoId(cognitoClientId);
+            if (partner == null)
+            {
+                throw new UnauthorizedAccessException("Partner not found. Partner may not have been activated yet.");
+            }
+            var partnerId = partner.Id;
             var creator = _userRepository.GetCreatorByPartnerAndUsername(cognitoClientId, creatorUsername);
             if (creator == null)
             {
@@ -35,18 +40,21 @@ namespace Subless.Services
             return code;
         }
 
-        public Guid CreatePartnerIfNew(string cognitoClientId)
+        public Guid CreatePartner(Partner partner)
         {
-            var partner = _userRepository.GetPartnerByCognitoId(cognitoClientId);
-            if (partner == null)
-            {
-                partner = new Partner()
-                {
-                    CognitoAppClientId = cognitoClientId
-                };
-                _userRepository.AddPartner(partner);
-            }
+            _userRepository.AddPartner(partner);
             return partner.Id;
+        }
+
+
+        public void UpdatePartner(Partner partner)
+        {
+            _userRepository.UpdatePartner(partner);
+        }
+
+        public List<Partner> GetPartners()
+        {
+            return _userRepository.GetPartners();
         }
     }
 }

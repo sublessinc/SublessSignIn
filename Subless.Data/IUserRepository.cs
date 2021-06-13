@@ -22,6 +22,7 @@ namespace Subless.Data
         User GetUserById(Guid id);
         bool IsUserAdmin(string cognitoId);
         Creator GetCreatorByPartnerAndUsername(string partnerCognitoId, string username);
-
+        List<Partner> GetPartners();
+        void UpdatePartner(Partner partner);
     }
 }

@@ -4,7 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Subless.Models;
 using Subless.Services;
+using SublessSignIn.Models;
 
 namespace SublessSignIn.Controllers
 {
@@ -45,5 +47,7 @@ namespace SublessSignIn.Controllers
             administrationService.ActivateAdmin(userId);
             return Ok();
         }
+
+
     }
 }
