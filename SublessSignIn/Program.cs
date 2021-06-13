@@ -5,6 +5,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Serilog;
 using Subless.Data;
+using Subless.Services;
 
 namespace SublessSignIn
 {
@@ -28,7 +29,8 @@ namespace SublessSignIn
                     context.Database.Migrate();
                     context.SaveChanges();
                 }
-
+                var adminService = services.GetService<IAdministrationService>();
+                adminService.OutputAdminKeyIfNoAdmins();
             }
             host.Run();
         }

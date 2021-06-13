@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Subless.Data;
 using Subless.Models;
 using SublessSignIn.Models;
@@ -73,7 +74,23 @@ namespace Subless.Services
         public User GetUserByCognitoId(string cognitoId)
         {
             return  _userRepo.GetUserByCognitoId(cognitoId);
+        }
 
+        public List<User> GetAdmins()
+        {
+            return _userRepo.GetAdmins();
+        }
+
+        public void SetUserAdmin(Guid userId)
+        {
+            var user = _userRepo.GetUserById(userId);
+            user.IsAdmin = true;
+            _userRepo.UpdateUser(user);
+        }
+
+        public bool IsUserAdmin(string cognitoId)
+        {
+            return _userRepo.IsUserAdmin(cognitoId);
         }
     }
 }
