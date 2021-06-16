@@ -6,7 +6,7 @@ import { AppComponent } from './app.component';
 import { RegisterPaymentComponent } from './register-payment/register-payment.component';
 import { LoginComponent } from './login/login.component';
 import { HttpClientModule } from '@angular/common/http';
-import { ProfileComponent } from './profile/profile.component';
+import { UserprofileComponent } from './userprofile/userprofile.component';
 
 
 @NgModule({
@@ -14,7 +14,7 @@ import { ProfileComponent } from './profile/profile.component';
     AppComponent,
     RegisterPaymentComponent,
     LoginComponent,
-    ProfileComponent,
+    UserprofileComponent,
   ],
   imports: [
     BrowserModule,

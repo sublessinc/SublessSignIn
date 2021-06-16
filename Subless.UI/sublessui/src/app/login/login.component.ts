@@ -37,6 +37,9 @@ export class LoginComponent implements OnInit {
         if (codeParameter) {
           this.authService.processAuthCode(codeParameter, state);
         }
+        if (idToken && authToken) {
+          this.authService.redirect();
+        }
       }
       );
   }

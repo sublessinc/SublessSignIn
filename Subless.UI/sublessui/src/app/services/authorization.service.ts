@@ -55,7 +55,7 @@ export class AuthorizationService {
             this.router.navigate(['register-payment']);
             break;
           case 2:
-            this.router.navigate(['profile']);
+            this.router.navigate(['user-profile']);
             break;
           default: {
             break;

@@ -1,7 +1,9 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ICheckoutSettings } from '../models/ICheckoutSettings';
 import { ISessionResponse } from '../models/ISessionResponse';
+import { IStripeRedirect } from '../models/IStripeRedirect';
 import { CheckoutService } from '../services/checkout.service';
 declare var Stripe: any;
 
@@ -13,7 +15,7 @@ declare var Stripe: any;
 export class RegisterPaymentComponent implements OnInit {
   private stripe: any;
   private settings!: ICheckoutSettings;
-  constructor(private httpClient: HttpClient,
+  constructor(
     private checkoutService: CheckoutService) { }
   ngOnInit(): void {
     this.getCheckoutSettings();
@@ -35,5 +37,6 @@ export class RegisterPaymentComponent implements OnInit {
       }
     });
   }
+
 }
 
