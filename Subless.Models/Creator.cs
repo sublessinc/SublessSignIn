@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Subless.Models
 {
-    [Index(nameof(Username))]
+    [Index(nameof(Username), nameof(PartnerId), IsUnique = true)]
     [Index(nameof(ActivationCode))]
     public class Creator
     {

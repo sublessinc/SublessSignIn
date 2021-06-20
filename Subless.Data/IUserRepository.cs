@@ -24,5 +24,6 @@ namespace Subless.Data
         Creator GetCreatorByPartnerAndUsername(string partnerCognitoId, string username);
         List<Partner> GetPartners();
         void UpdatePartner(Partner partner);
+        void UpsertCreator(Creator creator);
     }
 }

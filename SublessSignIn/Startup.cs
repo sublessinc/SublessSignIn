@@ -135,7 +135,6 @@ namespace SublessSignIn
             //app.UseHttpsRedirection();
 
             app.UseFileServer();
-
             app.UseAuthentication();
             app.UseRouting();
             app.UseCors();
@@ -143,6 +142,7 @@ namespace SublessSignIn
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapFallbackToFile("/index.html");
             });
         }
 

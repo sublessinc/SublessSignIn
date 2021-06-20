@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -33,10 +34,14 @@ namespace Subless.Services
                     Username = creatorUsername
                 };
             }
+            if (creator.Active)
+            {
+                throw new CreatorAlreadyActiveException();
+            }
             var code = Guid.NewGuid();
             creator.ActivationCode = code;
             creator.ActivationExpiration = DateTime.UtcNow.AddMinutes(10);
-            _userRepository.SaveCreator(creator);
+            _userRepository.UpsertCreator(creator);
             return code;
         }
 

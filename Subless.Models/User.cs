@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Subless.Models
 {
-    [Index(nameof(CognitoId))]
+    [Index(nameof(CognitoId), IsUnique = true)]
     public class User
     {
         public Guid Id { get; set; }

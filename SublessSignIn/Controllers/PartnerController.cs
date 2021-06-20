@@ -34,14 +34,25 @@ namespace SublessSignIn.Controllers
         public ActionResult<string> GetCreatorActivationLink([FromQuery] string username)
         {
             var scope = User.Claims.FirstOrDefault(x=> x.Type == "scope")?.Value;
-            var cognitoClientId = User.Claims.FirstOrDefault(x=> x.Type == "client_id")?.Value;            
+            var cognitoClientId = User.Claims.FirstOrDefault(x=> x.Type == "client_id")?.Value;
+            _logger.LogInformation($"Partner {cognitoClientId} registering creator {username}");
             if (scope == null || !scope.Contains("creator.register") || !scope.Contains(_settings.Domain) || cognitoClientId == null)
             {
                 _logger.LogError($"Unauthorized user registration Scope{scope}, username:{username}, clientId: {cognitoClientId}");
                 return Unauthorized();
-            }          
-
-            return _partnerService.GenerateCreatorActivationLink(cognitoClientId, username).ToString();
+            }
+            try
+            {
+                return _partnerService.GenerateCreatorActivationLink(cognitoClientId, username).ToString();
+            }
+            catch (UnauthorizedAccessException e)
+            {
+                return Unauthorized("Your partner credentials are invalid");
+            }
+            catch (CreatorAlreadyActiveException e)
+            {
+                return BadRequest("This creator is already activated on subless");
+            }
         }
 
 

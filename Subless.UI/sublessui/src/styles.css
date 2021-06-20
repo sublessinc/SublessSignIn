@@ -1,4 +1,4 @@
-/* Variables */
+/* You can add global styles to this file, and also import other style files */
 :root {
     --gray-offset: rgba(0, 0, 0, 0.03);
     --gray-border: rgba(0, 0, 0, 0.15);
@@ -8,136 +8,136 @@
     --green-light: #4361EE;
     --green-dark: #3A0CA3;
     --green-mid: #100F30;
-    --body-color: var(--gray-mid);
-    --headline-color: var(--gray-dark);
+    --body-color: rgba(0, 0, 0, 0.7);
+    --headline-color: rgba(0, 0, 0, 0.9);
     --accent-color: #F72585;
     --body-font-family: -apple-system, BlinkMacSystemFont, sans-serif;
     --radius: 6px;
-    --logo-image: url("../img/SublessLogoOnly.png");
+    --logo-image: url("/assets/img/SublessLogoOnly.png");
 }
 
 /* Base */
 html {
-  box-sizing: border-box;
-}
-* {
-  box-sizing: inherit;
-}
-body {
-  background-color: var(--green-dark);
-  font-family: var(--body-font-family);
-  font-size: 16px;
-  color: var(--body-color);
-  -webkit-font-smoothing: antialiased;
-}
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  color: var(--body-color);
-  margin-top: 2px;
-  margin-bottom: 4px;
-}
-h1 {
-  font-size: 27px;
-  color: var(--headline-color);
-}
-h4 {
-  font-weight: 500;
-  font-size: 14px;
-  color: var(--gray-light);
-}
-#bodyWrapper {
+    box-sizing: border-box;
+  }
+  * {
+    box-sizing: inherit;
+  }
+  body {
+    background-color: #3A0CA3;;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 16px;
+    color: rgba(0, 0, 0, 0.7);
+    -webkit-font-smoothing: antialiased;
+  }
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    color: rgba(0, 0, 0, 0.7);
+    margin-top: 2px;
+    margin-bottom: 4px;
+  }
+  h1 {
+    font-size: 27px;
+    color: #ffffff;
+  }
+  h4 {
+    font-weight: 500;
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.4);
+  }
+  #bodyWrapper {
+      display: flex;
+      flex-direction: row;
+  }
+  
+  #logout {
+      z-index:4;
+      margin: 10px;
+      align-self: flex-start;
+  }
+  /* Layout */
+  .sr-root {
+    align-self: flex-end;
     display: flex;
-    flex-direction: row;
-}
-
-#logout {
-    z-index:4;
-    margin: 10px;
-    align-self: flex-start;
-}
-/* Layout */
-.sr-root {
-  align-self: flex-end;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  width: 100%;
-  min-width: 320px;
-  height: auto;
-  min-height: 100vh;
-  padding: 48px 20px;
-}
-.sr-header {
-  margin-top: 64px;
-  margin-bottom: 32px;
-}
-.sr-payment-summary {
-  margin-bottom: 20px;
-  text-align: center;
-}
-.sr-main,
-.sr-content {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  height: 100%;
-}
-.sr-main {
-  width: 100%;
-}
-.sr-main-post-checkout {
-    width: 80%;
-}
-
-.sr-content {
-  display: none;
-  padding-left: 48px;
-}
-.sr-header__logo {
-  background-image: var(--logo-image);
-  height: 24px;
-  background-position: center;
-  background-size: contain;
-  background-repeat: no-repeat;
-  width: 100%;
-}
-.sr-legal-text {
-  color: var(--gray-light);
-  text-align: center;
-  font-size: 13px;
-  line-height: 17px;
-  margin-top: 12px;
-}
-.sr-field-error {
-  color: var(--accent-color);
-  text-align: left;
-  font-size: 13px;
-  line-height: 17px;
-  margin-top: 12px;
-}
-
-/* Form */
-.sr-form-row {
-  margin: 16px 0;
-}
-label {
-  font-size: 13px;
-  font-weight: 500;
-  margin-bottom: 8px;
-  display: inline-block;
-}
-
+    flex-direction: column;
+    justify-content: flex-start;
+    width: 100%;
+    min-width: 320px;
+    height: auto;
+    min-height: 100vh;
+    padding: 48px 20px;
+  }
+  .sr-header {
+    margin-top: 64px;
+    margin-bottom: 32px;
+  }
+  .sr-payment-summary {
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  .sr-main,
+  .sr-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%;
+  }
+  .sr-main {
+    width: 100%;
+  }
+  .sr-main-post-checkout {
+      width: 80%;
+  }
+  
+  .sr-content {
+    display: none;
+    padding-left: 48px;
+  }
+  .sr-header__logo {
+    background-image: var(--logo-image);
+    height: 24px;
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    width: 100%;
+  }
+  .sr-legal-text {
+    color: rgba(0, 0, 0, 0.4);
+    text-align: center;
+    font-size: 13px;
+    line-height: 17px;
+    margin-top: 12px;
+  }
+  .sr-field-error {
+    color: #F72585;
+    text-align: left;
+    font-size: 13px;
+    line-height: 17px;
+    margin-top: 12px;
+  }
+  
+  /* Form */
+  .sr-form-row {
+    margin: 16px 0;
+  }
+  label {
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 8px;
+    display: inline-block;
+  }
+  
 /* Inputs */
 .sr-input,
 .sr-select,
 input[type="text"],
 input[type="number"] {
-  border: 1px solid var(--gray-border);
-  border-radius: var(--radius);
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 6px;
   padding: 5px 12px;
   height: 44px;
   width: 100%;
@@ -160,7 +160,7 @@ button:focus,
 .sr-input::placeholder,
 input[type="text"]::placeholder,
 input[type="number"]::placeholder {
-  color: var(--gray-light);
+  color: rgba(0, 0, 0, 0.4);
 }
 
 /* Checkbox */
@@ -180,7 +180,7 @@ input[type="number"]::placeholder {
   height: 16px;
   width: 16px;
   background-color: white;
-  border: 1px solid var(--gray-border);
+  border: 1px solid rgba(0, 0, 0, 0.15);
   border-radius: 4px;
   transition: all 0.2s ease;
 }
@@ -192,7 +192,7 @@ input[type="number"]::placeholder {
 }
 
 .sr-checkbox-label input:checked ~ .sr-checkbox-check {
-  background-color: var(--accent-color);
+  background-color: #F72585;
   background-image: url("https://storage.googleapis.com/stripe-sample-images/icon-checkmark.svg");
   background-repeat: no-repeat;
   background-size: 16px;
@@ -224,98 +224,96 @@ input[type="number"]::placeholder {
   font-weight: 400;
 }
 .sr-select:invalid {
-  color: var(--gray-light);
+  color: rgba(0, 0, 0, 0.4);
   background-opacity: 0.4;
 }
 
 /* Combo inputs */
 .sr-combo-inputs {
-  display: flex;
-  flex-direction: column;
-}
-.sr-combo-inputs input,
-.sr-combo-inputs .sr-select {
-  border-radius: 0;
-  border-bottom: 0;
-}
-.sr-combo-inputs > input:first-child,
-.sr-combo-inputs > .sr-select:first-child {
-  border-radius: var(--radius) var(--radius) 0 0;
-}
-.sr-combo-inputs > input:last-child,
-.sr-combo-inputs > .sr-select:last-child {
-  border-radius: 0 0 var(--radius) var(--radius);
-  border-bottom: 1px solid var(--gray-border);
-}
-.sr-combo-inputs > .sr-combo-inputs-row:last-child input:first-child {
-  border-radius: 0 0 0 var(--radius);
-  border-bottom: 1px solid var(--gray-border);
-}
-.sr-combo-inputs > .sr-combo-inputs-row:last-child input:last-child {
-  border-radius: 0 0 var(--radius) 0;
-  border-bottom: 1px solid var(--gray-border);
-}
-.sr-combo-inputs > .sr-combo-inputs-row:first-child input:first-child {
-  border-radius: var(--radius) 0 0 0;
-}
-.sr-combo-inputs > .sr-combo-inputs-row:first-child input:last-child {
-  border-radius: 0 var(--radius) 0 0;
-}
-.sr-combo-inputs > .sr-combo-inputs-row:first-child input:only-child {
-  border-radius: var(--radius) var(--radius) 0 0;
-}
-.sr-combo-inputs-row {
-  width: 100%;
-  display: flex;
-}
-
-.sr-combo-inputs-row > input {
-  width: 100%;
-  border-radius: 0;
-}
-
-.sr-combo-inputs-row > input:first-child:not(:only-child) {
-  border-right: 0;
-}
-
-.sr-combo-inputs-row:not(:first-of-type) .sr-input {
-  border-radius: 0 0 var(--radius) var(--radius);
-}
-
-/* Buttons and links */
-button {
-  background: var(--accent-color);
-  border-radius: var(--radius);
-  color: white;
-  border: 0;
-  padding: 12px 16px;
-  margin-top: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  display: block;
-}
-button:hover {
-  filter: contrast(115%);
-}
-button:active {
-  transform: translateY(0px) scale(0.98);
-  filter: brightness(0.9);
-}
-button:disabled {
-  opacity: 0.5;
-  cursor: none;
-}
-
-
-
+    display: flex;
+    flex-direction: column;
+  }
+  .sr-combo-inputs input,
+  .sr-combo-inputs .sr-select {
+    border-radius: 0;
+    border-bottom: 0;
+  }
+  .sr-combo-inputs > input:first-child,
+  .sr-combo-inputs > .sr-select:first-child {
+    border-radius: 6px 6px 0 0;
+  }
+  .sr-combo-inputs > input:last-child,
+  .sr-combo-inputs > .sr-select:last-child {
+    border-radius: 0 0 6px 6px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+  }
+  .sr-combo-inputs > .sr-combo-inputs-row:last-child input:first-child {
+    border-radius: 0 0 0 6px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+  }
+  .sr-combo-inputs > .sr-combo-inputs-row:last-child input:last-child {
+    border-radius: 0 0 6px 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+  }
+  .sr-combo-inputs > .sr-combo-inputs-row:first-child input:first-child {
+    border-radius: 6px 0 0 0;
+  }
+  .sr-combo-inputs > .sr-combo-inputs-row:first-child input:last-child {
+    border-radius: 0 6px 0 0;
+  }
+  .sr-combo-inputs > .sr-combo-inputs-row:first-child input:only-child {
+    border-radius: 6px 6px 0 0;
+  }
+  .sr-combo-inputs-row {
+    width: 100%;
+    display: flex;
+  }
+  
+  .sr-combo-inputs-row > input {
+    width: 100%;
+    border-radius: 0;
+  }
+  
+  .sr-combo-inputs-row > input:first-child:not(:only-child) {
+    border-right: 0;
+  }
+  
+  .sr-combo-inputs-row:not(:first-of-type) .sr-input {
+    border-radius: 0 0 6px 6px;
+  }
+  
+  /* Buttons and links */
+  button {
+    background: #F72585;
+    border-radius: 6px;
+    color: white;
+    border: 0;
+    padding: 12px 16px;
+    margin-top: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: block;
+  }
+  button:hover {
+    filter: contrast(115%);
+  }
+  button:active {
+    transform: translateY(0px) scale(0.98);
+    filter: brightness(0.9);
+  }
+  button:disabled {
+    opacity: 0.5;
+    cursor: none;
+  }
+  
 .sr-payment-form button,
 .fullwidth {
   width: 100%;
 }
 
 a {
-  color: var(--accent-color);
+  color: #F72585;
   text-decoration: none;
   transition: all 0.2s ease;
 }
@@ -330,9 +328,9 @@ a:active {
 
 /* Code block */
 .sr-callout {
-  background: var(--gray-offset);
+  background: rgba(0, 0, 0, 0.03);
   padding: 12px;
-  border-radius: var(--radius);
+  border-radius: 6px;
   max-height: 200px;
   overflow: auto;
 }
@@ -374,9 +372,9 @@ pre {
 
 /* Pasha styles – Brand-overrides, can split these out */
 :root {
-    --accent-color: var(--green-dark);
+    --accent-color: #3A0CA3;;
     --headline-color: #ffffff;
-    --logo-image: url("../img/favicon.ico");
+    --logo-image: url("/assets/img/favicon.ico");
 }
 
 .subless-background {
@@ -385,7 +383,7 @@ pre {
   top: 0;
   left: 0;
   right: 0;
-  background-color: var(--green-mid);
+  background-color:#100F30;
   height: 275px;
 }
 
@@ -486,6 +484,7 @@ pre {
   padding: 20px;
 }
 
+
 /* todo: spinner/processing state, errors, animations */
 
 .spinner,
@@ -514,7 +513,7 @@ pre {
 .spinner:before {
   width: 10.4px;
   height: 20.4px;
-  background: var(--accent-color);
+  background: #F72585;
   border-radius: 20.4px 0 0 20.4px;
   top: -0.2px;
   left: -0.2px;
@@ -526,7 +525,7 @@ pre {
 .spinner:after {
   width: 10.4px;
   height: 10.2px;
-  background: var(--accent-color);
+  background: #F72585;
   border-radius: 0 10.2px 10.2px 0;
   top: -0.1px;
   left: 10.2px;
@@ -577,7 +576,7 @@ pre {
 .quantity-setter .increment-btn {
   margin-top: 0;
   border-radius: 0;
-  border: 1px solid var(--accent-color);
+  border: 1px solid #F72585;
 }
 
 input[type="number"]::-webkit-inner-spin-button,
@@ -625,24 +624,138 @@ input[type="number"]::-webkit-outer-spin-button {
 }
 
 @keyframes field-in {
-  0% {
-    opacity: 0;
-    transform: translateY(8px) scale(0.95);
+    0% {
+      opacity: 0;
+      transform: translateY(8px) scale(0.95);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0px) scale(1);
+    }
   }
-  100% {
-    opacity: 1;
-    transform: translateY(0px) scale(1);
+  
+  @keyframes form-in {
+    0% {
+      opacity: 0;
+      transform: scale(0.98);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
   }
-}
 
-@keyframes form-in {
-  0% {
-    opacity: 0;
-    transform: scale(0.98);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
+  /*! normalize.css v8.0.1 | MIT License | github.com/necolas/normalize.css */
 
+/* Document
+   ========================================================================== */
+
+/**
+ * 1. Correct the line height in all browsers.
+ * 2. Prevent adjustments of font size after orientation changes in iOS.
+ */
+
+ html {
+    line-height: 1.15; /* 1 */
+    -webkit-text-size-adjust: 100%; /* 2 */
+  }
+  
+  /* Sections
+     ========================================================================== */
+  
+  /**
+   * Remove the margin in all browsers.
+   */
+  
+  body {
+    margin: 0;
+  }
+  
+  /**
+   * Render the `main` element consistently in IE.
+   */
+
+  
+  /**
+   * Correct the font size and margin on `h1` elements within `section` and
+   * `article` contexts in Chrome, Firefox, and Safari.
+   */
+  
+  h1 {
+    font-size: 2em;
+    margin: 0.67em 0;
+  }
+ 
+  
+  /* Embedded content
+     ========================================================================== */
+  
+  /**
+   * Remove the border on images inside links in IE 10.
+   */
+  
+  img {
+    border-style: none;
+  }
+  
+  /* Forms
+     ========================================================================== */
+  
+  /**
+   * 1. Change the font styles in all browsers.
+   * 2. Remove the margin in Firefox and Safari.
+   */
+  
+   button,
+   input,
+   optgroup,
+   select,
+   textarea {
+     font-family: inherit; /* 1 */
+     font-size: 100%; /* 1 */
+     line-height: 1.15; /* 1 */
+     margin: 0; /* 2 */
+   }
+   
+   /**
+    * Show the overflow in IE.
+    * 1. Show the overflow in Edge.
+    */
+   
+   button,
+   input { /* 1 */
+     overflow: visible;
+   }
+   
+   /**
+    * Remove the inheritance of text transform in Edge, Firefox, and IE.
+    * 1. Remove the inheritance of text transform in Firefox.
+    */
+   
+   button,
+   select { /* 1 */
+     text-transform: none;
+   }
+   
+   /**
+    * Correct the inability to style clickable types in iOS and Safari.
+    */
+   
+   button,
+   [type="button"],
+   [type="reset"],
+   [type="submit"] {
+     -webkit-appearance: button;
+   }
+   
+   /**
+    * Remove the inner border and padding in Firefox.
+    */
+   
+   button::-moz-focus-inner,
+   [type="button"]::-moz-focus-inner,
+   [type="reset"]::-moz-focus-inner,
+   [type="submit"]::-moz-focus-inner {
+     border-style: none;
+     padding: 0;
+   }

@@ -28,7 +28,7 @@ namespace Subless.Data
 
         public User GetUserByCognitoId(string id)
         {
-            return Users.FirstOrDefault(x => x.CognitoId == id);
+            return Users.Include(i=> i.Creators).FirstOrDefault(x => x.CognitoId == id);
         }
 
         public User GetUserByStripeId(string id)
@@ -72,6 +72,18 @@ namespace Subless.Data
         {
             Creators.Add(creator);
             SaveChanges();
+        }
+
+        public void UpsertCreator(Creator creator)
+        {
+            if (creator.Id == Guid.Empty)
+            {
+                SaveCreator(creator);
+            }
+            else
+            {
+                UpdateCreator(creator);
+            }
         }
 
         public void UpdateCreator(Creator creator)
