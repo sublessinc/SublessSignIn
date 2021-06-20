@@ -6,12 +6,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="wwwroot\css\global.css" />
-    <None Include="wwwroot\css\normalize.css" />
-    <None Include="wwwroot\img\favicon.ico" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Amazon.AspNetCore.Identity.Cognito" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Abstractions" Version="2.2.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.5" />
