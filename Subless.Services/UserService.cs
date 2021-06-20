@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Subless.Data;
 using Subless.Models;
 using SublessSignIn.Models;
@@ -23,10 +24,18 @@ namespace Subless.Services
             {
                 user = CreateUserByCognitoId(cognitoId);
             }
-
-            if (activationCode != null && Guid.TryParse(activationCode, out Guid code))
+            
+            if (activationCode != null && Guid.TryParse(activationCode, out Guid code) && user.Creators.Any(x=>!x.Active))
             {
                 _creatorService.ActivateCreator(user.Id, code);
+                return new Redirection()
+                {
+                    RedirectionPath = RedirectionPath.ActivatedCreator
+                };
+            }
+
+            if (user.Creators!= null && user.Creators.Any())
+            {
                 return new Redirection()
                 {
                     RedirectionPath = RedirectionPath.ActivatedCreator

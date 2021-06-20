@@ -26,6 +26,12 @@ export class LoginComponent implements OnInit {
       .subscribe(async params => {
         const codeParameter = params.code;
         const state = params.state;
+        const activation = params.activation;
+
+        if (activation) {
+          sessionStorage.setItem("activation", params.activation);
+        }
+
         var idToken = sessionStorage.getItem("id_token");
         var authToken = sessionStorage.getItem("access_token");
         if ((!idToken || !authToken) && !(codeParameter)) {

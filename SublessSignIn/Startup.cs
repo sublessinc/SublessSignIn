@@ -135,7 +135,6 @@ namespace SublessSignIn
             //app.UseHttpsRedirection();
 
             app.UseFileServer();
-
             app.UseAuthentication();
             app.UseRouting();
             app.UseCors();

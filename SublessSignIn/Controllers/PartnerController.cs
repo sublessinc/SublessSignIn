@@ -39,9 +39,19 @@ namespace SublessSignIn.Controllers
             {
                 _logger.LogError($"Unauthorized user registration Scope{scope}, username:{username}, clientId: {cognitoClientId}");
                 return Unauthorized();
-            }          
-
-            return _partnerService.GenerateCreatorActivationLink(cognitoClientId, username).ToString();
+            }
+            try
+            {
+                return _partnerService.GenerateCreatorActivationLink(cognitoClientId, username).ToString();
+            }
+            catch (UnauthorizedAccessException e)
+            {
+                return Unauthorized("Your partner credentials are invalid");
+            }
+            catch (CreatorAlreadyActiveException e)
+            {
+                return BadRequest("This creator is already activated on subless");
+            }
         }
 
 

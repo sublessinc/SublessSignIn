@@ -124,7 +124,7 @@ namespace SublessSignIn.Controllers
             var options = new Stripe.BillingPortal.SessionCreateOptions
             {
                 Customer = checkoutSession.CustomerId,
-                ReturnUrl = $"{returnUrl}/userprofile",
+                ReturnUrl = $"{returnUrl}/user-profile",
             };
             var service = new Stripe.BillingPortal.SessionService(_client);
             var session = await service.CreateAsync(options);

@@ -12,6 +12,7 @@ import { IRedirect } from '../models/IRedirect';
 export class AuthorizationService {
   private baseURI: string = '';
   private redirectURI: string = '';
+  private logoutURI: string = '';
   private code_verifier: string = '';
   constructor(
     private httpClient: HttpClient,
@@ -19,6 +20,7 @@ export class AuthorizationService {
   ) {
     this.baseURI = location.protocol + '//' + window.location.hostname + (location.port ? ':' + location.port : '');
     this.redirectURI = this.baseURI + "/login";
+    this.logoutURI = this.baseURI + "/login";
   }
 
   public getSettings() {
@@ -47,7 +49,11 @@ export class AuthorizationService {
 
   redirect() {
     const authHeader = "Bearer " + sessionStorage.getItem('id_token');
-    var headers = new HttpHeaders().set('Authorization', authHeader);
+    const activation = sessionStorage.getItem('activation');
+    var headers = new HttpHeaders().set('Authorization', authHeader).set("Activation", activation ?? '');
+    if (activation) {
+      sessionStorage.setItem('activation', '');
+    }
     this.httpClient.get<IRedirect>('/api/Authorization/redirect', { headers: headers }).subscribe({
       next: (redirectResponse: IRedirect) => {
         switch (redirectResponse.redirectionPath) {
@@ -57,13 +63,29 @@ export class AuthorizationService {
           case 2:
             this.router.navigate(['user-profile']);
             break;
+          case 3:
+            this.router.navigate(['creator-profile']);
+            break;
           default: {
             break;
           }
         }
       }
     });
+  }
 
+  redirectToLogout() {
+    this.getSettings().subscribe({
+      next: (settings) => {
+        window.location.replace(
+          settings.issuerUrl
+          + "/logout?response_type=code&client_id="
+          + settings.appClientId
+          + "&logout_uri="
+          + this.logoutURI
+        );
+      }
+    })
   }
 
   decodePayload(payload: string) {

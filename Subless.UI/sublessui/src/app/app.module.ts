@@ -7,6 +7,9 @@ import { RegisterPaymentComponent } from './register-payment/register-payment.co
 import { LoginComponent } from './login/login.component';
 import { HttpClientModule } from '@angular/common/http';
 import { UserprofileComponent } from './userprofile/userprofile.component';
+import { CreatorprofileComponent } from './creatorprofile/creatorprofile.component';
+import { LogoutComponent } from './logout/logout.component';
+import { LoggedOutComponent } from './logged-out/logged-out.component';
 
 
 @NgModule({
@@ -15,6 +18,9 @@ import { UserprofileComponent } from './userprofile/userprofile.component';
     RegisterPaymentComponent,
     LoginComponent,
     UserprofileComponent,
+    CreatorprofileComponent,
+    LogoutComponent,
+    LoggedOutComponent,
   ],
   imports: [
     BrowserModule,
