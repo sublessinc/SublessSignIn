@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Subless.Models
 {
-    [Index(nameof(UserId))]
+    [Index(nameof(UserId), IsUnique = true)]
     [Index(nameof(TimeStamp))]
     public class Hit
     {

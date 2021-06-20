@@ -51,7 +51,8 @@ namespace Subless.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.HasIndex("Username");
+                    b.HasIndex("Username", "PartnerId")
+                        .IsUnique();
 
                     b.ToTable("Creators");
                 });
@@ -78,7 +79,8 @@ namespace Subless.Data.Migrations
 
                     b.HasIndex("TimeStamp");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserId")
+                        .IsUnique();
 
                     b.HasIndex("UserId1");
 
@@ -102,7 +104,8 @@ namespace Subless.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CognitoAppClientId");
+                    b.HasIndex("CognitoAppClientId")
+                        .IsUnique();
 
                     b.ToTable("Partners");
                 });
@@ -138,7 +141,8 @@ namespace Subless.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CognitoId");
+                    b.HasIndex("CognitoId")
+                        .IsUnique();
 
                     b.ToTable("Users");
                 });
