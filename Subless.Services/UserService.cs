@@ -25,7 +25,7 @@ namespace Subless.Services
                 user = CreateUserByCognitoId(cognitoId);
             }
             
-            if (activationCode != null && Guid.TryParse(activationCode, out Guid code) && (user.Creators == null || user.Creators.Any(x=>!x.Active)))
+            if (activationCode != null && Guid.TryParse(activationCode, out Guid code) && (user.Creators == null || !user.Creators.Any() || user.Creators.Any(x=>!x.Active)))
             {
                 _creatorService.ActivateCreator(user.Id, code);
                 return new Redirection()
