@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Subless.Data;
+using Subless.Models;
 
 namespace Subless.Services
 {
@@ -26,6 +27,31 @@ namespace Subless.Services
             creator.Active = true;
             creator.UserId = userId;
             _userRepository.UpdateCreator(creator);
+        }
+
+        public Creator GetCreator(string cognitoId)
+        {
+            var creators = _userRepository.GetCreatorsByCognitoId(cognitoId);
+            if (creators == null || !creators.Any(x => x.Active))
+            {
+                throw new UnauthorizedAccessException();
+            }
+            // TODO: One creator for now. 
+            return creators.First();
+        }
+
+        public Creator UpdateCreator(string cognitoId, Creator creator)
+        {
+            var creators = _userRepository.GetCreatorsByCognitoId(cognitoId);
+            if (creators == null || !creators.Any(x => x.Active))
+            {
+                throw new UnauthorizedAccessException();
+            }
+            // Set user modifiable properties
+            var currentCreator = creators.First();
+            currentCreator.PayoneerId = creator.PayoneerId;
+            _userRepository.UpdateCreator(currentCreator);
+            return currentCreator;
         }
     }
 }

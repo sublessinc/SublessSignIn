@@ -10,6 +10,7 @@ import { UserprofileComponent } from './userprofile/userprofile.component';
 import { CreatorprofileComponent } from './creatorprofile/creatorprofile.component';
 import { LogoutComponent } from './logout/logout.component';
 import { LoggedOutComponent } from './logged-out/logged-out.component';
+import { FormsModule } from '@angular/forms';
 
 
 @NgModule({
@@ -25,7 +26,8 @@ import { LoggedOutComponent } from './logged-out/logged-out.component';
   imports: [
     BrowserModule,
     AppRoutingModule,
-    HttpClientModule
+    HttpClientModule,
+    FormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

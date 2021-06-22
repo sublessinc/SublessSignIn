@@ -60,6 +60,17 @@ namespace Subless.Data
             return Creators.FirstOrDefault(creator => creator.ActivationCode == code);
         }
 
+        public List<Creator> GetCreatorsByCognitoId(string cognitoId)
+        {
+            return Users.Include(x => x.Creators).FirstOrDefault(x => x.CognitoId == cognitoId)?.Creators?.ToList();            
+        }
+
+        public void UpdateCreator(Creator creator)
+        {
+            Creators.Update(creator);
+            SaveChanges();
+        }
+
         public Creator GetCreatorByPartnerAndUsername(string partnerCognitoId, string username)
         {
             var partners = Partners.Include(p => p.Creators).Where(x => x.CognitoAppClientId == partnerCognitoId);
@@ -84,12 +95,6 @@ namespace Subless.Data
             {
                 UpdateCreator(creator);
             }
-        }
-
-        public void UpdateCreator(Creator creator)
-        {
-            Creators.Update(creator);
-            SaveChanges();
         }
 
         public void AddPartner(Partner partner)
