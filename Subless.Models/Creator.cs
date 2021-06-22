@@ -18,5 +18,6 @@ namespace Subless.Models
         public DateTime ActivationExpiration { get; set; }
         public Guid PartnerId { get; set; }
         public Guid? UserId { get; set; }
+        public string PayoneerId { get; set; }
     }
 }
