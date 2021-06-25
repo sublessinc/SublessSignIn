@@ -28,8 +28,8 @@ namespace Subless.PayoutCalculator
                 var partnerVisits = GetVisitsPerPartner(hits);
                 // fraction each creator by the percentage of total visits
                 // multiply payment by that fraction
-                payees.AddRange(GetCreatorPayees(creatorVisits, hits.Count, PartnerFraction, SublessFraction));
-                payees.AddRange(GetPartnerPayees(creatorVisits, hits.Count, PartnerFraction, SublessFraction));
+                payees.AddRange(GetCreatorPayees(payer.Payment, creatorVisits, hits.Count, PartnerFraction, SublessFraction));
+                payees.AddRange(GetPartnerPayees(payer.Payment, creatorVisits, hits.Count, PartnerFraction, SublessFraction));
                 // set aside 2% for us
                 payees.Add(GetSublessPayment(payer.Payment, SublessFraction));
                 // ensure total payment adds up
@@ -74,12 +74,12 @@ namespace Subless.PayoutCalculator
             throw new NotImplementedException();
         }
 
-        private List<Payee> GetCreatorPayees(Dictionary<Guid,int> creatorHits, int totalHits, double partnerHitFraction, double sublessHitFraction)
+        private List<Payee> GetCreatorPayees(Double payment, Dictionary<Guid,int> creatorHits, int totalHits, double partnerHitFraction, double sublessHitFraction)
         {
             throw new NotImplementedException();
         }
 
-        private List<Payee> GetPartnerPayees(Dictionary<Guid, int> creatorHits, int totalHits, double partnerHitFraction, double sublessHitFraction)
+        private List<Payee> GetPartnerPayees(Double payment, Dictionary<Guid, int> creatorHits, int totalHits, double partnerHitFraction, double sublessHitFraction)
         {
             throw new NotImplementedException();
         }
@@ -112,12 +112,6 @@ namespace Subless.PayoutCalculator
         private void SavePayoutsToS3(Dictionary<string, double> masterPayoutList)
         {
             throw new NotImplementedException();
-        }
-
-        private class Payee
-        {
-            public double Payment { get; set; }
-            public string PayoneerId { get; set; }
         }
 
         private class PaymentLog

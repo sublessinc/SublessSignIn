@@ -22,10 +22,10 @@ namespace SublessSignIn.Controllers
     public class CheckoutController : ControllerBase
     {
         private readonly IOptions<StripeConfig> _stripeConfig;
-        private readonly IStripeClient _client;
         private readonly IUserService _userService;
+        private readonly IStripeService _stripeService;
         private readonly ILogger<CheckoutController> _logger;
-        public CheckoutController(ILoggerFactory loggerFactory, IOptions<StripeConfig> stripeConfig, IUserService userService)
+        public CheckoutController(ILoggerFactory loggerFactory, IOptions<StripeConfig> stripeConfig, IUserService userService, IStripeService stripeService)
         {
             _stripeConfig = stripeConfig ?? throw new ArgumentNullException(nameof(stripeConfig));
             _ = stripeConfig.Value.PublishableKey ?? throw new ArgumentNullException(nameof(stripeConfig.Value.PublishableKey));
@@ -34,9 +34,8 @@ namespace SublessSignIn.Controllers
             _ = stripeConfig.Value.SecretKey ?? throw new ArgumentNullException(nameof(stripeConfig.Value.SecretKey));
             _ = stripeConfig.Value.WebhookSecret ?? throw new ArgumentNullException(nameof(stripeConfig.Value.WebhookSecret));
             _userService = userService ?? throw new ArgumentNullException(nameof(userService));
+            _stripeService = stripeService ?? throw new ArgumentNullException(nameof(stripeService));
             _logger = loggerFactory.CreateLogger<CheckoutController>();
-            _client = new StripeClient(_stripeConfig.Value.SecretKey);
-
         }
 
         /// <summary>
@@ -66,34 +65,11 @@ namespace SublessSignIn.Controllers
             {
                 return Unauthorized();
             }
-            var options = new SessionCreateOptions
-            {
-                SuccessUrl = $"{_stripeConfig.Value.Domain}/user-profile",
-                CancelUrl = $"{_stripeConfig.Value.Domain}/register-payment",
-                PaymentMethodTypes = new List<string>
-                {
-                    "card",
-                },
-                Mode = "subscription",
-                LineItems = new List<SessionLineItemOptions>
-                {
-                    new SessionLineItemOptions
-                    {
-                        Price = req.PriceId,
-                        Quantity = 1,
-                    },
-                },
-            };
-
-            var service = new SessionService(_client);
+            
             try
             {
-                var session = await service.CreateAsync(options);
-                _userService.AddStripeSessionId(cognitoId, session.Id);
-                return Ok(new CreateCheckoutSessionResponse
-                {
-                    SessionId = session.Id,
-                });
+            
+                return Ok(await _stripeService.CreateCheckoutSession(req.PriceId, cognitoId));
             }
             catch (StripeException e)
             {
@@ -109,27 +85,9 @@ namespace SublessSignIn.Controllers
             if (cognitoId == null)
             {
                 return Unauthorized();
-            }
-            // TODO: Switch this to loading the session ID based on the cognito user id
-            // For demonstration purposes, we're using the Checkout session to retrieve the customer ID. 
-            // Typically this is stored alongside the authenticated user in your database.
-            var checkoutSessionId = _userService.GetStripeIdFromCognitoId(cognitoId);
-            var checkoutService = new SessionService(_client);
-            var checkoutSession = await checkoutService.GetAsync(checkoutSessionId);
+            }            
 
-            // This is the URL to which your customer will return after
-            // they are done managing billing in the Customer Portal.
-            var returnUrl = _stripeConfig.Value.Domain;
-
-            var options = new Stripe.BillingPortal.SessionCreateOptions
-            {
-                Customer = checkoutSession.CustomerId,
-                ReturnUrl = $"{returnUrl}/user-profile",
-            };
-            var service = new Stripe.BillingPortal.SessionService(_client);
-            var session = await service.CreateAsync(options);
-
-            return Ok(session);
+            return Ok(await _stripeService.GetCustomerPortalLink(cognitoId));
         }
 
         /// <summary>
@@ -143,9 +101,7 @@ namespace SublessSignIn.Controllers
             {
                 return Unauthorized();
             }
-            var service = new SessionService(_client);
-            var session = await service.GetAsync(sessionId);
-            return Ok(session);
+            return Ok(await _stripeService.GetSession(sessionId));
         }
 
         [HttpGet("existing-session")]

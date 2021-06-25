@@ -33,7 +33,7 @@ namespace Subless.Data
 
         public User GetUserByStripeId(string id)
         {
-            return Users.FirstOrDefault(x => x.StripeId == id);
+            return Users.FirstOrDefault(x => x.StripeSessionId == id);
         }
 
         public Guid AddUser(User user)

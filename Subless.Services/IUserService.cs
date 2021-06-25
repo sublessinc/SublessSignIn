@@ -16,5 +16,6 @@ namespace Subless.Services
         List<User> GetAdmins();
         void SetUserAdmin(Guid userId);
         bool IsUserAdmin(string cognitoId);
+        void AddStripeCustomerId(string cognitoId, string stripeId);
     }
 }

@@ -82,6 +82,7 @@ namespace SublessSignIn
             services.AddTransient<IPartnerService, PartnerService>();
             services.AddTransient<ICreatorService, CreatorService>();
             services.AddTransient<IHitService, HitService>();
+            services.AddTransient<IStripeService, StripeService>();
             services.AddTransient<IUserService, UserService>();
             services.AddDbContext<UserRepository>(options => options.UseNpgsql(Environment.GetEnvironmentVariable("CONNECTION_STRING")));
             services.AddControllers();

@@ -9,6 +9,7 @@
     <PackageReference Include="AWSSDK.CognitoIdentity" Version="3.7.0.16" />
     <PackageReference Include="AWSSDK.CognitoIdentityProvider" Version="3.7.0.17" />
     <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="5.0.7" />
+    <PackageReference Include="Stripe.net" Version="39.45.0" />
   </ItemGroup>
 
   <ItemGroup>

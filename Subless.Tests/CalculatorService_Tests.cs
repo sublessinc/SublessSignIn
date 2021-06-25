@@ -24,6 +24,22 @@ namespace Subless.Tests
             
         }
 
+        [Fact]
+        public void CalculatorService_WithOneView_SendsToUsCreatorAndPartner()
+        {
+            //Arrange
+            var allPayments = new Dictionary<string, double>();
+            var sut = CalculatorServiceBuilder();
+
+            //Act
+            sut.CalculatePayments(DateTime.Now.AddMonths(-1), DateTime.Now);
+
+            //Assert
+            Assert.NotEmpty(allPayments); // We should have a payment directed at subless, even if it's zero
+            Assert.Equal(3, allPayments.Count); //Subless, Partner, Creator
+
+        }
+
         private CalculatorService CalculatorServiceBuilder()
         {
             return new CalculatorService();

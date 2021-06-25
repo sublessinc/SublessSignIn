@@ -13,7 +13,8 @@ namespace Subless.Models
         public Guid Id { get; set; }
         public bool IsAdmin { get; set; }
         public string CognitoId { get; set; }
-        public string StripeId { get; set; }
+        public string StripeSessionId { get; set; }
+        public string StripeCustomerId { get; set; }
         public ICollection<Creator> Creators {get; set;}
     }
 }

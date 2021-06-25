@@ -17,6 +17,9 @@ namespace Subless.Services
             _creatorService = creatorService ?? throw new ArgumentNullException(nameof(creatorService));
         }
 
+
+        
+
         public Redirection LoginWorkflow(string cognitoId, string activationCode)
         {
             var user = _userRepo.GetUserByCognitoId(cognitoId);
@@ -42,7 +45,7 @@ namespace Subless.Services
                 };
             }
 
-            if (user.StripeId == null)
+            if (user.StripeSessionId == null)
             {
                 return new Redirection()
                 {
@@ -53,13 +56,13 @@ namespace Subless.Services
             return new Redirection()
             {
                 RedirectionPath = RedirectionPath.Profile,
-                SessionId = user.StripeId
+                SessionId = user.StripeSessionId
             };
         }
 
         public string GetStripeIdFromCognitoId(string cognitoId)
         {
-            return _userRepo.GetUserByCognitoId(cognitoId).StripeId;
+            return _userRepo.GetUserByCognitoId(cognitoId).StripeSessionId;
         }
 
         public User CreateUserByCognitoId(string cognitoId)
@@ -67,7 +70,7 @@ namespace Subless.Services
             var user = new User()
             {
                 CognitoId = cognitoId,
-                StripeId = null
+                StripeSessionId = null
             };
             user.Id= _userRepo.AddUser(user);
             return user;
@@ -76,7 +79,14 @@ namespace Subless.Services
         public void AddStripeSessionId(string cognitoId, string stripeId)
         {
             var user = GetUserByCognitoId(cognitoId);
-            user.StripeId = stripeId;
+            user.StripeSessionId = stripeId;
+            _userRepo.UpdateUser(user);
+        }
+
+        public void AddStripeCustomerId(string cognitoId, string stripeId)
+        {
+            var user = GetUserByCognitoId(cognitoId);
+            user.StripeCustomerId = stripeId;
             _userRepo.UpdateUser(user);
         }
 
@@ -100,6 +110,11 @@ namespace Subless.Services
         public bool IsUserAdmin(string cognitoId)
         {
             return _userRepo.IsUserAdmin(cognitoId);
+        }
+
+        public List<User> GetUsersByStripeIds(List<string> customerId)
+        {
+            throw new NotImplementedException();
         }
     }
 }
