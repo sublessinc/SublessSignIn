@@ -124,7 +124,7 @@ namespace Subless.PayoutCalculator
                 {
                     visits.Add(hit.PartnerId, 0);
                 }
-                visits[hit.CreatorId] += 1;
+                visits[hit.PartnerId] += 1;
             }
             return visits;
         }
@@ -134,7 +134,7 @@ namespace Subless.PayoutCalculator
             var payees = new List<Payee>();
             foreach (var creatorVisits in creatorHits)
             {
-                var creatorPayment = (creatorVisits.Value / totalHits) * (payment * (1 - sublessHitFraction) * (1 - partnerHitFraction));
+                var creatorPayment = ((double)creatorVisits.Value / totalHits) * (payment * (1 - sublessHitFraction) * (1 - partnerHitFraction));
                 creatorPayment = Math.Round(creatorPayment, CurrencyPrecision, MidpointRounding.ToZero);
                 var creator = _creatorService.GetCreator(creatorVisits.Key);
                 payees.Add(new Payee
@@ -151,7 +151,7 @@ namespace Subless.PayoutCalculator
             var payees = new List<Payee>();
             foreach (var creatorVisits in creatorHits)
             {
-                var partnerPayment = (partnerHitFraction) * (creatorVisits.Value / totalHits) * (payment * (1 - sublessHitFraction));
+                var partnerPayment = (partnerHitFraction) * ((double)creatorVisits.Value / totalHits) * (payment * (1 - sublessHitFraction));
                 partnerPayment = Math.Round(partnerPayment, CurrencyPrecision, MidpointRounding.ToZero);
                 var creator = _creatorService.GetCreator(creatorVisits.Key);
                 var partner = _partnerService.GetPartner(creator.PartnerId);
