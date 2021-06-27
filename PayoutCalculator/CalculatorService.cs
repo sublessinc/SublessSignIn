@@ -9,7 +9,7 @@ using Subless.Services;
 
 namespace Subless.PayoutCalculator
 {
-    public partial class CalculatorService
+    public class CalculatorService : ICalculatorService
     {
         //TODO, these need to be configurable or something
         public const double PartnerFraction = .2;
@@ -26,9 +26,9 @@ namespace Subless.PayoutCalculator
         private readonly ILogger _logger;
 
         public CalculatorService(
-            IStripeService stripeService, 
-            IHitService hitService, 
-            ICreatorService creatorService, 
+            IStripeService stripeService,
+            IHitService hitService,
+            ICreatorService creatorService,
             IPartnerService partnerService,
             IPaymentLogsService paymentLogsService,
             IS3Service s3Service,
@@ -104,8 +104,8 @@ namespace Subless.PayoutCalculator
         private Dictionary<Guid, int> GetVisitsPerCreator(IEnumerable<Hit> hits)
         {
             var visits = new Dictionary<Guid, int>();
-            foreach (var hit in hits) 
-            { 
+            foreach (var hit in hits)
+            {
                 if (!visits.ContainsKey(hit.CreatorId))
                 {
                     visits.Add(hit.CreatorId, 0);
@@ -129,7 +129,7 @@ namespace Subless.PayoutCalculator
             return visits;
         }
 
-        private IEnumerable<Payee> GetCreatorPayees(Double payment, Dictionary<Guid,int> creatorHits, int totalHits, double partnerHitFraction, double sublessHitFraction)
+        private IEnumerable<Payee> GetCreatorPayees(Double payment, Dictionary<Guid, int> creatorHits, int totalHits, double partnerHitFraction, double sublessHitFraction)
         {
             var payees = new List<Payee>();
             foreach (var creatorVisits in creatorHits)
@@ -182,7 +182,7 @@ namespace Subless.PayoutCalculator
 
         private void AddPayeesToMasterList(Dictionary<string, double> masterPayoutList, IEnumerable<Payee> payees)
         {
-            foreach(var payee in payees)
+            foreach (var payee in payees)
             {
                 if (masterPayoutList.ContainsKey(payee.PayoneerId))
                 {
