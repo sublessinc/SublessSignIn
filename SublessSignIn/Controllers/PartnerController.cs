@@ -47,10 +47,12 @@ namespace SublessSignIn.Controllers
             }
             catch (UnauthorizedAccessException e)
             {
+                _logger.LogError(e, $"Invalid partner credentials {cognitoClientId}");
                 return Unauthorized("Your partner credentials are invalid");
             }
             catch (CreatorAlreadyActiveException e)
             {
+                _logger.LogError(e, $"Creator attempted to activate twice {username}");
                 return BadRequest("This creator is already activated on subless");
             }
         }
@@ -66,7 +68,7 @@ namespace SublessSignIn.Controllers
 
         [TypeFilter(typeof(AdminAuthorizationFilter))]
         [HttpGet()]
-        public ActionResult<List<Partner>> GetPartners()
+        public ActionResult<IEnumerable<Partner>> GetPartners()
         {
             return Ok(_partnerService.GetPartners());
         }

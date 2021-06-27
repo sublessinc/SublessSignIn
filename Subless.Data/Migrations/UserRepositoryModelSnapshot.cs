@@ -66,6 +66,9 @@ namespace Subless.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<string>("CognitoId")
+                        .HasColumnType("text");
+
                     b.Property<Guid>("CreatorId")
                         .HasColumnType("uuid");
 
@@ -78,20 +81,17 @@ namespace Subless.Data.Migrations
                     b.Property<string>("Uri")
                         .HasColumnType("text");
 
-                    b.Property<string>("UserId")
-                        .HasColumnType("text");
-
-                    b.Property<Guid?>("UserId1")
+                    b.Property<Guid?>("UserId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("TimeStamp");
-
-                    b.HasIndex("UserId")
+                    b.HasIndex("CognitoId")
                         .IsUnique();
 
-                    b.HasIndex("UserId1");
+                    b.HasIndex("TimeStamp");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Hits");
                 });
@@ -103,6 +103,9 @@ namespace Subless.Data.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("CognitoAppClientId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("PayoneerId")
                         .HasColumnType("text");
 
                     b.Property<string>("Site")
@@ -117,6 +120,87 @@ namespace Subless.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("Partners");
+                });
+
+            modelBuilder.Entity("Subless.Models.Payee", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<double>("Payment")
+                        .HasColumnType("double precision");
+
+                    b.Property<string>("PayoneerId")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Payee");
+                });
+
+            modelBuilder.Entity("Subless.Models.Payer", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<double>("Payment")
+                        .HasColumnType("double precision");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Payer");
+                });
+
+            modelBuilder.Entity("Subless.Models.Payment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<double>("Amount")
+                        .HasColumnType("double precision");
+
+                    b.Property<DateTime>("DateSent")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<Guid?>("PayeeId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("PayerId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PayeeId");
+
+                    b.HasIndex("PayerId");
+
+                    b.ToTable("Payments");
+                });
+
+            modelBuilder.Entity("Subless.Models.PaymentAuditLog", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("DatePaid")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<double>("Payment")
+                        .HasColumnType("double precision");
+
+                    b.Property<string>("PayoneerId")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PaymentAuditLogs");
                 });
 
             modelBuilder.Entity("Subless.Models.RuntimeConfiguration", b =>
@@ -176,9 +260,24 @@ namespace Subless.Data.Migrations
                 {
                     b.HasOne("Subless.Models.User", "User")
                         .WithMany()
-                        .HasForeignKey("UserId1");
+                        .HasForeignKey("UserId");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Subless.Models.Payment", b =>
+                {
+                    b.HasOne("Subless.Models.Payee", "Payee")
+                        .WithMany()
+                        .HasForeignKey("PayeeId");
+
+                    b.HasOne("Subless.Models.Payer", "Payer")
+                        .WithMany()
+                        .HasForeignKey("PayerId");
+
+                    b.Navigation("Payee");
+
+                    b.Navigation("Payer");
                 });
 
             modelBuilder.Entity("Subless.Models.Partner", b =>

@@ -2,10 +2,10 @@
 
 namespace Subless.Models
 {
-    public class Payee
+    public class Payer
     {
         public Guid Id { get; set; }
+        public Guid UserId { get; set; }
         public double Payment { get; set; }
-        public string PayoneerId { get; set; }
     }
 }

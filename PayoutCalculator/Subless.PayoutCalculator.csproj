@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -7,6 +7,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Subless.Models\Subless.Models.csproj" />
+    <ProjectReference Include="..\Subless.Services\Subless.Services.csproj" />
   </ItemGroup>
 
 </Project>

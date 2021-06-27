@@ -33,7 +33,7 @@ namespace SublessSignIn.Controllers
             }
             try
             {
-                return Ok(_creatorService.GetCreator(cognitoId));
+                return Ok(_creatorService.GetCreatorByCognitoid(cognitoId));
             }
             catch(UnauthorizedAccessException e)
             {

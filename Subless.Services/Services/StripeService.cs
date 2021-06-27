@@ -29,7 +29,7 @@ namespace Subless.Services
 
             if (string.IsNullOrEmpty(user.StripeCustomerId))
             {
-                customer = (await CreateCustomer(cognitoId)).Id;
+                customer = CreateCustomer(cognitoId).Id;
             }
 
             var options = new SessionCreateOptions
@@ -61,7 +61,7 @@ namespace Subless.Services
             };
         }
 
-        public async Task<Customer> CreateCustomer(string cognitoId)
+        public Customer CreateCustomer(string cognitoId)
         {
             var customerDetails = new CustomerCreateOptions
             {
@@ -101,7 +101,7 @@ namespace Subless.Services
             return await service.GetAsync(sessionId);
         }
 
-        public void GetInvoicesForRange(DateTime startDate, DateTime endDate)
+        public IEnumerable<Payer> GetInvoicesForRange(DateTime startDate, DateTime endDate)
         {
             var filters = new InvoiceListOptions()
             {
@@ -115,7 +115,17 @@ namespace Subless.Services
             var invoiceService = new InvoiceService(_client);
             var invoices = invoiceService.List(filters);
             var cusomterIds = invoices.Select(invoice => invoice.CustomerId);
-
+            var users = _userService.GetUsersFromStripeIds(cusomterIds);
+            var payers = new List<Payer>();
+            foreach (var invoice in invoices)
+            {
+                payers.Add(new Payer
+                {
+                    UserId = users.Single(x => x.StripeCustomerId == invoice.CustomerId).Id,
+                    Payment = invoice.AmountPaid
+                });
+            }
+            return payers;
         }
     }
 }

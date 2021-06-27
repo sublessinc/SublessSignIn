@@ -29,7 +29,7 @@ namespace Subless.Services
             _userRepository.UpdateCreator(creator);
         }
 
-        public Creator GetCreator(string cognitoId)
+        public Creator GetCreatorByCognitoid(string cognitoId)
         {
             var creators = _userRepository.GetCreatorsByCognitoId(cognitoId);
             if (creators == null || !creators.Any(x => x.Active))
@@ -38,6 +38,11 @@ namespace Subless.Services
             }
             // TODO: One creator for now. 
             return creators.First();
+        }
+
+        public Creator GetCreator(Guid id)
+        {
+            return _userRepository.GetCreator(id);
         }
 
         public Creator UpdateCreator(string cognitoId, Creator creator)

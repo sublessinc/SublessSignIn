@@ -9,7 +9,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Subless.Data;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using SublessSignIn.Models;
 using Microsoft.IdentityModel.Tokens;
 using System.Net;
@@ -47,18 +46,6 @@ namespace SublessSignIn
         public void ConfigureServices(IServiceCollection services)
         {
 
-            services.Configure<StripeConfig>(options =>
-            {
-                options.PublishableKey = Environment.GetEnvironmentVariable("STRIPE_PUBLISHABLE_KEY") ?? throw new ArgumentNullException("STRIPE_PUBLISHABLE_KEY");
-                options.SecretKey = Environment.GetEnvironmentVariable("STRIPE_SECRET_KEY") ?? throw new ArgumentNullException("STRIPE_SECRET_KEY");
-                options.WebhookSecret = Environment.GetEnvironmentVariable("STRIPE_WEBHOOK_SECRET") ?? throw new ArgumentNullException("STRIPE_WEBHOOK_SECRET");
-                options.BasicPrice = Environment.GetEnvironmentVariable("BASIC_PRICE_ID") ?? throw new ArgumentNullException("BASIC_PRICE_ID");
-                options.Domain = Environment.GetEnvironmentVariable("DOMAIN") ?? throw new ArgumentNullException("DOMAIN");
-            });
-            services.Configure<DatabaseSettings>(options =>
-            {
-                options.ConnectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING") ?? throw new ArgumentNullException("CONNECTION_STRING");
-            });
             services.Configure<AuthSettings>(options =>
             {
                 options.AppClientId = AuthSettings.AppClientId;
@@ -69,6 +56,8 @@ namespace SublessSignIn
                 options.Region = AuthSettings.Region;
             });
 
+            DataDi.RegisterDataDi(services);
+
             // TODO: See if mars catches this in code review, and also see if we can restrict this 
             services.AddCors(o => o.AddPolicy("Unrestricted", builder =>
             {
@@ -76,15 +65,8 @@ namespace SublessSignIn
                        .AllowAnyMethod()
                        .AllowAnyHeader();
             }));
-            services.AddTransient<IUserRepository, UserRepository>();
-            services.AddTransient<UserRepository, UserRepository>();
-            services.AddTransient<IAdministrationService, AdministrationService>();
-            services.AddTransient<IPartnerService, PartnerService>();
-            services.AddTransient<ICreatorService, CreatorService>();
-            services.AddTransient<IHitService, HitService>();
-            services.AddTransient<IStripeService, StripeService>();
-            services.AddTransient<IUserService, UserService>();
-            services.AddDbContext<UserRepository>(options => options.UseNpgsql(Environment.GetEnvironmentVariable("CONNECTION_STRING")));
+
+            ServicesDi.AddServicesDi(services);
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {

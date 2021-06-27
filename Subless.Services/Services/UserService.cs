@@ -15,10 +15,7 @@ namespace Subless.Services
         {
             _userRepo = userRepo ?? throw new ArgumentNullException(nameof(userRepo));
             _creatorService = creatorService ?? throw new ArgumentNullException(nameof(creatorService));
-        }
-
-
-        
+        }        
 
         public Redirection LoginWorkflow(string cognitoId, string activationCode)
         {
@@ -65,6 +62,11 @@ namespace Subless.Services
             return _userRepo.GetUserByCognitoId(cognitoId).StripeSessionId;
         }
 
+        public IEnumerable<User> GetUsersFromStripeIds(IEnumerable<string> customerIds)
+        {
+            return _userRepo.GetUsersByCustomerIds(customerIds);
+        }
+
         public User CreateUserByCognitoId(string cognitoId)
         {
             var user = new User()
@@ -95,7 +97,12 @@ namespace Subless.Services
             return  _userRepo.GetUserByCognitoId(cognitoId);
         }
 
-        public List<User> GetAdmins()
+        public User GetUser(Guid id)
+        {
+            return _userRepo.GetUserById(id);
+        }
+
+        public IEnumerable<User> GetAdmins()
         {
             return _userRepo.GetAdmins();
         }
@@ -112,7 +119,7 @@ namespace Subless.Services
             return _userRepo.IsUserAdmin(cognitoId);
         }
 
-        public List<User> GetUsersByStripeIds(List<string> customerId)
+        public IEnumerable<User> GetUsersByStripeIds(IEnumerable<string> customerId)
         {
             throw new NotImplementedException();
         }
