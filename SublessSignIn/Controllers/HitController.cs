@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
@@ -15,8 +13,8 @@ namespace SublessSignIn.Controllers
     [Route("api/[controller]")]
     public class HitController : ControllerBase
     {
-        private ILogger _logger;
-        private IHitService _hitService;
+        private readonly ILogger _logger;
+        private readonly IHitService _hitService;
         public HitController(ILoggerFactory loggerFactory, IHitService hitService)
         {
             _logger = loggerFactory?.CreateLogger<HitController>() ?? throw new ArgumentNullException(nameof(loggerFactory));

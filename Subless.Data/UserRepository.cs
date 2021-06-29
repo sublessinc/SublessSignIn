@@ -14,7 +14,9 @@ namespace Subless.Data
         internal DbSet<Hit> Hits { get; set; }
         internal DbSet<Partner> Partners { get; set; }
         internal DbSet<Creator> Creators { get; set; }
-        internal DbSet<RuntimeConfiguration> Configurations {get;set;}
+        internal DbSet<Payment> Payments { get; set; }
+        internal DbSet<PaymentAuditLog> PaymentAuditLogs { get; set; }
+        internal DbSet<RuntimeConfiguration> Configurations { get; set; }
         public UserRepository(IOptions<DatabaseSettings> options)
         {
             _options = options ?? throw new ArgumentNullException(nameof(options));
@@ -28,12 +30,17 @@ namespace Subless.Data
 
         public User GetUserByCognitoId(string id)
         {
-            return Users.Include(i=> i.Creators).FirstOrDefault(x => x.CognitoId == id);
+            return Users.Include(i => i.Creators).FirstOrDefault(x => x.CognitoId == id);
+        }
+
+        public IEnumerable<User> GetUsersByCustomerIds(IEnumerable<string> customerIds)
+        {
+            return Users.Where(x => customerIds.Contains(x.StripeCustomerId)).ToList();
         }
 
         public User GetUserByStripeId(string id)
         {
-            return Users.FirstOrDefault(x => x.StripeId == id);
+            return Users.FirstOrDefault(x => x.StripeSessionId == id);
         }
 
         public Guid AddUser(User user)
@@ -55,14 +62,24 @@ namespace Subless.Data
             SaveChanges();
         }
 
+        public IEnumerable<Hit> GetHitsByDate(DateTime startDate, DateTime endDate, string cognitoId)
+        {
+            return Hits.Where(hit => hit.CognitoId == cognitoId && hit.TimeStamp > startDate && hit.TimeStamp <= endDate).ToList();
+        }
+
         public Creator GetCreatorByActivationCode(Guid code)
         {
             return Creators.FirstOrDefault(creator => creator.ActivationCode == code);
         }
 
-        public List<Creator> GetCreatorsByCognitoId(string cognitoId)
+        public IEnumerable<Creator> GetCreatorsByCognitoId(string cognitoId)
         {
-            return Users.Include(x => x.Creators).FirstOrDefault(x => x.CognitoId == cognitoId)?.Creators?.ToList();            
+            return Users.Include(x => x.Creators).FirstOrDefault(x => x.CognitoId == cognitoId)?.Creators?.ToList();
+        }
+
+        public Creator GetCreator(Guid id)
+        {
+            return Creators.Find(id);
         }
 
         public void UpdateCreator(Creator creator)
@@ -109,11 +126,15 @@ namespace Subless.Data
             SaveChanges();
         }
 
-        public List<Partner> GetPartners()
+        public IEnumerable<Partner> GetPartners()
         {
             return Partners.ToList();
         }
 
+        public Partner GetPartner(Guid id)
+        {
+            return Partners.Find(id);
+        }
 
         public Partner GetPartnerByCognitoId(string partnerClientId)
         {
@@ -139,12 +160,18 @@ namespace Subless.Data
             SaveChanges();
         }
 
+        public void SavePaymentLogs(IEnumerable<Payment> logs)
+        {
+            Payments.AddRange(logs);
+            SaveChanges();
+        }
+
         public Guid? GetAdminKey()
         {
             return Configurations.FirstOrDefault()?.AdminKey;
         }
 
-        public List<User> GetAdmins()
+        public IEnumerable<User> GetAdmins()
         {
             return Users.Where(user => user.IsAdmin).ToList();
         }
@@ -157,6 +184,21 @@ namespace Subless.Data
         public bool IsUserAdmin(string cognitoId)
         {
             return Users.Any(x => x.CognitoId == cognitoId && x.IsAdmin);
+        }
+
+        public void SavePaymentAuditLogs(IEnumerable<PaymentAuditLog> logs)
+        {
+            PaymentAuditLogs.AddRange(logs);
+            SaveChanges();
+        }
+        
+        public DateTime GetLastPaymentDate()
+        {
+            if (!PaymentAuditLogs.Any())
+            {
+                return new DateTime();
+            }
+            return PaymentAuditLogs.Max(x=>x.DatePaid);
         }
     }
 }

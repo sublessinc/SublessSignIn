@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore;
 using Subless.Models;
 
 namespace Subless.Data
@@ -18,13 +17,19 @@ namespace Subless.Data
         Partner GetPartnerByCognitoId(string partnerClientId);
         Guid? GetAdminKey();
         void SetAdminKey(Guid? key);
-        List<User> GetAdmins();
+        IEnumerable<User> GetAdmins();
         User GetUserById(Guid id);
         bool IsUserAdmin(string cognitoId);
         Creator GetCreatorByPartnerAndUsername(string partnerCognitoId, string username);
-        List<Partner> GetPartners();
+        IEnumerable<Partner> GetPartners();
         void UpdatePartner(Partner partner);
         void UpsertCreator(Creator creator);
-        List<Creator> GetCreatorsByCognitoId(string cognitoId);
+        IEnumerable<Creator> GetCreatorsByCognitoId(string cognitoId);
+        IEnumerable<User> GetUsersByCustomerIds(IEnumerable<string> customerIds);
+        Creator GetCreator(Guid id);
+        Partner GetPartner(Guid id);
+        void SavePaymentLogs(IEnumerable<Payment> logs);
+        void SavePaymentAuditLogs(IEnumerable<PaymentAuditLog> logs);
+        DateTime GetLastPaymentDate();
     }
 }

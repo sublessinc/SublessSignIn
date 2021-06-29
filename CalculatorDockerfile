@@ -1,0 +1,29 @@
+#See https://aka.ms/containerfastmode to understand how Visual Studio uses this Dockerfile to build your images for faster debugging.
+
+FROM mcr.microsoft.com/dotnet/aspnet:5.0 AS base
+WORKDIR /app
+
+FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
+ARG build=1
+WORKDIR /src
+COPY ["./Subless.Data/Subless.Data.csproj", "./Subless.Data/"]
+RUN ls -la
+RUN dotnet restore "./Subless.Data/Subless.Data.csproj"
+COPY ["./Subless.Models/Subless.Models.csproj", "./Subless.Models/"]
+RUN ls -la
+RUN dotnet restore "./Subless.Models/Subless.Models.csproj"
+COPY ["./Subless.PayoutCalculator/Subless.PayoutCalculator.csproj", "./Subless.PayoutCalculator/"]
+RUN ls -la ./Subless.PayoutCalculator
+RUN dotnet restore "./Subless.PayoutCalculator/Subless.PayoutCalculator.csproj"
+
+COPY . .
+WORKDIR "/src/."
+RUN dotnet build "./Subless.PayoutCalculator/Subless.PayoutCalculator.csproj" -c Release -o /app/build
+
+FROM build AS publish
+RUN dotnet publish "./Subless.PayoutCalculator/Subless.PayoutCalculator.csproj" -c Release -o /app/publish
+
+FROM base AS final
+WORKDIR /app
+COPY --from=publish /app/publish .
+ENTRYPOINT ["dotnet", "Subless.PayoutCalculator.dll"]

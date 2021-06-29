@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Subless.Data;
 
@@ -10,9 +7,9 @@ namespace Subless.Services
 {
     public class AdministrationService : IAdministrationService
     {
-        IUserService _userService;
-        ILogger _logger;
-        IUserRepository _userRepository;
+        private readonly IUserService _userService;
+        private readonly ILogger _logger;
+        private readonly IUserRepository _userRepository;
         public AdministrationService(IUserService userService, ILoggerFactory loggerFactory, IUserRepository userRepository)
         {
             if (loggerFactory is null)

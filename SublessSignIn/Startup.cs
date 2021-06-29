@@ -1,24 +1,19 @@
 using System;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
+using System.Net;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.OpenApi.Models;
-using Subless.Data;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using SublessSignIn.Models;
 using Microsoft.IdentityModel.Tokens;
-using System.Net;
+using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
-using System.Collections.Generic;
-using Subless.Services;
+using Subless.Data;
 using Subless.Models;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
+using Subless.Services;
 
 namespace SublessSignIn
 {
@@ -47,18 +42,6 @@ namespace SublessSignIn
         public void ConfigureServices(IServiceCollection services)
         {
 
-            services.Configure<StripeConfig>(options =>
-            {
-                options.PublishableKey = Environment.GetEnvironmentVariable("STRIPE_PUBLISHABLE_KEY") ?? throw new ArgumentNullException("STRIPE_PUBLISHABLE_KEY");
-                options.SecretKey = Environment.GetEnvironmentVariable("STRIPE_SECRET_KEY") ?? throw new ArgumentNullException("STRIPE_SECRET_KEY");
-                options.WebhookSecret = Environment.GetEnvironmentVariable("STRIPE_WEBHOOK_SECRET") ?? throw new ArgumentNullException("STRIPE_WEBHOOK_SECRET");
-                options.BasicPrice = Environment.GetEnvironmentVariable("BASIC_PRICE_ID") ?? throw new ArgumentNullException("BASIC_PRICE_ID");
-                options.Domain = Environment.GetEnvironmentVariable("DOMAIN") ?? throw new ArgumentNullException("DOMAIN");
-            });
-            services.Configure<DatabaseSettings>(options =>
-            {
-                options.ConnectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING") ?? throw new ArgumentNullException("CONNECTION_STRING");
-            });
             services.Configure<AuthSettings>(options =>
             {
                 options.AppClientId = AuthSettings.AppClientId;
@@ -69,6 +52,8 @@ namespace SublessSignIn
                 options.Region = AuthSettings.Region;
             });
 
+            DataDi.RegisterDataDi(services);
+
             // TODO: See if mars catches this in code review, and also see if we can restrict this 
             services.AddCors(o => o.AddPolicy("Unrestricted", builder =>
             {
@@ -76,14 +61,8 @@ namespace SublessSignIn
                        .AllowAnyMethod()
                        .AllowAnyHeader();
             }));
-            services.AddTransient<IUserRepository, UserRepository>();
-            services.AddTransient<UserRepository, UserRepository>();
-            services.AddTransient<IAdministrationService, AdministrationService>();
-            services.AddTransient<IPartnerService, PartnerService>();
-            services.AddTransient<ICreatorService, CreatorService>();
-            services.AddTransient<IHitService, HitService>();
-            services.AddTransient<IUserService, UserService>();
-            services.AddDbContext<UserRepository>(options => options.UseNpgsql(Environment.GetEnvironmentVariable("CONNECTION_STRING")));
+
+            ServicesDi.AddServicesDi(services);
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
@@ -160,7 +139,7 @@ namespace SublessSignIn
                     var keys = JsonConvert.DeserializeObject<JsonWebKeySet>(json).Keys;
 
                     // cast the result to be the type expected by IssuerSigningKeyResolver
-                    return (IEnumerable<SecurityKey>)keys;
+                    return keys;
                 },
                 ValidIssuer = AuthSettings.CognitoUrl,
                 ValidateIssuerSigningKey = true,
@@ -175,7 +154,7 @@ namespace SublessSignIn
             if (securityToken is JwtSecurityToken)
             {
                 var token = (JwtSecurityToken)securityToken;
-                var tokenUse = token.Claims.FirstOrDefault(x=> x.Type == "token_use")?.Value;
+                var tokenUse = token.Claims.FirstOrDefault(x => x.Type == "token_use")?.Value;
                 if (tokenUse == null)
                 {
                     return false;

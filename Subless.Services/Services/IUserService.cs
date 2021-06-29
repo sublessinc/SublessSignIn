@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Subless.Data;
 using Subless.Models;
 using SublessSignIn.Models;
 
@@ -13,8 +12,11 @@ namespace Subless.Services
         string GetStripeIdFromCognitoId(string cognitoId);
         User GetUserByCognitoId(string cognitoId);
         Redirection LoginWorkflow(string cognitoId, string activation);
-        List<User> GetAdmins();
+        IEnumerable<User> GetAdmins();
         void SetUserAdmin(Guid userId);
         bool IsUserAdmin(string cognitoId);
+        void AddStripeCustomerId(string cognitoId, string stripeId);
+        IEnumerable<User> GetUsersFromStripeIds(IEnumerable<string> customerIds);
+        User GetUser(Guid id);
     }
 }

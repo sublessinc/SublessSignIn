@@ -1,9 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Subless.Data;
 using Subless.Models;
 
@@ -11,11 +7,17 @@ namespace Subless.Services
 {
     public class PartnerService : IPartnerService
     {
-        private IUserRepository _userRepository;
+        private readonly IUserRepository _userRepository;
         public PartnerService(IUserRepository userRepository)
         {
             _userRepository = userRepository;
         }
+
+        public Partner GetPartner(Guid id)
+        {
+            return _userRepository.GetPartner(id);
+        }
+
         public Guid GenerateCreatorActivationLink(string cognitoClientId, string creatorUsername)
         {
             var partner = _userRepository.GetPartnerByCognitoId(cognitoClientId);
@@ -57,7 +59,7 @@ namespace Subless.Services
             _userRepository.UpdatePartner(partner);
         }
 
-        public List<Partner> GetPartners()
+        public IEnumerable<Partner> GetPartners()
         {
             return _userRepository.GetPartners();
         }

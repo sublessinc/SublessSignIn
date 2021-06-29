@@ -9,8 +9,8 @@ namespace Subless.Services
 {
     public class UserService : IUserService
     {
-        private IUserRepository _userRepo;
-        private ICreatorService _creatorService;
+        private readonly IUserRepository _userRepo;
+        private readonly ICreatorService _creatorService;
         public UserService(IUserRepository userRepo, ICreatorService creatorService)
         {
             _userRepo = userRepo ?? throw new ArgumentNullException(nameof(userRepo));
@@ -24,8 +24,8 @@ namespace Subless.Services
             {
                 user = CreateUserByCognitoId(cognitoId);
             }
-            
-            if (activationCode != null && Guid.TryParse(activationCode, out Guid code) && (user.Creators == null || !user.Creators.Any() || user.Creators.Any(x=>!x.Active)))
+
+            if (activationCode != null && Guid.TryParse(activationCode, out Guid code) && (user.Creators == null || !user.Creators.Any() || user.Creators.Any(x => !x.Active)))
             {
                 _creatorService.ActivateCreator(user.Id, code);
                 return new Redirection()
@@ -34,7 +34,7 @@ namespace Subless.Services
                 };
             }
 
-            if (user.Creators!= null && user.Creators.Any())
+            if (user.Creators != null && user.Creators.Any())
             {
                 return new Redirection()
                 {
@@ -42,7 +42,7 @@ namespace Subless.Services
                 };
             }
 
-            if (user.StripeId == null)
+            if (user.StripeSessionId == null)
             {
                 return new Redirection()
                 {
@@ -53,13 +53,18 @@ namespace Subless.Services
             return new Redirection()
             {
                 RedirectionPath = RedirectionPath.Profile,
-                SessionId = user.StripeId
+                SessionId = user.StripeSessionId
             };
         }
 
         public string GetStripeIdFromCognitoId(string cognitoId)
         {
-            return _userRepo.GetUserByCognitoId(cognitoId).StripeId;
+            return _userRepo.GetUserByCognitoId(cognitoId).StripeSessionId;
+        }
+
+        public IEnumerable<User> GetUsersFromStripeIds(IEnumerable<string> customerIds)
+        {
+            return _userRepo.GetUsersByCustomerIds(customerIds);
         }
 
         public User CreateUserByCognitoId(string cognitoId)
@@ -67,25 +72,37 @@ namespace Subless.Services
             var user = new User()
             {
                 CognitoId = cognitoId,
-                StripeId = null
+                StripeSessionId = null
             };
-            user.Id= _userRepo.AddUser(user);
+            user.Id = _userRepo.AddUser(user);
             return user;
         }
 
         public void AddStripeSessionId(string cognitoId, string stripeId)
         {
             var user = GetUserByCognitoId(cognitoId);
-            user.StripeId = stripeId;
+            user.StripeSessionId = stripeId;
+            _userRepo.UpdateUser(user);
+        }
+
+        public void AddStripeCustomerId(string cognitoId, string stripeId)
+        {
+            var user = GetUserByCognitoId(cognitoId);
+            user.StripeCustomerId = stripeId;
             _userRepo.UpdateUser(user);
         }
 
         public User GetUserByCognitoId(string cognitoId)
         {
-            return  _userRepo.GetUserByCognitoId(cognitoId);
+            return _userRepo.GetUserByCognitoId(cognitoId);
         }
 
-        public List<User> GetAdmins()
+        public User GetUser(Guid id)
+        {
+            return _userRepo.GetUserById(id);
+        }
+
+        public IEnumerable<User> GetAdmins()
         {
             return _userRepo.GetAdmins();
         }
@@ -100,6 +117,11 @@ namespace Subless.Services
         public bool IsUserAdmin(string cognitoId)
         {
             return _userRepo.IsUserAdmin(cognitoId);
+        }
+
+        public IEnumerable<User> GetUsersByStripeIds(IEnumerable<string> customerId)
+        {
+            throw new NotImplementedException();
         }
     }
 }
