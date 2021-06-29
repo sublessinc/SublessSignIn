@@ -191,5 +191,10 @@ namespace Subless.Data
             PaymentAuditLogs.AddRange(logs);
             SaveChanges();
         }
+        
+        public DateTime GetLastPaymentDate()
+        {
+            return PaymentAuditLogs.Max(x => x.DatePaid);
+        }
     }
 }

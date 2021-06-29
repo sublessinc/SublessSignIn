@@ -21,7 +21,7 @@ namespace Subless.PayoutCalculator
         private readonly IPartnerService _partnerService;
         private readonly IPaymentLogsService _paymentLogsService;
         private readonly ILoggerFactory _loggerFactory;
-        private readonly IS3Service _s3Service;
+        private readonly IFileStorageService _s3Service;
         private readonly ILogger _logger;
 
         public CalculatorService(
@@ -30,7 +30,7 @@ namespace Subless.PayoutCalculator
             ICreatorService creatorService,
             IPartnerService partnerService,
             IPaymentLogsService paymentLogsService,
-            IS3Service s3Service,
+            IFileStorageService s3Service,
             IOptions<StripeConfig> stripeOptions,
             ILoggerFactory loggerFactory)
         {
@@ -73,11 +73,11 @@ namespace Subless.PayoutCalculator
                     throw new Exception($"The math did not add up for payer:{payer.UserId}");
                 }
                 // record each outgoing payment to master list
-                SavePaymentDetails(payees, payer);
+                SavePaymentDetails(payees, payer, endDate);
                 AddPayeesToMasterList(allPayouts, payees);
             }
             // record to database
-            SaveMasterList(allPayouts);
+            SaveMasterList(allPayouts, endDate);
             // record to s3 bucket
             SavePayoutsToS3(allPayouts);
         }
@@ -165,7 +165,7 @@ namespace Subless.PayoutCalculator
             return payees;
         }
 
-        private void SavePaymentDetails(IEnumerable<Payee> payees, Payer payer)
+        private void SavePaymentDetails(IEnumerable<Payee> payees, Payer payer, DateTime endDate)
         {
             var logs = new List<Payment>();
             foreach (var payee in payees)
@@ -174,7 +174,7 @@ namespace Subless.PayoutCalculator
                 {
                     Payee = payee,
                     Payer = payer,
-                    DateSent = DateTime.UtcNow
+                    DateSent = endDate
                 });
             }
             _paymentLogsService.SaveLogs(logs);
@@ -196,7 +196,7 @@ namespace Subless.PayoutCalculator
             }
         }
 
-        private void SaveMasterList(Dictionary<string, double> masterPayoutList)
+        private void SaveMasterList(Dictionary<string, double> masterPayoutList, DateTime endDate)
         {
             var payments = masterPayoutList.Select(x => new PaymentAuditLog() { Payment = x.Value, PayoneerId = x.Key, DatePaid = DateTime.UtcNow });
             _paymentLogsService.SaveAuditLogs(payments);
@@ -204,7 +204,7 @@ namespace Subless.PayoutCalculator
 
         private void SavePayoutsToS3(Dictionary<string, double> masterPayoutList)
         {
-            _s3Service.WritePaymentsToS3(masterPayoutList);
+            _s3Service.WritePaymentsToCloudFileStore(masterPayoutList);
         }
     }
 }

@@ -30,5 +30,6 @@ namespace Subless.Data
         Partner GetPartner(Guid id);
         void SavePaymentLogs(IEnumerable<Payment> logs);
         void SavePaymentAuditLogs(IEnumerable<PaymentAuditLog> logs);
+        DateTime GetLastPaymentDate();
     }
 }
