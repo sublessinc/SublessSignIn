@@ -23,5 +23,10 @@ namespace Subless.Services
         {
             _userRepository.SavePaymentAuditLogs(paymentAuditLogs);
         }
+
+        public DateTime GetLastPaymentDate()
+        {
+            return _userRepository.GetLastPaymentDate();
+        }
     }
 }

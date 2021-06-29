@@ -18,8 +18,8 @@ namespace Subless.Tests
         {
             //Arrange
             var allPayments = new Dictionary<string, double>();
-            var s3Service = new Mock<IS3Service>();
-            s3Service.Setup(x => x.WritePaymentsToS3(It.IsAny<Dictionary<string, double>>()))
+            var s3Service = new Mock<IFileStorageService>();
+            s3Service.Setup(x => x.WritePaymentsToCloudFileStore(It.IsAny<Dictionary<string, double>>()))
                 .Callback<Dictionary<string, double>>(y =>
                 {
                     allPayments = y;
@@ -51,8 +51,8 @@ namespace Subless.Tests
             });
             var hit = new List<Hit> { new Hit { CognitoId = "test" } };
             var hitService = HitServiceBuilder(hit);
-            var s3Service = new Mock<IS3Service>();
-            s3Service.Setup(x => x.WritePaymentsToS3(It.IsAny<Dictionary<string, double>>()))
+            var s3Service = new Mock<IFileStorageService>();
+            s3Service.Setup(x => x.WritePaymentsToCloudFileStore(It.IsAny<Dictionary<string, double>>()))
                 .Callback<Dictionary<string, double>>(y =>
                 {
                     allPayments = y;
@@ -89,8 +89,8 @@ namespace Subless.Tests
             });
             var hit = new List<Hit> { new Hit { CognitoId = "test" } };
             var hitService = HitServiceBuilder(hit);
-            var s3Service = new Mock<IS3Service>();
-            s3Service.Setup(x => x.WritePaymentsToS3(It.IsAny<Dictionary<string, double>>()))
+            var s3Service = new Mock<IFileStorageService>();
+            s3Service.Setup(x => x.WritePaymentsToCloudFileStore(It.IsAny<Dictionary<string, double>>()))
                 .Callback<Dictionary<string, double>>(y =>
                 {
                     allPayments = y;
@@ -127,8 +127,8 @@ namespace Subless.Tests
             });
             var hit = new List<Hit> { new Hit { CognitoId = "test" } };
             var hitService = HitServiceBuilder(hit);
-            var s3Service = new Mock<IS3Service>();
-            s3Service.Setup(x => x.WritePaymentsToS3(It.IsAny<Dictionary<string, double>>()))
+            var s3Service = new Mock<IFileStorageService>();
+            s3Service.Setup(x => x.WritePaymentsToCloudFileStore(It.IsAny<Dictionary<string, double>>()))
                 .Callback<Dictionary<string, double>>(y =>
                 {
                     allPayments = y;
@@ -166,8 +166,8 @@ namespace Subless.Tests
             });
             var hit = new List<Hit> { new Hit { CognitoId = "test" } };
             var hitService = HitServiceBuilder(hit);
-            var s3Service = new Mock<IS3Service>();
-            s3Service.Setup(x => x.WritePaymentsToS3(It.IsAny<Dictionary<string, double>>()))
+            var s3Service = new Mock<IFileStorageService>();
+            s3Service.Setup(x => x.WritePaymentsToCloudFileStore(It.IsAny<Dictionary<string, double>>()))
                 .Callback<Dictionary<string, double>>(y =>
                 {
                     allPayments = y;
@@ -209,8 +209,8 @@ namespace Subless.Tests
                 new Hit { CreatorId = creator2 }
             };
             var hitService = HitServiceBuilder(hit);
-            var s3Service = new Mock<IS3Service>();
-            s3Service.Setup(x => x.WritePaymentsToS3(It.IsAny<Dictionary<string, double>>()))
+            var s3Service = new Mock<IFileStorageService>();
+            s3Service.Setup(x => x.WritePaymentsToCloudFileStore(It.IsAny<Dictionary<string, double>>()))
                 .Callback<Dictionary<string, double>>(y =>
                 {
                     allPayments = y;
@@ -239,7 +239,7 @@ namespace Subless.Tests
         private CalculatorService CalculatorServiceBuilder(
             Mock<IStripeService> stripe = null,
             Mock<IHitService> hitService = null,
-            Mock<IS3Service> s3Service = null,
+            Mock<IFileStorageService> s3Service = null,
             Mock<ICreatorService> creatorService = null,
             Mock<IPartnerService> partnerService = null
             )
@@ -250,7 +250,7 @@ namespace Subless.Tests
                 creatorService?.Object ?? new Mock<ICreatorService>().Object,
                 partnerService?.Object ?? new Mock<IPartnerService>().Object,
                 new Mock<IPaymentLogsService>().Object,
-                s3Service?.Object ?? new Mock<IS3Service>().Object,
+                s3Service?.Object ?? new Mock<IFileStorageService>().Object,
                 CreateOptions(),
                 new Mock<ILoggerFactory>().Object
                 );

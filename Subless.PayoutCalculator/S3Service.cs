@@ -10,7 +10,7 @@ using CsvHelper.Configuration;
 
 namespace Subless.Services
 {
-    public class S3Service : IS3Service
+    public class S3Service : IFileStorageService
     {
         private readonly TransferUtility transferUtility;
         public S3Service(AWSCredentials credentials)
@@ -26,13 +26,13 @@ namespace Subless.Services
             transferUtility = new TransferUtility(s3Client, config);
         }
 
-        public void WritePaymentsToS3(Dictionary<string, double> masterPayoutList)
+        public void WritePaymentsToCloudFileStore(Dictionary<string, double> masterPayoutList)
         {
-            var csv = GetCsv(masterPayoutList);
+            var csv = GetPathToGeneratedCsv(masterPayoutList);
             transferUtility.Upload(csv, "sublesslocaldevbucket");
         }
 
-        private string GetCsv(Dictionary<string, double> masterPayoutList)
+        private string GetPathToGeneratedCsv(Dictionary<string, double> masterPayoutList)
         {
             var filePath = Path.Join(Path.GetTempPath(), DateTime.UtcNow.ToOADate() + ".csv");
             using (var writer = new StreamWriter(filePath))

@@ -194,7 +194,11 @@ namespace Subless.Data
         
         public DateTime GetLastPaymentDate()
         {
-            return PaymentAuditLogs.Max(x => x.DatePaid);
+            if (!PaymentAuditLogs.Any())
+            {
+                return new DateTime();
+            }
+            return PaymentAuditLogs.Max(x=>x.DatePaid);
         }
     }
 }
