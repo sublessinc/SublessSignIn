@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Subless.Services", "Subless
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Subless.Models", "Subless.Models\Subless.Models.csproj", "{1A317B24-E58C-4E46-A64A-F82DACBD4A92}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Subless.PayoutCalculator", "PayoutCalculator\Subless.PayoutCalculator.csproj", "{48A6ABBD-C576-4F88-B5A8-2CB75C234190}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Subless.PayoutCalculator", "Subless.PayoutCalculator\Subless.PayoutCalculator.csproj", "{48A6ABBD-C576-4F88-B5A8-2CB75C234190}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Subless.Tests", "Subless.Tests\Subless.Tests.csproj", "{5E67AB4F-8588-4F6E-9DC4-CD64F1A06C74}"
 EndProject

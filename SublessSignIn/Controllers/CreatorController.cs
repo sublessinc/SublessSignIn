@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -15,8 +12,8 @@ namespace SublessSignIn.Controllers
     [Authorize]
     public class CreatorController : ControllerBase
     {
-        private ICreatorService _creatorService;
-        private ILogger _logger;
+        private readonly ICreatorService _creatorService;
+        private readonly ILogger _logger;
         public CreatorController(ICreatorService creatorService, ILoggerFactory loggerFactory)
         {
             _creatorService = creatorService ?? throw new ArgumentNullException(nameof(creatorService));
@@ -35,7 +32,7 @@ namespace SublessSignIn.Controllers
             {
                 return Ok(_creatorService.GetCreatorByCognitoid(cognitoId));
             }
-            catch(UnauthorizedAccessException e)
+            catch (UnauthorizedAccessException e)
             {
                 return Unauthorized("Not a creator account");
             }

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Moq;
 using Subless.Models;
 using Subless.PayoutCalculator;
@@ -19,11 +20,12 @@ namespace Subless.Tests
             var allPayments = new Dictionary<string, double>();
             var s3Service = new Mock<IS3Service>();
             s3Service.Setup(x => x.WritePaymentsToS3(It.IsAny<Dictionary<string, double>>()))
-                .Callback<Dictionary<string, double>>(y => {
+                .Callback<Dictionary<string, double>>(y =>
+                {
                     allPayments = y;
-                }); 
+                });
             var sut = CalculatorServiceBuilder(s3Service: s3Service);
-            
+
 
             //Act
             sut.CalculatePayments(DateTime.UtcNow.AddMonths(-1), DateTime.UtcNow);
@@ -31,7 +33,7 @@ namespace Subless.Tests
             //Assert
             Assert.Empty(allPayments); // We shouldn't be paying anyone
             Assert.Equal(0, allPayments.Sum(payment => payment.Value)); //We shouldn't be paying anyone
-            
+
         }
 
         [Fact]
@@ -51,15 +53,16 @@ namespace Subless.Tests
             var hitService = HitServiceBuilder(hit);
             var s3Service = new Mock<IS3Service>();
             s3Service.Setup(x => x.WritePaymentsToS3(It.IsAny<Dictionary<string, double>>()))
-                .Callback<Dictionary<string, double>>(y => {
+                .Callback<Dictionary<string, double>>(y =>
+                {
                     allPayments = y;
-                }); 
+                });
             var creatorService = CreatorServiceBuilder();
             var partnerService = PartnerServiceBuilder();
             var sut = CalculatorServiceBuilder(
-                stripe: stripeService,  
-                s3Service: s3Service, 
-                hitService: hitService, 
+                stripe: stripeService,
+                s3Service: s3Service,
+                hitService: hitService,
                 creatorService: creatorService,
                 partnerService: partnerService
                 );
@@ -88,7 +91,8 @@ namespace Subless.Tests
             var hitService = HitServiceBuilder(hit);
             var s3Service = new Mock<IS3Service>();
             s3Service.Setup(x => x.WritePaymentsToS3(It.IsAny<Dictionary<string, double>>()))
-                .Callback<Dictionary<string, double>>(y => {
+                .Callback<Dictionary<string, double>>(y =>
+                {
                     allPayments = y;
                 });
             var creatorService = CreatorServiceBuilder();
@@ -105,7 +109,7 @@ namespace Subless.Tests
 
             //Assert
             Assert.NotEmpty(allPayments); // We should have a payment directed at subless
-            Assert.Equal(CalculatorService.SublessFraction, allPayments[CalculatorService.SublessPayoneerId]);
+            Assert.Equal(CalculatorService.SublessFraction, allPayments[sut.SublessPayoneerId]);
         }
 
         [Fact]
@@ -125,7 +129,8 @@ namespace Subless.Tests
             var hitService = HitServiceBuilder(hit);
             var s3Service = new Mock<IS3Service>();
             s3Service.Setup(x => x.WritePaymentsToS3(It.IsAny<Dictionary<string, double>>()))
-                .Callback<Dictionary<string, double>>(y => {
+                .Callback<Dictionary<string, double>>(y =>
+                {
                     allPayments = y;
                 });
             var creatorService = CreatorServiceBuilder();
@@ -163,7 +168,8 @@ namespace Subless.Tests
             var hitService = HitServiceBuilder(hit);
             var s3Service = new Mock<IS3Service>();
             s3Service.Setup(x => x.WritePaymentsToS3(It.IsAny<Dictionary<string, double>>()))
-                .Callback<Dictionary<string, double>>(y => {
+                .Callback<Dictionary<string, double>>(y =>
+                {
                     allPayments = y;
                 });
             var creatorService = CreatorServiceBuilder("Creator");
@@ -198,52 +204,6 @@ namespace Subless.Tests
             });
             var creator1 = Guid.NewGuid();
             var creator2 = Guid.NewGuid();
-            var hit = new List<Hit> { 
-                new Hit {  CreatorId = creator1 } ,
-                new Hit { CreatorId = creator2 }
-            };
-            var hitService = HitServiceBuilder(hit);
-            var s3Service = new Mock<IS3Service>();
-            s3Service.Setup(x => x.WritePaymentsToS3(It.IsAny<Dictionary<string, double>>()))
-                .Callback<Dictionary<string, double>>(y => {
-                    allPayments = y;
-                });
-            var creatorService = new Mock<ICreatorService>();
-            creatorService.Setup(x => x.GetCreator(It.Is<Guid>(x=> x==creator1))).Returns(new Creator() { PayoneerId = "Creator1" }); 
-            creatorService.Setup(x => x.GetCreator(It.Is<Guid>(x=> x==creator2))).Returns(new Creator() { PayoneerId = "Creator2" }); 
-            var partnerService = PartnerServiceBuilder("Partner");
-            var sut = CalculatorServiceBuilder(
-                stripe: stripeService,
-                s3Service: s3Service,
-                hitService: hitService,
-                creatorService: creatorService,
-                partnerService: partnerService
-                );
-            //Act
-            sut.CalculatePayments(DateTime.UtcNow.AddMonths(-1), DateTime.UtcNow);
-
-            //Assert
-            Assert.NotEmpty(allPayments); // We should have a payment directed at subless
-            Assert.Equal(3.68, allPayments["Creator1"]);
-            Assert.Equal(3.68, allPayments["Creator2"]);
-            Assert.Equal(1.84, allPayments["Partner"]);
-        }
-
-        [Fact]
-        public void CalculatorService_WithTwoCreators_CalculatesCreatorCut()
-        {
-            //Arrange
-            var allPayments = new Dictionary<string, double>();
-            var stripeService = StripeServiceBuilder(new List<Payer>
-            {
-                new Payer()
-                {
-                    Payment = 9.40,
-                    UserId = Guid.NewGuid()
-                }
-            });
-            var creator1 = Guid.NewGuid();
-            var creator2 = Guid.NewGuid();
             var hit = new List<Hit> {
                 new Hit {  CreatorId = creator1 } ,
                 new Hit { CreatorId = creator2 }
@@ -251,7 +211,8 @@ namespace Subless.Tests
             var hitService = HitServiceBuilder(hit);
             var s3Service = new Mock<IS3Service>();
             s3Service.Setup(x => x.WritePaymentsToS3(It.IsAny<Dictionary<string, double>>()))
-                .Callback<Dictionary<string, double>>(y => {
+                .Callback<Dictionary<string, double>>(y =>
+                {
                     allPayments = y;
                 });
             var creatorService = new Mock<ICreatorService>();
@@ -276,7 +237,7 @@ namespace Subless.Tests
         }
 
         private CalculatorService CalculatorServiceBuilder(
-            Mock<IStripeService> stripe = null, 
+            Mock<IStripeService> stripe = null,
             Mock<IHitService> hitService = null,
             Mock<IS3Service> s3Service = null,
             Mock<ICreatorService> creatorService = null,
@@ -290,8 +251,17 @@ namespace Subless.Tests
                 partnerService?.Object ?? new Mock<IPartnerService>().Object,
                 new Mock<IPaymentLogsService>().Object,
                 s3Service?.Object ?? new Mock<IS3Service>().Object,
+                CreateOptions(),
                 new Mock<ILoggerFactory>().Object
                 );
+        }
+
+        private IOptions<StripeConfig> CreateOptions()
+        {
+            return Options.Create<StripeConfig>(new StripeConfig()
+            {
+                SublessPayoneerId = "sublesspayoneer"
+            });
         }
 
         private Mock<IStripeService> StripeServiceBuilder(List<Payer> payers = null)

@@ -9,9 +9,9 @@ using Subless.Services;
 
 namespace PayoutCalculator
 {
-    class Program
+    internal class Program
     {
-        static Task Main(string[] args)
+        private static Task Main(string[] args)
         {
             using IHost host = CreateHostBuilder(args).Build();
             using (var scope = host.Services.CreateScope())
@@ -22,11 +22,12 @@ namespace PayoutCalculator
             return host.RunAsync();
         }
 
-        static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureServices((_, services) =>
-                {
-                services.Configure<AwsCreds>(options =>
+        private static IHostBuilder CreateHostBuilder(string[] args)
+        {
+            return Host.CreateDefaultBuilder(args)
+            .ConfigureServices((_, services) =>
+            {
+                services.Configure<AwsConfiguration>(options =>
                 {
                     options.AccessKey = Environment.GetEnvironmentVariable("AccessKey") ?? throw new ArgumentNullException("AccessKey");
                     options.SecretKey = Environment.GetEnvironmentVariable("SecretKey") ?? throw new ArgumentNullException("SecretKey");
@@ -37,6 +38,7 @@ namespace PayoutCalculator
                 services.AddTransient<IS3Service, S3Service>();
                 services.AddTransient<AWSCredentials, AwsCredWrapper>();
 
-                });
+            });
+        }
     }
 }

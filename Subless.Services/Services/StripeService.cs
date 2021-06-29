@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using Stripe;
@@ -69,7 +68,7 @@ namespace Subless.Services
             };
             var service = new CustomerService(_client);
             var customer = service.Create(customerDetails);
-            _userService.AddStripeCustomerId(cognitoId,customer.Id);
+            _userService.AddStripeCustomerId(cognitoId, customer.Id);
             return customer;
         }
 

@@ -15,8 +15,8 @@ namespace Subless.Data
         internal DbSet<Partner> Partners { get; set; }
         internal DbSet<Creator> Creators { get; set; }
         internal DbSet<Payment> Payments { get; set; }
-        internal DbSet<PaymentAuditLog> PaymentAuditLogs {get;set;}
-        internal DbSet<RuntimeConfiguration> Configurations {get;set;}
+        internal DbSet<PaymentAuditLog> PaymentAuditLogs { get; set; }
+        internal DbSet<RuntimeConfiguration> Configurations { get; set; }
         public UserRepository(IOptions<DatabaseSettings> options)
         {
             _options = options ?? throw new ArgumentNullException(nameof(options));
@@ -30,7 +30,7 @@ namespace Subless.Data
 
         public User GetUserByCognitoId(string id)
         {
-            return Users.Include(i=> i.Creators).FirstOrDefault(x => x.CognitoId == id);
+            return Users.Include(i => i.Creators).FirstOrDefault(x => x.CognitoId == id);
         }
 
         public IEnumerable<User> GetUsersByCustomerIds(IEnumerable<string> customerIds)
@@ -74,7 +74,7 @@ namespace Subless.Data
 
         public IEnumerable<Creator> GetCreatorsByCognitoId(string cognitoId)
         {
-            return Users.Include(x => x.Creators).FirstOrDefault(x => x.CognitoId == cognitoId)?.Creators?.ToList();            
+            return Users.Include(x => x.Creators).FirstOrDefault(x => x.CognitoId == cognitoId)?.Creators?.ToList();
         }
 
         public Creator GetCreator(Guid id)

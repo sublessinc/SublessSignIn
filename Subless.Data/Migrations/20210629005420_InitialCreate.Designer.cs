@@ -10,7 +10,7 @@ using Subless.Data;
 namespace Subless.Data.Migrations
 {
     [DbContext(typeof(UserRepository))]
-    [Migration("20210627170304_InitialCreate")]
+    [Migration("20210629005420_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

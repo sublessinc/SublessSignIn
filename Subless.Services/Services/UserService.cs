@@ -9,13 +9,13 @@ namespace Subless.Services
 {
     public class UserService : IUserService
     {
-        private IUserRepository _userRepo;
-        private ICreatorService _creatorService;
+        private readonly IUserRepository _userRepo;
+        private readonly ICreatorService _creatorService;
         public UserService(IUserRepository userRepo, ICreatorService creatorService)
         {
             _userRepo = userRepo ?? throw new ArgumentNullException(nameof(userRepo));
             _creatorService = creatorService ?? throw new ArgumentNullException(nameof(creatorService));
-        }        
+        }
 
         public Redirection LoginWorkflow(string cognitoId, string activationCode)
         {
@@ -24,8 +24,8 @@ namespace Subless.Services
             {
                 user = CreateUserByCognitoId(cognitoId);
             }
-            
-            if (activationCode != null && Guid.TryParse(activationCode, out Guid code) && (user.Creators == null || !user.Creators.Any() || user.Creators.Any(x=>!x.Active)))
+
+            if (activationCode != null && Guid.TryParse(activationCode, out Guid code) && (user.Creators == null || !user.Creators.Any() || user.Creators.Any(x => !x.Active)))
             {
                 _creatorService.ActivateCreator(user.Id, code);
                 return new Redirection()
@@ -34,7 +34,7 @@ namespace Subless.Services
                 };
             }
 
-            if (user.Creators!= null && user.Creators.Any())
+            if (user.Creators != null && user.Creators.Any())
             {
                 return new Redirection()
                 {
@@ -74,7 +74,7 @@ namespace Subless.Services
                 CognitoId = cognitoId,
                 StripeSessionId = null
             };
-            user.Id= _userRepo.AddUser(user);
+            user.Id = _userRepo.AddUser(user);
             return user;
         }
 
@@ -94,7 +94,7 @@ namespace Subless.Services
 
         public User GetUserByCognitoId(string cognitoId)
         {
-            return  _userRepo.GetUserByCognitoId(cognitoId);
+            return _userRepo.GetUserByCognitoId(cognitoId);
         }
 
         public User GetUser(Guid id)

@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Subless.Models;
 using Subless.Services;
-using SublessSignIn.Models;
 
 namespace SublessSignIn.Controllers
 {
@@ -24,9 +19,9 @@ namespace SublessSignIn.Controllers
             this.administrationService = administrationService ?? throw new ArgumentNullException(nameof(administrationService));
             this.userService = userService ?? throw new ArgumentNullException(nameof(userService));
         }
-        
+
         [HttpPost("setadminwithkey")]
-        public ActionResult SetAdminFromCode([FromQuery] Guid key) 
+        public ActionResult SetAdminFromCode([FromQuery] Guid key)
         {
             var cognitoId = User.FindFirst("cognito:username")?.Value;
             administrationService.ActivateAdminWithKey(key, cognitoId);

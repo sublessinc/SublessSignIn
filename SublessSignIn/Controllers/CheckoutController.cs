@@ -1,15 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Stripe;
-using Stripe.Checkout;
-using Subless.Data;
 using Subless.Models;
 using Subless.Services;
 using SublessSignIn.Models;
@@ -65,15 +60,15 @@ namespace SublessSignIn.Controllers
             {
                 return Unauthorized();
             }
-            
+
             try
             {
-            
+
                 return Ok(await _stripeService.CreateCheckoutSession(req.PriceId, cognitoId));
             }
             catch (StripeException e)
             {
-                _logger.LogError(e,"Could not create stripe session " + e.StripeError.Message);
+                _logger.LogError(e, "Could not create stripe session " + e.StripeError.Message);
                 return BadRequest();
             }
         }
@@ -85,7 +80,7 @@ namespace SublessSignIn.Controllers
             if (cognitoId == null)
             {
                 return Unauthorized();
-            }            
+            }
 
             return Ok(await _stripeService.GetCustomerPortalLink(cognitoId));
         }

@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 
 namespace Subless.Models
@@ -15,6 +12,6 @@ namespace Subless.Models
         public string CognitoId { get; set; }
         public string StripeSessionId { get; set; }
         public string StripeCustomerId { get; set; }
-        public ICollection<Creator> Creators {get; set;}
+        public ICollection<Creator> Creators { get; set; }
     }
 }

@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Subless.Models;
 using Subless.Services;
 
@@ -14,7 +13,7 @@ namespace Subless.PayoutCalculator
         //TODO, these need to be configurable or something
         public const double PartnerFraction = .2;
         public const double SublessFraction = .02;
-        public const string SublessPayoneerId = "foobuttsbarbaz";
+        public readonly string SublessPayoneerId;
         public const int CurrencyPrecision = 2;
         private readonly IStripeService _stripeService;
         private readonly IHitService _hitService;
@@ -32,6 +31,7 @@ namespace Subless.PayoutCalculator
             IPartnerService partnerService,
             IPaymentLogsService paymentLogsService,
             IS3Service s3Service,
+            IOptions<StripeConfig> stripeOptions,
             ILoggerFactory loggerFactory)
         {
             _stripeService = stripeService ?? throw new ArgumentNullException(nameof(stripeService));
@@ -42,6 +42,7 @@ namespace Subless.PayoutCalculator
             _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
             _s3Service = s3Service ?? throw new ArgumentNullException(nameof(s3Service));
             _logger = _loggerFactory.CreateLogger<CalculatorService>();
+            SublessPayoneerId = stripeOptions.Value.SublessPayoneerId ?? throw new ArgumentNullException(nameof(stripeOptions.Value.SublessPayoneerId));
         }
 
         public void CalculatePayments(DateTime startDate, DateTime endDate)

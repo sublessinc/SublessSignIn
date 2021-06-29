@@ -21,7 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\PayoutCalculator\Subless.PayoutCalculator.csproj" />
+    <ProjectReference Include="..\Subless.PayoutCalculator\Subless.PayoutCalculator.csproj" />
   </ItemGroup>
 
 </Project>

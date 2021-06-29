@@ -1,23 +1,19 @@
 using System;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
+using System.Net;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.OpenApi.Models;
-using Subless.Data;
-using SublessSignIn.Models;
 using Microsoft.IdentityModel.Tokens;
-using System.Net;
+using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
-using System.Collections.Generic;
-using Subless.Services;
+using Subless.Data;
 using Subless.Models;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
+using Subless.Services;
 
 namespace SublessSignIn
 {
@@ -143,7 +139,7 @@ namespace SublessSignIn
                     var keys = JsonConvert.DeserializeObject<JsonWebKeySet>(json).Keys;
 
                     // cast the result to be the type expected by IssuerSigningKeyResolver
-                    return (IEnumerable<SecurityKey>)keys;
+                    return keys;
                 },
                 ValidIssuer = AuthSettings.CognitoUrl,
                 ValidateIssuerSigningKey = true,
@@ -158,7 +154,7 @@ namespace SublessSignIn
             if (securityToken is JwtSecurityToken)
             {
                 var token = (JwtSecurityToken)securityToken;
-                var tokenUse = token.Claims.FirstOrDefault(x=> x.Type == "token_use")?.Value;
+                var tokenUse = token.Claims.FirstOrDefault(x => x.Type == "token_use")?.Value;
                 if (tokenUse == null)
                 {
                     return false;

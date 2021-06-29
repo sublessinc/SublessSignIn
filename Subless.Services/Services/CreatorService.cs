@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Subless.Data;
 using Subless.Models;
 
@@ -10,7 +7,7 @@ namespace Subless.Services
 {
     public class CreatorService : ICreatorService
     {
-        private IUserRepository _userRepository;
+        private readonly IUserRepository _userRepository;
         public CreatorService(IUserRepository userRepository)
         {
             _userRepository = userRepository;
