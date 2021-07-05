@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.Caching;
 using Microsoft.Extensions.Caching.Memory;
 using Subless.Data;
@@ -9,6 +10,8 @@ namespace Subless.Services
 {
     public class PartnerService : IPartnerService
     {
+        public static List<char> InvalidUsernameCharacters = new List<char> { ';', '/', '?', ':', '&', '=', '+', ',', '$' };
+
         private readonly IUserRepository _userRepository;
         private readonly IMemoryCache cache;
 
@@ -28,6 +31,7 @@ namespace Subless.Services
 
         public Guid GenerateCreatorActivationLink(string cognitoClientId, string creatorUsername)
         {
+
             var partner = _userRepository.GetPartnerByCognitoId(cognitoClientId);
             if (partner == null)
             {

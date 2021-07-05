@@ -71,8 +71,12 @@ namespace Subless.Services
             // iterate through the possible patterns
             foreach (var pattern in patterns)
             {
-              
-                var regexPattern = "(?:"+pattern.Replace("creator", ")(.*)(?:")+")";
+                var patternUri = new Uri(pattern);
+                if (uri.Segments.Count() < patternUri.Segments.Count())
+                {
+                    continue;
+                }
+                var regexPattern = "(?:"+pattern.Replace(creatorPlaceholder, ")(.*)(?:")+")";
                 var matches = Regex.Matches(uri.ToString(), regexPattern);
                 if (!matches.Any())
                 {
@@ -82,7 +86,7 @@ namespace Subless.Services
                 {
                     foreach (Group group in match.Groups)
                     {
-                        if (group.Value != uri.ToString() && !string.IsNullOrWhiteSpace(group.Value)) 
+                        if (group.Value != uri.ToString() && !string.IsNullOrWhiteSpace(group.Value) && !PartnerService.InvalidUsernameCharacters.Any(x=> group.Value.Contains(x)))
                         {
                             return _creatorService.GetCachedCreatorFromPartnerAndUsername(group.Value, partner.Id)?.Id;
                         }
