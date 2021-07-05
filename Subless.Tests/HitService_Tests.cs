@@ -88,6 +88,37 @@ namespace Subless.Tests
             //assert
             Assert.Null(creator);
         }
+
+        [Fact]
+        public void GetCreatorFromPartnerAndUri_WithDoubledPattern_ReturnsFirstCreator()
+        {
+            //arrange            
+            var uri = new Uri("http://www.partner.com/pictures/testuser/pictures/testuser/");
+            var creatorId = new Guid();
+            var sut = HitServiceBuilder(creatorId);
+
+            //act
+            var creator = sut.GetCreatorFromPartnerAndUri(uri, ValidPartner());
+
+            //assert
+            Assert.Equal(creatorId, creator.Value);
+        }
+
+        [Fact]
+        public void GetCreatorFromPartnerAndUri_WithDoubledNestedPattern_ReturnsFirstCreator()
+        {
+            //arrange            
+            var uri = new Uri("http://www.partner.com/testuser/stories/testuser/stories");
+            var creatorId = new Guid();
+            var sut = HitServiceBuilder(creatorId);
+
+            //act
+            var creator = sut.GetCreatorFromPartnerAndUri(uri, ValidPartner());
+
+            //assert
+            Assert.Equal(creatorId, creator.Value);
+        }
+
         public HitService HitServiceBuilder(Guid guid = new Guid())
         {
             var creatorService = new Mock<ICreatorService>();

@@ -76,7 +76,7 @@ namespace Subless.Services
                 {
                     continue;
                 }
-                var regexPattern = "(?:"+pattern.Replace(creatorPlaceholder, ")(.*)(?:")+")";
+                var regexPattern = "(?:"+pattern.Replace(creatorPlaceholder, ")([^/]*)(?:") +")";
                 var matches = Regex.Matches(uri.ToString(), regexPattern);
                 if (!matches.Any())
                 {
