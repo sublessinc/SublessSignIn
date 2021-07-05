@@ -130,7 +130,7 @@ namespace Subless.PayoutCalculator
             return visits;
         }
 
-        private IEnumerable<Payee> GetCreatorPayees(Double payment, Dictionary<Guid, int> creatorHits, int totalHits, double partnerHitFraction, double sublessHitFraction)
+        public IEnumerable<Payee> GetCreatorPayees(Double payment, Dictionary<Guid, int> creatorHits, int totalHits, double partnerHitFraction, double sublessHitFraction)
         {
             var payees = new List<Payee>();
             foreach (var creatorVisits in creatorHits)
@@ -147,7 +147,7 @@ namespace Subless.PayoutCalculator
             return payees;
         }
 
-        private IEnumerable<Payee> GetPartnerPayees(Double payment, Dictionary<Guid, int> creatorHits, int totalHits, double partnerHitFraction, double sublessHitFraction)
+        public IEnumerable<Payee> GetPartnerPayees(Double payment, Dictionary<Guid, int> creatorHits, int totalHits, double partnerHitFraction, double sublessHitFraction)
         {
             var payees = new List<Payee>();
             foreach (var creatorVisits in creatorHits)
