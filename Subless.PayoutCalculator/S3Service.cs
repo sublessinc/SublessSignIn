@@ -18,8 +18,7 @@ namespace Subless.Services
             var config = new TransferUtilityConfig
             {
                 ConcurrentServiceRequests = 10,
-                MinSizeBeforePartUpload = 16 * 1024 * 1024,
-                NumberOfUploadThreads = 10
+                MinSizeBeforePartUpload = 16 * 1024 * 1024
             };
 
             var s3Client = new AmazonS3Client(credentials, Amazon.RegionEndpoint.USEast1);

@@ -31,5 +31,10 @@ namespace Subless.Data
         void SavePaymentLogs(IEnumerable<Payment> logs);
         void SavePaymentAuditLogs(IEnumerable<PaymentAuditLog> logs);
         DateTime GetLastPaymentDate();
+        void SaveHit(Hit hit);
+        IEnumerable<Hit> GetHitsByDate(DateTime startDate, DateTime endDate, string cognitoId);
+        IEnumerable<Creator> GetCreatorsByPartnerId(Guid partnerId);
+        Creator GetCreatorByUsernameAndPartnerId(string username, Guid partnerId);
+        Partner GetPartnerByUri(Uri uri);
     }
 }

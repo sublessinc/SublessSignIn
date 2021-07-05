@@ -38,17 +38,17 @@ namespace SublessSignIn
         public static IHostBuilder CreateHostBuilder(string[] args)
         {
             return Host.CreateDefaultBuilder(args)
-.UseSerilog()
-.ConfigureLogging(logging =>
-{
-    logging.AddConsole();
-    logging.SetMinimumLevel(LogLevel.Information);
-})
-.ConfigureWebHostDefaults(webBuilder =>
-{
-    webBuilder.UseStartup<Startup>();
-    webBuilder.UseUrls("http://0.0.0.0:7070/");
-});
+                .UseSerilog()
+                .ConfigureLogging(logging =>
+                {
+                    logging.AddConsole();
+                    logging.SetMinimumLevel(LogLevel.Information);
+                })
+                .ConfigureWebHostDefaults(webBuilder =>
+                {
+                    webBuilder.UseStartup<Startup>();
+                    webBuilder.UseUrls("http://0.0.0.0:7070/");
+                });
         }
     }
 }
