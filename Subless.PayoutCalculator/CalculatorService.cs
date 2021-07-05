@@ -156,11 +156,20 @@ namespace Subless.PayoutCalculator
                 partnerPayment = Math.Round(partnerPayment, CurrencyPrecision, MidpointRounding.ToZero);
                 var creator = _creatorService.GetCreator(creatorVisits.Key);
                 var partner = _partnerService.GetPartner(creator.PartnerId);
-                payees.Add(new Payee
+                if ( payees.Any(x => x.PayoneerId == partner.PayoneerId))
                 {
-                    Payment = partnerPayment,
-                    PayoneerId = partner.PayoneerId
-                });
+                    var payee = payees.FirstOrDefault(x => x.PayoneerId == partner.PayoneerId);
+                    payee.Payment = Math.Round(payee.Payment+ partnerPayment, CurrencyPrecision, MidpointRounding.ToZero);
+                }
+                else
+                {
+                    var payee = new Payee() 
+                    { 
+                        PayoneerId = partner.PayoneerId,
+                        Payment = partnerPayment    
+                    };
+                    payees.Add(payee);
+                }
             }
             return payees;
         }

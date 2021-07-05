@@ -372,7 +372,7 @@ namespace Subless.Tests
         }
 
         [Fact]
-        public void GetPartnerPayees_WithTwoCrossPartnerCreators_CalculatesCreatorCut()
+        public void GetPartnerPayees_WithTwoCrossPartnerCreators_CalculatesPartnerCut()
         {
             //arrange
 
@@ -384,20 +384,87 @@ namespace Subless.Tests
             var hits = new Dictionary<Guid, int>();
             hits.Add(creator1.Key, creator1.Value);
             hits.Add(creator2.Key, creator2.Value);
-            var partners = new Tuple<Guid, List<Guid>>();
-            PartnerServiceCreatorMatcherBuilder()
-            var sut = CalculatorServiceBuilder(creatorService: CreatorServicePayoneerMatcherBuilder(), partnerService:);
-
+            var partners = new Dictionary<Guid, List<Guid>>();
+            partners.Add(partner1, new List<Guid> { creator1.Key });
+            partners.Add(partner2, new List<Guid> { creator2.Key });
+            var sut = CalculatorServiceBuilder(creatorService: CreatorServicePayoneerMatcherBuilder(partners), partnerService: PartnerServiceCreatorMatcherBuilder(partners));
 
             //act
-            var result = sut.GetCreatorPayees(4.55, hits, 15, CalculatorService.PartnerFraction, CalculatorService.SublessFraction);
+            var result = sut.GetPartnerPayees(4.55, hits, 15, CalculatorService.PartnerFraction, CalculatorService.SublessFraction);
 
             //assert
             Assert.Equal(2, result.Count());
 
             //these are .01 lower than the sheet in some cases due to rounding down
-            Assert.Equal(2.37, result.Single(x => x.PayoneerId == creator1.Key.ToString()).Payment);
-            Assert.Equal(1.18, result.Single(x => x.PayoneerId == creator2.Key.ToString()).Payment);
+            Assert.Equal(.59, result.Single(x => x.PayoneerId == partner1.ToString()).Payment);
+            Assert.Equal(.29, result.Single(x => x.PayoneerId == partner2.ToString()).Payment);
+        }
+
+        [Fact]
+        public void GetPartnerPayees_WithTenCrossPartnerCreators_CalculatesPartnerCut()
+        {
+            //arrange
+
+            var creator1 = new KeyValuePair<Guid, int>(Guid.NewGuid(), 33);
+            var creator2 = new KeyValuePair<Guid, int>(Guid.NewGuid(), 22);
+            var creator3 = new KeyValuePair<Guid, int>(Guid.NewGuid(), 11);
+            var creator4 = new KeyValuePair<Guid, int>(Guid.NewGuid(), 44);
+            var creator5 = new KeyValuePair<Guid, int>(Guid.NewGuid(), 55);
+            var creator6 = new KeyValuePair<Guid, int>(Guid.NewGuid(), 11);
+            var creator7 = new KeyValuePair<Guid, int>(Guid.NewGuid(), 22);
+
+            var hits = new Dictionary<Guid, int>();
+            hits.Add(creator1.Key, creator1.Value);
+            hits.Add(creator2.Key, creator2.Value);
+            hits.Add(creator3.Key, creator3.Value);
+            hits.Add(creator4.Key, creator4.Value);
+            hits.Add(creator5.Key, creator5.Value);
+            hits.Add(creator6.Key, creator6.Value);
+            hits.Add(creator7.Key, creator7.Value);
+
+            var partner1 = Guid.NewGuid();
+            var partner2 = Guid.NewGuid();
+
+            var partners = new Dictionary<Guid, List<Guid>>();
+            partners.Add(partner1, new List<Guid> { creator1.Key, creator2.Key, creator3.Key, creator4.Key, creator5.Key });
+            partners.Add(partner2, new List<Guid> { creator6.Key, creator7.Key });
+            var sut = CalculatorServiceBuilder(creatorService: CreatorServicePayoneerMatcherBuilder(partners), partnerService: PartnerServiceCreatorMatcherBuilder(partners));
+
+            //act
+            var result = sut.GetPartnerPayees(4.55, hits, 198, CalculatorService.PartnerFraction, CalculatorService.SublessFraction);
+
+            //assert
+            Assert.Equal(2, result.Count());
+
+            //these are .01 lower than the sheet in some cases due to rounding down
+            Assert.Equal(.74, result.Single(x => x.PayoneerId == partner1.ToString()).Payment);
+            Assert.Equal(.15, result.Single(x => x.PayoneerId == partner2.ToString()).Payment);
+        }
+
+        [Fact]
+        public void GetPartnerPayees_WithTwoCreatorsOnePartner_CalculatesPartnerCut()
+        {
+            //arrange
+
+            var creator1 = new KeyValuePair<Guid, int>(Guid.NewGuid(), 10);
+            var creator2 = new KeyValuePair<Guid, int>(Guid.NewGuid(), 5);
+            var partner1 = Guid.NewGuid();
+
+            var hits = new Dictionary<Guid, int>();
+            hits.Add(creator1.Key, creator1.Value);
+            hits.Add(creator2.Key, creator2.Value);
+            var partners = new Dictionary<Guid, List<Guid>>();
+            partners.Add(partner1, new List<Guid> { creator1.Key, creator2.Key });
+            var sut = CalculatorServiceBuilder(creatorService: CreatorServicePayoneerMatcherBuilder(partners), partnerService: PartnerServiceCreatorMatcherBuilder(partners));
+
+            //act
+            var result = sut.GetPartnerPayees(4.55, hits, 15, CalculatorService.PartnerFraction, CalculatorService.SublessFraction);
+
+            //assert
+            Assert.Equal(1, result.Count());
+
+            //these are .01 lower than the sheet in some cases due to rounding down
+            Assert.Equal(.89, result.Single(x => x.PayoneerId == partner1.ToString()).Payment);
         }
 
         private CalculatorService CalculatorServiceBuilder(
@@ -449,10 +516,19 @@ namespace Subless.Tests
             return service;
         }
 
-        private Mock<ICreatorService> CreatorServicePayoneerMatcherBuilder()
+        private Mock<ICreatorService> CreatorServicePayoneerMatcherBuilder(Dictionary<Guid, List<Guid>> partners = null)
         {
             var service = new Mock<ICreatorService>();
-            service.Setup(x => x.GetCreator(It.IsAny<Guid>())).Returns<Guid>(x=> new Creator() { PayoneerId = x.ToString() });
+            service.Setup(x => x.GetCreator(It.IsAny<Guid>())).Returns<Guid>(x =>
+            {
+                var creator = new Creator();
+                creator.PayoneerId = x.ToString();
+                if (partners != null)
+                {
+                    creator.PartnerId = partners.Single(y => y.Value.Contains(x)).Key;
+                }
+                return creator;
+            });
             return service;
         }
 
@@ -463,10 +539,10 @@ namespace Subless.Tests
             return service;
         }
 
-        private Mock<IPartnerService> PartnerServiceCreatorMatcherBuilder(Tuple<Guid,List<Guid>> creatorsToPartners, string PayoneerId = "TestPartner")
+        private Mock<IPartnerService> PartnerServiceCreatorMatcherBuilder(Dictionary<Guid, List<Guid>> partners)
         {
             var service = new Mock<IPartnerService>();
-            service.Setup(x => x.GetPartner(It.IsAny<Guid>())).Returns(new Partner() { PayoneerId = PayoneerId });
+            service.Setup(x => x.GetPartner(It.IsAny<Guid>())).Returns<Guid>(x=> new Partner() { PayoneerId = x.ToString() });
             return service;
         }
     }
