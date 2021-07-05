@@ -14,7 +14,7 @@ namespace Subless.PayoutCalculator
         public const double PartnerFraction = .2;
         public const double SublessFraction = .02;
         public readonly string SublessPayoneerId;
-        public const int CurrencyPrecision = 2;
+        public const int CurrencyPrecision = 4;
         private readonly IStripeService _stripeService;
         private readonly IHitService _hitService;
         private readonly ICreatorService _creatorService;

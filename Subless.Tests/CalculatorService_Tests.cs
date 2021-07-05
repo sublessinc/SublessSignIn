@@ -147,7 +147,7 @@ namespace Subless.Tests
 
             //Assert
             Assert.NotEmpty(allPayments); // We should have a payment directed at subless
-            Assert.Equal(.13, allPayments["Partner"]);
+            Assert.Equal(.1313, allPayments["Partner"]);
         }
 
 
@@ -186,7 +186,7 @@ namespace Subless.Tests
 
             //Assert
             Assert.NotEmpty(allPayments); // We should have a payment directed at subless
-            Assert.Equal(.52, allPayments["Creator"]);
+            Assert.Equal(.5252, allPayments["Creator"]);
         }
 
         [Fact]
@@ -231,9 +231,9 @@ namespace Subless.Tests
 
             //Assert
             Assert.NotEmpty(allPayments); // We should have a payment directed at subless
-            Assert.Equal(3.68, allPayments["Creator1"]);
-            Assert.Equal(3.68, allPayments["Creator2"]);
-            Assert.Equal(1.84, allPayments["Partner"]);
+            Assert.Equal(3.6848, allPayments["Creator1"]);
+            Assert.Equal(3.6848, allPayments["Creator2"]);
+            Assert.Equal(1.8424, allPayments["Partner"]);
         }
 
         [Fact]
@@ -265,13 +265,13 @@ namespace Subless.Tests
             Assert.Equal(7, result.Count());
 
             //these are .01 lower than the sheet in some cases due to rounding down
-            Assert.Equal(.59, result.Single(x => x.PayoneerId == creator1.Key.ToString()).Payment);
-            Assert.Equal(.39, result.Single(x => x.PayoneerId == creator2.Key.ToString()).Payment);
-            Assert.Equal(.19, result.Single(x => x.PayoneerId == creator3.Key.ToString()).Payment);
-            Assert.Equal(.79, result.Single(x => x.PayoneerId == creator4.Key.ToString()).Payment);
-            Assert.Equal(.99, result.Single(x => x.PayoneerId == creator5.Key.ToString()).Payment);
-            Assert.Equal(.19, result.Single(x => x.PayoneerId == creator6.Key.ToString()).Payment);
-            Assert.Equal(.39, result.Single(x => x.PayoneerId == creator7.Key.ToString()).Payment);
+            Assert.Equal(.5945, result.Single(x => x.PayoneerId == creator1.Key.ToString()).Payment);
+            Assert.Equal(.3963, result.Single(x => x.PayoneerId == creator2.Key.ToString()).Payment);
+            Assert.Equal(.1981, result.Single(x => x.PayoneerId == creator3.Key.ToString()).Payment);
+            Assert.Equal(.7927, result.Single(x => x.PayoneerId == creator4.Key.ToString()).Payment);
+            Assert.Equal(.9908, result.Single(x => x.PayoneerId == creator5.Key.ToString()).Payment);
+            Assert.Equal(.1981, result.Single(x => x.PayoneerId == creator6.Key.ToString()).Payment);
+            Assert.Equal(.3963, result.Single(x => x.PayoneerId == creator7.Key.ToString()).Payment);
         }
 
         [Fact]
@@ -292,7 +292,7 @@ namespace Subless.Tests
             Assert.Equal(1, result.Count());
 
             //these are .01 lower than the sheet in some cases due to rounding down
-            Assert.Equal(3.56, result.Single(x => x.PayoneerId == creator1.Key.ToString()).Payment);
+            Assert.Equal(3.5672, result.Single(x => x.PayoneerId == creator1.Key.ToString()).Payment);
 
         }
 
@@ -317,8 +317,8 @@ namespace Subless.Tests
             Assert.Equal(2, result.Count());
 
             //these are .01 lower than the sheet in some cases due to rounding down
-            Assert.Equal(3.68, result.Single(x => x.PayoneerId == creator1.Key.ToString()).Payment);
-            Assert.Equal(3.68, result.Single(x => x.PayoneerId == creator2.Key.ToString()).Payment);
+            Assert.Equal(3.6848, result.Single(x => x.PayoneerId == creator1.Key.ToString()).Payment);
+            Assert.Equal(3.6848, result.Single(x => x.PayoneerId == creator2.Key.ToString()).Payment);
         }
 
         [Fact]
@@ -342,8 +342,8 @@ namespace Subless.Tests
             Assert.Equal(2, result.Count());
 
             //these are .01 lower than the sheet in some cases due to rounding down
-            Assert.Equal(2.37, result.Single(x => x.PayoneerId == creator1.Key.ToString()).Payment);
-            Assert.Equal(1.18, result.Single(x => x.PayoneerId == creator2.Key.ToString()).Payment);
+            Assert.Equal(2.3781, result.Single(x => x.PayoneerId == creator1.Key.ToString()).Payment);
+            Assert.Equal(1.189, result.Single(x => x.PayoneerId == creator2.Key.ToString()).Payment);
         }
 
         [Fact]
@@ -367,8 +367,8 @@ namespace Subless.Tests
             Assert.Equal(2, result.Count());
 
             //these are .01 lower than the sheet in some cases due to rounding down
-            Assert.Equal(2.37, result.Single(x => x.PayoneerId == creator1.Key.ToString()).Payment);
-            Assert.Equal(1.18, result.Single(x => x.PayoneerId == creator2.Key.ToString()).Payment);
+            Assert.Equal(2.3781, result.Single(x => x.PayoneerId == creator1.Key.ToString()).Payment);
+            Assert.Equal(1.189, result.Single(x => x.PayoneerId == creator2.Key.ToString()).Payment);
         }
 
         [Fact]
@@ -396,8 +396,8 @@ namespace Subless.Tests
             Assert.Equal(2, result.Count());
 
             //these are .01 lower than the sheet in some cases due to rounding down
-            Assert.Equal(.59, result.Single(x => x.PayoneerId == partner1.ToString()).Payment);
-            Assert.Equal(.29, result.Single(x => x.PayoneerId == partner2.ToString()).Payment);
+            Assert.Equal(.5945, result.Single(x => x.PayoneerId == partner1.ToString()).Payment);
+            Assert.Equal(.2972, result.Single(x => x.PayoneerId == partner2.ToString()).Payment);
         }
 
         [Fact]
@@ -437,8 +437,8 @@ namespace Subless.Tests
             Assert.Equal(2, result.Count());
 
             //these are .01 lower than the sheet in some cases due to rounding down
-            Assert.Equal(.74, result.Single(x => x.PayoneerId == partner1.ToString()).Payment);
-            Assert.Equal(.15, result.Single(x => x.PayoneerId == partner2.ToString()).Payment);
+            Assert.Equal(.7428, result.Single(x => x.PayoneerId == partner1.ToString()).Payment);
+            Assert.Equal(.1485, result.Single(x => x.PayoneerId == partner2.ToString()).Payment);
         }
 
         [Fact]
@@ -464,7 +464,7 @@ namespace Subless.Tests
             Assert.Equal(1, result.Count());
 
             //these are .01 lower than the sheet in some cases due to rounding down
-            Assert.Equal(.89, result.Single(x => x.PayoneerId == partner1.ToString()).Payment);
+            Assert.Equal(.8917, result.Single(x => x.PayoneerId == partner1.ToString()).Payment);
         }
 
         private CalculatorService CalculatorServiceBuilder(
