@@ -236,6 +236,170 @@ namespace Subless.Tests
             Assert.Equal(1.84, allPayments["Partner"]);
         }
 
+        [Fact]
+        public void GetCreatorPayees_WithSevenCreators_CalculatesCreatorCut()
+        {
+            //arrange
+            var sut = CalculatorServiceBuilder(creatorService: CreatorServicePayoneerMatcherBuilder());
+            var creator1 = new KeyValuePair<Guid, int> (Guid.NewGuid(), 33);
+            var creator2 = new KeyValuePair<Guid, int>(Guid.NewGuid(), 22);
+            var creator3 = new KeyValuePair<Guid, int>(Guid.NewGuid(), 11);
+            var creator4 = new KeyValuePair<Guid, int>(Guid.NewGuid(), 44);
+            var creator5 = new KeyValuePair<Guid, int>(Guid.NewGuid(), 55);
+            var creator6 = new KeyValuePair<Guid, int>(Guid.NewGuid(), 11);
+            var creator7 = new KeyValuePair<Guid, int>(Guid.NewGuid(), 22);
+
+            var hits = new Dictionary<Guid, int>();
+            hits.Add(creator1.Key, creator1.Value);
+            hits.Add(creator2.Key, creator2.Value);
+            hits.Add(creator3.Key, creator3.Value);
+            hits.Add(creator4.Key, creator4.Value);
+            hits.Add(creator5.Key, creator5.Value);
+            hits.Add(creator6.Key, creator6.Value);
+            hits.Add(creator7.Key, creator7.Value);
+
+            //act
+            var result = sut.GetCreatorPayees(4.55, hits, 198, CalculatorService.PartnerFraction, CalculatorService.SublessFraction);
+
+            //assert
+            Assert.Equal(7, result.Count());
+
+            //these are .01 lower than the sheet in some cases due to rounding down
+            Assert.Equal(.59, result.Single(x => x.PayoneerId == creator1.Key.ToString()).Payment);
+            Assert.Equal(.39, result.Single(x => x.PayoneerId == creator2.Key.ToString()).Payment);
+            Assert.Equal(.19, result.Single(x => x.PayoneerId == creator3.Key.ToString()).Payment);
+            Assert.Equal(.79, result.Single(x => x.PayoneerId == creator4.Key.ToString()).Payment);
+            Assert.Equal(.99, result.Single(x => x.PayoneerId == creator5.Key.ToString()).Payment);
+            Assert.Equal(.19, result.Single(x => x.PayoneerId == creator6.Key.ToString()).Payment);
+            Assert.Equal(.39, result.Single(x => x.PayoneerId == creator7.Key.ToString()).Payment);
+        }
+
+        [Fact]
+        public void GetCreatorPayees_WithOneCreators_CalculatesCreatorCut()
+        {
+            //arrange
+            var sut = CalculatorServiceBuilder(creatorService: CreatorServicePayoneerMatcherBuilder());
+            var creator1 = new KeyValuePair<Guid, int>(Guid.NewGuid(), 1);
+
+            var hits = new Dictionary<Guid, int>();
+            hits.Add(creator1.Key, creator1.Value);
+
+
+            //act
+            var result = sut.GetCreatorPayees(4.55, hits, 1, CalculatorService.PartnerFraction, CalculatorService.SublessFraction);
+
+            //assert
+            Assert.Equal(1, result.Count());
+
+            //these are .01 lower than the sheet in some cases due to rounding down
+            Assert.Equal(3.56, result.Single(x => x.PayoneerId == creator1.Key.ToString()).Payment);
+
+        }
+
+        [Fact]
+        public void GetCreatorPayees_WithTwoCreators_CalculatesCreatorCut()
+        {
+            //arrange
+            var sut = CalculatorServiceBuilder(creatorService: CreatorServicePayoneerMatcherBuilder());
+            var creator1 = new KeyValuePair<Guid, int>(Guid.NewGuid(), 1);
+            var creator2 = new KeyValuePair<Guid, int>(Guid.NewGuid(), 1);
+
+
+            var hits = new Dictionary<Guid, int>();
+            hits.Add(creator1.Key, creator1.Value);
+            hits.Add(creator2.Key, creator2.Value);
+
+
+            //act
+            var result = sut.GetCreatorPayees(9.40, hits, 2, CalculatorService.PartnerFraction, CalculatorService.SublessFraction);
+
+            //assert
+            Assert.Equal(2, result.Count());
+
+            //these are .01 lower than the sheet in some cases due to rounding down
+            Assert.Equal(3.68, result.Single(x => x.PayoneerId == creator1.Key.ToString()).Payment);
+            Assert.Equal(3.68, result.Single(x => x.PayoneerId == creator2.Key.ToString()).Payment);
+        }
+
+        [Fact]
+        public void GetCreatorPayees_WithTwoUnequalCreators_CalculatesCreatorCut()
+        {
+            //arrange
+            var sut = CalculatorServiceBuilder(creatorService: CreatorServicePayoneerMatcherBuilder());
+            var creator1 = new KeyValuePair<Guid, int>(Guid.NewGuid(), 10);
+            var creator2 = new KeyValuePair<Guid, int>(Guid.NewGuid(), 5);
+
+
+            var hits = new Dictionary<Guid, int>();
+            hits.Add(creator1.Key, creator1.Value);
+            hits.Add(creator2.Key, creator2.Value);
+
+
+            //act
+            var result = sut.GetCreatorPayees(4.55, hits, 15, CalculatorService.PartnerFraction, CalculatorService.SublessFraction);
+
+            //assert
+            Assert.Equal(2, result.Count());
+
+            //these are .01 lower than the sheet in some cases due to rounding down
+            Assert.Equal(2.37, result.Single(x => x.PayoneerId == creator1.Key.ToString()).Payment);
+            Assert.Equal(1.18, result.Single(x => x.PayoneerId == creator2.Key.ToString()).Payment);
+        }
+
+        [Fact]
+        public void GetCreatorPayees_WithTwoCrossPartnerCreators_CalculatesCreatorCut()
+        {
+            //arrange
+            var sut = CalculatorServiceBuilder(creatorService: CreatorServicePayoneerMatcherBuilder());
+            var creator1 = new KeyValuePair<Guid, int>(Guid.NewGuid(), 10);
+            var creator2 = new KeyValuePair<Guid, int>(Guid.NewGuid(), 5);
+
+
+            var hits = new Dictionary<Guid, int>();
+            hits.Add(creator1.Key, creator1.Value);
+            hits.Add(creator2.Key, creator2.Value);
+
+
+            //act
+            var result = sut.GetCreatorPayees(4.55, hits, 15, CalculatorService.PartnerFraction, CalculatorService.SublessFraction);
+
+            //assert
+            Assert.Equal(2, result.Count());
+
+            //these are .01 lower than the sheet in some cases due to rounding down
+            Assert.Equal(2.37, result.Single(x => x.PayoneerId == creator1.Key.ToString()).Payment);
+            Assert.Equal(1.18, result.Single(x => x.PayoneerId == creator2.Key.ToString()).Payment);
+        }
+
+        [Fact]
+        public void GetPartnerPayees_WithTwoCrossPartnerCreators_CalculatesCreatorCut()
+        {
+            //arrange
+
+            var creator1 = new KeyValuePair<Guid, int>(Guid.NewGuid(), 10);
+            var creator2 = new KeyValuePair<Guid, int>(Guid.NewGuid(), 5);
+            var partner1 = Guid.NewGuid();
+            var partner2 = Guid.NewGuid();
+
+            var hits = new Dictionary<Guid, int>();
+            hits.Add(creator1.Key, creator1.Value);
+            hits.Add(creator2.Key, creator2.Value);
+            var partners = new Tuple<Guid, List<Guid>>();
+            PartnerServiceCreatorMatcherBuilder()
+            var sut = CalculatorServiceBuilder(creatorService: CreatorServicePayoneerMatcherBuilder(), partnerService:);
+
+
+            //act
+            var result = sut.GetCreatorPayees(4.55, hits, 15, CalculatorService.PartnerFraction, CalculatorService.SublessFraction);
+
+            //assert
+            Assert.Equal(2, result.Count());
+
+            //these are .01 lower than the sheet in some cases due to rounding down
+            Assert.Equal(2.37, result.Single(x => x.PayoneerId == creator1.Key.ToString()).Payment);
+            Assert.Equal(1.18, result.Single(x => x.PayoneerId == creator2.Key.ToString()).Payment);
+        }
+
         private CalculatorService CalculatorServiceBuilder(
             Mock<IStripeService> stripe = null,
             Mock<IHitService> hitService = null,
@@ -285,7 +449,21 @@ namespace Subless.Tests
             return service;
         }
 
+        private Mock<ICreatorService> CreatorServicePayoneerMatcherBuilder()
+        {
+            var service = new Mock<ICreatorService>();
+            service.Setup(x => x.GetCreator(It.IsAny<Guid>())).Returns<Guid>(x=> new Creator() { PayoneerId = x.ToString() });
+            return service;
+        }
+
         private Mock<IPartnerService> PartnerServiceBuilder(string PayoneerId = "TestPartner")
+        {
+            var service = new Mock<IPartnerService>();
+            service.Setup(x => x.GetPartner(It.IsAny<Guid>())).Returns(new Partner() { PayoneerId = PayoneerId });
+            return service;
+        }
+
+        private Mock<IPartnerService> PartnerServiceCreatorMatcherBuilder(Tuple<Guid,List<Guid>> creatorsToPartners, string PayoneerId = "TestPartner")
         {
             var service = new Mock<IPartnerService>();
             service.Setup(x => x.GetPartner(It.IsAny<Guid>())).Returns(new Partner() { PayoneerId = PayoneerId });
