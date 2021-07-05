@@ -82,6 +82,21 @@ namespace Subless.Data
             return Creators.Find(id);
         }
 
+        public IEnumerable<Creator> GetCreatorsByPartnerId(Guid partnerId)
+        {
+            return Creators.Where(x => x.PartnerId == partnerId);
+        }
+
+        public Creator GetCreatorByUsernameAndPartnerId(string username, Guid partnerId)
+        {
+            return Creators.FirstOrDefault(creator => creator.Username == username && creator.PartnerId == partnerId);
+        }
+
+        public Partner GetPartnerByUri(Uri uri)
+        {
+            return Partners.FirstOrDefault(partner => partner.Site == uri);
+        }
+
         public void UpdateCreator(Creator creator)
         {
             Creators.Update(creator);

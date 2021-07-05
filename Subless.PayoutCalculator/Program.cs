@@ -29,11 +29,11 @@ namespace PayoutCalculator
                     {
                         logger.LogInformation("Running calculation");
                         calculator.CalculatePayments(lastExecution, DateTime.UtcNow);
+                        logger.LogInformation("Calculation complete");
                     }
                     Thread.Sleep(1000 * 60);
                 }
             }
-            return host.RunAsync();
         }
 
         private static IHostBuilder CreateHostBuilder(string[] args)

@@ -62,6 +62,50 @@ const hashToBase64url = arrayBuffer => {
     return base64URL
 }
 
+async function redirectToLogin(settings) {
+    // Create random "state"
+    var state = getRandomString();
+    sessionStorage.setItem("pkce_state", state);
+
+    // Create PKCE code verifier
+    var code_verifier = getRandomString();
+    sessionStorage.setItem("code_verifier", code_verifier);
+
+    // Create code challenge
+    var arrayHash = await encryptStringWithSHA256(code_verifier);
+    var code_challenge = hashToBase64url(arrayHash);
+    sessionStorage.setItem("code_challenge", code_challenge)
+
+    // Redirtect user-agent to /authorize endpoint
+    location.href = settings.issuerUrl + "/oauth2/authorize?response_type=code&state=" + state + "&client_id=" + settings.appClientId + "&redirect_uri=" + redirectURI + "&scope=openid&code_challenge_method=S256&code_challenge=" + code_challenge;
+}
+
+async function loginCallback(settings, code) {
+    // Verify state matches
+    state = urlParams.get('state');
+    if (sessionStorage.getItem("pkce_state") != state) {
+        alert("Invalid state");
+    } else {
+
+        // Fetch OAuth2 tokens from Cognito
+        code_verifier = sessionStorage.getItem('code_verifier');
+        await fetch(settings.issuerUrl + "/oauth2/token?grant_type=authorization_code&client_id=" + settings.appClientId + "&code_verifier=" + code_verifier + "&redirect_uri=" + redirectURI + "&code=" + code, {
+            method: 'post',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        })
+            .then((response) => {
+                return response.json();
+            })
+            .then((data) => {
+                tokens = data;
+                sessionStorage.setItem("id_token", tokens.id_token);
+                sessionStorage.setItem("access_token", tokens.access_token);
+            });
+    }
+}
+
 // Main Function
 async function executeSublessLogin(settings) {
     var code = urlParams.get('code');
@@ -70,57 +114,38 @@ async function executeSublessLogin(settings) {
     //If code not present then request code else request tokens
     if (code == null && token == null) {
 
-        // Create random "state"
-        var state = getRandomString();
-        sessionStorage.setItem("pkce_state", state);
-
-        // Create PKCE code verifier
-        var code_verifier = getRandomString();
-        sessionStorage.setItem("code_verifier", code_verifier);
-
-        // Create code challenge
-        var arrayHash = await encryptStringWithSHA256(code_verifier);
-        var code_challenge = hashToBase64url(arrayHash);
-        sessionStorage.setItem("code_challenge", code_challenge)
-
-        // Redirtect user-agent to /authorize endpoint
-        location.href = settings.issuerUrl + "/oauth2/authorize?response_type=code&state=" + state + "&client_id=" + settings.appClientId + "&redirect_uri=" + redirectURI + "&scope=openid&code_challenge_method=S256&code_challenge=" + code_challenge;
+        redirectToLogin(settings);
     }
-        if (code!= null && token == null)  {
+    if (code!= null && token == null)  {
 
-            // Verify state matches
-            state = urlParams.get('state');
-            if (sessionStorage.getItem("pkce_state") != state) {
-                alert("Invalid state");
-            } else {
-
-                // Fetch OAuth2 tokens from Cognito
-                code_verifier = sessionStorage.getItem('code_verifier');
-                await fetch(settings.issuerUrl + "/oauth2/token?grant_type=authorization_code&client_id=" + settings.appClientId + "&code_verifier=" + code_verifier + "&redirect_uri=" + redirectURI + "&code=" + code, {
-                    method: 'post',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded'
-                    }
-                })
-                    .then((response) => {
-                        return response.json();
-                    })
-                    .then((data) => {
-                        tokens = data;
-                        sessionStorage.setItem("id_token", tokens.id_token);
-                        sessionStorage.setItem("access_token", tokens.access_token);
-                    });
-            }
-        }
+        loginCallback(settings, code);
+    }
 }
 
 function sublessLogin() {
+    sessionStorage.removeItem("id_token");
+    sessionStorage.removeItem("access_token");
     fetch(sublessURI + "/api/Authorization/settings")
         .then(function (resp) {
             var json = resp.json().then(json => {
                 executeSublessLogin(json);
             });
         });
+}
+
+function sublessLoginCallback() {
+    var code = urlParams.get('code');
+    var token = sessionStorage.getItem('id_token');
+    if (code != null && token == null) {
+
+        fetch(sublessURI + "/api/Authorization/settings")
+            .then(function (resp) {
+                var json = resp.json().then(json => {
+
+                    loginCallback(json, code);
+                });
+            });
+    }
 }
 
 
@@ -140,4 +165,5 @@ function hitSubless() {
     }
 }
 
+sublessLoginCallback();
 hitSubless();

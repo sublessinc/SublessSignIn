@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.Caching;
+using Microsoft.Extensions.Caching.Memory;
 using Subless.Data;
 using Subless.Models;
 
@@ -7,10 +10,18 @@ namespace Subless.Services
 {
     public class PartnerService : IPartnerService
     {
+        public static List<char> InvalidUsernameCharacters = new List<char> { ';', '/', '?', ':', '&', '=', '+', ',', '$' };
+
         private readonly IUserRepository _userRepository;
-        public PartnerService(IUserRepository userRepository)
+        private readonly IMemoryCache cache;
+
+        public PartnerService(
+            IUserRepository userRepository,
+            IMemoryCache cache
+            )
         {
-            _userRepository = userRepository;
+            _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
+            this.cache = cache ?? throw new ArgumentNullException(nameof(cache));
         }
 
         public Partner GetPartner(Guid id)
@@ -20,6 +31,7 @@ namespace Subless.Services
 
         public Guid GenerateCreatorActivationLink(string cognitoClientId, string creatorUsername)
         {
+
             var partner = _userRepository.GetPartnerByCognitoId(cognitoClientId);
             if (partner == null)
             {
@@ -49,6 +61,7 @@ namespace Subless.Services
 
         public Guid CreatePartner(Partner partner)
         {
+            partner.Site = new Uri(partner.Site.GetLeftPart(UriPartial.Authority));
             _userRepository.AddPartner(partner);
             return partner.Id;
         }
@@ -62,6 +75,17 @@ namespace Subless.Services
         public IEnumerable<Partner> GetPartners()
         {
             return _userRepository.GetPartners();
+        }
+
+        public Partner GetCachedParnterByUri(Uri uri)
+        {           
+            if (cache.TryGetValue(uri.ToString(), out Partner partner))
+            {
+                return (Partner)cache.Get(uri.ToString());
+            }
+            partner = _userRepository.GetPartnerByUri(uri);
+            cache.Set(uri.ToString(), partner, DateTime.UtcNow.AddHours(1));
+            return partner;
         }
     }
 }
