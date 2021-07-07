@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.Caching;
 using Microsoft.Extensions.DependencyInjection;
 using Subless.Models;
 
@@ -25,6 +26,7 @@ namespace Subless.Services
             services.AddTransient<IStripeService, StripeService>();
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<IPaymentLogsService, PaymentLogsService>();
+            services.AddMemoryCache();
             return services;
         }
     }

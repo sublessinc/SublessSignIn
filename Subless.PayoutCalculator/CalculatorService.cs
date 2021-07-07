@@ -14,7 +14,7 @@ namespace Subless.PayoutCalculator
         public const double PartnerFraction = .2;
         public const double SublessFraction = .02;
         public readonly string SublessPayoneerId;
-        public const int CurrencyPrecision = 2;
+        public const int CurrencyPrecision = 4;
         private readonly IStripeService _stripeService;
         private readonly IHitService _hitService;
         private readonly ICreatorService _creatorService;
@@ -130,7 +130,7 @@ namespace Subless.PayoutCalculator
             return visits;
         }
 
-        private IEnumerable<Payee> GetCreatorPayees(Double payment, Dictionary<Guid, int> creatorHits, int totalHits, double partnerHitFraction, double sublessHitFraction)
+        public IEnumerable<Payee> GetCreatorPayees(Double payment, Dictionary<Guid, int> creatorHits, int totalHits, double partnerHitFraction, double sublessHitFraction)
         {
             var payees = new List<Payee>();
             foreach (var creatorVisits in creatorHits)
@@ -147,7 +147,7 @@ namespace Subless.PayoutCalculator
             return payees;
         }
 
-        private IEnumerable<Payee> GetPartnerPayees(Double payment, Dictionary<Guid, int> creatorHits, int totalHits, double partnerHitFraction, double sublessHitFraction)
+        public IEnumerable<Payee> GetPartnerPayees(Double payment, Dictionary<Guid, int> creatorHits, int totalHits, double partnerHitFraction, double sublessHitFraction)
         {
             var payees = new List<Payee>();
             foreach (var creatorVisits in creatorHits)
@@ -156,11 +156,20 @@ namespace Subless.PayoutCalculator
                 partnerPayment = Math.Round(partnerPayment, CurrencyPrecision, MidpointRounding.ToZero);
                 var creator = _creatorService.GetCreator(creatorVisits.Key);
                 var partner = _partnerService.GetPartner(creator.PartnerId);
-                payees.Add(new Payee
+                if ( payees.Any(x => x.PayoneerId == partner.PayoneerId))
                 {
-                    Payment = partnerPayment,
-                    PayoneerId = partner.PayoneerId
-                });
+                    var payee = payees.FirstOrDefault(x => x.PayoneerId == partner.PayoneerId);
+                    payee.Payment = Math.Round(payee.Payment+ partnerPayment, CurrencyPrecision, MidpointRounding.ToZero);
+                }
+                else
+                {
+                    var payee = new Payee() 
+                    { 
+                        PayoneerId = partner.PayoneerId,
+                        Payment = partnerPayment    
+                    };
+                    payees.Add(payee);
+                }
             }
             return payees;
         }

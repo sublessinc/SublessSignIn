@@ -31,6 +31,10 @@ namespace SublessSignIn.Controllers
         [HttpPost("CreatorRegister")]
         public ActionResult<string> GetCreatorActivationLink([FromQuery] string username)
         {
+            if (PartnerService.InvalidUsernameCharacters.Any(chr => username.Contains(chr)))
+            {
+                return BadRequest("Username contains one of the following invalid characters" + PartnerService.InvalidUsernameCharacters.Concat(" "));
+            }
             var scope = User.Claims.FirstOrDefault(x => x.Type == "scope")?.Value;
             var cognitoClientId = User.Claims.FirstOrDefault(x => x.Type == "client_id")?.Value;
             _logger.LogInformation($"Partner {cognitoClientId} registering creator {username}");

@@ -8,6 +8,7 @@ namespace Subless.Services
     {
         Guid CreatePartner(Partner partner);
         Guid GenerateCreatorActivationLink(string cognitoClientId, string creatorUsername);
+        Partner GetCachedParnterByUri(Uri uri);
         Partner GetPartner(Guid id);
         IEnumerable<Partner> GetPartners();
         void UpdatePartner(Partner partner);
