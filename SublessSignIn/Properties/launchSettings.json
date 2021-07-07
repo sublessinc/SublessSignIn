@@ -30,8 +30,9 @@
             "ASPNETCORE_ENVIRONMENT": "Development",
             "STRIPE_WEBHOOK_SECRET": "whsec_BKwYJh9HjCYQEgUSYIu9A1RE7ciQ26Ho",
             "region": "us-east-1",
-            "appClientId": "4a8epi5e1hh6bp8cr761i24um5",
-            "userPoolId": "us-east-1_6U7tGA4YG"
+            "appClientId": "6a4425t6hjaerp2nndqo3el3d1",
+            "userPoolId": "us-east-1_vbXfe749W",
+            "issuerUrl": "https://test-auth.subless.com"
         },
       "dotnetRunMessages": "true",
       "applicationUrl": "https://localhost:5001;http://localhost:5000"
