@@ -96,6 +96,7 @@ async function loginCallback(settings, code) {
             }
         })
             .then((response) => {
+                handleUnauthorized(resp);
                 return response.json();
             })
             .then((data) => {
@@ -127,6 +128,7 @@ function sublessLogin() {
     sessionStorage.removeItem("access_token");
     fetch(sublessURI + "/api/Authorization/settings")
         .then(function (resp) {
+            handleUnauthorized(resp);
             var json = resp.json().then(json => {
                 executeSublessLogin(json);
             });
@@ -140,6 +142,7 @@ function sublessLoginCallback() {
 
         fetch(sublessURI + "/api/Authorization/settings")
             .then(function (resp) {
+                handleUnauthorized(resp);
                 var json = resp.json().then(json => {
 
                     loginCallback(json, code);
@@ -152,16 +155,26 @@ function sublessLoginCallback() {
 function hitSubless() {
     var token = sessionStorage.getItem('id_token');
     if (token) {
-        var body = 
-        fetch(sublessURI + "/api/hit", {
-            method: "POST",
-            headers: {
-                "Authorization": "Bearer " + token,
-                "Content-Type": "application/json",
-            },
-            body: window.location.href
-        })
+        var body =
+            fetch(sublessURI + "/api/hit", {
+                method: "POST",
+                headers: {
+                    "Authorization": "Bearer " + token,
+                    "Content-Type": "application/json",
+                },
+                body: window.location.href
+            }).then(response => {
+                handleUnauthorized(response);
+            });
             
+    }
+}
+
+function handleUnauthorized(response) {
+    if (response.status === 401)
+
+        sessionStorage.removeItem("id_token");
+        sessionStorage.removeItem("access_token");
     }
 }
 
