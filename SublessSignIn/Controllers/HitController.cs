@@ -43,11 +43,11 @@ namespace SublessSignIn.Controllers
                 {
                     return BadRequest("Could not read source url");
                 }
-                if (User.FindFirst("cognito:username")?.Value == null)
+                if (User.FindFirst("username")?.Value == null)
                 {
-                    return Unauthorized("User could not be ");
+                    return Unauthorized("User claim could not be found");
                 }
-                _hitService.SaveHit(User.FindFirst("cognito:username").Value, hitSource);
+                _hitService.SaveHit(User.FindFirst("username").Value, hitSource);
             }
             return Ok();
         }

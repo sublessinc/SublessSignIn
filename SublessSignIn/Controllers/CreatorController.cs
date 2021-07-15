@@ -23,7 +23,7 @@ namespace SublessSignIn.Controllers
         [HttpGet()]
         public ActionResult<Creator> GetCreator()
         {
-            var cognitoId = User.FindFirst("cognito:username")?.Value;
+            var cognitoId = User.FindFirst("username")?.Value;
             if (cognitoId == null)
             {
                 return Unauthorized();
@@ -41,7 +41,7 @@ namespace SublessSignIn.Controllers
         [HttpPut()]
         public ActionResult<Creator> UpdateCreator(Creator creator)
         {
-            var cognitoId = User.FindFirst("cognito:username")?.Value;
+            var cognitoId = User.FindFirst("username")?.Value;
             if (cognitoId == null)
             {
                 return Unauthorized();

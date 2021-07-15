@@ -1,13 +1,13 @@
-var myHeaders = new Headers();
-myHeaders.set('Cache-Control', 'no-store');
-var urlParams = new URLSearchParams(window.location.search);
-
-var baseURI = location.protocol + '//' + window.location.hostname + (location.port ? ':' + location.port : '') + window.location.pathname;
-var sublessURI = "http://localhost:7070";
 
 var config = {
-    redirect_uri: baseURI,
-    post_logout_redirect_uri: baseURI,
+    authority: "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_vbXfe749W/",
+    client_id: "6a4425t6hjaerp2nndqo3el3d1",
+    redirect_uri: window.location.origin + "/login",
+    post_logout_redirect_uri: window.location.origin + "/login",
+
+    // if we choose to use popup window instead for logins
+    popup_redirect_uri: window.location.origin + "/popup.html",
+    popupWindowFeatures: "menubar=yes,location=yes,toolbar=yes,width=1200,height=800,left=100,top=100;resizable=yes",
 
     // these two will be done dynamically from the buttons clicked, but are
     // needed if you want to use the silent_renew
@@ -29,97 +29,30 @@ var config = {
     // wouldn't care about them or want them taking up space
     filterProtocolClaims: false
 };
+Oidc.Log.logger = window.console;
+Oidc.Log.level = Oidc.Log.INFO;
 
+var mgr = new Oidc.UserManager(config);
 
-function populateConfig(followOnFunction) {
-    fetch(sublessURI + "/api/Authorization/settings")
-        .then(function (resp) {
-            var json = resp.json().then(json => {
-                config.authority = json.cognitoUrl;
-                config.client_id = json.appClientId;
-                init();
-                followOnFunction();
-            });
-        });
-}
-
-function sublessLogin() {
-    populateConfig(login);
-}
-
-function sublessLoginCallback() {
-    var code = urlParams.get('code');
-    populateConfig(function () {
-        mgr.getUser().then(function (user) {
-            if (code != null && user == null) {
-                handleCallback();
-            }
-        });
-    });
-}
-
-
-function hitSubless() {
-    populateConfig(function () {
-        mgr.getUser().then(function (user) {
-            if (user) {
-                var body =
-                    fetch(sublessURI + "/api/hit", {
-                        method: "POST",
-                        headers: {
-                            "Authorization": "Bearer " + user.access_token,
-                            "Content-Type": "application/json",
-                        },
-                        body: window.location.href
-                    });
-
-            }
-        });
-    });
-}
-
-
-
-
-
-
-
-
-
-
-
-
-var mgr = null;
-
-
-
-function init() {
-    Oidc.Log.logger = window.console;
-    Oidc.Log.level = Oidc.Log.INFO;
-
-    mgr = new Oidc.UserManager(config);
-
-    mgr.events.addUserLoaded(function (user) {
-        log("User loaded");
-        showTokens();
-    });
-    mgr.events.addUserUnloaded(function () {
-        log("User logged out locally");
-        showTokens();
-    });
-    mgr.events.addAccessTokenExpiring(function () {
-        log("Access token expiring...");
-    });
-    mgr.events.addSilentRenewError(function (err) {
-        log("Silent renew error: " + err.message);
-    });
-    mgr.events.addUserSignedOut(function () {
-        log("User signed out of OP");
-    });
-}
+mgr.events.addUserLoaded(function (user) {
+    log("User loaded");
+    showTokens();
+});
+mgr.events.addUserUnloaded(function () {
+    log("User logged out locally");
+    showTokens();
+});
+mgr.events.addAccessTokenExpiring(function () {
+    log("Access token expiring...");
+});
+mgr.events.addSilentRenewError(function (err) {
+    log("Silent renew error: " + err.message);
+});
+mgr.events.addUserSignedOut(function () {
+    log("User signed out of OP");
+});
 
 function login(scope, response_type) {
-
     var use_popup = false;
     if (!use_popup) {
         mgr.signinRedirect({ scope: scope, response_type: response_type });
@@ -140,6 +73,8 @@ function revoke() {
 }
 
 function log(data) {
+    document.getElementById('response').innerText = '';
+
     Array.prototype.forEach.call(arguments, function (msg) {
         if (msg instanceof Error) {
             msg = "Error: " + msg.message;
@@ -147,6 +82,7 @@ function log(data) {
         else if (typeof msg !== 'string') {
             msg = JSON.stringify(msg, null, 2);
         }
+        document.getElementById('response').innerHTML += msg + '\r\n';
     });
 }
 
@@ -183,26 +119,3 @@ function handleCallback() {
         log(error);
     });
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-sublessLoginCallback();
-hitSubless();

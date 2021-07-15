@@ -55,7 +55,7 @@ namespace SublessSignIn.Controllers
         [HttpPost("create-checkout-session")]
         public async Task<IActionResult> CreateCheckoutSession([FromBody] CreateCheckoutSessionRequest req)
         {
-            var cognitoId = User.FindFirst("cognito:username")?.Value;
+            var cognitoId = User.FindFirst("username")?.Value;
             if (cognitoId == null)
             {
                 return Unauthorized();
@@ -76,7 +76,7 @@ namespace SublessSignIn.Controllers
         [HttpPost("customer-portal")]
         public async Task<IActionResult> CustomerPortal()
         {
-            var cognitoId = User.FindFirst("cognito:username")?.Value;
+            var cognitoId = User.FindFirst("username")?.Value;
             if (cognitoId == null)
             {
                 return Unauthorized();
@@ -91,7 +91,7 @@ namespace SublessSignIn.Controllers
         [HttpGet("checkout-session")]
         public async Task<IActionResult> CheckoutSession(string sessionId)
         {
-            var cognitoId = User.FindFirst("cognito:username")?.Value;
+            var cognitoId = User.FindFirst("username")?.Value;
             if (cognitoId == null)
             {
                 return Unauthorized();
@@ -102,7 +102,7 @@ namespace SublessSignIn.Controllers
         [HttpGet("existing-session")]
         public IActionResult GetUserSession()
         {
-            var cognitoId = User.FindFirst("cognito:username")?.Value;
+            var cognitoId = User.FindFirst("username")?.Value;
             if (cognitoId == null)
             {
                 return Unauthorized();

@@ -27,7 +27,7 @@ export class AuthorizationService {
     return this.httpClient.get<ISettings>('/api/Authorization/settings');
   }
 
-  getToken(code: string) {
+  getToken(code: string): void {
     this.getSettings().subscribe({
       next: (settings) => {
         var headers = new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded');
@@ -88,7 +88,7 @@ export class AuthorizationService {
     })
   }
 
-  decodePayload(payload: string) {
+  private decodePayload(payload: string) {
     const cleanedPayload = payload.replace(/-/g, '+').replace(/_/g, '/');
     const decodedPayload = atob(cleanedPayload)
     const uriEncodedPayload = Array.from(decodedPayload).reduce((acc, char) => {
@@ -101,7 +101,7 @@ export class AuthorizationService {
   }
 
   //Parse JWT Payload
-  parseJWTPayload(token: string) {
+  private parseJWTPayload(token: string) {
     const [header, payload, signature] = token.split('.');
     const jsonPayload = this.decodePayload(payload)
 
@@ -109,7 +109,7 @@ export class AuthorizationService {
   };
 
   //Parse JWT Header
-  parseJWTHeader(token: string) {
+  private parseJWTHeader(token: string) {
     const [header, payload, signature] = token.split('.');
     const jsonHeader = this.decodePayload(header)
 
@@ -117,7 +117,7 @@ export class AuthorizationService {
   };
 
   //Generate a Random String
-  getRandomString() {
+  private getRandomString() {
     const randomItems = new Uint32Array(28);
     crypto.getRandomValues(randomItems);
     const binaryStringItems = randomItems.map(dec => +`0${dec.toString(16).substr(-2)}`);
@@ -125,7 +125,7 @@ export class AuthorizationService {
   }
 
   //Encrypt a String with SHA256
-  async encryptStringWithSHA256(str: string) {
+  private async encryptStringWithSHA256(str: string) {
     const PROTOCOL = 'SHA-256'
     const textEncoder = new TextEncoder();
     const encodedData = textEncoder.encode(str);
@@ -133,7 +133,7 @@ export class AuthorizationService {
   }
 
   //Convert Hash to Base64-URL
-  hashToBase64url(arrayBuffer: ArrayBuffer) {
+  private hashToBase64url(arrayBuffer: ArrayBuffer) {
     const items = new Uint8Array(arrayBuffer)
     const stringifiedArrayHash = items.reduce((acc, i) => `${acc}${String.fromCharCode(i)}`, '')
     const decodedHash = btoa(stringifiedArrayHash)
