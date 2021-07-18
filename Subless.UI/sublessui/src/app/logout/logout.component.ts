@@ -16,10 +16,7 @@ export class LogoutComponent implements OnInit {
   }
 
   logout() {
-    sessionStorage.setItem("state", '');
-    sessionStorage.setItem("id_token", '');
-    sessionStorage.setItem("access_token", '');
-    sessionStorage.setItem("activation", '');
+    sessionStorage.removeItem("activation");
     this.authService.redirectToLogout();
   }
 }

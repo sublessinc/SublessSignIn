@@ -11,14 +11,10 @@ export class CreatorService {
   constructor(private httpClient: HttpClient) { }
 
   getCreator(): Observable<ICreator> {
-    const authHeader = "Bearer " + sessionStorage.getItem('id_token');
-    var headers = new HttpHeaders().set('Authorization', authHeader);
-    return this.httpClient.get<ICreator>('/api/Creator', { headers });
+    return this.httpClient.get<ICreator>('/api/Creator');
   }
 
   updateCreator(creator: ICreator): Observable<ICreator> {
-    const authHeader = "Bearer " + sessionStorage.getItem('id_token');
-    var headers = new HttpHeaders().set('Authorization', authHeader);
-    return this.httpClient.put<ICreator>('/api/Creator', creator, { headers });
+    return this.httpClient.put<ICreator>('/api/Creator', creator);
   }
 }

@@ -17,37 +17,27 @@ export class CheckoutService {
   constructor(private httpClient: HttpClient) { }
 
   getCheckoutSettings(): Observable<ICheckoutSettings> {
-    const authHeader = "Bearer " + sessionStorage.getItem('id_token');
-    var headers = new HttpHeaders().set('Authorization', authHeader);
-    return this.httpClient.get<ICheckoutSettings>('/api/Checkout/setup', { headers });
+    return this.httpClient.get<ICheckoutSettings>('/api/Checkout/setup');
   }
 
   createCheckoutSession(priceId: string): Observable<ISessionResponse> {
-    const authHeader = "Bearer " + sessionStorage.getItem('id_token');
-    var headers = new HttpHeaders().set('Authorization', authHeader);
     return this.httpClient.post<ISessionResponse>("/api/Checkout/create-checkout-session", {
       priceId: priceId
-    }, { headers });
+    });
   }
 
   getCheckoutSession(sessionId: string): Observable<ISessionResponse> {
-    const authHeader = "Bearer " + sessionStorage.getItem('id_token');
-    var headers = new HttpHeaders().set('Authorization', authHeader);
-    return this.httpClient.get<ISessionResponse>("/api/Checkout/checkout-session?sessionId=" + sessionId, { headers });
+    return this.httpClient.get<ISessionResponse>("/api/Checkout/checkout-session?sessionId=" + sessionId);
   }
 
   loadCustomerPortal(sessionId: string): Observable<IStripeRedirect> {
-    const authHeader = "Bearer " + sessionStorage.getItem('id_token');
-    var headers = new HttpHeaders().set('Authorization', authHeader);
     return this.httpClient.post<IStripeRedirect>("/api/Checkout/customer-portal", {
       sessionId: sessionId
-    }, { headers });
+    });
   }
 
   getUserSession(): Observable<SessionId> {
-    const authHeader = "Bearer " + sessionStorage.getItem('id_token');
-    var headers = new HttpHeaders().set('Authorization', authHeader);
-    return this.httpClient.get<SessionId>('/api/Checkout/existing-session', { headers });
+    return this.httpClient.get<SessionId>('/api/Checkout/existing-session');
   }
 }
 

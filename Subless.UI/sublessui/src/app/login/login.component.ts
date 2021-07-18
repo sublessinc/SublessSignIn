@@ -18,37 +18,6 @@ export class LoginComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.redirectIfNotloggedIn();
+    this.authService.checkLogin();
   }
-
-  async redirectIfNotloggedIn(): Promise<void> {
-    this.route.queryParams
-      .subscribe(async params => {
-        const codeParameter = params.code;
-        const state = params.state;
-        const activation = params.activation;
-
-        if (activation) {
-          sessionStorage.setItem("activation", params.activation);
-        }
-
-        var idToken = sessionStorage.getItem("id_token");
-        var authToken = sessionStorage.getItem("access_token");
-        if ((!idToken || !authToken) && !(codeParameter)) {
-          sessionStorage.setItem("state", '');
-          sessionStorage.setItem("id_token", '');
-          sessionStorage.setItem("access_token", '');
-          await this.authService.getLoginLink();
-        }
-        if (codeParameter) {
-          this.authService.processAuthCode(codeParameter, state);
-        }
-        if (idToken && authToken) {
-          this.authService.redirect();
-        }
-      }
-      );
-  }
-
-
 }
