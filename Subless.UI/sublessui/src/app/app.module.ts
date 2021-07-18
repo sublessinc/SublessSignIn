@@ -12,6 +12,8 @@ import { LogoutComponent } from './logout/logout.component';
 import { LoggedOutComponent } from './logged-out/logged-out.component';
 import { FormsModule } from '@angular/forms';
 import { AuthInterceptor, AuthModule, LogLevel } from 'angular-auth-oidc-client';
+import { environment } from '../environments/environment';
+
 
 
 
@@ -31,9 +33,8 @@ import { AuthInterceptor, AuthModule, LogLevel } from 'angular-auth-oidc-client'
     HttpClientModule,
     FormsModule,
     AuthModule.forRoot({
-      //TODO: make these dynamic
       config: {
-        authority: 'https://cognito-idp.us-east-1.amazonaws.com/us-east-1_vbXfe749W',
+        authority: environment.authority,
         redirectUrl: window.location.origin + "/login",
         postLogoutRedirectUri: window.location.origin + "/login",
         clientId: '6a4425t6hjaerp2nndqo3el3d1',

@@ -101,11 +101,9 @@ function init() {
 
     mgr.events.addUserLoaded(function (user) {
         log("User loaded");
-        showTokens();
     });
     mgr.events.addUserUnloaded(function () {
         log("User logged out locally");
-        showTokens();
     });
     mgr.events.addAccessTokenExpiring(function () {
         log("Access token expiring...");
@@ -173,7 +171,6 @@ function handleCallback() {
         }, {});
 
         log(result);
-        showTokens();
 
         window.history.replaceState({},
             window.document.title,
