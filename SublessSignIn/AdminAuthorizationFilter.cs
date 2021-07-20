@@ -20,7 +20,7 @@ namespace Subless.Services
 
         public void OnAuthorization(AuthorizationFilterContext context)
         {
-            var cognitoId = context.HttpContext.User.Claims.First(x => x.Type == "username")?.Value;
+            var cognitoId = userService.GetUserClaim(context.HttpContext.User);
             if (!userService.IsUserAdmin(cognitoId))
             {
                 logger.LogError($"Cognito user {cognitoId} tried to access disallowed route");
