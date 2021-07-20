@@ -13,17 +13,19 @@ namespace SublessSignIn.Controllers
     public class CreatorController : ControllerBase
     {
         private readonly ICreatorService _creatorService;
+        private readonly IUserService userService;
         private readonly ILogger _logger;
-        public CreatorController(ICreatorService creatorService, ILoggerFactory loggerFactory)
+        public CreatorController(ICreatorService creatorService, ILoggerFactory loggerFactory, IUserService userService)
         {
             _creatorService = creatorService ?? throw new ArgumentNullException(nameof(creatorService));
+            this.userService = userService ?? throw new ArgumentNullException(nameof(userService));
             _logger = loggerFactory?.CreateLogger<PartnerController>() ?? throw new ArgumentNullException(nameof(loggerFactory));
         }
 
         [HttpGet()]
         public ActionResult<Creator> GetCreator()
         {
-            var cognitoId = User.FindFirst("cognito:username")?.Value;
+            var cognitoId = userService.GetUserClaim(HttpContext.User);
             if (cognitoId == null)
             {
                 return Unauthorized();
@@ -41,7 +43,7 @@ namespace SublessSignIn.Controllers
         [HttpPut()]
         public ActionResult<Creator> UpdateCreator(Creator creator)
         {
-            var cognitoId = User.FindFirst("cognito:username")?.Value;
+            var cognitoId = userService.GetUserClaim(HttpContext.User);
             if (cognitoId == null)
             {
                 return Unauthorized();

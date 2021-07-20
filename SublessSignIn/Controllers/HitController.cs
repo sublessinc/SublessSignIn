@@ -15,10 +15,13 @@ namespace SublessSignIn.Controllers
     {
         private readonly ILogger _logger;
         private readonly IHitService _hitService;
-        public HitController(ILoggerFactory loggerFactory, IHitService hitService)
+        private readonly IUserService userService;
+
+        public HitController(ILoggerFactory loggerFactory, IHitService hitService, IUserService userService)
         {
             _logger = loggerFactory?.CreateLogger<HitController>() ?? throw new ArgumentNullException(nameof(loggerFactory));
             _hitService = hitService ?? throw new ArgumentNullException(nameof(hitService));
+            this.userService = userService ?? throw new ArgumentNullException(nameof(userService));
         }
 
         [HttpPost]
@@ -43,11 +46,11 @@ namespace SublessSignIn.Controllers
                 {
                     return BadRequest("Could not read source url");
                 }
-                if (User.FindFirst("cognito:username")?.Value == null)
+                if (userService.GetUserClaim(HttpContext.User) == null)
                 {
-                    return Unauthorized("User could not be ");
+                    return Unauthorized("User claim could not be found");
                 }
-                _hitService.SaveHit(User.FindFirst("cognito:username").Value, hitSource);
+                _hitService.SaveHit(userService.GetUserClaim(HttpContext.User), hitSource);
             }
             return Ok();
         }

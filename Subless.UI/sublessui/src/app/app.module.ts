@@ -11,7 +11,10 @@ import { CreatorprofileComponent } from './creatorprofile/creatorprofile.compone
 import { LogoutComponent } from './logout/logout.component';
 import { LoggedOutComponent } from './logged-out/logged-out.component';
 import { FormsModule } from '@angular/forms';
-import { AuthInterceptor } from './services/auth.interceptor';
+import { AuthInterceptor, AuthModule, LogLevel } from 'angular-auth-oidc-client';
+import { environment } from '../environments/environment';
+
+
 
 
 @NgModule({
@@ -28,9 +31,23 @@ import { AuthInterceptor } from './services/auth.interceptor';
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
-    FormsModule
+    FormsModule,
+    AuthModule.forRoot({
+      config: {
+        authority: environment.authority,
+        redirectUrl: window.location.origin + "/login",
+        postLogoutRedirectUri: window.location.origin + "/login",
+        clientId: '6a4425t6hjaerp2nndqo3el3d1',
+        scope: 'openid',
+        responseType: 'code',
+        silentRenew: true,
+        useRefreshToken: true,
+        logLevel: LogLevel.Debug,
+        secureRoutes: ['/api/Creator', '/api/Checkout/', '/api/Authorization'],
+      },
+    }),
   ],
-  providers: [{ provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }],
+  providers: [{ provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

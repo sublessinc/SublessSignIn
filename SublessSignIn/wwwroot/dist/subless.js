@@ -3,124 +3,117 @@ myHeaders.set('Cache-Control', 'no-store');
 var urlParams = new URLSearchParams(window.location.search);
 
 var baseURI = location.protocol + '//' + window.location.hostname + (location.port ? ':' + location.port : '') + window.location.pathname;
-var redirectURI = baseURI;
 var sublessURI = "https://pay.subless.com";
 
+var config = {
+    redirect_uri: baseURI,
+    post_logout_redirect_uri: baseURI,
 
-//Convert Payload from Base64-URL to JSON
-const decodePayload = payload => {
-    const cleanedPayload = payload.replace(/-/g, '+').replace(/_/g, '/');
-    const decodedPayload = atob(cleanedPayload)
-    const uriEncodedPayload = Array.from(decodedPayload).reduce((acc, char) => {
-        const uriEncodedChar = ('00' + char.charCodeAt(0).toString(16)).slice(-2)
-        return `${acc}%${uriEncodedChar}`
-    }, '')
-    const jsonPayload = decodeURIComponent(uriEncodedPayload);
+    // these two will be done dynamically from the buttons clicked, but are
+    // needed if you want to use the silent_renew
+    response_type: "code",
+    scope: "openid",
 
-    return JSON.parse(jsonPayload)
-}
+    // this will toggle if profile endpoint is used
+    loadUserInfo: true,
 
-//Parse JWT Payload
-const parseJWTPayload = token => {
-    const [header, payload, signature] = token.split('.');
-    const jsonPayload = decodePayload(payload)
+    // silent renew will get a new access_token via an iframe 
+    // just prior to the old access_token expiring (60 seconds prior)
+    silent_redirect_uri: window.location.origin + "/silent.html",
+    automaticSilentRenew: true,
 
-    return jsonPayload
+    // will revoke (reference) access tokens at logout time
+    revokeAccessTokenOnSignout: true,
+
+    // this will allow all the OIDC protocol claims to be visible in the window. normally a client app 
+    // wouldn't care about them or want them taking up space
+    filterProtocolClaims: false
 };
 
-//Parse JWT Header
-const parseJWTHeader = token => {
-    const [header, payload, signature] = token.split('.');
-    const jsonHeader = decodePayload(header)
 
-    return jsonHeader
-};
-
-//Generate a Random String
-const getRandomString = () => {
-    const randomItems = new Uint32Array(28);
-    crypto.getRandomValues(randomItems);
-    const binaryStringItems = randomItems.map(dec => `0${dec.toString(16).substr(-2)}`)
-    return binaryStringItems.reduce((acc, item) => `${acc}${item}`, '');
-}
-
-//Encrypt a String with SHA256
-const encryptStringWithSHA256 = async str => {
-    const PROTOCOL = 'SHA-256'
-    const textEncoder = new TextEncoder();
-    const encodedData = textEncoder.encode(str);
-    return crypto.subtle.digest(PROTOCOL, encodedData);
-}
-
-//Convert Hash to Base64-URL
-const hashToBase64url = arrayBuffer => {
-    const items = new Uint8Array(arrayBuffer)
-    const stringifiedArrayHash = items.reduce((acc, i) => `${acc}${String.fromCharCode(i)}`, '')
-    const decodedHash = btoa(stringifiedArrayHash)
-
-    const base64URL = decodedHash.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-    return base64URL
-}
-
-async function redirectToLogin(settings) {
-    // Create random "state"
-    var state = getRandomString();
-    sessionStorage.setItem("pkce_state", state);
-
-    // Create PKCE code verifier
-    var code_verifier = getRandomString();
-    sessionStorage.setItem("code_verifier", code_verifier);
-
-    // Create code challenge
-    var arrayHash = await encryptStringWithSHA256(code_verifier);
-    var code_challenge = hashToBase64url(arrayHash);
-    sessionStorage.setItem("code_challenge", code_challenge)
-
-    // Redirtect user-agent to /authorize endpoint
-    location.href = settings.issuerUrl + "/oauth2/authorize?response_type=code&state=" + state + "&client_id=" + settings.appClientId + "&redirect_uri=" + redirectURI + "&scope=openid&code_challenge_method=S256&code_challenge=" + code_challenge;
-}
-
-async function loginCallback(settings, code) {
-    // Verify state matches
-    state = urlParams.get('state');
-    if (sessionStorage.getItem("pkce_state") != state) {
-        alert("Invalid state");
-    } else {
-
-        // Fetch OAuth2 tokens from Cognito
-        code_verifier = sessionStorage.getItem('code_verifier');
-        await fetch(settings.issuerUrl + "/oauth2/token?grant_type=authorization_code&client_id=" + settings.appClientId + "&code_verifier=" + code_verifier + "&redirect_uri=" + redirectURI + "&code=" + code, {
-            method: 'post',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            }
-        })
-            .then((response) => {
-                handleUnauthorized(resp);
-                return response.json();
-            })
-            .then((data) => {
-                tokens = data;
-                sessionStorage.setItem("id_token", tokens.id_token);
-                sessionStorage.setItem("access_token", tokens.access_token);
+function populateConfig(followOnFunction) {
+    fetch(sublessURI + "/api/Authorization/settings")
+        .then(function (resp) {
+            var json = resp.json().then(json => {
+                config.authority = json.cognitoUrl;
+                config.client_id = json.appClientId;
+                init();
+                followOnFunction();
             });
-    }
+        });
 }
 
-// Main Function
-async function executeSublessLogin(settings) {
+function sublessLogin() {
+    populateConfig(login);
+}
+
+function sublessLoginCallback() {
     var code = urlParams.get('code');
-    var token = sessionStorage.getItem('id_token');
+    populateConfig(function () {
+        mgr.getUser().then(function (user) {
+            if (code != null && user == null) {
+                handleCallback();
+            }
+        });
+    });
+}
 
-    //If code not present then request code else request tokens
-    if (code == null && token == null) {
 
-        redirectToLogin(settings);
-    }
-    if (code!= null && token == null)  {
+function hitSubless() {
+    populateConfig(function () {
+        mgr.getUser().then(function (user) {
+            if (user) {
+                var body =
+                    fetch(sublessURI + "/api/hit", {
+                        method: "POST",
+                        headers: {
+                            "Authorization": "Bearer " + user.access_token,
+                            "Content-Type": "application/json",
+                        },
+                        body: window.location.href
+                    });
 
-        loginCallback(settings, code);
-    }
+            }
+        });
+    });
+}
+
+
+
+
+
+
+
+
+
+
+
+
+var mgr = null;
+
+
+
+function init() {
+    Oidc.Log.logger = window.console;
+    Oidc.Log.level = Oidc.Log.INFO;
+
+    mgr = new Oidc.UserManager(config);
+
+    mgr.events.addUserLoaded(function (user) {
+        log("User loaded");
+    });
+    mgr.events.addUserUnloaded(function () {
+        log("User logged out locally");
+    });
+    mgr.events.addAccessTokenExpiring(function () {
+        log("Access token expiring...");
+    });
+    mgr.events.addSilentRenewError(function (err) {
+        log("Silent renew error: " + err.message);
+    });
+    mgr.events.addUserSignedOut(function () {
+        log("User signed out of OP");
+    });
 }
 
 function sublessLogin() {
@@ -135,22 +128,47 @@ function sublessLogin() {
         });
 }
 
-function sublessLoginCallback() {
-    var code = urlParams.get('code');
-    var token = sessionStorage.getItem('id_token');
-    if (code != null && token == null) {
+function logout() {
+    mgr.signoutRedirect();
+}
 
         fetch(sublessURI + "/api/Authorization/settings")
             .then(function (resp) {
                 handleUnauthorized(resp);
                 var json = resp.json().then(json => {
 
-                    loginCallback(json, code);
-                });
-            });
-    }
+function log(data) {
+    Array.prototype.forEach.call(arguments, function (msg) {
+        if (msg instanceof Error) {
+            msg = "Error: " + msg.message;
+        }
+        else if (typeof msg !== 'string') {
+            msg = JSON.stringify(msg, null, 2);
+        }
+    });
 }
 
+function display(selector, data) {
+    if (data && typeof data === 'string') {
+        try {
+            data = JSON.parse(data);
+        }
+        catch (e) { }
+    }
+    if (data && typeof data !== 'string') {
+        data = JSON.stringify(data, null, 2);
+    }
+    document.querySelector(selector).textContent = data;
+}
+
+function handleCallback() {
+    mgr.signinRedirectCallback().then(function (user) {
+        var hash = window.location.hash.substr(1);
+        var result = hash.split('&').reduce(function (result, item) {
+            var parts = item.split('=');
+            result[parts[0]] = parts[1];
+            return result;
+        }, {});
 
 function hitSubless() {
     var token = sessionStorage.getItem('id_token');

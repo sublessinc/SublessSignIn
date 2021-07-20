@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Security.Claims;
 using Subless.Models;
 using SublessSignIn.Models;
 
@@ -18,5 +19,6 @@ namespace Subless.Services
         void AddStripeCustomerId(string cognitoId, string stripeId);
         IEnumerable<User> GetUsersFromStripeIds(IEnumerable<string> customerIds);
         User GetUser(Guid id);
+        string GetUserClaim(ClaimsPrincipal user);
     }
 }

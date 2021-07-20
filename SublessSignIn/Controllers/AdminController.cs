@@ -23,7 +23,7 @@ namespace SublessSignIn.Controllers
         [HttpPost("setadminwithkey")]
         public ActionResult SetAdminFromCode([FromQuery] Guid key)
         {
-            var cognitoId = User.FindFirst("cognito:username")?.Value;
+            var cognitoId = userService.GetUserClaim(HttpContext.User);
             administrationService.ActivateAdminWithKey(key, cognitoId);
             return Ok();
         }
@@ -31,7 +31,7 @@ namespace SublessSignIn.Controllers
         [HttpGet("user")]
         public ActionResult<Guid> GetUserId()
         {
-            var cognitoId = User.FindFirst("cognito:username")?.Value;
+            var cognitoId = userService.GetUserClaim(HttpContext.User);
             return Ok(userService.GetUserByCognitoId(cognitoId).Id);
         }
 

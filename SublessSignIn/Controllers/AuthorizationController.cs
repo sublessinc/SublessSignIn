@@ -38,7 +38,7 @@ namespace SublessSignIn.Controllers
         [HttpGet("redirect")]
         public ActionResult<Redirection> GetPath([FromHeader] string Activation)
         {
-            var cognitoId = User.FindFirst("cognito:username")?.Value;
+            var cognitoId = _userService.GetUserClaim(HttpContext.User);
             if (cognitoId == null)
             {
                 return Unauthorized();

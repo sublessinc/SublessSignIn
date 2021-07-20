@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using Subless.Data;
 using Subless.Models;
 using SublessSignIn.Models;
@@ -122,6 +123,11 @@ namespace Subless.Services
         public IEnumerable<User> GetUsersByStripeIds(IEnumerable<string> customerId)
         {
             throw new NotImplementedException();
+        }
+
+        public string GetUserClaim(ClaimsPrincipal user)
+        {
+            return user.FindFirst("username")?.Value ?? user.FindFirst("cognito:username")?.Value;
         }
     }
 }
