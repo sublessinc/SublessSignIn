@@ -3,7 +3,7 @@ myHeaders.set('Cache-Control', 'no-store');
 var urlParams = new URLSearchParams(window.location.search);
 
 var baseURI = location.protocol + '//' + window.location.hostname + (location.port ? ':' + location.port : '') + window.location.pathname;
-var sublessURI = "http://localhost:7070";
+var sublessURI = "https://pay.subless.com";
 
 var config = {
     redirect_uri: baseURI,
