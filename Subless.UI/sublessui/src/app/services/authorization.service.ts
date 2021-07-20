@@ -1,6 +1,6 @@
 import { Injectable, OnInit } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ISettings } from '../models/ISettings';
 import { ITokenResponse } from '../models/ITokenResponse';
 import { IRedirect } from '../models/IRedirect';
@@ -10,24 +10,29 @@ import { OidcSecurityService } from 'angular-auth-oidc-client';
 @Injectable({
   providedIn: 'root'
 })
-export class AuthorizationService implements OnInit {
+export class AuthorizationService {
   private baseURI: string = '';
   private redirectURI: string = '';
   private logoutURI: string = '';
   private code_verifier: string = '';
+  private activation: string = '';
   constructor(
     private httpClient: HttpClient,
     private router: Router,
+    private route: ActivatedRoute,
     public oidcSecurityService: OidcSecurityService
   ) {
     this.baseURI = location.protocol + '//' + window.location.hostname + (location.port ? ':' + location.port : '');
     this.redirectURI = this.baseURI + "/login";
     this.logoutURI = this.baseURI + "/login";
+    this.route.queryParams.subscribe(params => {
+      this.activation = params['activation'];
+      if (this.activation) {
+        sessionStorage.setItem('activation', this.activation);
+      }
+    });
   }
 
-  ngOnInit() {
-
-  }
   getSettings() {
     return this.httpClient.get<ISettings>('/api/Authorization/settings');
   }
