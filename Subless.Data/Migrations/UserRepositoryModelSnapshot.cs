@@ -86,8 +86,7 @@ namespace Subless.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CognitoId")
-                        .IsUnique();
+                    b.HasIndex("CognitoId");
 
                     b.HasIndex("TimeStamp");
 
