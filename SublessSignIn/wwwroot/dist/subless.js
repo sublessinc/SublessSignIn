@@ -116,26 +116,26 @@ function init() {
     });
 }
 
-function login(scope, response_type) {
-
-    var use_popup = false;
-    if (!use_popup) {
-        mgr.signinRedirect({ scope: scope, response_type: response_type });
-    }
-    else {
-        mgr.signinPopup({ scope: scope, response_type: response_type }).then(function () {
-            log("Logged In");
+function sublessLogin() {
+    sessionStorage.removeItem("id_token");
+    sessionStorage.removeItem("access_token");
+    fetch(sublessURI + "/api/Authorization/settings")
+        .then(function (resp) {
+            handleUnauthorized(resp);
+            var json = resp.json().then(json => {
+                executeSublessLogin(json);
+            });
         });
-    }
 }
 
 function logout() {
     mgr.signoutRedirect();
 }
 
-function revoke() {
-    mgr.revokeAccessToken();
-}
+        fetch(sublessURI + "/api/Authorization/settings")
+            .then(function (resp) {
+                handleUnauthorized(resp);
+                var json = resp.json().then(json => {
 
 function log(data) {
     Array.prototype.forEach.call(arguments, function (msg) {
@@ -170,36 +170,31 @@ function handleCallback() {
             return result;
         }, {});
 
-        log(result);
-
-        window.history.replaceState({},
-            window.document.title,
-            window.location.origin + window.location.pathname);
-
-    }, function (error) {
-        log(error);
-    });
+function hitSubless() {
+    var token = sessionStorage.getItem('id_token');
+    if (token) {
+        var body =
+            fetch(sublessURI + "/api/hit", {
+                method: "POST",
+                headers: {
+                    "Authorization": "Bearer " + token,
+                    "Content-Type": "application/json",
+                },
+                body: window.location.href
+            }).then(response => {
+                handleUnauthorized(response);
+            });
+            
+    }
 }
 
+function handleUnauthorized(response) {
+    if (response.status === 401)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        sessionStorage.removeItem("id_token");
+        sessionStorage.removeItem("access_token");
+    }
+}
 
 sublessLoginCallback();
 hitSubless();
