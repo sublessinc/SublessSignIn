@@ -1,4 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Net.Mime;
+using System.Threading.Tasks;
+using CsvHelper;
+using CsvHelper.Configuration;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -55,6 +62,55 @@ namespace SublessSignIn.Controllers
             catch (UnauthorizedAccessException e)
             {
                 return Unauthorized("Not a creator account");
+            }
+        }
+
+        [HttpGet("stats")]
+        public ActionResult<IEnumerable<MontlyPaymentStats>> GetStats()
+        {
+            var cognitoId = userService.GetUserClaim(HttpContext.User);
+            if (cognitoId == null)
+            {
+                return Unauthorized();
+            }
+            try
+            {
+                var creator = _creatorService.GetCreatorByCognitoid(cognitoId);
+                return Ok(_creatorService.GetStatsForCreator(creator));
+
+            }
+            catch (UnauthorizedAccessException e)
+            {
+                return Unauthorized();
+            }
+        }
+
+        [HttpGet("statscsv")]
+        public async Task<ActionResult> GetStatsCsv()
+        {
+            var cognitoId = userService.GetUserClaim(HttpContext.User);
+            if (cognitoId == null)
+            {
+                return Unauthorized();
+            }
+            try
+            {
+                var creator = _creatorService.GetCreatorByCognitoid(cognitoId);
+                var stats = _creatorService.GetStatsForCreator(creator);
+                MemoryStream ms = new MemoryStream();
+                StreamWriter sw = new StreamWriter(ms);
+                using (var csv = new CsvWriter(sw, CultureInfo.InvariantCulture))
+                {
+                    csv.WriteRecords(stats);
+
+                    ms.Seek(0, SeekOrigin.Begin);
+                    return File(ms, MediaTypeNames.Text.Plain, $"CreatorStats.csv");
+                }
+
+            }
+            catch (UnauthorizedAccessException e)
+            {
+                return Unauthorized();
             }
         }
     }

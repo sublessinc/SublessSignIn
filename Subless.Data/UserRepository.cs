@@ -206,6 +206,11 @@ namespace Subless.Data
             PaymentAuditLogs.AddRange(logs);
             SaveChanges();
         }
+
+        public IEnumerable<Payment> GetPaymentsByPayeePayoneerId(string payoneerId)
+        {
+            return Payments.Where(x => x.Payee.PayoneerId == payoneerId);
+        }
         
         public DateTime GetLastPaymentDate()
         {
