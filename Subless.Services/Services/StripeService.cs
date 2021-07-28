@@ -116,12 +116,16 @@ namespace Subless.Services
             var cusomterIds = invoices.Select(invoice => invoice.CustomerId);
             var users = _userService.GetUsersFromStripeIds(cusomterIds);
             var payers = new List<Payer>();
+            var balanceTransactionService = new BalanceTransactionService(_client);
+            var chargeService = new ChargeService(_client);
             foreach (var invoice in invoices)
             {
+                var charge = chargeService.Get(invoice.ChargeId);
+                var balanceTrans = balanceTransactionService.Get(charge.BalanceTransactionId);
                 payers.Add(new Payer
                 {
                     UserId = users.Single(x => x.StripeCustomerId == invoice.CustomerId).Id,
-                    Payment = invoice.AmountPaid
+                    Payment = balanceTrans.Net
                 });
             }
             return payers;
