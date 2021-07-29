@@ -62,9 +62,12 @@ namespace Subless.Data
             SaveChanges();
         }
 
-        public IEnumerable<Hit> GetHitsByDate(DateTime startDate, DateTime endDate, string cognitoId)
+        public IEnumerable<Hit> GetValidHitsByDate(DateTime startDate, DateTime endDate, string cognitoId)
         {
-            return Hits.Where(hit => hit.CognitoId == cognitoId && hit.TimeStamp > startDate && hit.TimeStamp <= endDate).ToList();
+            return Hits.Where(hit => hit.CognitoId == cognitoId 
+            && hit.CreatorId != Guid.Empty
+            && hit.TimeStamp > startDate 
+            && hit.TimeStamp <= endDate).ToList();
         }
 
         public Creator GetCreatorByActivationCode(Guid code)

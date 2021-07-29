@@ -119,6 +119,8 @@ namespace Subless.Services
             var cusomterIds = invoices.Select(invoice => invoice.CustomerId);
             var users = _userService.GetUsersFromStripeIds(cusomterIds);
             var payers = new List<Payer>();
+            var balanceTransactionService = new BalanceTransactionService(_client);
+            var chargeService = new ChargeService(_client);
             foreach (var invoice in invoices)
             {
                 var user = users.FirstOrDefault(x => x.StripeCustomerId == invoice.CustomerId);
@@ -128,12 +130,15 @@ namespace Subless.Services
                 }
                 else
                 {
+                    var charge = chargeService.Get(invoice.ChargeId);
+                    var balanceTrans = balanceTransactionService.Get(charge.BalanceTransactionId);
                     payers.Add(new Payer
                     {
-                        UserId = user.Id,
-                        Payment = invoice.AmountPaid
+                        UserId = users.Single(x => x.StripeCustomerId == invoice.CustomerId).Id,
+                        Payment = balanceTrans.Net
                     });
                 }
+  
             }
             return payers;
         }
