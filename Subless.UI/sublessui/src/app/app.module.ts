@@ -16,6 +16,7 @@ import { environment } from '../environments/environment';
 import { CreatorstatsComponent } from './creatorstats/creatorstats.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import {MatSelectModule} from '@angular/material/select';
+import { IdComponent } from './id/id.component';
 
 
 
@@ -31,6 +32,7 @@ import {MatSelectModule} from '@angular/material/select';
     LogoutComponent,
     LoggedOutComponent,
     CreatorstatsComponent,
+    IdComponent,
   ],
   imports: [
     BrowserModule,

@@ -13,5 +13,6 @@ namespace Subless.Models
         public Uri Site { get; set; }
         public string UserPattern { get; set; }
         public ICollection<Creator> Creators { get; set; }
+        public List<Guid> AdminUsers { get; set; }
     }
 }
