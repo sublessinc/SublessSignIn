@@ -53,7 +53,7 @@ namespace Subless.Services
         public IEnumerable<Hit> GetHitsByDate(DateTime startDate, DateTime endDate, Guid userId)
         {
             var user = _userService.GetUser(userId);
-            return _userRepository.GetHitsByDate(startDate, endDate, user.CognitoId);
+            return _userRepository.GetValidHitsByDate(startDate, endDate, user.CognitoId);
         }
 
         public Guid? GetCreatorFromPartnerAndUri(Uri uri, Partner partner)

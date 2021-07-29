@@ -80,5 +80,30 @@ namespace Subless.Services
             _userRepository.UpdateCreator(currentCreator);
             return currentCreator;
         }
+
+
+        public IEnumerable<MontlyPaymentStats> GetStatsForCreator(Creator creator)
+        {
+            if (creator is null)
+            {
+                throw new ArgumentNullException(nameof(creator));
+            }
+            var payments = _userRepository.GetPaymentsByPayeePayoneerId(creator.PayoneerId);
+            var paymentStats = new Dictionary<DateTime, MontlyPaymentStats>();
+            foreach (var payment in payments)
+            {
+                var paymentMonth = new DateTime(payment.DateSent.Year, payment.DateSent.Month, 1);
+                if (!paymentStats.Keys.Any(x=> new DateTime(x.Year, x.Month, 1) == paymentMonth))
+                {
+                    paymentStats.Add(paymentMonth, new MontlyPaymentStats()
+                    {
+                        MonthStartDay = paymentMonth,
+                    });
+                }
+                paymentStats[paymentMonth].DollarsPaid += (int)payment.Amount;
+                paymentStats[paymentMonth].Payers += 1;
+            } 
+            return paymentStats.Values.OrderBy(x=> x.MonthStartDay);
+        }
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Stripe;
 using Stripe.Checkout;
@@ -14,11 +15,13 @@ namespace Subless.Services
         private readonly IStripeClient _client;
         private readonly IOptions<StripeConfig> _stripeConfig;
         private readonly IUserService _userService;
+        private readonly ILogger _logger;
 
-        public StripeService(IOptions<StripeConfig> stripeConfig, IUserService userService)
+        public StripeService(IOptions<StripeConfig> stripeConfig, IUserService userService, ILoggerFactory loggerFactory)
         {
             _stripeConfig = stripeConfig ?? throw new ArgumentNullException(nameof(stripeConfig));
             _userService = userService ?? throw new ArgumentNullException(nameof(userService));
+            _logger = loggerFactory?.CreateLogger<StripeService>() ?? throw new ArgumentNullException(nameof(loggerFactory));
             _client = new StripeClient(_stripeConfig.Value.SecretKey ?? throw new ArgumentNullException(nameof(_stripeConfig.Value.SecretKey)));
         }
         public async Task<CreateCheckoutSessionResponse> CreateCheckoutSession(string priceId, string cognitoId)
@@ -120,13 +123,22 @@ namespace Subless.Services
             var chargeService = new ChargeService(_client);
             foreach (var invoice in invoices)
             {
-                var charge = chargeService.Get(invoice.ChargeId);
-                var balanceTrans = balanceTransactionService.Get(charge.BalanceTransactionId);
-                payers.Add(new Payer
+                var user = users.FirstOrDefault(x => x.StripeCustomerId == invoice.CustomerId);
+                if (user == null)
                 {
-                    UserId = users.Single(x => x.StripeCustomerId == invoice.CustomerId).Id,
-                    Payment = balanceTrans.Net
-                });
+                    _logger.LogCritical($"User payment detected without corresponding user in subless system. CustomerId: {invoice.CustomerId} Email: {invoice.CustomerEmail}");
+                }
+                else
+                {
+                    var charge = chargeService.Get(invoice.ChargeId);
+                    var balanceTrans = balanceTransactionService.Get(charge.BalanceTransactionId);
+                    payers.Add(new Payer
+                    {
+                        UserId = users.Single(x => x.StripeCustomerId == invoice.CustomerId).Id,
+                        Payment = balanceTrans.Net
+                    });
+                }
+  
             }
             return payers;
         }
