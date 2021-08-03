@@ -37,5 +37,6 @@ namespace Subless.Data
         Creator GetCreatorByUsernameAndPartnerId(string username, Guid partnerId);
         Partner GetPartnerByUri(Uri uri);
         IEnumerable<Payment> GetPaymentsByPayeePayoneerId(string payoneerId);
+        IEnumerable<Partner> GetPartnerByAdminId(Guid id);
     }
 }

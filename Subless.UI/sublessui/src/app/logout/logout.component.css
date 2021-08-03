@@ -1,0 +1,9 @@
+.navButton {
+    z-index:4;
+    margin: 10px;
+}
+.navContainer {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: flex-end;
+}

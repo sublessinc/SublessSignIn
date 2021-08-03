@@ -154,6 +154,11 @@ namespace Subless.Data
             return Partners.Find(id);
         }
 
+        public IEnumerable<Partner> GetPartnerByAdminId(Guid id)
+        {
+            return Partners.Where(x => x.AdminUsers.Contains(id));
+        }
+
         public Partner GetPartnerByCognitoId(string partnerClientId)
         {
             return Partners.FirstOrDefault(x => x.CognitoAppClientId == partnerClientId);

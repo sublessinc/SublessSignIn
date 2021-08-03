@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Subless.Models;
 using Subless.Services;
+using SublessSignIn.Models;
 
 namespace SublessSignIn.Controllers
 {
@@ -16,12 +17,14 @@ namespace SublessSignIn.Controllers
     public class PartnerController : ControllerBase
     {
         private readonly IPartnerService _partnerService;
+        private readonly IUserService _userService;
         private readonly ILogger _logger;
         //this is a weird place to get this from, but it'll work. Probs split it out later
         private readonly StripeConfig _settings;
-        public PartnerController(IPartnerService partnerService, IOptions<StripeConfig> authSettings, ILoggerFactory loggerFactory)
+        public PartnerController(IPartnerService partnerService, IUserService userService, IOptions<StripeConfig> authSettings, ILoggerFactory loggerFactory)
         {
             _partnerService = partnerService ?? throw new ArgumentNullException(nameof(partnerService));
+            _userService = userService;
             _logger = loggerFactory?.CreateLogger<PartnerController>() ?? throw new ArgumentNullException(nameof(loggerFactory));
             _settings = authSettings.Value ?? throw new ArgumentNullException(nameof(authSettings));
 
@@ -83,5 +86,19 @@ namespace SublessSignIn.Controllers
             return Ok();
         }
 
+        [HttpGet("config")]
+        public ActionResult GetPartner()
+        {
+            var userClaim = _userService.GetUserClaim(this.User);
+            var user = _userService.GetUserByCognitoId(userClaim);
+            var partners = _partnerService.GetPartnerByAdminId(user.Id);
+            if (!partners.Any())
+            {
+                return Unauthorized("Attemped to access forbidden zone");
+            }
+            return Ok(partners.Select(x => x.GetViewModel()));
+        }
+
+        
     }
 }

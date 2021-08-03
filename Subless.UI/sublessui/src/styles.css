@@ -54,11 +54,6 @@ html {
       flex-direction: row;
   }
   
-  #logout {
-      z-index:4;
-      margin: 10px;
-      align-self: flex-start;
-  }
   /* Layout */
   .sr-root {
     align-self: flex-end;

@@ -29,6 +29,11 @@ namespace Subless.Services
             return _userRepository.GetPartner(id);
         }
 
+        public IEnumerable<Partner> GetPartnerByAdminId(Guid adminId)
+        {
+            return _userRepository.GetPartnerByAdminId(adminId);
+        }
+
         public Guid GenerateCreatorActivationLink(string cognitoClientId, string creatorUsername)
         {
 

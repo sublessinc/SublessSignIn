@@ -15,8 +15,10 @@ import { AuthInterceptor, AuthModule, LogLevel } from 'angular-auth-oidc-client'
 import { environment } from '../environments/environment';
 import { CreatorstatsComponent } from './creatorstats/creatorstats.component';
 import { ReactiveFormsModule } from '@angular/forms';
-import {MatSelectModule} from '@angular/material/select';
+import { MatSelectModule } from '@angular/material/select';
 import { IdComponent } from './id/id.component';
+import { PayoneerComponent } from './payoneer/payoneer.component';
+import { PartnerprofileComponent } from './partnerprofile/partnerprofile.component';
 
 
 
@@ -33,6 +35,8 @@ import { IdComponent } from './id/id.component';
     LoggedOutComponent,
     CreatorstatsComponent,
     IdComponent,
+    PayoneerComponent,
+    PartnerprofileComponent,
   ],
   imports: [
     BrowserModule,
@@ -51,7 +55,7 @@ import { IdComponent } from './id/id.component';
         silentRenew: true,
         useRefreshToken: true,
         logLevel: LogLevel.Error,
-        secureRoutes: ['/api/Creator', '/api/Checkout/', '/api/Authorization'],
+        secureRoutes: ['/api/Creator', '/api/Checkout/', '/api/Authorization', '/api/Partner', '/api/Admin'],
       },
     }),
   ],
