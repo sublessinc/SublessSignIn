@@ -1,10 +1,9 @@
+<div class="container">
+    <app-nav class="header"></app-nav>
 <div id="bodyWrapper">
     <div class="subless-background"></div>
     <div class="sr-root">
         <div class="sr-main-post-checkout">
-            <header class="sr-header">
-                <div class="sr-header__logo"></div>
-            </header>
             <div class="sr-payment-summary completed-view">
                 <h1>Your profile</h1>
 
@@ -13,7 +12,8 @@
                 <button (click)='returnToStripe()'>Manage Billing</button>
 
             </div>
+            <app-id></app-id>
         </div>
-        <app-logout></app-logout>
     </div>
+</div>
 </div>

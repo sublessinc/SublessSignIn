@@ -29,6 +29,19 @@ namespace Subless.Services
             return _userRepository.GetPartner(id);
         }
 
+        public Partner GetPartnerByAdminId(Guid adminId)
+        {
+            return _userRepository.GetPartnerByAdminId(adminId);
+        }
+
+        public Partner UpdatePartnerPayoneerId(Guid partnerId, string payoneerId)
+        {
+            var partner = _userRepository.GetPartner(partnerId);
+            partner.PayoneerId = payoneerId;
+            _userRepository.UpdatePartner(partner);
+            return partner;
+        }
+
         public Guid GenerateCreatorActivationLink(string cognitoClientId, string creatorUsername)
         {
 

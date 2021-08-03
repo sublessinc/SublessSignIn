@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Subless.Models;
 using Subless.Services;
+using SublessSignIn.Models;
 
 namespace SublessSignIn.Controllers
 {
@@ -16,12 +17,14 @@ namespace SublessSignIn.Controllers
     public class PartnerController : ControllerBase
     {
         private readonly IPartnerService _partnerService;
+        private readonly IUserService _userService;
         private readonly ILogger _logger;
         //this is a weird place to get this from, but it'll work. Probs split it out later
         private readonly StripeConfig _settings;
-        public PartnerController(IPartnerService partnerService, IOptions<StripeConfig> authSettings, ILoggerFactory loggerFactory)
+        public PartnerController(IPartnerService partnerService, IUserService userService, IOptions<StripeConfig> authSettings, ILoggerFactory loggerFactory)
         {
             _partnerService = partnerService ?? throw new ArgumentNullException(nameof(partnerService));
+            _userService = userService;
             _logger = loggerFactory?.CreateLogger<PartnerController>() ?? throw new ArgumentNullException(nameof(loggerFactory));
             _settings = authSettings.Value ?? throw new ArgumentNullException(nameof(authSettings));
 
@@ -82,6 +85,34 @@ namespace SublessSignIn.Controllers
             _partnerService.UpdatePartner(partner);
             return Ok();
         }
+
+        [HttpGet("config")]
+        public ActionResult<PartnerResponse> GetPartner()
+        {
+            var userClaim = _userService.GetUserClaim(this.User);
+            var user = _userService.GetUserByCognitoId(userClaim);
+            var partner = _partnerService.GetPartnerByAdminId(user.Id);
+            if (partner == null)
+            {
+                return Unauthorized("Attemped to access forbidden zone");
+            }
+            return Ok(partner.GetViewModel());
+        }
+
+        [HttpPut("payoneerId")]
+        public ActionResult<PartnerResponse> UpdatePayoneerId([FromQuery] string payoneerId)
+        {
+            var userClaim = _userService.GetUserClaim(this.User);
+            var user = _userService.GetUserByCognitoId(userClaim);
+            if (user == null || !user.Partners.Any())
+            {
+                return Unauthorized("Attemped to access forbidden zone");
+            }
+            var partner = _partnerService.UpdatePartnerPayoneerId(user.Partners.First().Id, payoneerId);
+            
+            return Ok(partner.GetViewModel());
+        }
+
 
     }
 }

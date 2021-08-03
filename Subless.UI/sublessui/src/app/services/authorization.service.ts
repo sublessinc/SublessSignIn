@@ -36,6 +36,11 @@ export class AuthorizationService {
   getSettings() {
     return this.httpClient.get<ISettings>('/api/Authorization/settings');
   }
+  
+  getRoutes() {
+    return this.httpClient.get<number[]>('/api/Authorization/routes');
+  }
+
   checkLogin() {
     this.oidcSecurityService.checkAuth().subscribe(({ isAuthenticated, userData, accessToken, idToken }) => {
       if (isAuthenticated) {
