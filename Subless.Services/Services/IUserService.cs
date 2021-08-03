@@ -12,7 +12,6 @@ namespace Subless.Services
         void AddStripeSessionId(string cognitoId, string stripeId);
         string GetStripeIdFromCognitoId(string cognitoId);
         User GetUserByCognitoId(string cognitoId);
-        Redirection LoginWorkflow(string cognitoId, string activation);
         IEnumerable<User> GetAdmins();
         void SetUserAdmin(Guid userId);
         bool IsUserAdmin(string cognitoId);
@@ -20,6 +19,5 @@ namespace Subless.Services
         IEnumerable<User> GetUsersFromStripeIds(IEnumerable<string> customerIds);
         User GetUser(Guid id);
         string GetUserClaim(ClaimsPrincipal user);
-        IEnumerable<RedirectionPath> GetAllowedPaths(string cognitoId);
     }
 }
