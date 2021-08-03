@@ -8,7 +8,7 @@ import { LoginComponent } from './login/login.component';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { UserprofileComponent } from './userprofile/userprofile.component';
 import { CreatorprofileComponent } from './creatorprofile/creatorprofile.component';
-import { LogoutComponent } from './logout/logout.component';
+import { NavComponent } from './nav/nav.component';
 import { LoggedOutComponent } from './logged-out/logged-out.component';
 import { FormsModule } from '@angular/forms';
 import { AuthInterceptor, AuthModule, LogLevel } from 'angular-auth-oidc-client';
@@ -32,7 +32,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
     LoginComponent,
     UserprofileComponent,
     CreatorprofileComponent,
-    LogoutComponent,
+    NavComponent,
     LoggedOutComponent,
     CreatorstatsComponent,
     IdComponent,

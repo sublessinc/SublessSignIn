@@ -3,11 +3,11 @@ import { Router } from '@angular/router';
 import { AuthorizationService } from '../services/authorization.service';
 
 @Component({
-  selector: 'app-logout',
-  templateUrl: './logout.component.html',
-  styleUrls: ['./logout.component.css']
+  selector: 'app-nav',
+  templateUrl: './nav.component.html',
+  styleUrls: ['./nav.component.css']
 })
-export class LogoutComponent implements OnInit {
+export class NavComponent implements OnInit {
 
   public user: boolean = false;
   public creator: boolean = false;
