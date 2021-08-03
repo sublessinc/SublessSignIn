@@ -1,9 +1,14 @@
 .navButton {
-    z-index:4;
     margin: 10px;
 }
-.navContainer {
-    display: flex;
-    flex-flow: row nowrap;
-    justify-content: flex-end;
+.fill-remaining-space {
+    /* This fills the remaining space, by using flexbox. 
+       Every toolbar row uses a flexbox row layout. */
+    flex: 1 1 auto;
+  }
+
+.navBar{
+    z-index:4;
+    position:relative;
+
 }

@@ -1,5 +1,6 @@
 
 using System;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
@@ -44,6 +45,18 @@ namespace SublessSignIn.Controllers
                 return Unauthorized();
             }
             return _userService.LoginWorkflow(cognitoId, Activation);
+        }
+
+        [Authorize]
+        [HttpGet("routes")]
+        public ActionResult<IEnumerable<RedirectionPath>> Routes()
+        {
+            var cognitoId = _userService.GetUserClaim(HttpContext.User);
+            if (cognitoId == null)
+            {
+                return Unauthorized();
+            }
+            return Ok(_userService.GetAllowedPaths(cognitoId));
         }
     }
 }

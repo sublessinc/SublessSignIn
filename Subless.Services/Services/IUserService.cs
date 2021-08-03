@@ -20,5 +20,6 @@ namespace Subless.Services
         IEnumerable<User> GetUsersFromStripeIds(IEnumerable<string> customerIds);
         User GetUser(Guid id);
         string GetUserClaim(ClaimsPrincipal user);
+        IEnumerable<RedirectionPath> GetAllowedPaths(string cognitoId);
     }
 }

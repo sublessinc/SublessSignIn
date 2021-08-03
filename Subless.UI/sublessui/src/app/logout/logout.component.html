@@ -1,5 +1,21 @@
-<div class="navContainer">
-<!-- <button id="creator"class="navButton" (click)="creator()">Creator Profile</button>
-<button id="partner"class="navButton" (click)="partner()">Partner Profile</button> -->
-<button id="logout" class="navButton" (click)="logout()">Logout</button>
-</div>
+
+<mat-toolbar class="navBar">
+  <span>
+    <div class="sr-header__logo"></div>
+  </span>
+  <span>
+    <button *ngIf="creator" id="creator"class="navButton" routerLink="/creator-profile">Creator Profile</button>
+  </span>
+  <span>
+    <button *ngIf="partner" id="partner"class="navButton" routerLink="/partner-profile">Partner Profile</button> 
+  </span>
+  <span>
+    <button *ngIf="user" id="user"class="navButton" routerLink="/user-profile">User Profile</button> 
+  </span>
+    <!-- This fills the remaining space of the current row -->
+    <span class="fill-remaining-space"></span>
+  
+    <span>
+      <button id="logout" class="navButton" (click)="logout()">Logout</button>
+    </span>
+  </mat-toolbar>

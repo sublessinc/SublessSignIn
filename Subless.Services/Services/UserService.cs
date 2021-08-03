@@ -58,6 +58,29 @@ namespace Subless.Services
             };
         }
 
+        public IEnumerable<RedirectionPath> GetAllowedPaths(string cognitoId)
+        {
+            var paths = new List<RedirectionPath>();
+            var user = _userRepo.GetUserByCognitoId(cognitoId);
+            if (user != null && user.StripeSessionId != null) 
+            {
+                paths.Add(RedirectionPath.Profile);
+            }
+            if (user != null && user.StripeSessionId == null)
+            {
+                paths.Add(RedirectionPath.Payment);
+            }
+            if (user != null && user.Creators.Any())
+            {
+                paths.Add(RedirectionPath.ActivatedCreator);
+            }
+            if (user != null && user.Partners.Any())
+            {
+                paths.Add(RedirectionPath.Partner);
+            }
+            return paths;
+        }
+
         public string GetStripeIdFromCognitoId(string cognitoId)
         {
             return _userRepo.GetUserByCognitoId(cognitoId).StripeSessionId;

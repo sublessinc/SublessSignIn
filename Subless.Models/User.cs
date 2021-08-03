@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
 namespace Subless.Models
@@ -13,5 +14,7 @@ namespace Subless.Models
         public string StripeSessionId { get; set; }
         public string StripeCustomerId { get; set; }
         public ICollection<Creator> Creators { get; set; }
+        [ForeignKey("Admin")]
+        public ICollection<Partner> Partners { get; set; }
     }
 }

@@ -87,18 +87,32 @@ namespace SublessSignIn.Controllers
         }
 
         [HttpGet("config")]
-        public ActionResult GetPartner()
+        public ActionResult<PartnerResponse> GetPartner()
         {
             var userClaim = _userService.GetUserClaim(this.User);
             var user = _userService.GetUserByCognitoId(userClaim);
-            var partners = _partnerService.GetPartnerByAdminId(user.Id);
-            if (!partners.Any())
+            var partner = _partnerService.GetPartnerByAdminId(user.Id);
+            if (partner == null)
             {
                 return Unauthorized("Attemped to access forbidden zone");
             }
-            return Ok(partners.Select(x => x.GetViewModel()));
+            return Ok(partner.GetViewModel());
         }
 
-        
+        [HttpPut("payoneerId")]
+        public ActionResult<PartnerResponse> UpdatePayoneerId([FromQuery] string payoneerId)
+        {
+            var userClaim = _userService.GetUserClaim(this.User);
+            var user = _userService.GetUserByCognitoId(userClaim);
+            if (user == null || !user.Partners.Any())
+            {
+                return Unauthorized("Attemped to access forbidden zone");
+            }
+            var partner = _partnerService.UpdatePartnerPayoneerId(user.Partners.First().Id, payoneerId);
+            
+            return Ok(partner.GetViewModel());
+        }
+
+
     }
 }

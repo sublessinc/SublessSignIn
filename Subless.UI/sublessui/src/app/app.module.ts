@@ -19,6 +19,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { IdComponent } from './id/id.component';
 import { PayoneerComponent } from './payoneer/payoneer.component';
 import { PartnerprofileComponent } from './partnerprofile/partnerprofile.component';
+import { MatToolbarModule } from '@angular/material/toolbar';
 
 
 
@@ -43,7 +44,8 @@ import { PartnerprofileComponent } from './partnerprofile/partnerprofile.compone
     AppRoutingModule,
     HttpClientModule,
     ReactiveFormsModule,
-        FormsModule,
+    MatToolbarModule,
+    FormsModule,
     AuthModule.forRoot({
       config: {
         authority: environment.authority,

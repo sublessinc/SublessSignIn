@@ -9,21 +9,21 @@ import { AuthorizationService } from '../services/authorization.service';
 })
 export class LogoutComponent implements OnInit {
 
+  public user: boolean = false;
+  public creator: boolean = false;
+  public partner: boolean = false;
   constructor(
     private router: Router,
     private authService: AuthorizationService
   ) { }
 
   ngOnInit(): void {
-    
-  }
-
-  partner(): void {
-    this.router.navigateByUrl('/partner-profile');
-  }
-
-  creator(): void {
-    this.router.navigateByUrl('/creator-profile');
+    this.authService.getRoutes().subscribe({
+      next: (routes: number[]) => {
+        this.user = routes.includes(2);
+        this.creator = routes.includes(3);
+        this.partner = routes.includes(4);
+      }});
   }
 
   logout() {

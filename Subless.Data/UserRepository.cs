@@ -30,7 +30,7 @@ namespace Subless.Data
 
         public User GetUserByCognitoId(string id)
         {
-            return Users.Include(i => i.Creators).FirstOrDefault(x => x.CognitoId == id);
+            return Users.Include(i => i.Creators).Include(i => i.Partners).FirstOrDefault(x => x.CognitoId == id);
         }
 
         public IEnumerable<User> GetUsersByCustomerIds(IEnumerable<string> customerIds)
@@ -154,9 +154,9 @@ namespace Subless.Data
             return Partners.Find(id);
         }
 
-        public IEnumerable<Partner> GetPartnerByAdminId(Guid id)
+        public Partner GetPartnerByAdminId(Guid id)
         {
-            return Partners.Where(x => x.AdminUsers.Contains(id));
+            return Partners.FirstOrDefault(x => x.Admin == id);
         }
 
         public Partner GetPartnerByCognitoId(string partnerClientId)

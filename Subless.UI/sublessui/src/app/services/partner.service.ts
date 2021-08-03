@@ -11,6 +11,10 @@ export class PartnerService {
   constructor(private httpClient: HttpClient) { }
 
   getPartner(): Observable<IPartner> {
-    return this.httpClient.get<IPartner>('/api/Partner');
+    return this.httpClient.get<IPartner>('/api/Partner/config');
+  }
+
+  updatePayoneer(payoneer: string): Observable<IPartner> {
+    return this.httpClient.put<IPartner>('/api/Partner/payoneerId?payoneerId='+payoneer, null);
   }
 }
