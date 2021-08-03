@@ -17,7 +17,7 @@ namespace Subless.Services
         private readonly ILogger _logger;
 
         public HitService(
-            IUserService userService, 
+            IUserService userService,
             IUserRepository userRepository,
             ICreatorService creatorService,
             IPartnerService partnerService,
@@ -66,8 +66,8 @@ namespace Subless.Services
             ///www.partner.com/creator/pictures; www.partner.com/profile/creator; www.partner.com/stories/creator/
             ///www.partner.com\/profile\/?.*\.php
             var patterns = partner.UserPattern.Split(";");
-            
-            
+
+
             // iterate through the possible patterns
             foreach (var pattern in patterns)
             {
@@ -76,7 +76,7 @@ namespace Subless.Services
                 {
                     continue;
                 }
-                var regexPattern = "(?:"+pattern.Replace(creatorPlaceholder, ")([^/]*)(?:") +")";
+                var regexPattern = "(?:" + pattern.Replace(creatorPlaceholder, ")([^/]*)(?:") + ")";
                 var matches = Regex.Matches(uri.ToString(), regexPattern);
                 if (!matches.Any())
                 {
@@ -86,7 +86,7 @@ namespace Subless.Services
                 {
                     foreach (Group group in match.Groups)
                     {
-                        if (group.Value != uri.ToString() && !string.IsNullOrWhiteSpace(group.Value) && !PartnerService.InvalidUsernameCharacters.Any(x=> group.Value.Contains(x)))
+                        if (group.Value != uri.ToString() && !string.IsNullOrWhiteSpace(group.Value) && !PartnerService.InvalidUsernameCharacters.Any(x => group.Value.Contains(x)))
                         {
                             return _creatorService.GetCachedCreatorFromPartnerAndUsername(group.Value, partner.Id)?.Id;
                         }
@@ -94,6 +94,6 @@ namespace Subless.Services
                 }
             }
             return null;
-        }   
+        }
     }
 }

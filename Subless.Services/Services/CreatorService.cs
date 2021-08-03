@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Caching;
 using Microsoft.Extensions.Caching.Memory;
 using Subless.Data;
 using Subless.Models;
@@ -93,7 +92,7 @@ namespace Subless.Services
             foreach (var payment in payments)
             {
                 var paymentMonth = new DateTime(payment.DateSent.Year, payment.DateSent.Month, 1);
-                if (!paymentStats.Keys.Any(x=> new DateTime(x.Year, x.Month, 1) == paymentMonth))
+                if (!paymentStats.Keys.Any(x => new DateTime(x.Year, x.Month, 1) == paymentMonth))
                 {
                     paymentStats.Add(paymentMonth, new MontlyPaymentStats()
                     {
@@ -102,8 +101,8 @@ namespace Subless.Services
                 }
                 paymentStats[paymentMonth].DollarsPaid += (int)payment.Amount;
                 paymentStats[paymentMonth].Payers += 1;
-            } 
-            return paymentStats.Values.OrderBy(x=> x.MonthStartDay);
+            }
+            return paymentStats.Values.OrderBy(x => x.MonthStartDay);
         }
     }
 }

@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Subless.Data;
@@ -14,7 +10,7 @@ namespace Subless.Tests
 {
     public class HitService_Tests
     {
-        
+
         [Fact]
         public void GetCreatorFromPartnerAndUri_WithNoMatchingPattern_ReturnsNull()
         {
@@ -26,7 +22,7 @@ namespace Subless.Tests
             var creator = sut.GetCreatorFromPartnerAndUri(uri, ValidPartner());
 
             //assert
-            Assert.Null(creator);                
+            Assert.Null(creator);
         }
 
         [Fact]

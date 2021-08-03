@@ -64,9 +64,9 @@ namespace Subless.Data
 
         public IEnumerable<Hit> GetValidHitsByDate(DateTime startDate, DateTime endDate, string cognitoId)
         {
-            return Hits.Where(hit => hit.CognitoId == cognitoId 
+            return Hits.Where(hit => hit.CognitoId == cognitoId
             && hit.CreatorId != Guid.Empty
-            && hit.TimeStamp > startDate 
+            && hit.TimeStamp > startDate
             && hit.TimeStamp <= endDate).ToList();
         }
 
@@ -219,14 +219,14 @@ namespace Subless.Data
         {
             return Payments.Where(x => x.Payee.PayoneerId == payoneerId);
         }
-        
+
         public DateTime GetLastPaymentDate()
         {
             if (!PaymentAuditLogs.Any())
             {
                 return new DateTime();
             }
-            return PaymentAuditLogs.Max(x=>x.DatePaid);
+            return PaymentAuditLogs.Max(x => x.DatePaid);
         }
     }
 }

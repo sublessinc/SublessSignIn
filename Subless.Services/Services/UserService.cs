@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
 using Subless.Data;
 using Subless.Models;
-using SublessSignIn.Models;
 
 namespace Subless.Services
 {
@@ -18,7 +16,7 @@ namespace Subless.Services
             _creatorService = creatorService ?? throw new ArgumentNullException(nameof(creatorService));
         }
 
-        
+
 
         public string GetStripeIdFromCognitoId(string cognitoId)
         {
