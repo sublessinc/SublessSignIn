@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Security.Claims;
 using Subless.Models;
-using SublessSignIn.Models;
 
 namespace Subless.Services
 {

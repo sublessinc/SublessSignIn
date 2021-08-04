@@ -109,7 +109,7 @@ namespace SublessSignIn.Controllers
                 return Unauthorized("Attemped to access forbidden zone");
             }
             var partner = _partnerService.UpdatePartnerPayoneerId(user.Partners.First().Id, payoneerId);
-            
+
             return Ok(partner.GetViewModel());
         }
 

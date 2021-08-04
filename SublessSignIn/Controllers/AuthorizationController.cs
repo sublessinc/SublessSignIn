@@ -23,8 +23,8 @@ namespace SublessSignIn.Controllers
         private readonly IAuthService authorizationService;
 
         public AuthorizationController(
-            ILogger<AuthorizationController> logger, 
-            IOptions<AuthSettings> authSettings, 
+            ILogger<AuthorizationController> logger,
+            IOptions<AuthSettings> authSettings,
             IUserService userService,
             IAuthService authorizationService
             )

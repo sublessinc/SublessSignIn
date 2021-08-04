@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Caching;
 using Microsoft.Extensions.Caching.Memory;
 using Subless.Data;
 using Subless.Models;
@@ -91,7 +89,7 @@ namespace Subless.Services
         }
 
         public Partner GetCachedParnterByUri(Uri uri)
-        {           
+        {
             if (cache.TryGetValue(uri.ToString(), out Partner partner))
             {
                 return (Partner)cache.Get(uri.ToString());

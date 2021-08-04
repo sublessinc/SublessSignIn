@@ -241,7 +241,7 @@ namespace Subless.Tests
         {
             //arrange
             var sut = CalculatorServiceBuilder(creatorService: CreatorServicePayoneerMatcherBuilder());
-            var creator1 = new KeyValuePair<Guid, int> (Guid.NewGuid(), 33);
+            var creator1 = new KeyValuePair<Guid, int>(Guid.NewGuid(), 33);
             var creator2 = new KeyValuePair<Guid, int>(Guid.NewGuid(), 22);
             var creator3 = new KeyValuePair<Guid, int>(Guid.NewGuid(), 11);
             var creator4 = new KeyValuePair<Guid, int>(Guid.NewGuid(), 44);
@@ -542,7 +542,7 @@ namespace Subless.Tests
         private Mock<IPartnerService> PartnerServiceCreatorMatcherBuilder(Dictionary<Guid, List<Guid>> partners)
         {
             var service = new Mock<IPartnerService>();
-            service.Setup(x => x.GetPartner(It.IsAny<Guid>())).Returns<Guid>(x=> new Partner() { PayoneerId = x.ToString() });
+            service.Setup(x => x.GetPartner(It.IsAny<Guid>())).Returns<Guid>(x => new Partner() { PayoneerId = x.ToString() });
             return service;
         }
     }
