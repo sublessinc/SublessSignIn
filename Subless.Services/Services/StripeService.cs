@@ -75,6 +75,19 @@ namespace Subless.Services
             return customer;
         }
 
+        public bool CustomerHasPaid(string cognitoId)
+        {
+            var user = _userService.GetUserByCognitoId(cognitoId);
+            var service = new SessionService(_client);
+
+            var session = service.Get(user.StripeSessionId);
+            if (session.PaymentStatus == "paid")
+            {
+                return true;
+            }
+            return false;
+        }
+
         public async Task<Stripe.BillingPortal.Session> GetCustomerPortalLink(string cognitoId)
         {
             // TODO: Switch this to loading the session ID based on the cognito user id

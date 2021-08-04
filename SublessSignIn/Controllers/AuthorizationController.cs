@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Subless.Models;
 using Subless.Services;
+using Subless.Services.Services;
 using SublessSignIn.Models;
 
 namespace SublessSignIn.Controllers
@@ -19,12 +20,24 @@ namespace SublessSignIn.Controllers
         private readonly ILogger<AuthorizationController> _logger;
         private readonly AuthSettings _authSettings;
         private readonly IUserService _userService;
+        private readonly IAuthService authorizationService;
 
-        public AuthorizationController(ILogger<AuthorizationController> logger, IOptions<AuthSettings> authSettings, IUserService userService)
+        public AuthorizationController(
+            ILogger<AuthorizationController> logger, 
+            IOptions<AuthSettings> authSettings, 
+            IUserService userService,
+            IAuthService authorizationService
+            )
         {
-            _logger = logger;
+            if (authSettings is null)
+            {
+                throw new ArgumentNullException(nameof(authSettings));
+            }
+
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _authSettings = authSettings.Value ?? throw new ArgumentNullException(nameof(authSettings));
             _userService = userService ?? throw new ArgumentNullException(nameof(userService));
+            this.authorizationService = authorizationService ?? throw new ArgumentNullException(nameof(authorizationService));
         }
 
         [HttpGet("settings")]
@@ -44,7 +57,7 @@ namespace SublessSignIn.Controllers
             {
                 return Unauthorized();
             }
-            return _userService.LoginWorkflow(cognitoId, Activation);
+            return authorizationService.LoginWorkflow(cognitoId, Activation);
         }
 
         [Authorize]
@@ -56,7 +69,7 @@ namespace SublessSignIn.Controllers
             {
                 return Unauthorized();
             }
-            return Ok(_userService.GetAllowedPaths(cognitoId));
+            return Ok(authorizationService.GetAllowedPaths(cognitoId));
         }
     }
 }

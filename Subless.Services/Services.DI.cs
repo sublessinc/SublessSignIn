@@ -2,6 +2,7 @@
 using System.Runtime.Caching;
 using Microsoft.Extensions.DependencyInjection;
 using Subless.Models;
+using Subless.Services.Services;
 
 namespace Subless.Services
 {
@@ -20,6 +21,7 @@ namespace Subless.Services
             });
 
             services.AddTransient<IAdministrationService, AdministrationService>();
+            services.AddTransient<IAuthService, AuthService>();
             services.AddTransient<IPartnerService, PartnerService>();
             services.AddTransient<ICreatorService, CreatorService>();
             services.AddTransient<IHitService, HitService>();

@@ -18,68 +18,7 @@ namespace Subless.Services
             _creatorService = creatorService ?? throw new ArgumentNullException(nameof(creatorService));
         }
 
-        public Redirection LoginWorkflow(string cognitoId, string activationCode)
-        {
-            var user = _userRepo.GetUserByCognitoId(cognitoId);
-            if (user == null)
-            {
-                user = CreateUserByCognitoId(cognitoId);
-            }
-
-            if (activationCode != null && Guid.TryParse(activationCode, out Guid code) && (user.Creators == null || !user.Creators.Any() || user.Creators.Any(x => !x.Active)))
-            {
-                _creatorService.ActivateCreator(user.Id, code);
-                return new Redirection()
-                {
-                    RedirectionPath = RedirectionPath.ActivatedCreator
-                };
-            }
-
-            if (user.Creators != null && user.Creators.Any())
-            {
-                return new Redirection()
-                {
-                    RedirectionPath = RedirectionPath.ActivatedCreator
-                };
-            }
-
-            if (user.StripeSessionId == null)
-            {
-                return new Redirection()
-                {
-                    RedirectionPath = RedirectionPath.Payment
-                };
-            }
-
-            return new Redirection()
-            {
-                RedirectionPath = RedirectionPath.Profile,
-                SessionId = user.StripeSessionId
-            };
-        }
-
-        public IEnumerable<RedirectionPath> GetAllowedPaths(string cognitoId)
-        {
-            var paths = new List<RedirectionPath>();
-            var user = _userRepo.GetUserByCognitoId(cognitoId);
-            if (user != null && user.StripeSessionId != null) 
-            {
-                paths.Add(RedirectionPath.Profile);
-            }
-            if (user != null && user.StripeSessionId == null)
-            {
-                paths.Add(RedirectionPath.Payment);
-            }
-            if (user != null && user.Creators.Any())
-            {
-                paths.Add(RedirectionPath.ActivatedCreator);
-            }
-            if (user != null && user.Partners.Any())
-            {
-                paths.Add(RedirectionPath.Partner);
-            }
-            return paths;
-        }
+        
 
         public string GetStripeIdFromCognitoId(string cognitoId)
         {
