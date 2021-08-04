@@ -86,7 +86,7 @@ namespace SublessSignIn.Controllers
         }
 
         [HttpGet("statscsv")]
-        public ActionResult<string> GetStatsCsv()
+        public async Task<ActionResult> GetStatsCsv()
         {
             var cognitoId = userService.GetUserClaim(HttpContext.User);
             if (cognitoId == null)
@@ -97,21 +97,15 @@ namespace SublessSignIn.Controllers
             {
                 var creator = _creatorService.GetCreatorByCognitoid(cognitoId);
                 var stats = _creatorService.GetStatsForCreator(creator);
-
                 MemoryStream ms = new MemoryStream();
                 StreamWriter sw = new StreamWriter(ms);
                 using (var csv = new CsvWriter(sw, CultureInfo.InvariantCulture))
                 {
-                    csv.WriteHeader<MontlyPaymentStats>();
-                    csv.NextRecord();
                     csv.WriteRecords(stats);
-                    csv.Flush();
+
                     ms.Seek(0, SeekOrigin.Begin);
-                    StreamReader reader = new StreamReader(ms);
-                    return reader.ReadToEnd();
+                    return File(ms, MediaTypeNames.Text.Plain, $"CreatorStats.csv");
                 }
-
-
 
             }
             catch (UnauthorizedAccessException e)

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Stripe;
 using Stripe.Checkout;
@@ -15,13 +14,11 @@ namespace Subless.Services
         private readonly IStripeClient _client;
         private readonly IOptions<StripeConfig> _stripeConfig;
         private readonly IUserService _userService;
-        private readonly ILogger _logger;
 
-        public StripeService(IOptions<StripeConfig> stripeConfig, IUserService userService, ILoggerFactory loggerFactory)
+        public StripeService(IOptions<StripeConfig> stripeConfig, IUserService userService)
         {
             _stripeConfig = stripeConfig ?? throw new ArgumentNullException(nameof(stripeConfig));
             _userService = userService ?? throw new ArgumentNullException(nameof(userService));
-            _logger = loggerFactory?.CreateLogger<StripeService>() ?? throw new ArgumentNullException(nameof(loggerFactory));
             _client = new StripeClient(_stripeConfig.Value.SecretKey ?? throw new ArgumentNullException(nameof(_stripeConfig.Value.SecretKey)));
         }
         public async Task<CreateCheckoutSessionResponse> CreateCheckoutSession(string priceId, string cognitoId)
@@ -121,19 +118,11 @@ namespace Subless.Services
             var payers = new List<Payer>();
             foreach (var invoice in invoices)
             {
-                var user = users.FirstOrDefault(x => x.StripeCustomerId == invoice.CustomerId);
-                if (user == null)
+                payers.Add(new Payer
                 {
-                    _logger.LogCritical($"User payment detected without corresponding user in subless system. CustomerId: {invoice.CustomerId} Email: {invoice.CustomerEmail}");
-                }
-                else
-                {
-                    payers.Add(new Payer
-                    {
-                        UserId = user.Id,
-                        Payment = invoice.AmountPaid
-                    });
-                }
+                    UserId = users.Single(x => x.StripeCustomerId == invoice.CustomerId).Id,
+                    Payment = invoice.AmountPaid
+                });
             }
             return payers;
         }

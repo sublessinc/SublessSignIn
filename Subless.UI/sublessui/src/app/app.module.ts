@@ -1,4 +1,4 @@
-import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -13,10 +13,6 @@ import { LoggedOutComponent } from './logged-out/logged-out.component';
 import { FormsModule } from '@angular/forms';
 import { AuthInterceptor, AuthModule, LogLevel } from 'angular-auth-oidc-client';
 import { environment } from '../environments/environment';
-import { CreatorstatsComponent } from './creatorstats/creatorstats.component';
-import { ReactiveFormsModule } from '@angular/forms';
-import {MatSelectModule} from '@angular/material/select';
-
 
 
 
@@ -30,14 +26,12 @@ import {MatSelectModule} from '@angular/material/select';
     CreatorprofileComponent,
     LogoutComponent,
     LoggedOutComponent,
-    CreatorstatsComponent,
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
-    ReactiveFormsModule,
-        FormsModule,
+    FormsModule,
     AuthModule.forRoot({
       config: {
         authority: environment.authority,
@@ -48,16 +42,12 @@ import {MatSelectModule} from '@angular/material/select';
         responseType: 'code',
         silentRenew: true,
         useRefreshToken: true,
-        logLevel: LogLevel.Error,
+        logLevel: LogLevel.Debug,
         secureRoutes: ['/api/Creator', '/api/Checkout/', '/api/Authorization'],
       },
     }),
   ],
   providers: [{ provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },],
-  bootstrap: [AppComponent],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA ],
-  exports: [
-    MatSelectModule
-  ]
+  bootstrap: [AppComponent]
 })
 export class AppModule { }
