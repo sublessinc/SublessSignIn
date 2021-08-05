@@ -1,2 +1,2 @@
-﻿var mgr = new Oidc.UserManager();
-mgr.signinSilentCallback();
+﻿var subless_mgr = new Oidc.UserManager();
+subless_mgr.signinSilentCallback();

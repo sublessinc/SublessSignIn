@@ -1,13 +1,12 @@
-var myHeaders = new Headers();
-myHeaders.set('Cache-Control', 'no-store');
-var urlParams = new URLSearchParams(window.location.search);
+var subless_Headers = new Headers();
+subless_Headers.set('Cache-Control', 'no-store');
+var subless_urlParams = new URLSearchParams(window.location.search);
 
-var baseURI = location.protocol + '//' + window.location.hostname + (location.port ? ':' + location.port : '') + window.location.pathname;
-var sublessURI = "https://pay.subless.com";
-
-var config = {
-    redirect_uri: baseURI,
-    post_logout_redirect_uri: baseURI,
+var subless_baseUri = location.protocol + '//' + window.location.hostname + (location.port ? ':' + location.port : '') + window.location.pathname;
+var subless_Uri = "https://pay.subless.com";
+var subless_config = {
+    redirect_uri: subless_baseUri,
+    post_logout_redirect_uri: subless_baseUri,
 
     // these two will be done dynamically from the buttons clicked, but are
     // needed if you want to use the silent_renew
@@ -31,40 +30,41 @@ var config = {
 };
 
 
-function populateConfig(followOnFunction) {
-    fetch(sublessURI + "/api/Authorization/settings")
+function subless_populateConfig(followOnFunction) {
+    fetch(subless_Uri + "/api/Authorization/settings")
         .then(function (resp) {
             var json = resp.json().then(json => {
-                config.authority = json.cognitoUrl;
-                config.client_id = json.appClientId;
-                init();
+                subless_config.authority = json.cognitoUrl;
+                subless_config.client_id = json.appClientId;
+                subless_init();
                 followOnFunction();
             });
         });
 }
 
 function sublessLogin() {
-    populateConfig(startLogin);
+    subless_populateConfig(subless_startLogin);
 }
 
-function sublessLoginCallback() {
-    var code = urlParams.get('code');
-    populateConfig(function () {
-        mgr.getUser().then(function (user) {
+function subless_loginCallback() {
+    var code = subless_urlParams.get('code');
+    subless_populateConfig(function () {
+        subless_mgr.getUser().then(function (user) {
             if (code != null && user == null) {
-                handleCallback();
+                subless_handleCallback();
             }
         });
     });
 }
 
 
-function hitSubless() {
-    populateConfig(function () {
-        mgr.getUser().then(function (user) {
+function subless_hit() {
+    subless_populateConfig(function () {
+        subless_mgr.getUser().then(function (user) {
             if (user) {
+                
                 var body =
-                    fetch(sublessURI + "/api/hit", {
+                    fetch(subless_Uri + "/api/hit", {
                         method: "POST",
                         headers: {
                             "Authorization": "Bearer " + user.access_token,
@@ -89,55 +89,55 @@ function hitSubless() {
 
 
 
-var mgr = null;
+var subless_mgr = null;
 
 
 
-function init() {
+function subless_init() {
     Oidc.Log.logger = window.console;
     Oidc.Log.level = Oidc.Log.INFO;
 
-    mgr = new Oidc.UserManager(config);
+    subless_mgr = new Oidc.UserManager(subless_config);
 
-    mgr.events.addUserLoaded(function (user) {
-        log("User loaded");
+    subless_mgr.events.addUserLoaded(function (user) {
+        subless_log("User loaded");
     });
-    mgr.events.addUserUnloaded(function () {
-        log("User logged out locally");
+    subless_mgr.events.addUserUnloaded(function () {
+        subless_log("User logged out locally");
     });
-    mgr.events.addAccessTokenExpiring(function () {
-        log("Access token expiring...");
+    subless_mgr.events.addAccessTokenExpiring(function () {
+        subless_log("Access token expiring...");
     });
-    mgr.events.addSilentRenewError(function (err) {
-        log("Silent renew error: " + err.message);
+    subless_mgr.events.addSilentRenewError(function (err) {
+        subless_log("Silent renew error: " + err.message);
     });
-    mgr.events.addUserSignedOut(function () {
-        log("User signed out of OP");
+    subless_mgr.events.addUserSignedOut(function () {
+        subless_log("User signed out of OP");
     });
 }
 
-function startLogin(scope, response_type) {
+function subless_startLogin(scope, response_type) {
 
     var use_popup = false;
     if (!use_popup) {
-        mgr.signinRedirect({ scope: scope, response_type: response_type });
+        subless_mgr.signinRedirect({ scope: scope, response_type: response_type });
     }
     else {
-        mgr.signinPopup({ scope: scope, response_type: response_type }).then(function () {
-            log("Logged In");
+        subless_mgr.signinPopup({ scope: scope, response_type: response_type }).then(function () {
+            subless_log("Logged In");
         });
     }
 }
 
-function logout() {
-    mgr.signoutRedirect();
+function subless_logout() {
+    subless_mgr.signoutRedirect();
 }
 
-function revoke() {
-    mgr.revokeAccessToken();
+function subless_revoke() {
+    subless_mgr.revokeAccessToken();
 }
 
-function log(data) {
+function subless_log(data) {
     Array.prototype.forEach.call(arguments, function (msg) {
         if (msg instanceof Error) {
             msg = "Error: " + msg.message;
@@ -148,7 +148,7 @@ function log(data) {
     });
 }
 
-function display(selector, data) {
+function subless_display(selector, data) {
     if (data && typeof data === 'string') {
         try {
             data = JSON.parse(data);
@@ -161,8 +161,8 @@ function display(selector, data) {
     document.querySelector(selector).textContent = data;
 }
 
-function handleCallback() {
-    mgr.signinRedirectCallback().then(function (user) {
+function subless_handleCallback() {
+    subless_mgr.signinRedirectCallback().then(function (user) {
         var hash = window.location.hash.substr(1);
         var result = hash.split('&').reduce(function (result, item) {
             var parts = item.split('=');
@@ -172,6 +172,16 @@ function handleCallback() {
     });
 }
 
+function subless_isLoggedIn() {
+    return subless_mgr.getUser().then(function (user) {
+        if (user) {
+            return true;
+        }
+        return false;
+    });
+}
 
-sublessLoginCallback();
-hitSubless();
+
+
+subless_loginCallback();
+subless_hit();
