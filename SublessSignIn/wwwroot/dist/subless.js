@@ -1,12 +1,13 @@
 var subless_Headers = new Headers();
 subless_Headers.set('Cache-Control', 'no-store');
 var subless_urlParams = new URLSearchParams(window.location.search);
-
+var subless_mgr = null;
 var subless_baseUri = location.protocol + '//' + window.location.hostname + (location.port ? ':' + location.port : '') + window.location.pathname;
 var subless_Uri = "https://pay.subless.com";
 var subless_config = {
     redirect_uri: subless_baseUri,
     post_logout_redirect_uri: subless_baseUri,
+
 
     // these two will be done dynamically from the buttons clicked, but are
     // needed if you want to use the silent_renew
@@ -29,81 +30,34 @@ var subless_config = {
     filterProtocolClaims: false
 };
 
-
-function subless_populateConfig(followOnFunction) {
-    fetch(subless_Uri + "/api/Authorization/settings")
-        .then(function (resp) {
-            var json = resp.json().then(json => {
-                subless_config.authority = json.cognitoUrl;
-                subless_config.client_id = json.appClientId;
-                subless_init();
-                followOnFunction();
-            });
-        });
+async function subless_GetConfig() {
+    var resp = await fetch(subless_Uri + "/api/Authorization/settings");
+    var json = await resp.json();
+    subless_config.authority = json.cognitoUrl;
+    subless_config.client_id = json.appClientId;
+    subless_config.metadataSeed = {
+        end_session_endpoint :
+        subless_config.authority
+        + "/logout?response_type=code&client_id="
+        + subless_config.client_id
+        + "&logout_uri="
+        + subless_baseUri
+    };
 }
 
-function sublessLogin() {
-    subless_populateConfig(subless_startLogin);
-}
-
-function subless_loginCallback() {
-    var code = subless_urlParams.get('code');
-    subless_populateConfig(function () {
-        subless_mgr.getUser().then(function (user) {
-            if (code != null && user == null) {
-                subless_handleCallback();
-            }
-        });
-    });
-}
-
-
-function subless_hit() {
-    subless_populateConfig(function () {
-        subless_mgr.getUser().then(function (user) {
-            if (user) {
-                
-                var body =
-                    fetch(subless_Uri + "/api/hit", {
-                        method: "POST",
-                        headers: {
-                            "Authorization": "Bearer " + user.access_token,
-                            "Content-Type": "application/json",
-                        },
-                        body: window.location.href
-                    });
-
-            }
-        });
-    });
-}
-
-
-
-
-
-
-
-
-
-
-
-
-var subless_mgr = null;
-
-
-
-function subless_init() {
+async function subless_initUserManagement() {
     Oidc.Log.logger = window.console;
     Oidc.Log.level = Oidc.Log.INFO;
-
+    await subless_ConfigLoaded;
     subless_mgr = new Oidc.UserManager(subless_config);
 
     subless_mgr.events.addUserLoaded(function (user) {
         subless_log("User loaded");
+        subless_isLoggedIn = true;
     });
     subless_mgr.events.addUserUnloaded(function () {
         subless_log("User logged out locally");
+        subless_isLoggedIn = false;
     });
     subless_mgr.events.addAccessTokenExpiring(function () {
         subless_log("Access token expiring...");
@@ -113,6 +67,7 @@ function subless_init() {
     });
     subless_mgr.events.addUserSignedOut(function () {
         subless_log("User signed out of OP");
+        subless_isLoggedIn = false;
     });
 }
 
@@ -129,36 +84,29 @@ function subless_startLogin(scope, response_type) {
     }
 }
 
-function subless_logout() {
-    subless_mgr.signoutRedirect();
+async function sublessLogin() {
+    await subless_ConfigLoaded;
+    await subless_initUserManagement;
+    subless_startLogin();
 }
 
-function subless_revoke() {
-    subless_mgr.revokeAccessToken();
+async function subless_LoggedIn() {
+    await subless_UserManagerInitialized;
+    return subless_mgr.getUser().then(function (user) {
+        if (user) {
+            return true;
+        }
+        return false;
+    });;
 }
 
-function subless_log(data) {
-    Array.prototype.forEach.call(arguments, function (msg) {
-        if (msg instanceof Error) {
-            msg = "Error: " + msg.message;
-        }
-        else if (typeof msg !== 'string') {
-            msg = JSON.stringify(msg, null, 2);
-        }
-    });
-}
-
-function subless_display(selector, data) {
-    if (data && typeof data === 'string') {
-        try {
-            data = JSON.parse(data);
-        }
-        catch (e) { }
+async function subless_loginCallback() {
+    var code = subless_urlParams.get('code');
+    await subless_ConfigLoaded;
+    var loggedIn = await subless_LoggedIn();
+    if (code != null && !loggedIn) {
+        subless_handleCallback();
     }
-    if (data && typeof data !== 'string') {
-        data = JSON.stringify(data, null, 2);
-    }
-    document.querySelector(selector).textContent = data;
 }
 
 function subless_handleCallback() {
@@ -172,16 +120,49 @@ function subless_handleCallback() {
     });
 }
 
-function subless_isLoggedIn() {
-    return subless_mgr.getUser().then(function (user) {
+async function subless_hit() {
+    await subless_UserManagerInitialized;
+    subless_mgr.getUser().then(function (user) {
         if (user) {
-            return true;
+            var body =
+                fetch(subless_Uri + "/api/hit", {
+                    method: "POST",
+                    headers: {
+                        "Authorization": "Bearer " + user.access_token,
+                        "Content-Type": "application/json",
+                    },
+                    body: window.location.href
+                });
         }
-        return false;
     });
 }
 
 
+async function sublessLogout() {
+    await subless_UserManagerInitialized;
+    subless_mgr.signoutRedirect();
+}
+
+async function subless_revoke() {
+    await subless_UserManagerInitialized;
+    subless_mgr.revokeAccessToken();
+}
+
+
+
+function subless_log(data) {
+    Array.prototype.forEach.call(arguments, function (msg) {
+        if (msg instanceof Error) {
+            msg = "Error: " + msg.message;
+        }
+        else if (typeof msg !== 'string') {
+            msg = JSON.stringify(msg, null, 2);
+        }
+    });
+}
+
+var subless_ConfigLoaded = subless_GetConfig();
+var subless_UserManagerInitialized = subless_initUserManagement();
 
 subless_loginCallback();
 subless_hit();
