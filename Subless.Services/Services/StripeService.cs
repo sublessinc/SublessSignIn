@@ -78,8 +78,12 @@ namespace Subless.Services
         public bool CustomerHasPaid(string cognitoId)
         {
             var user = _userService.GetUserByCognitoId(cognitoId);
-            var service = new SessionService(_client);
+            if (user.StripeSessionId == null)
+            {
+                return false;
+            }
 
+            var service = new SessionService(_client);
             var session = service.Get(user.StripeSessionId);
             if (session.PaymentStatus == "paid")
             {
