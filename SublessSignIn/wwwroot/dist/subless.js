@@ -37,7 +37,7 @@ async function subless_GetConfig() {
     subless_config.client_id = json.appClientId;
     subless_config.metadataSeed = {
         end_session_endpoint :
-        subless_config.authority
+        json.issuerUrl
         + "/logout?response_type=code&client_id="
         + subless_config.client_id
         + "&logout_uri="
