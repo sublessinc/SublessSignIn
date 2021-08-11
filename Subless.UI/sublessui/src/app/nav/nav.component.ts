@@ -28,6 +28,7 @@ export class NavComponent implements OnInit {
 
   logout() {
     sessionStorage.removeItem("activation");
+    sessionStorage.removeItem("postActivationRedirect");
     this.authService.redirectToLogout();
   }
 }

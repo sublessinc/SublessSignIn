@@ -5,6 +5,7 @@ import { ISettings } from '../models/ISettings';
 import { ITokenResponse } from '../models/ITokenResponse';
 import { IRedirect } from '../models/IRedirect';
 import { OidcSecurityService } from 'angular-auth-oidc-client';
+import { Observable } from 'rxjs';
 
 
 @Injectable({
@@ -14,8 +15,8 @@ export class AuthorizationService {
   private baseURI: string = '';
   private redirectURI: string = '';
   private logoutURI: string = '';
-  private code_verifier: string = '';
   private activation: string = '';
+  private postActivationRedirect: string = '';
   constructor(
     private httpClient: HttpClient,
     private router: Router,
@@ -27,8 +28,12 @@ export class AuthorizationService {
     this.logoutURI = this.baseURI + "/login";
     this.route.queryParams.subscribe(params => {
       this.activation = params['activation'];
+      this.postActivationRedirect = params['postActivationRedirect'];
       if (this.activation) {
         sessionStorage.setItem('activation', this.activation);
+      }
+      if (this.postActivationRedirect) {
+        sessionStorage.setItem('postActivationRedirect', this.postActivationRedirect);
       }
     });
   }
@@ -53,7 +58,7 @@ export class AuthorizationService {
   }
   redirect() {
     const activation = sessionStorage.getItem('activation');
-    var headers = new HttpHeaders().set("Activation", activation ?? '');
+    var headers = new HttpHeaders().set("Activation", activation ?? '')
     if (activation) {
       sessionStorage.setItem('activation', '');
     }
@@ -90,6 +95,10 @@ export class AuthorizationService {
         );
       }
     })
+  }
+
+  getEmail(): string {
+    return this.oidcSecurityService.getUserData().username;
   }
 
   public async getLoginLink() {
