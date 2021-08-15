@@ -8,7 +8,11 @@
         </div>
     </div>
     <div class="form-group">
-        <label class='lbl' for="payoneerId">Payoneer Id</label>
+        <div>
+            <label>We use payoneer for payouts, if you don't have an account, register one </label>
+            <a class="link" href="https://www.payoneer.com/"> here</a>
+        </div>
+        <label class='lbl' for="payoneerId">Payoneer Email</label>
         <input type="text" class="form-control" id="payoneerId" required [(ngModel)]="model.payoneerId"
             name="payoneerId" #payoneerId="ngModel">
         <div [hidden]="payoneerId.valid || payoneerId.pristine" class="alert alert-danger">

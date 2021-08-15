@@ -13,6 +13,9 @@
             <div  class="completed-view-section">
                 <app-creatorstats></app-creatorstats>
             </div>
+            <div  class="completed-view-section" *ngIf="activationRedirectUrl" >
+                <button (click)="finalize()" >Finalize activation and return to partner</button>
+            </div>
         </div>
         <app-id></app-id>
     </div>
