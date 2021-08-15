@@ -1,12 +1,20 @@
-var subless_Headers = new Headers();
+const subless_Headers = new Headers();
 subless_Headers.set('Cache-Control', 'no-store');
 var subless_urlParams = new URLSearchParams(window.location.search);
 var subless_mgr = null;
-var subless_baseUri = location.protocol + '//' + window.location.hostname + (location.port ? ':' + location.port : '') + window.location.pathname;
-var subless_Uri = "https://pay.subless.com";
+const subless_baseUri = location.protocol + '//' + window.location.hostname + (location.port ? ':' + location.port : '') + window.location.pathname;
+const subless_Uri = "https://pay.subless.com";
+const subless_silentRenewPage = '<html><body>' +
+    '<script src="https://cdnjs.cloudflare.com/ajax/libs/oidc-client/1.11.5/oidc-client.js" type = "text/javascript" ></script>' +
+    '<script src="https://pay.subless.com/dist/subless-silent-renew.js" type="text/javascript"></script>' +
+    '</body></html>';
+
+const subless_silentRenewBlob = new Blob([subless_silentRenewPage], { type: 'text/html' });
+
 var subless_config = {
     redirect_uri: subless_baseUri,
     post_logout_redirect_uri: subless_baseUri,
+
 
 
     // these two will be done dynamically from the buttons clicked, but are
@@ -19,7 +27,7 @@ var subless_config = {
 
     // silent renew will get a new access_token via an iframe 
     // just prior to the old access_token expiring (60 seconds prior)
-    silent_redirect_uri: window.location.origin + "/silent.html",
+    silent_redirect_uri: window.URL.createObjectURL(subless_silentRenewBlob),
     automaticSilentRenew: true,
 
     // will revoke (reference) access tokens at logout time
