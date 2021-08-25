@@ -21,10 +21,6 @@ import { PayoneerComponent } from './payoneer/payoneer.component';
 import { PartnerprofileComponent } from './partnerprofile/partnerprofile.component';
 import { MatToolbarModule } from '@angular/material/toolbar';
 
-
-
-
-
 @NgModule({
   declarations: [
     AppComponent,
@@ -51,7 +47,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
         authority: environment.authority,
         redirectUrl: window.location.origin + "/login",
         postLogoutRedirectUri: window.location.origin + "/login",
-        clientId: '6a4425t6hjaerp2nndqo3el3d1',
+        clientId: environment.clientId,
         scope: 'openid',
         responseType: 'code',
         silentRenew: true,
@@ -63,7 +59,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
   ],
   providers: [{ provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },],
   bootstrap: [AppComponent],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA ],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   exports: [
     MatSelectModule
   ]
