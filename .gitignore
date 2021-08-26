@@ -36,3 +36,6 @@ msbuild.wrn
 # Visual Studio 2015
 .vs/
 settings.env
+
+# python
+Subless.UI.Tests/virtual_env/*
