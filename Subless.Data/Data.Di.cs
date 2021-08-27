@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 
 namespace Subless.Data
 {
@@ -8,14 +10,33 @@ namespace Subless.Data
     {
         public static IServiceCollection RegisterDataDi(IServiceCollection services)
         {
+            var json = Environment.GetEnvironmentVariable("dbCreds") ?? throw new ArgumentNullException("dbCreds");
+            var dbCreds = JsonConvert.DeserializeObject<DbCreds>(json);
             services.Configure<DatabaseSettings>(options =>
             {
-                options.ConnectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING") ?? throw new ArgumentNullException("CONNECTION_STRING");
+                options.ConnectionString = dbCreds.GetDatabaseConnection();
             });
             services.AddTransient<IUserRepository, UserRepository>();
             services.AddTransient<UserRepository, UserRepository>();
-            services.AddDbContext<UserRepository>(options => options.UseNpgsql(Environment.GetEnvironmentVariable("CONNECTION_STRING")));
+            services.AddDbContext<UserRepository>(options => options.UseNpgsql(dbCreds.GetDatabaseConnection()));
             return services;
         }
+
+        
+        public class DbCreds {
+            public string dbInstanceIdentifier;
+            public string engine;
+            public string host;
+            public int port;
+            public string resourceId;
+            public string username;
+            public string password;
+            public string GetDatabaseConnection()
+            {
+                return $"Server={host}; " + $"Port={port}; " +
+                    $"User Id={username};" + $"Password={password};" + $"Database={dbInstanceIdentifier};";
+            }
+        }
+
     }
 }
