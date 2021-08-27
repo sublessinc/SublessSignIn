@@ -1,3 +1,5 @@
+clear
+cls
 
 python -m venv virtual_env
 call virtual_env\Scripts\activate.bat

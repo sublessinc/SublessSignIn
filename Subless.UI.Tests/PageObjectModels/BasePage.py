@@ -6,11 +6,10 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger()
 
 
-class BasePageLocators:
-    logout_button_id = 'nav'
-
-
 class BasePage(object):
+    @property
+    def logout_button(self):
+        return self.driver.find_element_by_id(BasePageLocators.logout_button_id)
 
     def __init__(self, driver):
         self.driver = driver
@@ -18,30 +17,11 @@ class BasePage(object):
     def logout(self):
         logger.info(f'Logging Out')
         logger.info(self.__class__.__name__)
-        el = self.driver.find_element_by_id(BasePageLocators.logout_button_id)
-        el.click()
+        self.logout_button.click()
 
         # wait for redirect
         WebDriverWait(self.driver, 10).until(lambda driver: 'login' in driver.current_url)
 
 
-class BasePageElement(object):
-    """Base page class that is initialized on every page object class."""
-
-    def __set__(self, obj, value):
-        """Sets the text to the value supplied"""
-
-        driver = obj.driver
-        WebDriverWait(driver, 100).until(
-            lambda driver: driver.find_element_by_name(self.locator))
-        driver.find_element_by_name(self.locator).clear()
-        driver.find_element_by_name(self.locator).send_keys(value)
-
-    def __get__(self, obj, owner):
-        """Gets the text of the specified object"""
-
-        driver = obj.driver
-        WebDriverWait(driver, 100).until(
-            lambda driver: driver.find_element_by_name(self.locator))
-        element = driver.find_element_by_name(self.locator)
-        return element.get_attribute("value")
+class BasePageLocators:
+    logout_button_id = 'nav'

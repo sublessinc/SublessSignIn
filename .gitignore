@@ -39,3 +39,4 @@ settings.env
 
 # python
 Subless.UI.Tests/virtual_env/*
+Subless.UI.Tests/.env

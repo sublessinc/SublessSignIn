@@ -1,5 +1,8 @@
 import logging
 
+import os
+
+import time
 from selenium.webdriver.support.wait import WebDriverWait
 
 from PageObjectModels.BasePage import BasePage
@@ -11,58 +14,58 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger()
 
 
-class LoginLocators:
-    google_login_name = 'googleSignUpButton'
-    email_textbox_id = 'signInFormUsername'
-    pass_textbox_id = 'signInFormPassword'
-    sign_in_button_name = 'signInSubmitButton'
-    forgot_pass_xpath = '/html/body/div[1]/div/div[1]/div[2]/div[2]/div[3]/div[2]/div/form/div[3]/a'
-    signup_link_xpath = '/html/body/div[1]/div/div[1]/div[2]/div[2]/div[3]/div[2]/div/form/div[4]/p/div/a'
-
-
 class LoginPage(BasePage):
+    @property
+    def google_login_button(self):
+        return self.driver.find_elements_by_name(LoginLocators.google_login_name)[1]
+
+    @property
+    def email_textbox(self):
+        return self.driver.find_elements_by_id(LoginLocators.email_textbox_id)[1]
+
+    @property
+    def password_textbox(self):
+        return self.driver.find_elements_by_id(LoginLocators.pass_textbox_id)[1]
+
+    @property
+    def sign_in_button(self):
+        return self.driver.find_elements_by_name(LoginLocators.sign_in_button_name)[1]
+
+    @property
+    def forgot_password_link(self):
+        return self.driver.find_elements_by_xpath(LoginLocators.forgot_pass_xpath)[1]
+
+    @property
+    def signup_link(self):
+        return self.driver.find_elements_by_xpath(LoginLocators.signup_link_xpath)[0]
+
     def open(self):
-        self.driver.get('https://pay.subless.com')  # todo: this needs to be pulled into env vars / configs
+        self.driver.get(f'https://{os.environ["environment"]}.subless.com')
+        time.sleep(1)
         return self
 
-    # there's two of all of these elements for some reason, you need the second one
-    def enter_un(self, username):
-        logger.info(f'sending {username} to un field')
-        el = self.driver.find_elements_by_id(LoginLocators.email_textbox_id)[1]
-        el.send_keys(username)
-
-    def enter_pass(self, password):
-        logger.info(f'sending password')
-        el = self.driver.find_elements_by_id(LoginLocators.pass_textbox_id)[1]
-        el.send_keys(password)
-
-    def click_sign_up_link(self):
+    def click_sign_up(self):
         logger.info(f'clicking sign up link')
         from PageObjectModels.SignupPage import SignupPage
-        el = self.driver.find_elements_by_xpath(LoginLocators.signup_link_xpath)[1]
-        el.click()
+        self.signup_link.click()
         return SignupPage(self.driver)
 
     def click_forgot_pass(self):
         logger.info(f'clicking forgot password')
-        el = self.driver.find_elements_by_xpath(LoginLocators.forgot_pass_xpath)[1]
-        el.click()
+        self.forgot_password_link.click()
 
-    def click_google_signin(self):
+    def sign_in_with_google(self):
         logger.info(f'clicking sign in')
-        el = self.driver.find_elements_by_name(LoginLocators.google_login_name)[1]
-        el.click()
+        self.google_login_button.click()
 
-    def click_sign_in_button(self):
-        logger.info(f'clicking sign in')
-        el = self.driver.find_elements_by_name(LoginLocators.sign_in_button_name)[1]
-        el.click()
-
-    def sign_in(self, un, password):
+    def sign_in(self, username, password):
         logger.info(f'attempting to sign in')
-        self.enter_un(un)
-        self.enter_pass(password)
-        self.click_sign_in_button()
+        logger.info(f'sending {username} to un field')
+        self.email_textbox.send_keys(username)
+
+        logger.info(f'sending password')
+        self.password_textbox.send_keys(password)
+        self.sign_in_button.click()
 
         # wait for redirect
         WebDriverWait(self.driver, 10).until(lambda driver: 'login' not in driver.current_url)
@@ -77,3 +80,13 @@ class LoginPage(BasePage):
 
         else:
             raise Exception('Unable to detect redirect page post-login')
+
+
+class LoginLocators:
+    google_login_name = 'googleSignUpButton'
+    email_textbox_id = 'signInFormUsername'
+    pass_textbox_id = 'signInFormPassword'
+    sign_in_button_name = 'signInSubmitButton'
+    forgot_pass_xpath = '/html/body/div[1]/div/div[1]/div[2]/div[2]/div[3]/div[2]/div/form/div[3]/a'
+    signup_link_xpath = '/html/body/div[1]/div/div[1]/div[2]/div[2]/div[3]/div[2]/div/form/div[4]/p/div/a'
+
