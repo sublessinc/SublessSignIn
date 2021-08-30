@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -114,6 +115,13 @@ namespace SublessSignIn
             //app.UseHttpsRedirection();
 
             app.UseFileServer();
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                OnPrepareResponse = ctx =>
+                {
+                    ctx.Context.Response.Headers.Append("Cache-Control", "max-age=3000, must-revalidate");
+                }
+            });
             app.UseAuthentication();
             app.UseRouting();
             app.UseCors();
