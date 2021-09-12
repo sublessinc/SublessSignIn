@@ -56,6 +56,24 @@ namespace Subless.Data
             SaveChanges();
         }
 
+        public void DeleteUser(User user)
+        {
+            Users.Remove(user);
+            SaveChanges();
+        }
+
+        public void DeleteCreator(Creator creator)
+        {
+            Creators.Remove(creator);
+            SaveChanges();
+        }
+
+        public void DeletePartner(Partner partner)
+        {
+            Partners.Remove(partner);
+            SaveChanges();
+        }
+
         public void SaveHit(Hit hit)
         {
             Hits.Add(hit);

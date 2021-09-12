@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using Subless.Data;
 using Subless.Models;
@@ -95,6 +96,32 @@ namespace Subless.Services
             var user = _userRepo.GetUserById(id);
             user.StripeSessionId = null;
             _userRepo.UpdateUser(user);
+        }
+
+        public void DemoteUser(Guid id)
+        {
+            var user = _userRepo.GetUserById(id);
+            if (user.Partners != null && user.Partners.Any())
+            {
+                foreach (var partner in user.Partners)
+                {
+                    _userRepo.DeletePartner(partner);
+                }
+            }
+
+            if (user.Creators != null && user.Creators.Any())
+            {
+                foreach (var creator in user.Creators)
+                {
+                    _userRepo.DeleteCreator(creator);
+                }
+            }
+
+            if (user.IsAdmin)
+            {
+                user.IsAdmin = false;
+                _userRepo.UpdateUser(user);
+            }
         }
     }
 }
