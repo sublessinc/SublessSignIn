@@ -7,6 +7,7 @@ using Microsoft.Extensions.Options;
 using Stripe;
 using Subless.Models;
 using Subless.Services;
+using Subless.Services.Services;
 using SublessSignIn.Models;
 
 
@@ -20,23 +21,29 @@ namespace SublessSignIn.Controllers
     {
         private readonly IStripeService stripeService;
         private readonly IUserService userService;
+        private readonly ICognitoService cognitoService;
         private readonly ILogger _logger;
-        public UserController(IStripeService stripeService, ILoggerFactory loggerFactory, IUserService userService)
+        public UserController(IStripeService stripeService, ILoggerFactory loggerFactory, IUserService userService, ICognitoService cognitoService)
         {
-            this.stripeService = stripeService;
+            if (loggerFactory is null)
+            {
+                throw new ArgumentNullException(nameof(loggerFactory));
+            }
+
+            this.stripeService = stripeService ?? throw new ArgumentNullException(nameof(stripeService));
             this.userService = userService ?? throw new ArgumentNullException(nameof(userService));
+            this.cognitoService = cognitoService ?? throw new ArgumentNullException(nameof(cognitoService));
             _logger = loggerFactory?.CreateLogger<PartnerController>() ?? throw new ArgumentNullException(nameof(loggerFactory));
         }
 
         [HttpDelete()]
-        public void DeleteUser()
+        public async Task DeleteUser()
         {
             var cognitoId = userService.GetUserClaim(HttpContext.User);
             stripeService.CancelSubscription(cognitoId);
             var user = userService.GetUserByCognitoId(cognitoId);
             userService.DemoteUser(user.Id);
-
-            throw new NotImplementedException();
+            await cognitoService.DeleteCognitoUser(user.CognitoId);
         }
     }
 }

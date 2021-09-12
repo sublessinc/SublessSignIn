@@ -27,6 +27,7 @@ namespace Subless.Services
             services.AddTransient<IStripeService, StripeService>();
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<IPaymentLogsService, PaymentLogsService>();
+            services.AddTransient<ICognitoService, CognitoService>();
             services.AddMemoryCache();
             return services;
         }
