@@ -3,10 +3,10 @@ subless_Headers.set('Cache-Control', 'no-store');
 var subless_urlParams = new URLSearchParams(window.location.search);
 var subless_mgr = null;
 const subless_baseUri = location.protocol + '//' + window.location.hostname + (location.port ? ':' + location.port : '') + window.location.pathname;
-const subless_Uri = "https://pay.subless.com";
+const subless_Uri = "https://dev.subless.com";
 const subless_silentRenewPage = '<html><body>' +
     '<script src="https://cdnjs.cloudflare.com/ajax/libs/oidc-client/1.11.5/oidc-client.js" type = "text/javascript" ></script>' +
-    '<script src="https://pay.subless.com/dist/subless-silent-renew.js" type="text/javascript"></script>' +
+    '<script src="https://dev.subless.com/dist/subless-silent-renew.js" type="text/javascript"></script>' +
     '</body></html>';
 
 const subless_silentRenewBlob = new Blob([subless_silentRenewPage], { type: 'text/html' });
