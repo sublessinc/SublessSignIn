@@ -89,5 +89,12 @@ namespace Subless.Services
         {
             return user.FindFirst("username")?.Value ?? user.FindFirst("cognito:username")?.Value;
         }
+
+        public void ClearStripePayment(Guid id)
+        {
+            var user = _userRepo.GetUserById(id);
+            user.StripeSessionId = null;
+            _userRepo.UpdateUser(user);
+        }
     }
 }

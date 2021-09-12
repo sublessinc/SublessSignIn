@@ -20,6 +20,7 @@ import { IdComponent } from './id/id.component';
 import { PayoneerComponent } from './payoneer/payoneer.component';
 import { PartnerprofileComponent } from './partnerprofile/partnerprofile.component';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { UnauthorizedInterceptor } from './services/auth.interceptor';
 
 @NgModule({
   declarations: [
@@ -57,7 +58,10 @@ import { MatToolbarModule } from '@angular/material/toolbar';
       },
     }),
   ],
-  providers: [{ provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },],
+  providers: [
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
+    { provide: HTTP_INTERCEPTORS, useClass: UnauthorizedInterceptor, multi: true },
+  ],
   bootstrap: [AppComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   exports: [

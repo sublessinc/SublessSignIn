@@ -1,19 +1,18 @@
 <div class="container">
     <app-nav class="header"></app-nav>
-<div id="bodyWrapper">
-    <div class="subless-background"></div>
-    <div class="sr-root">
-        <div class="sr-main-post-checkout">
-            <div class="sr-payment-summary completed-view">
-                <h1>Your profile</h1>
-
+    <div id="bodyWrapper">
+        <div class="subless-background"></div>
+        <div class="sr-root">
+            <div class="sr-main-post-checkout">
+                <div class="sr-payment-summary completed-view">
+                    <h1>Your profile</h1>
+                </div>
+                <div class="completed-view-section horizontalGroup">
+                    <button (click)='returnToStripe()'>Manage Billing</button>
+                    <button (click)='cancelSubscription()'>Cancel Subscription</button>
+                </div>
+                <app-id></app-id>
             </div>
-            <div class="completed-view-section">
-                <button (click)='returnToStripe()'>Manage Billing</button>
-
-            </div>
-            <app-id></app-id>
         </div>
     </div>
-</div>
 </div>
