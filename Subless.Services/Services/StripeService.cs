@@ -155,9 +155,29 @@ namespace Subless.Services
                         Payment = balanceTrans.Net
                     });
                 }
-
             }
             return payers;
+        }
+
+        public bool CancelSubscription(string cognitoId)
+        {
+            var service = new SubscriptionService(_client);
+            var user = _userService.GetUserByCognitoId(cognitoId);
+
+            var subOptions = new SubscriptionListOptions() { Customer = user.StripeCustomerId };
+            var subs = service.List(subOptions);
+            foreach (var sub in subs)
+            {
+                var cancelOptions = new SubscriptionCancelOptions
+                {
+                    InvoiceNow = false,
+                    Prorate = false,
+                };
+                Subscription subscription = service.Cancel(sub.Id, cancelOptions);
+            }
+
+            _userService.ClearStripePayment(user.Id);
+            return true;
         }
     }
 }

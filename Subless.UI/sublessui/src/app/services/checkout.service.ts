@@ -39,5 +39,9 @@ export class CheckoutService {
   getUserSession(): Observable<SessionId> {
     return this.httpClient.get<SessionId>('/api/Checkout/existing-session');
   }
+
+  cancelSubscription(): Observable<boolean> {
+    return this.httpClient.delete<boolean>("/api/Checkout/");
+  }
 }
 

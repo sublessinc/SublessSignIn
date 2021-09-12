@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { IStripeRedirect } from '../models/IStripeRedirect';
 import { SessionId } from '../models/SessionId';
+import { AuthorizationService } from '../services/authorization.service';
 import { CheckoutService } from '../services/checkout.service';
 
 @Component({
@@ -12,7 +13,8 @@ import { CheckoutService } from '../services/checkout.service';
 export class UserprofileComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
-    private checkoutService: CheckoutService
+    private checkoutService: CheckoutService,
+    private authService: AuthorizationService
   ) { }
 
   ngOnInit(): void { }
@@ -27,5 +29,13 @@ export class UserprofileComponent implements OnInit {
         });
       }
     });
+  }
+
+  cancelSubscription() {
+    this.checkoutService.cancelSubscription().subscribe({
+      next: (completed: boolean) => {
+        this.authService.redirect();
+      }
+    })
   }
 }
