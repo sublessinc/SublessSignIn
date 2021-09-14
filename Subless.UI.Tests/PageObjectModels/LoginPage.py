@@ -68,7 +68,7 @@ class LoginPage(BasePage):
         self.sign_in_button.click()
 
         # wait for redirect
-        WebDriverWait(self.driver, 10).until(lambda driver: 'login' not in driver.current_url)
+        WebDriverWait(self.driver, 10).until(lambda driver: 'login' not in self.driver.current_url)
 
         # new user
         if 'register-payment' in self.driver.current_url:
@@ -88,5 +88,5 @@ class LoginLocators:
     pass_textbox_id = 'signInFormPassword'
     sign_in_button_name = 'signInSubmitButton'
     forgot_pass_xpath = '/html/body/div[1]/div/div[1]/div[2]/div[2]/div[3]/div[2]/div/form/div[3]/a'
-    signup_link_xpath = '/html/body/div[1]/div/div[1]/div[2]/div[2]/div[3]/div[2]/div/form/div[4]/p/div/a'
-
+    signup_link_xpath = '/html/body/div[1]/div/div[2]/div[2]/div[2]/div[2]/div[2]/div/form/div[3]/p/a'
+    # signup_link_xpath = '/html/body/div[1]/div/div[1]/div[2]/div[2]/div[3]/div[2]/div/form/div[3]/p/a'
