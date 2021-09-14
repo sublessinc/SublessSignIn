@@ -44,5 +44,14 @@ namespace SublessSignIn.Controllers
         }
 
 
+        [TypeFilter(typeof(AdminAuthorizationFilter))]
+        [HttpDelete("demoteuser")]
+        public IActionResult DemoteUser([FromQuery] Guid userId)
+        {
+            userService.DemoteUser(userId);
+            return Ok();
+        }
+
+
     }
 }

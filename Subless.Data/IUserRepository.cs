@@ -38,5 +38,8 @@ namespace Subless.Data
         Partner GetPartnerByUri(Uri uri);
         IEnumerable<Payment> GetPaymentsByPayeePayoneerId(string payoneerId);
         Partner GetPartnerByAdminId(Guid id);
+        void DeletePartner(Partner partner);
+        void DeleteCreator(Creator creator);
+        void DeleteUser(User user);
     }
 }
