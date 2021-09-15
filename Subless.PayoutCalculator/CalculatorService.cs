@@ -56,6 +56,8 @@ namespace Subless.PayoutCalculator
                 var payees = new List<Payee>();
                 // get who they visited
                 var hits = RetrieveUsersMonthlyHits(payer.UserId, startDate, endDate);
+                // filter out incomplete creators
+                hits = FilterInvalidCreators(hits);
                 // group all visits to payee
                 var creatorVisits = GetVisitsPerCreator(hits);
                 // get partner share
@@ -85,6 +87,14 @@ namespace Subless.PayoutCalculator
             SavePayoutsToS3(allPayouts);
         }
 
+        private IEnumerable<Hit> FilterInvalidCreators(IEnumerable<Hit> hits)
+        {
+            var creatorIds = hits.Select(x => x.CreatorId);
+            var creators = creatorIds.Select(x => _creatorService.GetCreator(x));
+            var invalidCreators = creators.Where(x => x.ActivationCode != null || string.IsNullOrWhiteSpace(x.PayPalId));
+            var validHits = hits.Where(x => !invalidCreators.Any(y => y.Id == x.CreatorId));
+            return validHits;
+        }
 
         private IEnumerable<Payer> GetPayments(DateTime startDate, DateTime endDate)
         {
