@@ -8,6 +8,6 @@
 
         public string BasicPrice { get; set; }
         public string Domain { get; set; }
-        public string SublessPayoneerId { get; set; }
+        public string SublessPayPalId { get; set; }
     }
 }

@@ -14,7 +14,7 @@ export class PartnerService {
     return this.httpClient.get<IPartner>('/api/Partner/config');
   }
 
-  updatePayoneer(payoneer: string): Observable<IPartner> {
-    return this.httpClient.put<IPartner>('/api/Partner/payoneerId?payoneerId='+payoneer, null);
+  updatePayPal(payPal: string): Observable<IPartner> {
+    return this.httpClient.put<IPartner>('/api/Partner/payPalId?payPalId=' + payPal, null);
   }
 }

@@ -1,5 +1,5 @@
 export interface IPartner {
-    payoneerId: string;
+    payPalId: string;
     site: string;
     userPattern: string;
 }

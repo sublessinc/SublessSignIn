@@ -1,23 +1,23 @@
 <div class="container">
-<app-nav class="header"></app-nav>
-<div id="bodyWrapper">
-    <div class="subless-background"></div>
-    <div class="sr-root">
-        <div class="sr-main-post-checkout">
-            <div class="sr-payment-summary completed-view">
-                <h1>Your creator profile</h1>
+    <app-nav class="header"></app-nav>
+    <div id="bodyWrapper">
+        <div class="subless-background"></div>
+        <div class="sr-root">
+            <div class="sr-main-post-checkout">
+                <div class="sr-payment-summary completed-view">
+                    <h1>Your creator profile</h1>
+                </div>
+                <div class="completed-view-section">
+                    <app-payPal></app-payPal>
+                </div>
+                <div class="completed-view-section">
+                    <app-creatorstats></app-creatorstats>
+                </div>
+                <div class="completed-view-section" *ngIf="activationRedirectUrl">
+                    <button (click)="finalize()">Finalize activation and return to partner</button>
+                </div>
             </div>
-            <div class="completed-view-section">
-                <app-payoneer></app-payoneer>
-            </div>
-            <div  class="completed-view-section">
-                <app-creatorstats></app-creatorstats>
-            </div>
-            <div  class="completed-view-section" *ngIf="activationRedirectUrl" >
-                <button (click)="finalize()" >Finalize activation and return to partner</button>
-            </div>
+            <app-id></app-id>
         </div>
-        <app-id></app-id>
     </div>
-</div>
 </div>

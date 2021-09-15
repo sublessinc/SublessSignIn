@@ -17,7 +17,7 @@ import { CreatorstatsComponent } from './creatorstats/creatorstats.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
 import { IdComponent } from './id/id.component';
-import { PayoneerComponent } from './payoneer/payoneer.component';
+import { PayPalComponent } from './payPal/payPal.component';
 import { PartnerprofileComponent } from './partnerprofile/partnerprofile.component';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { UnauthorizedInterceptor } from './services/auth.interceptor';
@@ -33,7 +33,7 @@ import { UnauthorizedInterceptor } from './services/auth.interceptor';
     LoggedOutComponent,
     CreatorstatsComponent,
     IdComponent,
-    PayoneerComponent,
+    PayPalComponent,
     PartnerprofileComponent,
   ],
   imports: [

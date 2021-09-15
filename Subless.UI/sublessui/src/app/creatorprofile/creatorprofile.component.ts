@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ICreator } from '../models/ICreator';
-import { Creator } from '../payoneer/payoneer.component';
+import { Creator } from '../payPal/payPal.component';
 import { AuthorizationService } from '../services/authorization.service';
 import { CreatorService } from '../services/creator.service';
 
@@ -19,7 +19,7 @@ export class CreatorprofileComponent implements OnInit {
   constructor(private authService: AuthorizationService,
     private creatorService: CreatorService) {
     this.activationRedirectUrl = sessionStorage.getItem('postActivationRedirect');
-  } 
+  }
 
 
   ngOnInit(): void {

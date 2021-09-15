@@ -4,11 +4,11 @@ import { ICreator } from '../models/ICreator';
 import { CreatorService } from '../services/creator.service';
 
 @Component({
-  selector: 'app-payoneer',
-  templateUrl: './payoneer.component.html',
-  styleUrls: ['./payoneer.component.css']
+  selector: 'app-payPal',
+  templateUrl: './payPal.component.html',
+  styleUrls: ['./payPal.component.css']
 })
-export class PayoneerComponent implements OnInit {
+export class PayPalComponent implements OnInit {
 
   private model$: Observable<ICreator> | undefined;
   public model: ICreator = new Creator("", "");
@@ -38,6 +38,6 @@ export class PayoneerComponent implements OnInit {
 export class Creator implements ICreator {
   constructor(
     public username: string,
-    public payoneerId: string,
+    public payPalId: string,
   ) { }
 }
