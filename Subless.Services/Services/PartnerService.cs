@@ -32,10 +32,10 @@ namespace Subless.Services
             return _userRepository.GetPartnerByAdminId(adminId);
         }
 
-        public Partner UpdatePartnerPayoneerId(Guid partnerId, string payoneerId)
+        public Partner UpdatePartnerPayPalId(Guid partnerId, string payPalId)
         {
             var partner = _userRepository.GetPartner(partnerId);
-            partner.PayoneerId = payoneerId;
+            partner.PayPalId = payPalId;
             _userRepository.UpdatePartner(partner);
             return partner;
         }

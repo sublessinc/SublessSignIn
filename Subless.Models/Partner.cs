@@ -9,7 +9,7 @@ namespace Subless.Models
     {
         public Guid Id { get; set; }
         public string CognitoAppClientId { get; set; }
-        public string PayoneerId { get; set; }
+        public string PayPalId { get; set; }
         public Uri Site { get; set; }
         public string UserPattern { get; set; }
         public ICollection<Creator> Creators { get; set; }

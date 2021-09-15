@@ -1,52 +1,52 @@
 <div class="container">
     <app-nav class="header"></app-nav>
-<div id="bodyWrapper">
-    <div class="subless-background"></div>
-    <div class="sr-root">
-        <div class="sr-main-post-checkout">
-            <div class="sr-payment-summary completed-view">
-                <h1>Your partner profile</h1>
+    <div id="bodyWrapper">
+        <div class="subless-background"></div>
+        <div class="sr-root">
+            <div class="sr-main-post-checkout">
+                <div class="sr-payment-summary completed-view">
+                    <h1>Your partner profile</h1>
 
+                </div>
+                <div class="completed-view-section">
+
+
+
+                    <form (ngSubmit)="onSubmit()" #partnerForm="ngForm">
+                        <div class="form-group">
+                            <label class='lbl' for="PayPalId">PayPal Id</label>
+                            <input type="text" class="form-control" id="PayPalId" required [(ngModel)]="model.payPalId"
+                                name="PayPalId" #PayPalId="ngModel">
+                            <div [hidden]="PayPalId.valid || PayPalId.pristine" class="alert alert-danger">
+                                PayPalId is required
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class='lbl' for="Site">Site</label>
+                            <input type="text" class="form-control" id="Site" required [readonly]="true"
+                                [(ngModel)]="model.site" name="Site" #Site="ngModel">
+                            <div [hidden]="Site.valid || Site.pristine" class="alert alert-danger">
+                                Site is required
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class='lbl' for="UserPattern">User Pattern</label>
+                            <input type="text" class="form-control" id="UserPattern" required [readonly]="true"
+                                [(ngModel)]="model.userPattern" name="UserPattern" #UserPattern="ngModel">
+                            <div [hidden]="UserPattern.valid || UserPattern.pristine" class="alert alert-danger">
+                                UserPattern is required
+                            </div>
+                        </div>
+                        <button id='save' type="submit" class="btn btn-success"
+                            [disabled]="!partnerForm.form.valid">Save</button>
+                    </form>
+                </div>
+                <div class="completed-view-section">
+                    <app-creatorstats></app-creatorstats>
+                </div>
+                <app-id></app-id>
             </div>
-            <div class="completed-view-section">
-
-
-            
-            <form (ngSubmit)="onSubmit()" #partnerForm="ngForm">
-                <div class="form-group">
-                    <label class='lbl' for="PayoneerId">Payoneer Id</label>
-                    <input type="text" class="form-control" id="PayoneerId" required
-                        [(ngModel)]="model.payoneerId" name="PayoneerId" #PayoneerId="ngModel">
-                    <div [hidden]="PayoneerId.valid || PayoneerId.pristine" class="alert alert-danger">
-                        PayoneerId is required
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class='lbl' for="Site">Site</label>
-                    <input type="text" class="form-control" id="Site" required  [readonly]="true" [(ngModel)]="model.site"
-                        name="Site" #Site="ngModel">
-                    <div [hidden]="Site.valid || Site.pristine" class="alert alert-danger">
-                        Site is required
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class='lbl' for="UserPattern">User Pattern</label>
-                    <input type="text" class="form-control" id="UserPattern" required  [readonly]="true" [(ngModel)]="model.userPattern"
-                        name="UserPattern" #UserPattern="ngModel">
-                    <div [hidden]="UserPattern.valid || UserPattern.pristine" class="alert alert-danger">
-                        UserPattern is required
-                    </div>
-                </div>
-                <button id='save' type="submit" class="btn btn-success"
-                    [disabled]="!partnerForm.form.valid">Save</button>
-            </form>
         </div>
-            <div  class="completed-view-section">
-                <app-creatorstats></app-creatorstats>
-            </div>
-            <app-id></app-id>
-        </div>
+
     </div>
-    
-</div>
 </div>

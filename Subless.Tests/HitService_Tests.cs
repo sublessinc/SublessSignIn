@@ -140,7 +140,7 @@ namespace Subless.Tests
             return new Partner
             {
                 CognitoAppClientId = "CognitoClient",
-                PayoneerId = "PayoneerId",
+                PayPalId = "PayPalId",
                 Site = new Uri("http://www.partner.com"),
                 UserPattern = "http://www.partner.com/profile/creator;http://www.partner.com/pictures/creator;http://www.partner.com/creator/stories"
             };

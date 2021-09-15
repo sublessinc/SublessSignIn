@@ -36,7 +36,7 @@ namespace Subless.Data
         IEnumerable<Creator> GetCreatorsByPartnerId(Guid partnerId);
         Creator GetCreatorByUsernameAndPartnerId(string username, Guid partnerId);
         Partner GetPartnerByUri(Uri uri);
-        IEnumerable<Payment> GetPaymentsByPayeePayoneerId(string payoneerId);
+        IEnumerable<Payment> GetPaymentsByPayeePayPalId(string payPalId);
         Partner GetPartnerByAdminId(Guid id);
         void DeletePartner(Partner partner);
         void DeleteCreator(Creator creator);

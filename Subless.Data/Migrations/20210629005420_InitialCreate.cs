@@ -25,7 +25,7 @@ namespace Subless.Data.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     CognitoAppClientId = table.Column<string>(type: "text", nullable: true),
-                    PayoneerId = table.Column<string>(type: "text", nullable: true),
+                    PayPalId = table.Column<string>(type: "text", nullable: true),
                     Site = table.Column<string>(type: "text", nullable: true),
                     UserPattern = table.Column<string>(type: "text", nullable: true)
                 },
@@ -40,7 +40,7 @@ namespace Subless.Data.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Payment = table.Column<double>(type: "double precision", nullable: false),
-                    PayoneerId = table.Column<string>(type: "text", nullable: true)
+                    PayPalId = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -65,7 +65,7 @@ namespace Subless.Data.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    PayoneerId = table.Column<string>(type: "text", nullable: true),
+                    PayPalId = table.Column<string>(type: "text", nullable: true),
                     Payment = table.Column<double>(type: "double precision", nullable: false),
                     DatePaid = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
                 },
@@ -127,7 +127,7 @@ namespace Subless.Data.Migrations
                     ActivationExpiration = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     PartnerId = table.Column<Guid>(type: "uuid", nullable: false),
                     UserId = table.Column<Guid>(type: "uuid", nullable: true),
-                    PayoneerId = table.Column<string>(type: "text", nullable: true)
+                    PayPalId = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {

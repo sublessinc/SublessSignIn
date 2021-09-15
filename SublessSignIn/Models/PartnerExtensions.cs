@@ -8,7 +8,7 @@ namespace SublessSignIn.Models
         {
             return new PartnerResponse
             {
-                PayoneerId = partner.PayoneerId,
+                PayPalId = partner.PayPalId,
                 Site = partner.Site,
                 UserPattern = partner.UserPattern
             };

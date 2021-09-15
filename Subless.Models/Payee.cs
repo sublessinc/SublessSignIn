@@ -6,6 +6,6 @@ namespace Subless.Models
     {
         public Guid Id { get; set; }
         public double Payment { get; set; }
-        public string PayoneerId { get; set; }
+        public string PayPalId { get; set; }
     }
 }

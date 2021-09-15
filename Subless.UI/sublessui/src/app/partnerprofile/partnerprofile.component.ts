@@ -10,7 +10,7 @@ import { PartnerService } from '../services/partner.service';
 })
 export class PartnerprofileComponent implements OnInit {
   private model$: Observable<IPartner> | undefined;
-  public model: IPartner =  { payoneerId:"", site:"", userPattern:"" };
+  public model: IPartner = { payPalId: "", site: "", userPattern: "" };
   constructor(private partnerService: PartnerService) { }
 
   ngOnInit(): void {
@@ -23,11 +23,12 @@ export class PartnerprofileComponent implements OnInit {
   }
 
   onSubmit(): void {
-    this.model$ = this.partnerService.updatePayoneer(this.model.payoneerId);
+    this.model$ = this.partnerService.updatePayPal(this.model.payPalId);
     this.model$.subscribe({
       next: (partner: IPartner) => {
         this.model = partner;
       }
-    })  }
+    })
+  }
 
 }
