@@ -147,7 +147,7 @@ namespace Subless.Tests
 
             //Assert
             Assert.NotEmpty(allPayments); // We should have a payment directed at subless
-            Assert.Equal(.1313, allPayments["Partner"]);
+            Assert.Equal(.13, allPayments["Partner"]);
         }
 
 
@@ -186,7 +186,7 @@ namespace Subless.Tests
 
             //Assert
             Assert.NotEmpty(allPayments); // We should have a payment directed at subless
-            Assert.Equal(.5252, allPayments["Creator"]);
+            Assert.Equal(.52, allPayments["Creator"]);
         }
 
         [Fact]
@@ -231,9 +231,9 @@ namespace Subless.Tests
 
             //Assert
             Assert.NotEmpty(allPayments); // We should have a payment directed at subless
-            Assert.Equal(3.6848, allPayments["Creator1"]);
-            Assert.Equal(3.6848, allPayments["Creator2"]);
-            Assert.Equal(1.8424, allPayments["Partner"]);
+            Assert.Equal(3.68, allPayments["Creator1"]);
+            Assert.Equal(3.68, allPayments["Creator2"]);
+            Assert.Equal(1.84, allPayments["Partner"]);
         }
 
         [Fact]
