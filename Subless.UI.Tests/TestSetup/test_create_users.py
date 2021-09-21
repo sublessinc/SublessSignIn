@@ -12,18 +12,8 @@ usertypes = [
     'BasicUser',
 ]
 
-
-@pytest.fixture(scope='class')
-def user_data():
-    data = get_all_test_user_data()
-
-    yield data
-
-    save_user_test_data(data)
-
-
 @pytest.mark.parametrize('usertype', usertypes)
-def test_user_data_creation(usertype, firefox_driver, user_data):
+def test_create_test_users(usertype, firefox_driver, user_data):
     inbox = MailSlurp.get_inbox_from_name(usertype)
 
     id, token = create_user(firefox_driver, inbox)

@@ -5,9 +5,6 @@ from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
 from webdriver_manager.firefox import GeckoDriverManager
 
-from EmailLib import MailSlurp
-from UsersLib.Users import create_user
-
 
 def pytest_addoption(parser):
     parser.addoption("--password", action="store", help="override login password for all tests")
@@ -31,6 +28,8 @@ def params(request):
 
 @pytest.fixture
 def mailslurp_inbox():
+    from EmailLib import MailSlurp
+
     # create
     inbox = MailSlurp.create_inbox()
 
@@ -40,25 +39,41 @@ def mailslurp_inbox():
     MailSlurp.delete_inbox_by_id(inbox.id)
 
 
+@pytest.fixture(scope='session')
+def user_data():
+    from UsersLib.Users import get_all_test_user_data, save_user_test_data
+    data = get_all_test_user_data()
+
+    yield data
+
+    save_user_test_data(data)
+
+
 # ideally this would be some sort of API call
 #   but we're working with what we've got available
 @pytest.fixture
-def subless_account(mailslurp_inbox, chrome_driver):
+def subless_account(mailslurp_inbox, firefox_driver):
+    from ApiLib import User
+    from UsersLib.Users import create_user
+
     # create
-    id, token = create_user(chrome_driver, mailslurp_inbox)
+    id, token = create_user(firefox_driver, mailslurp_inbox)
 
-    yield id
+    yield id, token
 
-    # todo: do not have this functionality yet
-    # destroy
+    User.delete(token)
 
 
-# todo: stubbing this for now as it may be useful later
 @pytest.fixture
-def subless_admin_account(subless_account):
-    # update perms
+def subless_admin_account(subless_account, test_data):
+    from ApiLib import Admin
 
-    yield 'baz'
+    id, token = subless_account
+
+    Admin.set_admin(id, test_data['GodUser']['token'])
+
+    yield id, token
+
 
 
 @pytest.fixture(params=[

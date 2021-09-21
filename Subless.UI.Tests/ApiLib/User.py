@@ -1,12 +1,12 @@
 import requests
 
 
-def delete(token):
+def delete(auth_token):
     url = "https://dev.subless.com/api/User"
 
     payload = {}
     headers = {
-        'Authorization': f'Bearer {token}'
+        'Authorization': f'Bearer {auth_token}'
     }
 
     response = requests.request("DELETE", url, headers=headers, data=payload)

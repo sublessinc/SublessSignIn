@@ -8,4 +8,4 @@ class Keys:
     god_token = all_json['god_token']
     god_password = all_json['god_password']
     god_email = all_json['god_email']
-
+    cognito_app_client_id = all_json['cognito_app_client_id']

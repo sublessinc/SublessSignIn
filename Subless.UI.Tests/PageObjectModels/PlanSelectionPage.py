@@ -1,12 +1,7 @@
 import logging
 
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.ui import WebDriverWait
-
-from PageObjectModels.StripeSignupPage import StripeSignupPage
+from PageObjectModels.ExternalPages.StripeSignupPage import StripeSignupPage
 from .BasePage import BasePage
-import time
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger()
