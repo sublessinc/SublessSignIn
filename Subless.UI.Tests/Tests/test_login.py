@@ -52,7 +52,7 @@ def test_incomplete_payment_processing(web_driver, params):
     pass
 
 
-def test_user_creation(web_driver, mailslurp_account, params):
+def test_user_creation(web_driver, mailslurp_inbox, params):
     # GIVEN: I am on the Subless login page, as a completely new user
     login_page = LoginPage(web_driver).open()
 
@@ -60,9 +60,9 @@ def test_user_creation(web_driver, mailslurp_account, params):
     sign_up_page = login_page.click_sign_up()
     assert "signup" in web_driver.current_url
 
-    otp_page = sign_up_page.sign_up(mailslurp_account.email_address,
+    otp_page = sign_up_page.sign_up(mailslurp_inbox.email_address,
                                     'SublessTestUser')
-    plan_selection_page = otp_page.confirm_otp(MailSlurp.get_newest_otp(inbox_id=mailslurp_account.id))
+    plan_selection_page = otp_page.confirm_otp(MailSlurp.get_newest_otp(inbox_id=mailslurp_inbox.id))
 
     # THEN: I should be taken to the plan selection page
     assert "Sublessui" in web_driver.title

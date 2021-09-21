@@ -3,8 +3,10 @@ import json
 import mailslurp_client
 import re
 
+from Keys.Keys import Keys
+
 configuration = mailslurp_client.Configuration()
-configuration.api_key['x-api-key'] = json.loads('../keys.json').contents['mailslurp_api_key']
+configuration.api_key['x-api-key'] = Keys.mailslurp_api_key
 
 # CURRENTLY DEFINED MAILSLURP USERS
 # GodUser
@@ -37,6 +39,7 @@ def get_inbox_from_name(inbox_name):
         # create an inbox using the inbox controller
         inbox_controller = mailslurp_client.InboxControllerApi(api_client)
         inboxes = inbox_controller.get_all_inboxes(page=0)
+        mailslurp_client.EmailControllerApi(api_client).delete_all_emails() # todo: should I be doing this?
 
         inbox = list((x for x in inboxes.content if x.name == inbox_name))[0]
 

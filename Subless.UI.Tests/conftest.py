@@ -6,6 +6,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 from webdriver_manager.firefox import GeckoDriverManager
 
 from EmailLib import MailSlurp
+from UsersLib.Users import create_user
 
 
 def pytest_addoption(parser):
@@ -29,7 +30,7 @@ def params(request):
 
 
 @pytest.fixture
-def mailslurp_account():
+def mailslurp_inbox():
     # create
     inbox = MailSlurp.create_inbox()
 
@@ -42,19 +43,9 @@ def mailslurp_account():
 # ideally this would be some sort of API call
 #   but we're working with what we've got available
 @pytest.fixture
-def subless_account(mailslurp_account, chrome_driver):
+def subless_account(mailslurp_inbox, chrome_driver):
     # create
-    from PageObjectModels.LoginPage import LoginPage
-    login_page = LoginPage(chrome_driver).open()
-    sign_up_page = login_page.click_sign_up()
-    otp_page = sign_up_page.sign_up(mailslurp_account.email_address,
-                                    'SublessTestUser')
-    otp_page.confirm_otp(MailSlurp.get_newest_otp(inbox_id=mailslurp_account.id))
-
-    chrome_driver.get(f'https://{os.environ["environment"]}.subless.com/register-payment#id')
-
-    id_field = chrome_driver.find_elements_by_id('id')[0]
-    id = id_field.get_attribute('value')
+    id, token = create_user(chrome_driver, mailslurp_inbox)
 
     yield id
 
@@ -71,8 +62,8 @@ def subless_admin_account(subless_account):
 
 
 @pytest.fixture(params=[
-    'chrome_driver',
-    # 'firefox_driver',
+    # 'chrome_driver',
+    'firefox_driver',
 ])
 def web_driver(request):
     return request.getfixturevalue(request.param)
