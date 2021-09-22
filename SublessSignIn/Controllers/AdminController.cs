@@ -28,12 +28,7 @@ namespace SublessSignIn.Controllers
             return Ok();
         }
 
-        [HttpGet("user")]
-        public ActionResult<Guid> GetUserId()
-        {
-            var cognitoId = userService.GetUserClaim(HttpContext.User);
-            return Ok(userService.GetUserByCognitoId(cognitoId).Id);
-        }
+
 
         [TypeFilter(typeof(AdminAuthorizationFilter))]
         [HttpPost("setadmin")]
@@ -52,6 +47,13 @@ namespace SublessSignIn.Controllers
             return Ok();
         }
 
-
+        [TypeFilter(typeof(AdminAuthorizationFilter))]
+        [HttpGet("userCapabilties")]
+        public IActionResult GetUserCapabilities([FromQuery] Guid userId)
+        {
+            var user = userService.GetUser(userId);
+            user = userService.GetUserByCognitoId(user.CognitoId);
+            return Ok(user);
+        }    
     }
 }
