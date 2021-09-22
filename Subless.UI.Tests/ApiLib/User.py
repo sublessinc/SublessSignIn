@@ -1,8 +1,10 @@
+import os
+
 import requests
 
 
 def delete(auth_token):
-    url = "https://dev.subless.com/api/User"
+    url = f'https://{os.environ["environment"]}.subless.com/api/User'
 
     payload = {}
     headers = {

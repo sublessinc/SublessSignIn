@@ -24,19 +24,23 @@ def test_create_test_users(usertype, firefox_driver, user_data):
 
 
 def test_retrieve_god_user_token(firefox_driver, user_data):
-    from Keys.Keys import Keys
-
-    login_page = LoginPage(firefox_driver).open()
-    login_page.sign_in(Keys.god_email, Keys.god_password)
-
-    id, token = get_user_id_and_token(firefox_driver)
-
-    user_data['GodUser'] = {'id': id,
-                            'email': Keys.god_email,
-                            'token': token}
+    pass
 
 
 @pytest.mark.parametrize('usertype', usertypes)
 def test_delete_all_users(usertype):
     data = get_all_test_user_data()
     ApiLib.User.delete(data[usertype]['token'])
+
+
+@pytest.mark.parametrize('usertype', usertypes)
+def test_delete_users_smart(usertype, firefox_driver):
+    login_page = LoginPage(firefox_driver).open()
+
+    login_page.sign_in(MailSlurp.get_inbox_from_name(usertype).email_address, 'SublessTestUser')
+
+    id, token = get_user_id_and_token(firefox_driver)
+
+    login_page.logout()
+
+    ApiLib.User.delete(token)

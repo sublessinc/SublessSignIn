@@ -67,6 +67,11 @@ class LoginPage(BasePage):
         self.password_textbox.send_keys(password)
         self.sign_in_button.click()
 
+        if 'The username or password you entered is invalid' in self.driver.find_element_by_tag_name('body').text:
+            raise Exception('Invalid user, could not login')
+        if 'User is not confirmed.' in self.driver.find_element_by_tag_name('body').text:
+            raise Exception('User is not confirmed, could not login')
+
         # wait for redirect
         WebDriverWait(self.driver, 10).until(lambda driver: 'login' not in self.driver.current_url)
 

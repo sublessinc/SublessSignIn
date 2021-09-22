@@ -1,9 +1,11 @@
 import json
+import os
 
 import requests
 
+
 def set_admin(user_id, auth_token):
-    url = f'https://dev.subless.com/api/Admin/setadmin?userId={user_id}'
+    url = f'https://{os.environ["environment"]}.subless.com/api/Admin/setadmin?userId={user_id}'
 
     payload = {}
     headers = {
@@ -16,7 +18,7 @@ def set_admin(user_id, auth_token):
 
 
 def get_user_capabilities(user_id, auth_token):
-    url = f'https://dev.subless.com/api/Admin/userCapabilties?userId={user_id}'
+    url = f'https://{os.environ["environment"]}.subless.com/api/Admin/userCapabilties?userId={user_id}'
 
     payload = {}
     headers = {
