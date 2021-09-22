@@ -75,6 +75,52 @@ namespace Subless.Tests
         }
 
         [Fact]
+        public void CalculatorService_WithInActiveCreator_SkipsInactive()
+        {
+            //Arrange
+            var allPayments = new Dictionary<string, double>();
+            var stripeService = StripeServiceBuilder(new List<Payer>
+            {
+                new Payer()
+                {
+                    Payment = 1,
+                    UserId = Guid.NewGuid()
+                }
+            });
+            var inActiveCreatorId = Guid.NewGuid();
+            var activeCreatorId = Guid.NewGuid();
+            var hit = new List<Hit> { 
+                new Hit { CognitoId = "test",  CreatorId = activeCreatorId },
+                new Hit { CognitoId = "inactive", CreatorId = inActiveCreatorId },
+            };
+            var hitService = HitServiceBuilder(hit);
+            var s3Service = new Mock<IFileStorageService>();
+            s3Service.Setup(x => x.WritePaymentsToCloudFileStore(It.IsAny<Dictionary<string, double>>()))
+                .Callback<Dictionary<string, double>>(y =>
+                {
+                    allPayments = y;
+                });
+            var creatorService = new Mock<ICreatorService>();
+            creatorService.Setup(x => x.GetCreator(It.Is<Guid>(x=> x == activeCreatorId))).Returns(new Creator() { Id=activeCreatorId, PayPalId = "test" });
+            creatorService.Setup(x => x.GetCreator(It.Is<Guid>(x => x == inActiveCreatorId))).Returns(new Creator() { Id=inActiveCreatorId, PayPalId = null });
+
+            var partnerService = PartnerServiceBuilder();
+            var sut = CalculatorServiceBuilder(
+                stripe: stripeService,
+                s3Service: s3Service,
+                hitService: hitService,
+                creatorService: creatorService,
+                partnerService: partnerService
+                );
+            //Act
+            sut.CalculatePayments(DateTime.UtcNow.AddMonths(-1), DateTime.UtcNow);
+
+            //Assert
+            Assert.NotEmpty(allPayments); // We should have a payment directed at subless, even if it's zero
+            Assert.Equal(3, allPayments.Count); //Subless, Partner, Active creator, not inactive creator
+        }
+
+        [Fact]
         public void CalculatorService_WithOneDollar_CalculatesOurCut()
         {
             //Arrange

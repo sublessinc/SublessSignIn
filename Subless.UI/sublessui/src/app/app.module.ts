@@ -17,10 +17,10 @@ import { CreatorstatsComponent } from './creatorstats/creatorstats.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
 import { IdComponent } from './id/id.component';
-import { PayPalComponent } from './payPal/payPal.component';
 import { PartnerprofileComponent } from './partnerprofile/partnerprofile.component';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { UnauthorizedInterceptor } from './services/auth.interceptor';
+import { StopNavGuard } from './stop-nav.guard';
 
 @NgModule({
   declarations: [
@@ -33,8 +33,7 @@ import { UnauthorizedInterceptor } from './services/auth.interceptor';
     LoggedOutComponent,
     CreatorstatsComponent,
     IdComponent,
-    PayPalComponent,
-    PartnerprofileComponent,
+    PartnerprofileComponent
   ],
   imports: [
     BrowserModule,
@@ -54,13 +53,14 @@ import { UnauthorizedInterceptor } from './services/auth.interceptor';
         silentRenew: true,
         useRefreshToken: true,
         logLevel: LogLevel.Error,
-        secureRoutes: ['/api/Creator', '/api/Checkout/', '/api/Authorization', '/api/Partner', '/api/Admin'],
+        secureRoutes: ['/api/Creator', '/api/Checkout/', '/api/Authorization', '/api/Partner', '/api/Admin', '/api/User'],
       },
     }),
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: UnauthorizedInterceptor, multi: true },
+    StopNavGuard
   ],
   bootstrap: [AppComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],

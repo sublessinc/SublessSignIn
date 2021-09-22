@@ -11,10 +11,10 @@ export class AdminService {
 
   constructor(private httpClient: HttpClient,
     private oidcSecurityService: OidcSecurityService
-    ) { }
+  ) { }
 
   getId(): Observable<string> {
-    return this.httpClient.get<string>('/api/Admin/user');
+    return this.httpClient.get<string>('/api/User');
   }
 
   getToken(): string {
