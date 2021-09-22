@@ -13,6 +13,6 @@ namespace Subless.Services
         Partner GetPartnerByAdminId(Guid adminId);
         IEnumerable<Partner> GetPartners();
         void UpdatePartner(Partner partner);
-        Partner UpdatePartnerPayoneerId(Guid partnerId, string payoneerId);
+        Partner UpdatePartnerPayPalId(Guid partnerId, string payPalId);
     }
 }

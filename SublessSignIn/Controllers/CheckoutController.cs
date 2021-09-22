@@ -112,6 +112,15 @@ namespace SublessSignIn.Controllers
                 Id = _userService.GetStripeIdFromCognitoId(cognitoId)
             });
         }
+
+        [HttpDelete]
+        public IActionResult CancelSubscription()
+        {
+            var cognitoId = _userService.GetUserClaim(HttpContext.User);
+            var cancelled = _stripeService.CancelSubscription(cognitoId);
+            return Ok(cancelled);
+        }
+
         private class SessionId
         {
             public string Id { get; set; }

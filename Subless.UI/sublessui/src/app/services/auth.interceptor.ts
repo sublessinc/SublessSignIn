@@ -12,7 +12,7 @@ import { Router } from '@angular/router';
 import { AuthorizationService } from './authorization.service';
 
 @Injectable()
-export class AuthInterceptor implements HttpInterceptor {
+export class UnauthorizedInterceptor implements HttpInterceptor {
 
     constructor(private authService: AuthorizationService) { }
 

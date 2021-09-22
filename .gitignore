@@ -36,3 +36,12 @@ msbuild.wrn
 # Visual Studio 2015
 .vs/
 settings.env
+
+# python
+Subless.UI.Tests/virtual_env/*
+Subless.UI.Tests/.env
+/Subless.UI.Tests/keys.json
+/Subless.UI.Tests/.cache/
+/Subless.UI.Tests/.pytest_cache/
+
+Subless.JS/node_modules/**

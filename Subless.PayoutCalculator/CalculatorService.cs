@@ -13,7 +13,7 @@ namespace Subless.PayoutCalculator
         //TODO, these need to be configurable or something
         public const double PartnerFraction = .2;
         public const double SublessFraction = .02;
-        public readonly string SublessPayoneerId;
+        public readonly string SublessPayPalId;
         public const int CurrencyPrecision = 4;
         private readonly IStripeService _stripeService;
         private readonly IHitService _hitService;
@@ -42,7 +42,7 @@ namespace Subless.PayoutCalculator
             _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
             _s3Service = s3Service ?? throw new ArgumentNullException(nameof(s3Service));
             _logger = _loggerFactory.CreateLogger<CalculatorService>();
-            SublessPayoneerId = stripeOptions.Value.SublessPayoneerId ?? throw new ArgumentNullException(nameof(stripeOptions.Value.SublessPayoneerId));
+            SublessPayPalId = stripeOptions.Value.SublessPayPalId ?? throw new ArgumentNullException(nameof(stripeOptions.Value.SublessPayPalId));
         }
 
         public void CalculatePayments(DateTime startDate, DateTime endDate)
@@ -56,6 +56,8 @@ namespace Subless.PayoutCalculator
                 var payees = new List<Payee>();
                 // get who they visited
                 var hits = RetrieveUsersMonthlyHits(payer.UserId, startDate, endDate);
+                // filter out incomplete creators
+                hits = FilterInvalidCreators(hits);
                 // group all visits to payee
                 var creatorVisits = GetVisitsPerCreator(hits);
                 // get partner share
@@ -67,25 +69,44 @@ namespace Subless.PayoutCalculator
                 // set aside 2% for us
                 payees.Add(GetSublessPayment(payer.Payment, SublessFraction));
                 // ensure total payment adds up
-                var totalPayments = payees.Sum(payee => payee.Payment);
+                var totalPayments = Math.Round(payees.Sum(payee => payee.Payment), CurrencyPrecision, MidpointRounding.ToZero);
                 if (totalPayments > payer.Payment)
                 {
                     throw new Exception($"The math did not add up for payer:{payer.UserId}");
                 }
+                
                 // record each outgoing payment to master list
                 SavePaymentDetails(payees, payer, endDate);
                 AddPayeesToMasterList(allPayouts, payees);
             }
+            // make sure we're not sending inappropriate fractions
+            RoundPaymentsForFinalPayment(allPayouts);
             // record to database
             SaveMasterList(allPayouts, endDate);
             // record to s3 bucket
             SavePayoutsToS3(allPayouts);
         }
 
+        private IEnumerable<Hit> FilterInvalidCreators(IEnumerable<Hit> hits)
+        {
+            var creatorIds = hits.Select(x => x.CreatorId);
+            var creators = creatorIds.Select(x => _creatorService.GetCreator(x));
+            var invalidCreators = creators.Where(x => x.ActivationCode != null || string.IsNullOrWhiteSpace(x.PayPalId));
+            var validHits = hits.Where(x => !invalidCreators.Any(y => y.Id == x.CreatorId));
+            return validHits;
+        }
 
         private IEnumerable<Payer> GetPayments(DateTime startDate, DateTime endDate)
         {
             return _stripeService.GetInvoicesForRange(startDate, endDate);
+        }
+
+        private void RoundPaymentsForFinalPayment(Dictionary<string, double> masterPayoutList)
+        {
+            foreach (var key in masterPayoutList.Keys)
+            {
+                masterPayoutList[key] = Math.Round(masterPayoutList[key], 2, MidpointRounding.ToZero);
+            }
         }
 
         private Payee GetSublessPayment(double Payment, double sublessFraction)
@@ -93,7 +114,7 @@ namespace Subless.PayoutCalculator
             return new Payee
             {
                 Payment = Math.Round(Payment * sublessFraction, CurrencyPrecision, MidpointRounding.ToZero),
-                PayoneerId = SublessPayoneerId
+                PayPalId = SublessPayPalId
             };
         }
 
@@ -141,7 +162,7 @@ namespace Subless.PayoutCalculator
                 payees.Add(new Payee
                 {
                     Payment = creatorPayment,
-                    PayoneerId = creator.PayoneerId
+                    PayPalId = creator.PayPalId
                 });
             }
             return payees;
@@ -156,16 +177,16 @@ namespace Subless.PayoutCalculator
                 partnerPayment = Math.Round(partnerPayment, CurrencyPrecision, MidpointRounding.ToZero);
                 var creator = _creatorService.GetCreator(creatorVisits.Key);
                 var partner = _partnerService.GetPartner(creator.PartnerId);
-                if (payees.Any(x => x.PayoneerId == partner.PayoneerId))
+                if (payees.Any(x => x.PayPalId == partner.PayPalId))
                 {
-                    var payee = payees.FirstOrDefault(x => x.PayoneerId == partner.PayoneerId);
+                    var payee = payees.FirstOrDefault(x => x.PayPalId == partner.PayPalId);
                     payee.Payment = Math.Round(payee.Payment + partnerPayment, CurrencyPrecision, MidpointRounding.ToZero);
                 }
                 else
                 {
                     var payee = new Payee()
                     {
-                        PayoneerId = partner.PayoneerId,
+                        PayPalId = partner.PayPalId,
                         Payment = partnerPayment
                     };
                     payees.Add(payee);
@@ -194,20 +215,20 @@ namespace Subless.PayoutCalculator
         {
             foreach (var payee in payees)
             {
-                if (masterPayoutList.ContainsKey(payee.PayoneerId))
+                if (masterPayoutList.ContainsKey(payee.PayPalId))
                 {
-                    masterPayoutList[payee.PayoneerId] += payee.Payment;
+                    masterPayoutList[payee.PayPalId] += payee.Payment;
                 }
                 else
                 {
-                    masterPayoutList.Add(payee.PayoneerId, payee.Payment);
+                    masterPayoutList.Add(payee.PayPalId, payee.Payment);
                 }
             }
         }
 
         private void SaveMasterList(Dictionary<string, double> masterPayoutList, DateTime endDate)
         {
-            var payments = masterPayoutList.Select(x => new PaymentAuditLog() { Payment = x.Value, PayoneerId = x.Key, DatePaid = DateTime.UtcNow });
+            var payments = masterPayoutList.Select(x => new PaymentAuditLog() { Payment = x.Value, PayPalId = x.Key, DatePaid = DateTime.UtcNow });
             _paymentLogsService.SaveAuditLogs(payments);
         }
 

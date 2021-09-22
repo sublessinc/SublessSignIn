@@ -75,7 +75,7 @@ namespace Subless.Services
             }
             // Set user modifiable properties
             var currentCreator = creators.First();
-            currentCreator.PayoneerId = creator.PayoneerId;
+            currentCreator.PayPalId = creator.PayPalId;
             _userRepository.UpdateCreator(currentCreator);
             return currentCreator;
         }
@@ -87,7 +87,7 @@ namespace Subless.Services
             {
                 throw new ArgumentNullException(nameof(creator));
             }
-            var payments = _userRepository.GetPaymentsByPayeePayoneerId(creator.PayoneerId);
+            var payments = _userRepository.GetPaymentsByPayeePayPalId(creator.PayPalId);
             var paymentStats = new Dictionary<DateTime, MontlyPaymentStats>();
             foreach (var payment in payments)
             {

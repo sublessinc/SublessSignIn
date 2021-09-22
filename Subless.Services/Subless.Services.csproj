@@ -5,13 +5,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Amazon.Extensions.CognitoAuthentication" Version="2.2.1" />
-    <PackageReference Include="AWSSDK.CognitoIdentity" Version="3.7.0.16" />
-    <PackageReference Include="AWSSDK.CognitoIdentityProvider" Version="3.7.0.17" />
-    <PackageReference Include="AWSSDK.S3" Version="3.7.1.7" />
+    <PackageReference Include="Amazon.Extensions.CognitoAuthentication" Version="2.2.2" />
+    <PackageReference Include="AWSSDK.CognitoIdentity" Version="3.7.0.65" />
+    <PackageReference Include="AWSSDK.CognitoIdentityProvider" Version="3.7.1.37" />
+    <PackageReference Include="AWSSDK.S3" Version="3.7.2.5" />
     <PackageReference Include="CsvHelper" Version="27.1.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="5.0.7" />
-    <PackageReference Include="Stripe.net" Version="39.45.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="5.0.10" />
+    <PackageReference Include="Stripe.net" Version="39.66.0" />
     <PackageReference Include="System.Runtime.Caching" Version="5.0.0" />
   </ItemGroup>
 

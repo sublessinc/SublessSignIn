@@ -18,5 +18,7 @@ namespace Subless.Services
         IEnumerable<User> GetUsersFromStripeIds(IEnumerable<string> customerIds);
         User GetUser(Guid id);
         string GetUserClaim(ClaimsPrincipal user);
+        void ClearStripePayment(Guid id);
+        void DemoteUser(Guid id);
     }
 }

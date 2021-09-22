@@ -23,11 +23,16 @@ namespace Subless.Services
 
         public void OutputAdminKeyIfNoAdmins()
         {
-            if (!_userService.GetAdmins().Any())
+            var admins = _userService.GetAdmins();
+            if (!admins.Any())
             {
                 var key = Guid.NewGuid();
                 _userRepository.SetAdminKey(key);
                 _logger.LogError($"No admins configured, admin key: {key}");
+            }
+            else
+            {
+                _logger.LogInformation($"Admins: {string.Join("\n", admins.Select(x => x.CognitoId))}");
             }
         }
 

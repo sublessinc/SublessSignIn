@@ -16,7 +16,7 @@ namespace Subless.Data.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("Relational:MaxIdentifierLength", 63)
-                .HasAnnotation("ProductVersion", "5.0.5")
+                .HasAnnotation("ProductVersion", "5.0.9")
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
             modelBuilder.Entity("Subless.Models.Creator", b =>
@@ -37,7 +37,7 @@ namespace Subless.Data.Migrations
                     b.Property<Guid>("PartnerId")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("PayoneerId")
+                    b.Property<string>("PayPalId")
                         .HasColumnType("text");
 
                     b.Property<Guid?>("UserId")
@@ -107,7 +107,7 @@ namespace Subless.Data.Migrations
                     b.Property<string>("CognitoAppClientId")
                         .HasColumnType("text");
 
-                    b.Property<string>("PayoneerId")
+                    b.Property<string>("PayPalId")
                         .HasColumnType("text");
 
                     b.Property<string>("Site")
@@ -132,11 +132,11 @@ namespace Subless.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<string>("PayPalId")
+                        .HasColumnType("text");
+
                     b.Property<double>("Payment")
                         .HasColumnType("double precision");
-
-                    b.Property<string>("PayoneerId")
-                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -196,11 +196,11 @@ namespace Subless.Data.Migrations
                     b.Property<DateTime>("DatePaid")
                         .HasColumnType("timestamp without time zone");
 
+                    b.Property<string>("PayPalId")
+                        .HasColumnType("text");
+
                     b.Property<double>("Payment")
                         .HasColumnType("double precision");
-
-                    b.Property<string>("PayoneerId")
-                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
