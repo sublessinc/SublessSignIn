@@ -8,36 +8,42 @@ import typescript from '@rollup/plugin-typescript';
 const baseConfig = createBasicConfig();
 
 export default merge(baseConfig, {
-    input: './src/subless.ts',
+    input: './src/test.ts',
     output: [
+        // {
+        //     file: './../SublessSignIn/wwwroot/dist/subless.cjs.js',
+        //     format: 'cjs'
+        // },
         {
-            file: './../SublessSignIn/wwwroot/dist/subless.cjs.js',
-            format: 'cjs'
+            file: './../SublessSignIn/wwwroot/dist/test.es.js',
+            format: 'es',
+            //minifyInternalExports: false,
+            exports: 'named',
         },
-        {
-            file: './../SublessSignIn/wwwroot/dist/subless.es.js',
-            format: 'es'
-        }
     ],
-    // {
+    // external: [
+    //     'oidc-client-ts',
+    //     'node_modules/oidc-client-ts/**'
+    // ],
     //     //inlineDynamicImports: true,
     //     dir: './../SublessSignIn/wwwroot/dist/',
     //     format: 'iife',
     //     sourcemap: true,
-    //     //exports: 'named',
 
-    // },
+
     plugins: [
         nodeResolve({
             //ignoreGlobal: false,
             //include: ['node_modules/**'],
-            dynamicRequireTargets: [
+            moduleDirectories: [
                 'node_modules/oidc-client-ts/**'
             ]
         }),
         commonjs({
-
+            include: 'node_modules/**'
         }),
-        typescript()
+        typescript({
+            sourceMap: true
+        })
     ]
 });
