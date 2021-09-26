@@ -43,3 +43,5 @@ Subless.UI.Tests/.env
 /Subless.UI.Tests/keys.json
 /Subless.UI.Tests/.cache/
 /Subless.UI.Tests/.pytest_cache/
+
+Subless.JS/node_modules/**
