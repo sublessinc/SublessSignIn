@@ -4,6 +4,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Net;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
@@ -112,15 +113,18 @@ namespace SublessSignIn
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "SublessSignIn v1"));
             }
 
-            //app.UseHttpsRedirection();
-
-            app.UseFileServer();
+            // I dont think we need this, however, I don't fully understand it, so restore it if the front end file server starts acting a fool - 9/27/21
+            //app.UseFileServer();
             app.UseStaticFiles(new StaticFileOptions
             {
-                OnPrepareResponse = ctx =>
+                ServeUnknownFileTypes = true,
+                OnPrepareResponse = (ctx) =>
                 {
-                    ctx.Context.Response.Headers.Append("Cache-Control", "max-age=3000, must-revalidate");
-                }
+                    // for some reason, we have to override the headers for static files
+                    ctx.Context.Response.Headers.Append("Access-Control-Allow-Origin", "*");
+                    ctx.Context.Response.Headers.Append("Access-Control-Allow-Headers",
+                      "Origin, X-Requested-With, Content-Type, Accept");
+                },
             });
             app.UseAuthentication();
             app.UseRouting();
