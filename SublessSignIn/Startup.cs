@@ -113,8 +113,7 @@ namespace SublessSignIn
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "SublessSignIn v1"));
             }
 
-            //app.UseHttpsRedirection();
-
+            // I dont think we need this, however, I don't fully understand it, so restore it if the front end file server starts acting a fool - 9/27/21
             //app.UseFileServer();
             app.UseStaticFiles(new StaticFileOptions
             {
