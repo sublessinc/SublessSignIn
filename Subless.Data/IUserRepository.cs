@@ -41,5 +41,6 @@ namespace Subless.Data
         void DeletePartner(Partner partner);
         void DeleteCreator(Creator creator);
         void DeleteUser(User user);
+        User GetUserWithRelationships(Guid id);
     }
 }

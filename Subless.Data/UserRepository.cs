@@ -222,6 +222,11 @@ namespace Subless.Data
             return Users.Find(id);
         }
 
+        public User GetUserWithRelationships(Guid id)
+        {
+            return Users.Include(u => u.Creators).Include(u => u.Partners).Single(u => u.Id == id);
+        }
+
         public bool IsUserAdmin(string cognitoId)
         {
             return Users.Any(x => x.CognitoId == cognitoId && x.IsAdmin);
