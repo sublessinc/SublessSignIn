@@ -164,7 +164,7 @@ namespace Subless.Data
 
         public IEnumerable<Partner> GetPartners()
         {
-            return Partners.ToList();
+            return Partners.Include(p=>p.Creators).ToList();
         }
 
         public Partner GetPartner(Guid id)
