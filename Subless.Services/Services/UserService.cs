@@ -100,7 +100,7 @@ namespace Subless.Services
 
         public void DemoteUser(Guid id)
         {
-            var user = _userRepo.GetUserById(id);
+            var user = _userRepo.GetUserWithRelationships(id);
             if (user.Partners != null && user.Partners.Any())
             {
                 foreach (var partner in user.Partners)

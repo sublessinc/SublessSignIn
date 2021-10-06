@@ -164,7 +164,7 @@ namespace Subless.Data
 
         public IEnumerable<Partner> GetPartners()
         {
-            return Partners.ToList();
+            return Partners.Include(p=>p.Creators).ToList();
         }
 
         public Partner GetPartner(Guid id)
@@ -220,6 +220,11 @@ namespace Subless.Data
         public User GetUserById(Guid id)
         {
             return Users.Find(id);
+        }
+
+        public User GetUserWithRelationships(Guid id)
+        {
+            return Users.Include(u => u.Creators).Include(u => u.Partners).Single(u => u.Id == id);
         }
 
         public bool IsUserAdmin(string cognitoId)
