@@ -4,17 +4,20 @@ const subless_Headers = new Headers();
 subless_Headers.set('Cache-Control', 'no-store');
 var subless_urlParams = new URLSearchParams(window.location.search);
 var subless_mgr: UserManager | null = null;
+const subless_Uri = process.env.SUBLESS_URL;
 const subless_baseUri = location.protocol + '//' + window.location.hostname + (location.port ? ':' + location.port : '') + window.location.pathname;
-const subless_silentRenewPage = '<html><body>' +
-    '<script src="https://cdnjs.cloudflare.com/ajax/libs/oidc-client/1.11.5/oidc-client.js" type = "text/javascript" ></script>' +
-    '<script src="https://dev.subless.com/dist/subless.js" type="text/javascript"></script>' +
-    '<script type="text/javascript">' +
-    'subless_SilentCallback();' +
-    '</script>' +
-    '</body></html>';
-
+const subless_silentRenewPage =
+    '<html>' +
+    '<body>' +
+    '    <script type="module">' +
+    '        import Subless from "' + subless_Uri + '";' +
+    '        window.subless = Subless;' +
+    '        window.subless.subless_SilentCallback();' +
+    '    </script>' +
+    '</body>' +
+    '</html>';
 const subless_silentRenewBlob = new Blob([subless_silentRenewPage], { type: 'text/html' });
-const subless_Uri = "https://dev.subless.com";
+
 interface SublessInterface {
     subless_GetConfig(): Promise<UserManagerSettings>;
     subless_initUserManagement(): Promise<UserManager>;
@@ -134,7 +137,7 @@ export class Subless implements SublessInterface {
                 return true;
             }
             return false;
-        });;
+        });
     }
 
     async subless_loginCallback() {

@@ -1,8 +1,8 @@
 // Generated using webpack-cli https://github.com/webpack/webpack-cli
-
+const Dotenv = require('dotenv-webpack');
 const path = require("path");
 
-const isProduction = process.env.NODE_ENV == "production";
+const isProduction = process.env.NODE_ENV != "local";
 
 const config = {
   entry: "./src/subless.ts",
@@ -16,8 +16,10 @@ const config = {
     }
   },
   plugins: [
-    // Add your plugins here
-    // Learn more about plugins from https://webpack.js.org/configuration/plugins/
+    new Dotenv({
+      path: './environment/' + process.env.NODE_ENV + '.env',
+      safe: true
+    })
   ],
   module: {
     rules: [
