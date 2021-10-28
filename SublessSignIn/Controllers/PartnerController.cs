@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Web;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -40,10 +41,10 @@ namespace SublessSignIn.Controllers
             }
             var scope = User.Claims.FirstOrDefault(x => x.Type == "scope")?.Value;
             var cognitoClientId = User.Claims.FirstOrDefault(x => x.Type == "client_id")?.Value;
-            _logger.LogInformation($"Partner {cognitoClientId} registering creator {username}");
+            _logger.LogInformation($"Partner {cognitoClientId} registering creator {HttpUtility.UrlEncode(username)}");
             if (scope == null || !scope.Contains("creator.register") || !scope.Contains(_settings.Domain) || cognitoClientId == null)
             {
-                _logger.LogError($"Unauthorized user registration Scope{scope}, username:{username}, clientId: {cognitoClientId}");
+                _logger.LogError($"Unauthorized user registration Scope{scope}, username:{HttpUtility.UrlEncode(username)}, clientId: {cognitoClientId}");
                 return Unauthorized();
             }
             try
