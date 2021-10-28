@@ -17,6 +17,7 @@
     "build:local": "webpack --mode=development --node-env=local",
     "build:dev": "webpack --mode=development --node-env=dev",
     "build:stage": "webpack --mode=production --node-env=stage",
+    "build:test": "webpack --mode=production --node-env=test",
     "build:prod": "webpack --mode=production --node-env=prod",
     "watch": "webpack --watch"
   },

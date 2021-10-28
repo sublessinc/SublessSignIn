@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
+using System.Web;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
@@ -39,7 +40,7 @@ namespace SublessSignIn.Controllers
                        $"Schema:{Request.Scheme} " +
                        $"Host: {Request.Host} " +
                        $"Path: {Request.Path} " +
-                       $"QueryString: {Request.QueryString}");
+                       $"QueryString: {HttpUtility.UrlEncode(Request.QueryString.Value)}");
                     return BadRequest("No url included in hit");
                 }
                 if (!Uri.TryCreate(body, UriKind.RelativeOrAbsolute, out Uri hitSource))
