@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Subless.Models;
@@ -21,6 +22,16 @@ namespace Subless.Data
         {
             _options = options ?? throw new ArgumentNullException(nameof(options));
             _ = options.Value.ConnectionString ?? throw new ArgumentNullException(nameof(options));
+        }
+
+        /// <summary>
+        /// Just checks database connectivity
+        /// </summary>
+        /// <returns></returns>
+        public async Task<bool> CanAccessDatabase()
+        {
+            var user = await Users.FirstOrDefaultAsync();
+            return true;
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

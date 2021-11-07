@@ -2,7 +2,6 @@
 {
     public class AwsConfiguration
     {
-        public string AccessKey;
-        public string SecretKey;
+        public string BucketName;
     }
 }

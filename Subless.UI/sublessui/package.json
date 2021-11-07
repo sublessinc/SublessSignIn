@@ -8,6 +8,7 @@
     "build-dev": "ng build --configuration dev && cp -r ./dist/sublessui/* ../../SublessSignIn/wwwroot",
     "build-test": "ng build --configuration test && cp -r ./dist/sublessui/* ../../SublessSignIn/wwwroot",
     "build-stage": "ng build --configuration stage && cp -r ./dist/sublessui/* ../../SublessSignIn/wwwroot",
+    "build-prod": "ng build --configuration prod && cp -r ./dist/sublessui/* ../../SublessSignIn/wwwroot",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },

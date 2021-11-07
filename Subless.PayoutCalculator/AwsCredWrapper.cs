@@ -3,10 +3,15 @@ using Microsoft.Extensions.Options;
 
 namespace Subless.PayoutCalculator
 {
-    public class AwsCredWrapper : BasicAWSCredentials
+    public class AwsCredWrapper
     {
-        public AwsCredWrapper(IOptions<AwsConfiguration> creds) : base(creds.Value.AccessKey, creds.Value.SecretKey)
+        public AwsCredWrapper(IOptions<AwsConfiguration> creds)
         {
+        }
+
+        public AWSCredentials GetCredentials()
+        {
+            return FallbackCredentialsFactory.GetCredentials();
         }
     }
 }

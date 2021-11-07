@@ -3,18 +3,22 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Amazon.Runtime;
 using Amazon.S3;
 using Amazon.S3.Transfer;
 using CsvHelper;
 using CsvHelper.Configuration;
+using Microsoft.Extensions.Options;
+using Subless.PayoutCalculator;
 
 namespace Subless.Services
 {
     public class S3Service : IFileStorageService
     {
         private readonly TransferUtility transferUtility;
-        public S3Service(AWSCredentials credentials)
+        private readonly string BucketName;
+        public S3Service(AwsCredWrapper credentials, IOptions<AwsConfiguration> options)
         {
             var config = new TransferUtilityConfig
             {
@@ -22,8 +26,9 @@ namespace Subless.Services
                 MinSizeBeforePartUpload = 16 * 1024 * 1024
             };
 
-            var s3Client = new AmazonS3Client(credentials, Amazon.RegionEndpoint.USEast1);
+            var s3Client = new AmazonS3Client(credentials.GetCredentials(), Amazon.RegionEndpoint.USEast1);
             transferUtility = new TransferUtility(s3Client, config);
+            BucketName = options?.Value?.BucketName ?? throw new ArgumentNullException(nameof(options));
         }
 
         public void WritePaymentsToCloudFileStore(Dictionary<string, double> masterPayoutList)
@@ -34,7 +39,21 @@ namespace Subless.Services
                 Amount = x.Value                
             }).ToList();
             var csv = GetPathToGeneratedCsv(payoutsInPaypalFormat);
-            transferUtility.Upload(csv, "sublesslocaldevbucket");
+            transferUtility.Upload(csv, BucketName);
+        }
+
+        /// <summary>
+        /// Just checks if S3 is accessible
+        /// </summary>
+        /// <returns></returns>
+        public async Task<bool> CanAccessS3()
+        {
+            var info = await transferUtility.S3Client.GetBucketLocationAsync(BucketName);
+            if (info != null)
+            {
+                return true;
+            }
+            return false;
         }
 
         private string GetPathToGeneratedCsv(List<PayPalItem> masterPayoutList)

@@ -13,12 +13,18 @@ namespace PayoutCalculator
 {
     internal class Program
     {
-        private static Task Main(string[] args)
+        private async static Task Main(string[] args)
         {
             using IHost host = CreateHostBuilder(args).Build();
             using (var scope = host.Services.CreateScope())
             {
                 var logger = scope.ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<Program>();
+                var healthCheck = scope.ServiceProvider.GetRequiredService<IHealthCheck>();
+                if (!(await healthCheck.IsHealthly()))
+                {
+                    throw new Exception("Could not start due to health check failure");
+                }
+                logger.LogInformation("All dependencies responding, starting services");
                 while (true)
                 {
                     logger.LogInformation("Checking if calculator should be run");
@@ -43,14 +49,14 @@ namespace PayoutCalculator
             {
                 services.Configure<AwsConfiguration>(options =>
                 {
-                    options.AccessKey = Environment.GetEnvironmentVariable("AccessKey") ?? throw new ArgumentNullException("AccessKey");
-                    options.SecretKey = Environment.GetEnvironmentVariable("SecretKey") ?? throw new ArgumentNullException("SecretKey");
+                    options.BucketName = Environment.GetEnvironmentVariable("BucketName") ?? throw new ArgumentNullException("BucketName");
                 });
                 DataDi.RegisterDataDi(services);
                 ServicesDi.AddServicesDi(services);
                 services.AddTransient<ICalculatorService, CalculatorService>();
                 services.AddTransient<IFileStorageService, S3Service>();
-                services.AddTransient<AWSCredentials, AwsCredWrapper>();
+                services.AddTransient<AwsCredWrapper, AwsCredWrapper>();
+                services.AddTransient<IHealthCheck, HealthCheck>();
 
             });
         }

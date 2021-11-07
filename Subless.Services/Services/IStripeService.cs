@@ -7,6 +7,7 @@ namespace Subless.Services
 {
     public interface IStripeService
     {
+        Task<bool> CanAccessStripe();
         bool CancelSubscription(string cognitoId);
         Task<CreateCheckoutSessionResponse> CreateCheckoutSession(string priceId, string cognitoId);
         bool CustomerHasPaid(string cognitoId);
