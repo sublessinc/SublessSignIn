@@ -24,6 +24,21 @@ namespace Subless.Services
             _logger = loggerFactory?.CreateLogger<StripeService>() ?? throw new ArgumentNullException(nameof(loggerFactory));
             _client = new StripeClient(_stripeConfig.Value.SecretKey ?? throw new ArgumentNullException(nameof(_stripeConfig.Value.SecretKey)));
         }
+
+        public async Task<bool> CanAccessStripe()
+        {
+            var service= new CustomerService(_client);
+            var list= service.List(new CustomerListOptions()
+            {
+                Limit = 1
+            });
+            if (list != null)
+            {
+                return true;
+            }
+            return false;
+        }
+
         public async Task<CreateCheckoutSessionResponse> CreateCheckoutSession(string priceId, string cognitoId)
         {
             var user = _userService.GetUserByCognitoId(cognitoId);

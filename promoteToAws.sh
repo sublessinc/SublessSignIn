@@ -8,7 +8,7 @@ if [ -z "$environment" ]; then
   echo 1>&2 "Environment flag missing"
   exit 2
 fi
-echo "environment: environment";
+echo "environment: " $environment;
 
 cd ./Subless.UI/sublessui
 ng build --configuration $environment && cp -r ./dist/sublessui/* ../../SublessSignIn/wwwroot

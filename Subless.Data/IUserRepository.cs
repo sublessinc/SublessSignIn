@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Subless.Models;
 
 namespace Subless.Data
@@ -42,5 +43,6 @@ namespace Subless.Data
         void DeleteCreator(Creator creator);
         void DeleteUser(User user);
         User GetUserWithRelationships(Guid id);
+        Task<bool> CanAccessDatabase();
     }
 }
