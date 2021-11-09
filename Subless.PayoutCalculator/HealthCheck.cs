@@ -23,7 +23,7 @@ namespace Subless.PayoutCalculator
             this.userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
         }
 
-        public async Task<bool> IsHealthly()
+        public async Task<bool> IsHealthy()
         {
             var db = userRepository.CanAccessDatabase();
             var stripe = stripeService.CanAccessStripe();

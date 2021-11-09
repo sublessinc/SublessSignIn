@@ -4,6 +4,6 @@ namespace Subless.PayoutCalculator
 {
     public interface IHealthCheck
     {
-        Task<bool> IsHealthly();
+        Task<bool> IsHealthy();
     }
 }
