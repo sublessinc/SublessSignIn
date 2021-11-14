@@ -5,7 +5,8 @@ subless_Headers.set('Cache-Control', 'no-store');
 var subless_urlParams = new URLSearchParams(window.location.search);
 var subless_mgr: UserManager | null = null;
 const subless_Uri = process.env.SUBLESS_URL;
-const subless_baseUri = location.protocol + '//' + window.location.hostname + (location.port ? ':' + location.port : '') + window.location.pathname;
+const client_baseUri = location.protocol + '//' + window.location.hostname + (location.port ? ':' + location.port : '');
+const client_currentPath = window.location.pathname;
 const subless_silentRenewPage =
     '<html>' +
     '<body>' +
@@ -33,8 +34,8 @@ interface SublessInterface {
 }
 
 var subless_config: UserManagerSettings = {
-    redirect_uri: subless_baseUri,
-    post_logout_redirect_uri: subless_baseUri,
+    redirect_uri: client_baseUri,
+    post_logout_redirect_uri: client_baseUri,
 
 
     // these two will be done dynamically from the buttons clicked, but are
@@ -85,7 +86,7 @@ export class Subless implements SublessInterface {
                 + "/logout?response_type=code&client_id="
                 + subless_config.client_id
                 + "&logout_uri="
-                + subless_baseUri
+                + client_baseUri
         };
         return subless_config;
     }
@@ -114,6 +115,7 @@ export class Subless implements SublessInterface {
         if (subless_mgr == null) {
             subless_mgr = await this.subless_initUserManagement();
         }
+        this.subless_SetRedirectPath();
         var use_popup = false;
         if (!use_popup) {
             subless_mgr.signinRedirect();
@@ -122,6 +124,16 @@ export class Subless implements SublessInterface {
             subless_mgr.signinPopup().then(function () {
             });
         }
+    }
+
+    subless_SetRedirectPath(): void {
+        sessionStorage.clear();
+        sessionStorage.setItem("pre-login-path", client_currentPath)
+    }
+
+    subless_PostLoginRedirect(): void {
+        var path = sessionStorage.getItem("pre-login-path");
+        window.location.href = client_baseUri + path;
     }
 
     async sublessLogin() {
@@ -145,7 +157,8 @@ export class Subless implements SublessInterface {
         await this.subless_Config;
         var loggedIn = await this.subless_LoggedIn();
         if (code != null && !loggedIn) {
-            this.subless_handleCallback();
+            await this.subless_handleCallback();
+            this.subless_PostLoginRedirect();
         }
     }
 
