@@ -17,4 +17,8 @@ export class CreatorService {
   updateCreator(creator: ICreator): Observable<ICreator> {
     return this.httpClient.put<ICreator>('/api/Creator', creator);
   }
+
+  unlinkCreator(creator: ICreator): Observable<boolean> {
+    return this.httpClient.delete<boolean>('/api/Creator/' + creator.id + "/unlink");
+  }
 }

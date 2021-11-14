@@ -1,4 +1,5 @@
 export interface ICreator {
     payPalId: string;
-    username: string
+    username: string;
+    id: string;
 }

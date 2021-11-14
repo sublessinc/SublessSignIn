@@ -29,8 +29,12 @@
                                 PayPal Id is required
                             </div>
                         </div>
-                        <button id='save' type="submit" class="btn btn-success"
-                            [disabled]="!creatorForm.form.valid">Save</button>
+                        <div class='buttonWrapper'>
+                            <button id='save' type="submit" class="btn btn-success creatorButton"
+                                [disabled]="!creatorForm.form.valid">Save</button>
+                            <button id='unlink' class='btn btn-success creatorButton' (click)="unlink()">Delete Creator
+                                Profile</button>
+                        </div>
                     </form>
                 </div>
                 <div class="completed-view-section">

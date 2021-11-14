@@ -116,7 +116,7 @@ namespace Subless.Services
             return partner;
         }
 
-        public async Task CreatorActivatedWebhook(Creator creator)
+        public async Task CreatorChangeWebhook(PartnerViewCreator creator)
         {
             this.logger.LogInformation($"Creator {creator.Id} activated, firing webhook");
             var partner = GetPartner(creator.PartnerId);
@@ -124,7 +124,7 @@ namespace Subless.Services
             {
                 try
                 {
-                    var viewModel = JsonContent.Create(creator.ToPartnerView());
+                    var viewModel = JsonContent.Create(creator);
 
                     var result = await httpClient.PostAsync(partner.CreatorWebhook, viewModel);
                     result.EnsureSuccessStatusCode();

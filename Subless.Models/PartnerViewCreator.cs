@@ -10,5 +10,6 @@ namespace Subless.Models
         public bool Active { get; set; }
         public Guid PartnerId { get; set; }
         public string Email { get; set; }
+        public bool IsDeleted { get; set; }
     }
 }

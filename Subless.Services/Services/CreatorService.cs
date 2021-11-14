@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Subless.Data;
 using Subless.Models;
+using Subless.Services.Extensions;
 
 namespace Subless.Services
 {
@@ -126,8 +127,20 @@ namespace Subless.Services
             var isValid = CreatorValid(creator);
             if (isValid != wasValid)
             {
-                await partnerService.CreatorActivatedWebhook(creator);
+                await partnerService.CreatorChangeWebhook(creator.ToPartnerView());
             }
+        }
+
+        public async Task UnlinkCreator(string cognitoId, Guid id)
+        {
+            var creators = _userRepository.GetCreatorsByCognitoId(cognitoId);
+            if (!creators.Any(x=>x.Id == id))
+            {
+                throw new AccessViolationException("User cannot modify this creator");
+            }
+            var creator = creators.Single(x => x.Id == id);
+            _userRepository.DeleteCreator(creator);
+            await partnerService.CreatorChangeWebhook(creator.ToPartnerView(true));
         }
     }
 }

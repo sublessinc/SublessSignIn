@@ -9,7 +9,7 @@ namespace Subless.Services.Extensions
 {
     public static class CreatorExtensions
     {
-        public static PartnerViewCreator ToPartnerView(this Creator creator)
+        public static PartnerViewCreator ToPartnerView(this Creator creator, bool deleted = false)
         {
             return new PartnerViewCreator()
             {
@@ -17,7 +17,8 @@ namespace Subless.Services.Extensions
                 Active = creator.Active,
                 Email = creator.Email,
                 Id = creator.Id,
-                Username = creator.Username
+                Username = creator.Username,
+                IsDeleted = deleted
             };
         }
     }

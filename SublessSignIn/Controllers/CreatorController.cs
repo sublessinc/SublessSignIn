@@ -82,6 +82,25 @@ namespace SublessSignIn.Controllers
                 return Unauthorized();
             }
         }
+        
+        [HttpDelete("{id}/Unlink")]
+        public ActionResult Unlink(Guid id)
+        {
+            var cognitoId = userService.GetUserClaim(HttpContext.User);
+            if (cognitoId == null)
+            {
+                return Unauthorized();
+            }
+            try
+            {
+                var creator = _creatorService.UnlinkCreator(cognitoId, id);
+                return Ok();
+            }
+            catch (UnauthorizedAccessException e)
+            {
+                return Unauthorized();
+            }
+        }
 
         [HttpGet("statscsv")]
         public ActionResult<string> GetStatsCsv()
