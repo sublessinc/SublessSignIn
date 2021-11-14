@@ -94,7 +94,28 @@ namespace SublessSignIn.Controllers
             return Ok(creators.Select(x => x.ToPartnerView()));
         }
 
-            [TypeFilter(typeof(AdminAuthorizationFilter))]
+        [HttpGet("Creators/{id}")]
+        public ActionResult<IEnumerable<PartnerViewCreator>> GetCreatorByPartner(Guid id)
+        {
+            var cognitoClientId = User.Claims.FirstOrDefault(x => x.Type == "client_id")?.Value;
+            if (string.IsNullOrWhiteSpace(cognitoClientId))
+            {
+                return Unauthorized("Provided token is not a client token");
+            }
+            var partner = _partnerService.GetPartnerByCognitoClientId(cognitoClientId);
+            if (partner == null)
+            {
+                return NotFound("No partner registered for the given client ID");
+            }
+            var creator = creatorService.GetCreator(id);
+            if (creator == null || creator.PartnerId != partner.Id)
+            {
+                return NotFound();
+            }
+            return Ok(creator.ToPartnerView());
+        }
+
+        [TypeFilter(typeof(AdminAuthorizationFilter))]
         [HttpPost()]
         public ActionResult<Guid> NewPartner([FromBody] Partner partner)
         {
