@@ -20,5 +20,6 @@ namespace Subless.Services
         string GetUserClaim(ClaimsPrincipal user);
         void ClearStripePayment(Guid id);
         void DemoteUser(Guid id);
+        User GetUserWithRelationships(Guid id);
     }
 }

@@ -1,8 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net.Http;
+using System.Net.Http.Json;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
 using Subless.Data;
 using Subless.Models;
+using Subless.Services.Extensions;
 
 namespace Subless.Services
 {
@@ -12,14 +17,20 @@ namespace Subless.Services
 
         private readonly IUserRepository _userRepository;
         private readonly IMemoryCache cache;
+        private readonly HttpClient httpClient;
+        private readonly ILogger<PartnerService> logger;
 
         public PartnerService(
             IUserRepository userRepository,
-            IMemoryCache cache
+            IHttpClientFactory httpClientFactory,
+            IMemoryCache cache,
+            ILoggerFactory loggerFactory
             )
         {
             _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
             this.cache = cache ?? throw new ArgumentNullException(nameof(cache));
+            this.httpClient = httpClientFactory?.CreateClient() ?? throw new ArgumentNullException(nameof(httpClientFactory));
+            this.logger = loggerFactory.CreateLogger<PartnerService>();
         }
 
         public Partner GetPartner(Guid id)
@@ -40,10 +51,16 @@ namespace Subless.Services
             return partner;
         }
 
+        public Partner GetPartnerByCognitoClientId(string cognitoId)
+        {
+            var partner = _userRepository.GetPartnerByCognitoId(cognitoId);
+            return partner;
+        }
+
         public Guid GenerateCreatorActivationLink(string cognitoClientId, string creatorUsername)
         {
 
-            var partner = _userRepository.GetPartnerByCognitoId(cognitoClientId);
+            var partner = GetPartnerByCognitoClientId(cognitoClientId);
             if (partner == null)
             {
                 throw new UnauthorizedAccessException("Partner not found. Partner may not have been activated yet.");
@@ -97,6 +114,33 @@ namespace Subless.Services
             partner = _userRepository.GetPartnerByUri(uri);
             cache.Set(uri.ToString(), partner, DateTime.UtcNow.AddHours(1));
             return partner;
+        }
+
+        public async Task CreatorActivatedWebhook(Creator creator)
+        {
+            this.logger.LogInformation($"Creator {creator.Id} activated, firing webhook");
+            var partner = GetPartner(creator.PartnerId);
+            if (partner.CreatorWebhook != null) 
+            {
+                try
+                {
+                    var viewModel = JsonContent.Create(creator.ToPartnerView());
+
+                    var result = await httpClient.PostAsync(partner.CreatorWebhook, viewModel);
+                    result.EnsureSuccessStatusCode();
+                }
+                catch (Exception e)
+                {
+                    logger.LogError("Webhook failed \n "+
+                        $"URI: {partner.CreatorWebhook} \n" +
+                        $"Result: {e.Message} \n" +
+                        $"Creator: {creator.Id} \n" +
+                        $"Error: {e.Message} \n" +
+                        $"Stack: {e.StackTrace} \n" +
+                        $"InnerException: {e.InnerException}"
+                        );
+                }                
+            }
         }
     }
 }

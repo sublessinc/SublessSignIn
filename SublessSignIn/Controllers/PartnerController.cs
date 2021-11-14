@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Subless.Models;
 using Subless.Services;
+using Subless.Services.Extensions;
 using SublessSignIn.Models;
 
 namespace SublessSignIn.Controllers
@@ -19,13 +20,25 @@ namespace SublessSignIn.Controllers
     {
         private readonly IPartnerService _partnerService;
         private readonly IUserService _userService;
+        private readonly ICreatorService creatorService;
         private readonly ILogger _logger;
         //this is a weird place to get this from, but it'll work. Probs split it out later
         private readonly StripeConfig _settings;
-        public PartnerController(IPartnerService partnerService, IUserService userService, IOptions<StripeConfig> authSettings, ILoggerFactory loggerFactory)
+        public PartnerController(IPartnerService partnerService, IUserService userService, ICreatorService creatorService, IOptions<StripeConfig> authSettings, ILoggerFactory loggerFactory)
         {
+            if (authSettings is null)
+            {
+                throw new ArgumentNullException(nameof(authSettings));
+            }
+
+            if (loggerFactory is null)
+            {
+                throw new ArgumentNullException(nameof(loggerFactory));
+            }
+
             _partnerService = partnerService ?? throw new ArgumentNullException(nameof(partnerService));
-            _userService = userService;
+            _userService = userService ?? throw new ArgumentNullException(nameof(userService));
+            this.creatorService = creatorService ?? throw new ArgumentNullException(nameof(creatorService));
             _logger = loggerFactory?.CreateLogger<PartnerController>() ?? throw new ArgumentNullException(nameof(loggerFactory));
             _settings = authSettings.Value ?? throw new ArgumentNullException(nameof(authSettings));
 
@@ -64,7 +77,24 @@ namespace SublessSignIn.Controllers
         }
 
 
-        [TypeFilter(typeof(AdminAuthorizationFilter))]
+        [HttpGet("Creators")]
+        public ActionResult<IEnumerable<PartnerViewCreator>> GetCreatorsForPartner()
+        {
+            var cognitoClientId = User.Claims.FirstOrDefault(x => x.Type == "client_id")?.Value;
+            if (string.IsNullOrWhiteSpace(cognitoClientId))
+            {
+                return Unauthorized("Provided token is not a client token");
+            }
+            var partner = _partnerService.GetPartnerByCognitoClientId(cognitoClientId);
+            if (partner == null)
+            {
+                return NotFound("No partner registered for the given client ID");
+            }
+            var creators = creatorService.GetCreatorsByPartnerId(partner.Id);
+            return Ok(creators.Select(x => x.ToPartnerView()));
+        }
+
+            [TypeFilter(typeof(AdminAuthorizationFilter))]
         [HttpPost()]
         public ActionResult<Guid> NewPartner([FromBody] Partner partner)
         {

@@ -29,6 +29,7 @@ namespace Subless.Services
             services.AddTransient<IPaymentLogsService, PaymentLogsService>();
             services.AddTransient<ICognitoService, CognitoService>();
             services.AddMemoryCache();
+            services.AddHttpClient();
             return services;
         }
     }

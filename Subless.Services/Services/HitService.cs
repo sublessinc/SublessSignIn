@@ -50,6 +50,26 @@ namespace Subless.Services
             });
         }
 
+        public Hit TestHit(string userId, Uri uri)
+        {
+            var partner = _partnerService.GetCachedParnterByUri(new Uri(uri.GetLeftPart(UriPartial.Authority)));
+            if (partner == null)
+            {
+                _logger.LogError($"Unknown partner recieved hit from URL {uri}");
+                return null;
+            }
+            var creatorId = GetCreatorFromPartnerAndUri(uri, partner);
+            return new Hit()
+            {
+                CognitoId = userId,
+                Uri = uri,
+                TimeStamp = DateTime.UtcNow,
+                PartnerId = partner.Id,
+                CreatorId = creatorId ?? Guid.Empty
+            };
+        }
+
+
         public IEnumerable<Hit> GetHitsByDate(DateTime startDate, DateTime endDate, Guid userId)
         {
             var user = _userService.GetUser(userId);

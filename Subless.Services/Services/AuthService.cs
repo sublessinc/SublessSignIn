@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Subless.Data;
 using Subless.Models;
 using SublessSignIn.Models;
@@ -22,7 +23,7 @@ namespace Subless.Services.Services
             this.creatorService = creatorService ?? throw new ArgumentNullException(nameof(creatorService));
         }
 
-        public Redirection LoginWorkflow(string cognitoId, string activationCode)
+        public async Task<Redirection> LoginWorkflow(string cognitoId, string activationCode, string email)
         {
             var user = _userRepo.GetUserByCognitoId(cognitoId);
             if (user == null)
@@ -32,7 +33,7 @@ namespace Subless.Services.Services
 
             if (activationCode != null && Guid.TryParse(activationCode, out Guid code) && (user.Creators == null || !user.Creators.Any() || user.Creators.Any(x => !x.Active)))
             {
-                creatorService.ActivateCreator(user.Id, code);
+                await creatorService.ActivateCreator(user.Id, code, email);
                 return new Redirection()
                 {
                     RedirectionPath = RedirectionPath.ActivatedCreator

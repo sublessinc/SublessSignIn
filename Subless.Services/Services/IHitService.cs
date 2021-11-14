@@ -8,5 +8,6 @@ namespace Subless.Services
     {
         IEnumerable<Hit> GetHitsByDate(DateTime startDate, DateTime endDate, Guid userId);
         void SaveHit(string userId, Uri uri);
+        Hit TestHit(string userId, Uri uri);
     }
 }
