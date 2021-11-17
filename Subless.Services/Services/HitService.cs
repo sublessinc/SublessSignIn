@@ -33,7 +33,7 @@ namespace Subless.Services
 
         public void SaveHit(string userId, Uri uri)
         {
-            var partner = _partnerService.GetCachedParnterByUri(new Uri(uri.GetLeftPart(UriPartial.Authority)));
+            var partner = _partnerService.GetCachedPartnerByUri(new Uri(uri.GetLeftPart(UriPartial.Authority)));
             if (partner == null)
             {
                 _logger.LogError($"Unknown partner recieved hit from URL {uri}");
@@ -52,7 +52,7 @@ namespace Subless.Services
 
         public Hit TestHit(string userId, Uri uri)
         {
-            var partner = _partnerService.GetCachedParnterByUri(new Uri(uri.GetLeftPart(UriPartial.Authority)));
+            var partner = _partnerService.GetCachedPartnerByUri(new Uri(uri.GetLeftPart(UriPartial.Authority)));
             if (partner == null)
             {
                 _logger.LogError($"Unknown partner recieved hit from URL {uri}");

@@ -105,7 +105,7 @@ namespace Subless.Services
             return _userRepository.GetPartners();
         }
 
-        public Partner GetCachedParnterByUri(Uri uri)
+        public Partner GetCachedPartnerByUri(Uri uri)
         {
             if (cache.TryGetValue(uri.ToString(), out Partner partner))
             {

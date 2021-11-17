@@ -10,7 +10,7 @@ namespace Subless.Services
         Guid CreatePartner(Partner partner);
         Task CreatorChangeWebhook(PartnerViewCreator creator);
         Guid GenerateCreatorActivationLink(string cognitoClientId, string creatorUsername);
-        Partner GetCachedParnterByUri(Uri uri);
+        Partner GetCachedPartnerByUri(Uri uri);
         Partner GetPartner(Guid id);
         Partner GetPartnerByAdminId(Guid adminId);
         Partner GetPartnerByCognitoClientId(string cognitoId);
