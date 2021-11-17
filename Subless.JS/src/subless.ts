@@ -5,7 +5,7 @@ subless_Headers.set('Cache-Control', 'no-store');
 var subless_urlParams = new URLSearchParams(window.location.search);
 var subless_mgr: UserManager | null = null;
 const subless_Uri = process.env.SUBLESS_URL;
-const client_baseUri = location.protocol + '//' + window.location.hostname + (location.port ? ':' + location.port : '');
+const client_baseUri = location.protocol + '//' + window.location.hostname + (location.port ? ':' + location.port : '') + '/';
 const client_currentPath = window.location.pathname;
 const subless_silentRenewPage =
     '<html>' +
@@ -127,13 +127,15 @@ export class Subless implements SublessInterface {
     }
 
     subless_SetRedirectPath(): void {
-        sessionStorage.clear();
-        sessionStorage.setItem("pre-login-path", client_currentPath)
+        sessionStorage.setItem("pre-login-path", client_currentPath.substring(1));
     }
 
     subless_PostLoginRedirect(): void {
         var path = sessionStorage.getItem("pre-login-path");
-        window.location.href = client_baseUri + path;
+        sessionStorage.setItem("pre-login-path", "");
+        if (path) {
+            window.location.href = client_baseUri + path;
+        }
     }
 
     async sublessLogin() {
@@ -164,7 +166,7 @@ export class Subless implements SublessInterface {
 
     async subless_handleCallback() {
         subless_mgr = await this.subless_UserManager;
-        subless_mgr.signinRedirectCallback();
+        await subless_mgr.signinRedirectCallback();
     }
 
     async subless_hit() {
