@@ -37,6 +37,11 @@
                                 UserPattern is required
                             </div>
                         </div>
+                        <div class="form-group">
+                            <label class='lbl' for="webhook">Creator change webhook</label>
+                            <input type="text" class="form-control" id="webhook" required [readonly]="false "
+                                [(ngModel)]="model.creatorWebhook" name="webhook" #webhook="ngModel">
+                        </div>
                         <button id='save' type="submit" class="btn btn-success"
                             [disabled]="!partnerForm.form.valid">Save</button>
                     </form>

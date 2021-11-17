@@ -7,6 +7,8 @@ namespace SublessSignIn.Models
         public string PayPalId { get; set; }
         public Uri Site { get; set; }
         public string UserPattern { get; set; }
+        public string CreatorWebhook { get; set; }
+        public Guid Id { get; set; }
     }
 
 

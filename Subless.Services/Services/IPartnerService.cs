@@ -16,6 +16,6 @@ namespace Subless.Services
         Partner GetPartnerByCognitoClientId(string cognitoId);
         IEnumerable<Partner> GetPartners();
         void UpdatePartner(Partner partner);
-        Partner UpdatePartnerPayPalId(Guid partnerId, string payPalId);
+        Partner UpdatePartnerWritableFields(PartnerWriteModel partnerModel);
     }
 }

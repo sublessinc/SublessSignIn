@@ -43,10 +43,11 @@ namespace Subless.Services
             return _userRepository.GetPartnerByAdminId(adminId);
         }
 
-        public Partner UpdatePartnerPayPalId(Guid partnerId, string payPalId)
+        public Partner UpdatePartnerWritableFields(PartnerWriteModel partnerModel)
         {
-            var partner = _userRepository.GetPartner(partnerId);
-            partner.PayPalId = payPalId;
+            var partner = _userRepository.GetPartner(partnerModel.Id);
+            partner.PayPalId = partnerModel.PayPalId;
+            partner.CreatorWebhook = partnerModel.CreatorWebhook;
             _userRepository.UpdatePartner(partner);
             return partner;
         }

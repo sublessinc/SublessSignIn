@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { IPartner } from '../models/IPartner';
+import { IPartnerWrite } from '../models/IPartnerWrite';
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +15,7 @@ export class PartnerService {
     return this.httpClient.get<IPartner>('/api/Partner/config');
   }
 
-  updatePayPal(payPal: string): Observable<IPartner> {
-    return this.httpClient.put<IPartner>('/api/Partner/payPalId?payPalId=' + payPal, null);
+  updatePartner(partnerWrite: IPartnerWrite): Observable<IPartner> {
+    return this.httpClient.put<IPartner>('/api/Partner/' + partnerWrite.id, partnerWrite);
   }
 }
