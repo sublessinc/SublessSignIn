@@ -62,6 +62,7 @@ var subless_config: UserManagerSettings = {
     metadataSeed: {}
 };
 
+var callbackRunning: Promise<void> = null;
 
 
 export class Subless implements SublessInterface {
@@ -71,7 +72,7 @@ export class Subless implements SublessInterface {
         this.subless_Config = this.subless_GetConfig();
         this.subless_UserManager = this.subless_initUserManagement();
 
-        this.subless_loginCallback();
+        callbackRunning = this.subless_loginCallback();
         this.subless_hit();
     }
 
@@ -145,6 +146,13 @@ export class Subless implements SublessInterface {
     }
 
     async subless_LoggedIn(): Promise<boolean> {
+        if (callbackRunning != null) {
+            await callbackRunning;
+        }
+        return this.subless_TokenPresent();
+    }
+
+    async subless_TokenPresent(): Promise<boolean> {
         subless_mgr = await this.subless_UserManager;
         return subless_mgr.getUser().then(function (user) {
             if (user) {
@@ -157,7 +165,7 @@ export class Subless implements SublessInterface {
     async subless_loginCallback() {
         var code = subless_urlParams.get('code');
         await this.subless_Config;
-        var loggedIn = await this.subless_LoggedIn();
+        var loggedIn = await this.subless_TokenPresent();
         if (code != null && !loggedIn) {
             await this.subless_handleCallback();
             this.subless_PostLoginRedirect();
