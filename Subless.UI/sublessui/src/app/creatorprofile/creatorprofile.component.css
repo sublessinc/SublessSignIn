@@ -1,7 +1,12 @@
-#save {
+.creatorButton {
     margin-top: .5em;
 }
 
 .lbl {
     margin-top: .5em;
+}
+.buttonWrapper {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
 }

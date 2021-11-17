@@ -14,5 +14,6 @@ namespace Subless.Models
         public string UserPattern { get; set; }
         public ICollection<Creator> Creators { get; set; }
         public Guid Admin { get; set; }
+        public Uri? CreatorWebhook { get; set; }
     }
 }

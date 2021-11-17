@@ -16,7 +16,7 @@ export class CreatorprofileComponent implements OnInit, ComponentCanDeactivate, 
   public email: any;
   private model$: Observable<ICreator> | undefined;
   private formDirty = false;
-  public model: ICreator = new Creator("", "");
+  public model: ICreator = new Creator("", "", "");
   @ViewChild('creatorForm', { read: NgForm }) payPalForm: any;
 
   constructor(private authService: AuthorizationService,
@@ -62,6 +62,14 @@ export class CreatorprofileComponent implements OnInit, ComponentCanDeactivate, 
     this.formDirty = false;
   }
 
+  unlink(): void {
+    this.creatorService.unlinkCreator(this.model).subscribe({
+      next: (success: boolean) => {
+        this.authService.redirectToLogout();
+      }
+    });
+  }
+
 
 
   @HostListener('window:beforeunload')
@@ -78,5 +86,6 @@ class Creator implements ICreator {
   constructor(
     public username: string,
     public payPalId: string,
+    public id: string
   ) { }
 }

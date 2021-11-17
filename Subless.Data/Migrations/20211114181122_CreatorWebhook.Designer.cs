@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Subless.Data;
@@ -9,9 +10,10 @@ using Subless.Data;
 namespace Subless.Data.Migrations
 {
     [DbContext(typeof(UserRepository))]
-    partial class UserRepositoryModelSnapshot : ModelSnapshot
+    [Migration("20211114181122_CreatorWebhook")]
+    partial class CreatorWebhook
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -110,7 +112,7 @@ namespace Subless.Data.Migrations
                     b.Property<string>("CognitoAppClientId")
                         .HasColumnType("text");
 
-                    b.Property<string>("CreatorWebhook")
+                    b.Property<string>("CreatorActivatedWebhook")
                         .HasColumnType("text");
 
                     b.Property<string>("PayPalId")

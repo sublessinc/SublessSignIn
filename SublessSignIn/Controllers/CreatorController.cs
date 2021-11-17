@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Threading.Tasks;
 using CsvHelper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -45,7 +46,7 @@ namespace SublessSignIn.Controllers
         }
 
         [HttpPut()]
-        public ActionResult<Creator> UpdateCreator(Creator creator)
+        public async Task<ActionResult<Creator>> UpdateCreator(Creator creator)
         {
             var cognitoId = userService.GetUserClaim(HttpContext.User);
             if (cognitoId == null)
@@ -54,7 +55,7 @@ namespace SublessSignIn.Controllers
             }
             try
             {
-                return Ok(_creatorService.UpdateCreator(cognitoId, creator));
+                return Ok(await _creatorService.UpdateCreator(cognitoId, creator));
             }
             catch (UnauthorizedAccessException e)
             {
@@ -75,6 +76,25 @@ namespace SublessSignIn.Controllers
                 var creator = _creatorService.GetCreatorByCognitoid(cognitoId);
                 return Ok(_creatorService.GetStatsForCreator(creator));
 
+            }
+            catch (UnauthorizedAccessException e)
+            {
+                return Unauthorized();
+            }
+        }
+        
+        [HttpDelete("{id}/Unlink")]
+        public ActionResult Unlink(Guid id)
+        {
+            var cognitoId = userService.GetUserClaim(HttpContext.User);
+            if (cognitoId == null)
+            {
+                return Unauthorized();
+            }
+            try
+            {
+                var creator = _creatorService.UnlinkCreator(cognitoId, id);
+                return Ok();
             }
             catch (UnauthorizedAccessException e)
             {

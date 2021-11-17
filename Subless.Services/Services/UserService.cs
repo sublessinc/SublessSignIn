@@ -98,9 +98,15 @@ namespace Subless.Services
             _userRepo.UpdateUser(user);
         }
 
+        public User GetUserWithRelationships(Guid id)
+        {
+            return _userRepo.GetUserWithRelationships(id);
+
+        }
+
         public void DemoteUser(Guid id)
         {
-            var user = _userRepo.GetUserWithRelationships(id);
+            var user = GetUserWithRelationships(id);
             if (user.Partners != null && user.Partners.Any())
             {
                 foreach (var partner in user.Partners)
