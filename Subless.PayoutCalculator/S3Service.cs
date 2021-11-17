@@ -18,7 +18,7 @@ namespace Subless.Services
     {
         private readonly TransferUtility transferUtility;
         private readonly string BucketName;
-        public S3Service(AwsCredWrapper credentials, IOptions<AwsConfiguration> options)
+        public S3Service(AwsCredWrapper credentials, IOptions<CalculatorConfiguration> options)
         {
             var config = new TransferUtilityConfig
             {

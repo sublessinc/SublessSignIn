@@ -5,7 +5,7 @@ namespace Subless.PayoutCalculator
 {
     public class AwsCredWrapper
     {
-        public AwsCredWrapper(IOptions<AwsConfiguration> creds)
+        public AwsCredWrapper(IOptions<CalculatorConfiguration> creds)
         {
         }
 

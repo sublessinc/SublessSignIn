@@ -50,6 +50,11 @@ namespace Subless.PayoutCalculator
             Dictionary<string, double> allPayouts = new Dictionary<string, double>();
             // get what we were paid (after fees), and by who
             var payers = GetPayments(startDate, endDate);
+            if (!payers.Any())
+            {
+                _logger.LogWarning("No Payments found in payment period, calculation skipped.");
+                return;
+            }
             // for each user
             foreach (var payer in payers)
             {
