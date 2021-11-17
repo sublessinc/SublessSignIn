@@ -62,10 +62,13 @@ export class AuthorizationService {
 
     if (activation) {
       sessionStorage.setItem('activation', '');
-      var headers = new HttpHeaders(
-        {
-          "Activation": activation ?? '',
-        });
+      var headers = new HttpHeaders();
+      if (activation) {
+        headers = new HttpHeaders(
+          {
+            "Activation": activation ?? '',
+          });
+      }
     }
     this.httpClient.get<IRedirect>('/api/Authorization/redirect', { headers: headers }).subscribe({
       next: (redirectResponse: IRedirect) => {
@@ -105,7 +108,7 @@ export class AuthorizationService {
   getEmail(): string {
     if (this.oidcSecurityService.isAuthenticated()) {
       var data = this.oidcSecurityService.getUserData();
-      if (data) {
+      if (data && data.email) {
         return data.email;
       }
     }

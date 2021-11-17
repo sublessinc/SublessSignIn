@@ -14,8 +14,14 @@ export class UserDataInterceptor implements HttpInterceptor {
     constructor(private authService: AuthorizationService) { }
 
     intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+        var email = this.authService.getEmail();
+        if (email) {
+            const userDataRequest = request.clone({ headers: request.headers.set('email', email) });
+            return next.handle(userDataRequest)
+        }
+        else {
+            return next.handle(request);
+        }
 
-        const userDataRequest = request.clone({ headers: request.headers.set('email', this.authService.getEmail()) });
-        return next.handle(userDataRequest)
     }
 }
