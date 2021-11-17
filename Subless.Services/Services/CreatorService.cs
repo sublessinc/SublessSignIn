@@ -82,7 +82,7 @@ namespace Subless.Services
             }
             // Set user modifiable properties
             var currentCreator = creators.First();
-            var wasValid = CreatorValid(creator);
+            var wasValid = CreatorValid(currentCreator);
             currentCreator.PayPalId = creator.PayPalId;
             _userRepository.UpdateCreator(currentCreator);
             await FireCreatorActivationWebhook(creator, wasValid);
