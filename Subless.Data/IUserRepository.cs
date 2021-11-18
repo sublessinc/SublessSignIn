@@ -44,5 +44,6 @@ namespace Subless.Data
         void DeleteUser(User user);
         User GetUserWithRelationships(Guid id);
         Task<bool> CanAccessDatabase();
+        void LogDbStats();
     }
 }

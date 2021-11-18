@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Subless.Models;
 
@@ -18,10 +19,12 @@ namespace Subless.Data
         internal DbSet<Payment> Payments { get; set; }
         internal DbSet<PaymentAuditLog> PaymentAuditLogs { get; set; }
         internal DbSet<RuntimeConfiguration> Configurations { get; set; }
-        public UserRepository(IOptions<DatabaseSettings> options)
+        ILogger<UserRepository> logger { get; set; }
+        public UserRepository(IOptions<DatabaseSettings> options, ILoggerFactory loggerFactory)
         {
             _options = options ?? throw new ArgumentNullException(nameof(options));
             _ = options.Value.ConnectionString ?? throw new ArgumentNullException(nameof(options));
+            logger = loggerFactory?.CreateLogger<UserRepository>() ?? throw new ArgumentNullException(nameof(loggerFactory));
         }
 
         /// <summary>
@@ -32,6 +35,16 @@ namespace Subless.Data
         {
             var user = await Users.FirstOrDefaultAsync();
             return true;
+        }
+
+        public void LogDbStats()
+        {
+            logger.LogWarning($"User count: {Users.Count()}");
+            logger.LogWarning($"Hits count: {Hits.Count()}");
+            logger.LogWarning($"Partners count: {Partners.Count()}");
+            logger.LogWarning($"Creators count: {Creators.Count()}");
+            logger.LogWarning($"Payments count: {Payments.Count()}");
+            logger.LogWarning($"PaymentAuditLogs count: {PaymentAuditLogs.Count()}");
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

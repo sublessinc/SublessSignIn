@@ -45,3 +45,4 @@ Subless.UI.Tests/.env
 /Subless.UI.Tests/.pytest_cache/
 
 Subless.JS/node_modules/**
+SublessSignIn/wwwroot/**
