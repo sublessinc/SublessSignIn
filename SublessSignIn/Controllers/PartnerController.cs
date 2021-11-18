@@ -151,18 +151,18 @@ namespace SublessSignIn.Controllers
             return Ok(partner.GetViewModel());
         }
 
-        [HttpPut("payPalId")]
-        public ActionResult<PartnerResponse> UpdatePayPalId([FromQuery] string payPalId)
+        [HttpPut("{id}")]
+        public ActionResult<PartnerResponse> UpdateOwnPartner([FromBody] PartnerWriteModel partner)
         {
             var userClaim = _userService.GetUserClaim(this.User);
             var user = _userService.GetUserByCognitoId(userClaim);
-            if (user == null || !user.Partners.Any())
+            if (user == null || !user.Partners.Any() || !user.Partners.Any(x=> partner.Id == x.Id))
             {
                 return Unauthorized("Attemped to access forbidden zone");
             }
-            var partner = _partnerService.UpdatePartnerPayPalId(user.Partners.First().Id, payPalId);
+            var updatedPartner = _partnerService.UpdatePartnerWritableFields(partner);
 
-            return Ok(partner.GetViewModel());
+            return Ok(updatedPartner.GetViewModel());
         }
 
 

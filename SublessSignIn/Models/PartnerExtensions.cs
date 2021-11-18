@@ -10,7 +10,9 @@ namespace SublessSignIn.Models
             {
                 PayPalId = partner.PayPalId,
                 Site = partner.Site,
-                UserPattern = partner.UserPattern
+                UserPattern = partner.UserPattern,
+                CreatorWebhook = partner.CreatorWebhook.ToString(),
+                Id = partner.Id
             };
         }
     }

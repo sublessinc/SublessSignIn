@@ -2,6 +2,7 @@ import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { IPartner } from '../models/IPartner';
+import { IPartnerWrite } from '../models/IPartnerWrite';
 import { PartnerService } from '../services/partner.service';
 import { ComponentCanDeactivate } from '../stop-nav.guard';
 
@@ -12,7 +13,7 @@ import { ComponentCanDeactivate } from '../stop-nav.guard';
 })
 export class PartnerprofileComponent implements OnInit, ComponentCanDeactivate {
   private model$: Observable<IPartner> | undefined;
-  public model: IPartner = { payPalId: "", site: "", userPattern: "" };
+  public model: IPartner = { payPalId: "", site: "", userPattern: "", creatorWebhook: "", id: "" };
   private formDirty = false;
   @ViewChild('partnerForm', { read: NgForm }) payPalForm: any;
 
@@ -28,7 +29,8 @@ export class PartnerprofileComponent implements OnInit, ComponentCanDeactivate {
   }
 
   onSubmit(): void {
-    this.model$ = this.partnerService.updatePayPal(this.model.payPalId);
+    var writeModel: IPartnerWrite = { id: this.model.id, payPalId: this.model.payPalId, creatorWebhook: this.model.creatorWebhook }
+    this.model$ = this.partnerService.updatePartner(writeModel);
     this.model$.subscribe({
       next: (partner: IPartner) => {
         this.model = partner;

@@ -5,7 +5,8 @@ subless_Headers.set('Cache-Control', 'no-store');
 var subless_urlParams = new URLSearchParams(window.location.search);
 var subless_mgr: UserManager | null = null;
 const subless_Uri = process.env.SUBLESS_URL;
-const subless_baseUri = location.protocol + '//' + window.location.hostname + (location.port ? ':' + location.port : '') + window.location.pathname;
+const client_baseUri = location.protocol + '//' + window.location.hostname + (location.port ? ':' + location.port : '') + '/';
+const client_currentPath = window.location.pathname;
 const subless_silentRenewPage =
     '<html>' +
     '<body>' +
@@ -33,8 +34,8 @@ interface SublessInterface {
 }
 
 var subless_config: UserManagerSettings = {
-    redirect_uri: subless_baseUri,
-    post_logout_redirect_uri: subless_baseUri,
+    redirect_uri: client_baseUri,
+    post_logout_redirect_uri: client_baseUri,
 
 
     // these two will be done dynamically from the buttons clicked, but are
@@ -61,6 +62,7 @@ var subless_config: UserManagerSettings = {
     metadataSeed: {}
 };
 
+var callbackRunning: Promise<void> = null;
 
 
 export class Subless implements SublessInterface {
@@ -70,7 +72,7 @@ export class Subless implements SublessInterface {
         this.subless_Config = this.subless_GetConfig();
         this.subless_UserManager = this.subless_initUserManagement();
 
-        this.subless_loginCallback();
+        callbackRunning = this.subless_loginCallback();
         this.subless_hit();
     }
 
@@ -85,7 +87,7 @@ export class Subless implements SublessInterface {
                 + "/logout?response_type=code&client_id="
                 + subless_config.client_id
                 + "&logout_uri="
-                + subless_baseUri
+                + client_baseUri
         };
         return subless_config;
     }
@@ -114,6 +116,7 @@ export class Subless implements SublessInterface {
         if (subless_mgr == null) {
             subless_mgr = await this.subless_initUserManagement();
         }
+        this.subless_SetRedirectPath();
         var use_popup = false;
         if (!use_popup) {
             subless_mgr.signinRedirect();
@@ -124,6 +127,18 @@ export class Subless implements SublessInterface {
         }
     }
 
+    subless_SetRedirectPath(): void {
+        sessionStorage.setItem("pre-login-path", client_currentPath.substring(1));
+    }
+
+    subless_PostLoginRedirect(): void {
+        var path = sessionStorage.getItem("pre-login-path");
+        sessionStorage.setItem("pre-login-path", "");
+        if (path) {
+            window.location.href = client_baseUri + path;
+        }
+    }
+
     async sublessLogin() {
         await this.subless_Config;
         await this.subless_initUserManagement;
@@ -131,6 +146,13 @@ export class Subless implements SublessInterface {
     }
 
     async subless_LoggedIn(): Promise<boolean> {
+        if (callbackRunning != null) {
+            await callbackRunning;
+        }
+        return this.subless_TokenPresent();
+    }
+
+    async subless_TokenPresent(): Promise<boolean> {
         subless_mgr = await this.subless_UserManager;
         return subless_mgr.getUser().then(function (user) {
             if (user) {
@@ -143,15 +165,16 @@ export class Subless implements SublessInterface {
     async subless_loginCallback() {
         var code = subless_urlParams.get('code');
         await this.subless_Config;
-        var loggedIn = await this.subless_LoggedIn();
+        var loggedIn = await this.subless_TokenPresent();
         if (code != null && !loggedIn) {
-            this.subless_handleCallback();
+            await this.subless_handleCallback();
+            this.subless_PostLoginRedirect();
         }
     }
 
     async subless_handleCallback() {
         subless_mgr = await this.subless_UserManager;
-        subless_mgr.signinRedirectCallback();
+        await subless_mgr.signinRedirectCallback();
     }
 
     async subless_hit() {
