@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Design;
+using Microsoft.Extensions.Logging;
 
 namespace Subless.Data
 {
@@ -17,7 +18,7 @@ namespace Subless.Data
                 ConnectionString = Environment.GetEnvironmentVariable("MigrationsGenerationConnectionString")
 
             };
-            return new UserRepository(Microsoft.Extensions.Options.Options.Create(options));
+            return new UserRepository(Microsoft.Extensions.Options.Options.Create(options), new LoggerFactory());
         }
     }
 }
