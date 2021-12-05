@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
 using Subless.Data;
 using Subless.Models;
 using Subless.Services.Extensions;
@@ -14,15 +15,18 @@ namespace Subless.Services
         private readonly IUserRepository _userRepository;
         private readonly IPartnerService partnerService;
         private readonly IMemoryCache cache;
+        private readonly ILogger<CreatorService> logger;
 
         public CreatorService(
             IUserRepository userRepository,
             IPartnerService partnerService,
-            IMemoryCache cache)
+            IMemoryCache cache,
+            ILoggerFactory loggerFactory)
         {
             _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
             this.partnerService = partnerService ?? throw new ArgumentNullException(nameof(partnerService));
             this.cache = cache ?? throw new ArgumentNullException(nameof(cache));
+            this.logger = loggerFactory?.CreateLogger<CreatorService>() ?? throw new ArgumentNullException(nameof(loggerFactory));
         }
 
         public async Task ActivateCreator(Guid userId, Guid activationCode, string email)
@@ -124,7 +128,10 @@ namespace Subless.Services
 
         public async Task FireCreatorActivationWebhook(Creator creator, bool wasValid)
         {
+            logger.LogInformation("Checking if webhook should fire");
             var isValid = CreatorValid(creator);
+            logger.LogInformation($"Creator was valid {wasValid}");
+            logger.LogInformation($"Creator is valid {isValid}");
             if (isValid != wasValid)
             {
                 await partnerService.CreatorChangeWebhook(creator.ToPartnerView());
