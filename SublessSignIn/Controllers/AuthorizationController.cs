@@ -41,6 +41,7 @@ namespace SublessSignIn.Controllers
             this.authorizationService = authorizationService ?? throw new ArgumentNullException(nameof(authorizationService));
         }
 
+        [AllowAnonymous]
         [HttpGet("settings")]
         [EnableCors("Unrestricted")]
         public AuthSettings Get()

@@ -21,7 +21,7 @@ export class AuthorizationService {
     private httpClient: HttpClient,
     private router: Router,
     private route: ActivatedRoute,
-    public oidcSecurityService: OidcSecurityService
+    // public oidcSecurityService: OidcSecurityService
   ) {
     this.baseURI = location.protocol + '//' + window.location.hostname + (location.port ? ':' + location.port : '');
     this.redirectURI = this.baseURI + "/login";
@@ -47,14 +47,14 @@ export class AuthorizationService {
   }
 
   checkLogin() {
-    this.oidcSecurityService.checkAuth().subscribe(({ isAuthenticated, userData, accessToken, idToken }) => {
-      if (isAuthenticated) {
-        this.redirect();
-      }
-      else {
-        this.getLoginLink();
-      }
-    });
+    // this.oidcSecurityService.checkAuth().subscribe(({ isAuthenticated, userData, accessToken, idToken }) => {
+    //   if (isAuthenticated) {
+    this.redirect();
+    //   }
+    //   else {
+    //     this.getLoginLink();
+    //   }
+    // });
   }
   redirect() {
     const activation = sessionStorage.getItem('activation');
@@ -91,7 +91,7 @@ export class AuthorizationService {
   }
 
   redirectToLogout() {
-    this.oidcSecurityService.logoff();
+    // this.oidcSecurityService.logoff();
     this.getSettings().subscribe({
       next: (settings) => {
         window.location.replace(
@@ -106,17 +106,17 @@ export class AuthorizationService {
   }
 
   getEmail(): string {
-    if (this.oidcSecurityService.isAuthenticated()) {
-      var data = this.oidcSecurityService.getUserData();
-      if (data && data.email) {
-        return data.email;
-      }
-    }
+    // if (this.oidcSecurityService.isAuthenticated()) {
+    //   var data = this.oidcSecurityService.getUserData();
+    //   if (data && data.email) {
+    //     return data.email;
+    //   }
+    // }
     return "";
   }
 
   public async getLoginLink() {
-    this.oidcSecurityService.authorize();
+    //this.oidcSecurityService.authorize();
   }
 }
 

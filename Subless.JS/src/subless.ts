@@ -142,7 +142,8 @@ export class Subless implements SublessInterface {
     async sublessLogin() {
         await this.subless_Config;
         await this.subless_initUserManagement;
-        this.subless_startLogin();
+        window.location.href = subless_Uri + "/bff/login?returnUrl=" + client_baseUri;
+        //this.subless_startLogin();
     }
 
     async subless_LoggedIn(): Promise<boolean> {
@@ -179,25 +180,26 @@ export class Subless implements SublessInterface {
 
     async subless_hit() {
         subless_mgr = await this.subless_UserManager;
-        subless_mgr.getUser().then(function (user) {
-            if (user) {
-                var body =
-                    fetch(subless_Uri + "/api/hit", {
-                        method: "POST",
-                        headers: {
-                            "Authorization": "Bearer " + user.access_token,
-                            "Content-Type": "application/json",
-                        },
-                        body: window.location.href
-                    });
-            }
-        });
+        // subless_mgr.getUser().then(function (user) {
+        //     if (user) {
+        var body =
+            fetch(subless_Uri + "/api/hit", {
+                method: "POST",
+                headers: {
+                    //"Authorization": "Bearer " + user.access_token,
+                    "Content-Type": "application/json",
+                },
+                body: window.location.href,
+                credentials: "include"
+            });
+        //     }
+        // });
     }
 
 
     async sublessLogout() {
         subless_mgr = await this.subless_UserManager;
-        subless_mgr.signoutRedirect();
+        window.location.href = subless_Uri + "/bff/logout?returnUrl=" + client_baseUri;
     }
 
     async subless_revoke() {

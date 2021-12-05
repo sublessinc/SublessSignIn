@@ -1,12 +1,18 @@
 {
+    "/bff/*": {
+        "target": "https://localhost:7071",
+        "secure": false,
+        "logLevel": "debug",
+        "changeOrigin": true
+    },
     "/api/*": {
-        "target": "http://localhost:7070",
+        "target": "https://localhost:7071",
         "secure": false,
         "logLevel": "debug",
         "changeOrigin": true
     },
     "/dist/*": {
-        "target": "http://localhost:7070",
+        "target": "https://localhost:7071",
         "secure": false,
         "logLevel": "debug",
         "changeOrigin": true

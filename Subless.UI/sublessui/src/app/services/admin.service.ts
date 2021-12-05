@@ -10,7 +10,7 @@ import { ICreator } from '../models/ICreator';
 export class AdminService {
 
   constructor(private httpClient: HttpClient,
-    private oidcSecurityService: OidcSecurityService
+    //private oidcSecurityService: OidcSecurityService
   ) { }
 
   getId(): Observable<string> {
@@ -18,6 +18,6 @@ export class AdminService {
   }
 
   getToken(): string {
-    return this.oidcSecurityService.getIdToken();
+    return ""; //return this.oidcSecurityService.getIdToken();
   }
 }

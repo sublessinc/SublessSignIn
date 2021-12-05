@@ -48,7 +48,7 @@ namespace SublessSignIn
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
-                    webBuilder.UseUrls("http://0.0.0.0:7070/");
+                    webBuilder.UseUrls("http://0.0.0.0:7070/", "https://0.0.0.0:7071/");
                 });
         }
     }

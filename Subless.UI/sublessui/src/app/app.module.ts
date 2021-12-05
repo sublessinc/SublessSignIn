@@ -43,23 +43,23 @@ import { StopNavGuard } from './stop-nav.guard';
     ReactiveFormsModule,
     MatToolbarModule,
     FormsModule,
-    AuthModule.forRoot({
-      config: {
-        authority: environment.authority,
-        redirectUrl: window.location.origin + "/login",
-        postLogoutRedirectUri: window.location.origin + "/login",
-        clientId: environment.clientId,
-        scope: 'openid email',
-        responseType: 'code',
-        silentRenew: true,
-        useRefreshToken: true,
-        logLevel: LogLevel.Error,
-        secureRoutes: ['/api/Creator', '/api/Checkout/', '/api/Authorization', '/api/Partner', '/api/Admin', '/api/User'],
-      },
-    }),
+    // AuthModule.forRoot({
+    //   config: {
+    //     authority: environment.authority,
+    //     redirectUrl: window.location.origin + "/login",
+    //     postLogoutRedirectUri: window.location.origin + "/login",
+    //     clientId: environment.clientId,
+    //     scope: 'openid email',
+    //     responseType: 'code',
+    //     silentRenew: true,
+    //     useRefreshToken: true,
+    //     logLevel: LogLevel.Error,
+    //     secureRoutes: ['/api/Creator', '/api/Checkout/', '/api/Authorization', '/api/Partner', '/api/Admin', '/api/User'],
+    //   },
+    // }),
   ],
   providers: [
-    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
+    // { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: UnauthorizedInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: UserDataInterceptor, multi: true },
     StopNavGuard
