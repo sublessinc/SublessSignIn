@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Net;
-using System.Threading.Tasks;
 using Duende.Bff;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Hosting;
@@ -20,6 +18,7 @@ using Newtonsoft.Json;
 using Subless.Data;
 using Subless.Models;
 using Subless.Services;
+using SublessSignIn.AuthServices;
 
 namespace SublessSignIn
 {
@@ -76,7 +75,6 @@ namespace SublessSignIn
 
                 // confidential client using code flow + PKCE + query response mode
                 options.ClientId = AuthSettings.AppClientId;
-                    options.ClientSecret = "secret";
                     options.ResponseType = "code";
                     options.ResponseMode = "query";
                     options.UsePkce = true;
@@ -88,8 +86,8 @@ namespace SublessSignIn
 
                 // request scopes
                 options.Scope.Clear();
-                    options.Scope.Add("openid");
-                    options.Scope.Add("profile");
+                options.Scope.Add("openid");
+                options.Scope.Add("profile");
                     //options.Scope.Add("api");
 
                     // request refresh token
@@ -109,51 +107,43 @@ namespace SublessSignIn
             DataDi.RegisterDataDi(services);
 
             // TODO: See if mars catches this in code review, and also see if we can restrict this 
-            services.AddCors(o => o.AddPolicy("Unrestricted", builder =>
+            services.AddCors(o => o.AddPolicy(CorsPolicyAccessor.UnrestrictedPolicy, builder =>
             {
-                builder.WithOrigins("http://localhost:5000","http://localhost")
-                        .AllowCredentials()
+                builder.WithOrigins()
+                       .AllowCredentials()
                        .AllowAnyMethod()
                        .AllowAnyHeader();
             }));
 
             ServicesDi.AddServicesDi(services);
             services.AddTransient<ILoginService, SublessLoginService>();
+            services.AddTransient<ICorsPolicyAccessor, CorsPolicyAccessor>();
+
             services.AddControllers();
-            //services.AddSwaggerGen(c =>
-            //{
-            //    c.SwaggerDoc("v1", new OpenApiInfo { Title = "SublessSignIn", Version = "v1" });
-            //    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-            //    {
-            //        In = ParameterLocation.Header,
-            //        Description = "Please insert JWT with Bearer into field",
-            //        Name = "Authorization",
-            //        Type = SecuritySchemeType.ApiKey
-            //    });
-            //    c.AddSecurityRequirement(new OpenApiSecurityRequirement {
-            //       {
-            //         new OpenApiSecurityScheme
-            //         {
-            //           Reference = new OpenApiReference
-            //           {
-            //             Type = ReferenceType.SecurityScheme,
-            //             Id = "Bearer"
-            //           }
-            //          },
-            //          new string[] { }
-            //        }
-            //      });
-            //});
-
-
-            // Add Authentication services
-
-            //services.AddAuthentication("Bearer")
-            //     .AddJwtBearer(options =>
-            //     {
-            //         options.TokenValidationParameters = GetCognitoTokenValidationParams();
-            //     });
-
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "SublessSignIn", Version = "v1" });
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    In = ParameterLocation.Header,
+                    Description = "Please insert JWT with Bearer into field",
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.ApiKey
+                });
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement {
+                   {
+                     new OpenApiSecurityScheme
+                     {
+                       Reference = new OpenApiReference
+                       {
+                         Type = ReferenceType.SecurityScheme,
+                         Id = "Bearer"
+                       }
+                      },
+                      new string[] { }
+                    }
+                  });
+            });
             services.AddMvc();
         }
 
@@ -163,13 +153,10 @@ namespace SublessSignIn
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                //app.UseSwagger();
-                //app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "SublessSignIn v1"));
+                app.UseSwagger();
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "SublessSignIn v1"));
             }
             app.UseForwardedHeaders();
-
-            // I dont think we need this, however, I don't fully understand it, so restore it if the front end file server starts acting a fool - 9/27/21
-            //app.UseFileServer();
             app.UseStaticFiles(new StaticFileOptions
             {
                 ServeUnknownFileTypes = true,
@@ -192,7 +179,7 @@ namespace SublessSignIn
             app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllers()                 
+                endpoints.MapControllers()
                     .RequireAuthorization()
                     .AsBffApiEndpoint();
 
@@ -200,80 +187,7 @@ namespace SublessSignIn
                 endpoints.MapBffManagementEndpoints();
                 endpoints.MapFallbackToFile("/index.html");
             });
-        }
-
-
-        //private TokenValidationParameters GetCognitoTokenValidationParams()
-        //{
-        //    return new TokenValidationParameters
-        //    {
-        //        IssuerSigningKeyResolver = (s, securityToken, identifier, parameters) =>
-        //        {
-        //            // get JsonWebKeySet from AWS
-        //            var json = new WebClient().DownloadString(AuthSettings.JwtKeySetUrl);
-
-        //            // serialize the result
-        //            var keys = JsonConvert.DeserializeObject<JsonWebKeySet>(json).Keys;
-
-        //            // cast the result to be the type expected by IssuerSigningKeyResolver
-        //            return keys;
-        //        },
-        //        ValidIssuer = AuthSettings.CognitoUrl,
-        //        ValidateIssuerSigningKey = true,
-        //        ValidateIssuer = true,
-        //        ValidateLifetime = true,
-        //        AudienceValidator = AudienceValidator,
-        //    };
-        //}
-
-        //public bool AudienceValidator(IEnumerable<string> audiences, SecurityToken securityToken, TokenValidationParameters validationParameters)
-        //{
-        //    if (securityToken is JwtSecurityToken)
-        //    {
-        //        var token = (JwtSecurityToken)securityToken;
-        //        var tokenUse = token.Claims.FirstOrDefault(x => x.Type == "token_use")?.Value;
-        //        if (tokenUse == null)
-        //        {
-        //            return false;
-        //        }
-        //        if (tokenUse == "access")
-        //        {
-        //            return true;
-        //        }
-        //        if (tokenUse == "id")
-        //        {
-        //            return AuthSettings.AppClientId == audiences.First();
-        //        }
-        //    }
-        //    return false;
-        //}
-
-    }
-    public class SublessLoginService : ILoginService
-    {
-        private readonly BffOptions _options;
-
-        /// <summary>
-        /// ctor
-        /// </summary>
-        /// <param name="options"></param>
-        public SublessLoginService(BffOptions options)
-        {
-            _options = options;
-        }
-
-        /// <inheritdoc />
-        public async Task ProcessRequestAsync(HttpContext context)
-        {
-
-            var returnUrl = context.Request.Query[Constants.RequestParameters.ReturnUrl].FirstOrDefault();
-
-            var props = new AuthenticationProperties
-            {
-                RedirectUri = returnUrl ?? "/"
-            };
-
-            await context.ChallengeAsync(props);
+            
         }
     }
 }

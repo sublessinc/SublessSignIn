@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using Serilog;
 using Subless.Data;
 using Subless.Services;
+using SublessSignIn.AuthServices;
 
 namespace SublessSignIn
 {
@@ -32,6 +33,8 @@ namespace SublessSignIn
                 }
                 var adminService = services.GetService<IAdministrationService>();
                 adminService.OutputAdminKeyIfNoAdmins();
+                var cors = services.GetService<ICorsPolicyAccessor>();
+                cors.SetUnrestrictedOrigins();
             }
             host.Run();
         }

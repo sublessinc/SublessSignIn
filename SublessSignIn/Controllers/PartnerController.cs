@@ -9,6 +9,7 @@ using Microsoft.Extensions.Options;
 using Subless.Models;
 using Subless.Services;
 using Subless.Services.Extensions;
+using SublessSignIn.AuthServices;
 using SublessSignIn.Models;
 
 namespace SublessSignIn.Controllers
@@ -21,10 +22,11 @@ namespace SublessSignIn.Controllers
         private readonly IPartnerService _partnerService;
         private readonly IUserService _userService;
         private readonly ICreatorService creatorService;
+        private readonly ICorsPolicyAccessor corsPolicyAccessor;
         private readonly ILogger _logger;
         //this is a weird place to get this from, but it'll work. Probs split it out later
         private readonly StripeConfig _settings;
-        public PartnerController(IPartnerService partnerService, IUserService userService, ICreatorService creatorService, IOptions<StripeConfig> authSettings, ILoggerFactory loggerFactory)
+        public PartnerController(IPartnerService partnerService, IUserService userService, ICreatorService creatorService, IOptions<StripeConfig> authSettings, ICorsPolicyAccessor corsPolicyAccessor, ILoggerFactory loggerFactory)
         {
             if (authSettings is null)
             {
@@ -39,6 +41,7 @@ namespace SublessSignIn.Controllers
             _partnerService = partnerService ?? throw new ArgumentNullException(nameof(partnerService));
             _userService = userService ?? throw new ArgumentNullException(nameof(userService));
             this.creatorService = creatorService ?? throw new ArgumentNullException(nameof(creatorService));
+            this.corsPolicyAccessor = corsPolicyAccessor;
             _logger = loggerFactory?.CreateLogger<PartnerController>() ?? throw new ArgumentNullException(nameof(loggerFactory));
             _settings = authSettings.Value ?? throw new ArgumentNullException(nameof(authSettings));
 
@@ -120,6 +123,9 @@ namespace SublessSignIn.Controllers
         public ActionResult<Guid> NewPartner([FromBody] Partner partner)
         {
             _partnerService.CreatePartner(partner);
+
+            //Update the list of allowed origins
+            corsPolicyAccessor.SetUnrestrictedOrigins();
             return Ok(partner.Id);
         }
 
@@ -134,7 +140,10 @@ namespace SublessSignIn.Controllers
         [HttpPut()]
         public ActionResult UpdatePartner([FromBody] Partner partner)
         {
+
             _partnerService.UpdatePartner(partner);
+            //Update the list of allowed origins
+            corsPolicyAccessor.SetUnrestrictedOrigins();
             return Ok();
         }
 
@@ -164,7 +173,5 @@ namespace SublessSignIn.Controllers
 
             return Ok(updatedPartner.GetViewModel());
         }
-
-
     }
 }
