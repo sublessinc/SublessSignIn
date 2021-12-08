@@ -3,6 +3,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -66,5 +67,20 @@ namespace SublessSignIn.Controllers
             var viewModel = user.ToViewModel(HttpContext.User.FindFirst("email").Value);
             return Ok(viewModel);
         }
+
+        [HttpGet("loggedIn")]
+        [EnableCors("Unrestricted")]
+        [Authorize]
+        public ActionResult GetLoggedIn()
+        {
+            var cognitoId = userService.GetUserClaim(HttpContext.User);
+            var user = userService.GetUserByCognitoId(cognitoId);
+            if (user!=null)
+            {
+                return Ok();
+            }
+            return Unauthorized();
+        }
+
     }
 }
