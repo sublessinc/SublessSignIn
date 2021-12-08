@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using Duende.Bff;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Hosting;
@@ -11,7 +14,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
@@ -36,6 +41,7 @@ namespace SublessSignIn
             AuthSettings.IssuerUrl = Environment.GetEnvironmentVariable("issuerUrl") ?? throw new ArgumentNullException("issuerUrl");
             AuthSettings.CognitoUrl = $"https://cognito-idp.{AuthSettings.Region}.amazonaws.com/{AuthSettings.PoolId}";
             AuthSettings.JwtKeySetUrl = AuthSettings.CognitoUrl + "/.well-known/jwks.json";
+            AuthSettings.Domain = Environment.GetEnvironmentVariable("DOMAIN") ?? throw new ArgumentNullException("DOMAIN");
 
         }
 
@@ -52,47 +58,7 @@ namespace SublessSignIn
                     ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
             });
 
-            services.AddBff()
-                .AddServerSideSessions();
-            // configure server-side authentication and session management
-            services.AddAuthentication(options =>
-            {
-                options.DefaultScheme = "cookie";
-                options.DefaultChallengeScheme = "oidc";
-                options.DefaultSignOutScheme = "oidc";
-            })
-                .AddCookie("cookie", options =>
-                {
-                // host prefixed cookie name
-                options.Cookie.Name = "__Host-spa";
 
-                // strict SameSite handling
-                options.Cookie.SameSite = SameSiteMode.None;
-                })
-                .AddOpenIdConnect("oidc", options =>
-                {
-                    options.Authority = AuthSettings.CognitoUrl;
-
-                // confidential client using code flow + PKCE + query response mode
-                options.ClientId = AuthSettings.AppClientId;
-                    options.ResponseType = "code";
-                    options.ResponseMode = "query";
-                    options.UsePkce = true;
-                    options.MapInboundClaims = false;
-                    options.GetClaimsFromUserInfoEndpoint = true;
-
-                // save access and refresh token to enable automatic lifetime management
-                options.SaveTokens = true;
-
-                // request scopes
-                options.Scope.Clear();
-                options.Scope.Add("openid");
-                options.Scope.Add("profile");
-                    //options.Scope.Add("api");
-
-                    // request refresh token
-                    //options.Scope.Add("offline_access");
-                });
 
             services.Configure<AuthSettings>(options =>
             {
@@ -103,6 +69,10 @@ namespace SublessSignIn
                 options.PoolId = AuthSettings.PoolId;
                 options.Region = AuthSettings.Region;
             });
+
+
+            services.AddBffServices(AuthSettings);
+
 
             DataDi.RegisterDataDi(services);
 
@@ -119,6 +89,9 @@ namespace SublessSignIn
             services.AddTransient<ILoginService, SublessLoginService>();
             services.AddTransient<ICorsPolicyAccessor, CorsPolicyAccessor>();
 
+
+
+            //services.Replace(descriptor2);
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {

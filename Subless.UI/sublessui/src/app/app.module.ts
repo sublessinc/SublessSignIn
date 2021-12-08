@@ -61,7 +61,7 @@ import { StopNavGuard } from './stop-nav.guard';
   providers: [
     // { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: UnauthorizedInterceptor, multi: true },
-    { provide: HTTP_INTERCEPTORS, useClass: UserDataInterceptor, multi: true },
+    // { provide: HTTP_INTERCEPTORS, useClass: UserDataInterceptor, multi: true },
     StopNavGuard
   ],
   bootstrap: [AppComponent],
