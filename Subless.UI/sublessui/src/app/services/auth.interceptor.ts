@@ -24,9 +24,6 @@ export class UnauthorizedInterceptor implements HttpInterceptor {
                     if (err.status !== 401) {
                         return;
                     }
-                    sessionStorage.setItem("state", '');
-                    sessionStorage.setItem("id_token", '');
-                    sessionStorage.setItem("access_token", '');
                     sessionStorage.setItem("activation", '');
                     this.authService.redirectToLogout();
                 }

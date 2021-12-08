@@ -5,27 +5,21 @@ import { ISettings } from '../models/ISettings';
 import { IRedirect } from '../models/IRedirect';
 import { Observable, of, throwError } from 'rxjs';
 
-import { catchError } from 'rxjs/operators';
+import { catchError, map } from 'rxjs/operators';
+import { IUser } from '../models/IUser';
 
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthorizationService {
-  private baseURI: string = '';
-  private redirectURI: string = '';
-  private logoutURI: string = '';
   private activation: string = '';
   private postActivationRedirect: string = '';
   constructor(
     private httpClient: HttpClient,
     private router: Router,
     private route: ActivatedRoute,
-    // public oidcSecurityService: OidcSecurityService
   ) {
-    this.baseURI = location.protocol + '//' + window.location.hostname + (location.port ? ':' + location.port : '');
-    this.redirectURI = this.baseURI + "/login";
-    this.logoutURI = this.baseURI + "/login";
     this.route.queryParams.subscribe(params => {
       this.activation = params['activation'];
       this.postActivationRedirect = params['postActivationRedirect'];
@@ -46,8 +40,8 @@ export class AuthorizationService {
     return this.httpClient.get<number[]>('/api/Authorization/routes');
   }
 
-  getUserData(): Observable<string | null> {
-    return this.httpClient.get<string>('/api/User').pipe(
+  getUserData(): Observable<IUser | null> {
+    return this.httpClient.get<IUser>('/api/User').pipe(
       catchError((err: HttpErrorResponse) => {
         if (err.status == 401) {
           return of(null);
@@ -107,14 +101,13 @@ export class AuthorizationService {
     window.location.href = "/bff/logout";
   }
 
-  getEmail(): string {
-    // if (this.oidcSecurityService.isAuthenticated()) {
-    //   var data = this.oidcSecurityService.getUserData();
-    //   if (data && data.email) {
-    //     return data.email;
-    //   }
-    // }
-    return "";
+  getEmail(): Observable<string | null> {
+    return this.getUserData().pipe(map((user: IUser | null) => {
+      if (user) {
+        return user.Email;
+      }
+      return null;
+    }))
   }
 
   public getLoginLink() {

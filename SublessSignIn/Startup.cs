@@ -58,8 +58,6 @@ namespace SublessSignIn
                     ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
             });
 
-
-
             services.Configure<AuthSettings>(options =>
             {
                 options.AppClientId = AuthSettings.AppClientId;
