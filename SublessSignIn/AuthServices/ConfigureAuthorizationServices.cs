@@ -61,13 +61,14 @@ namespace SublessSignIn.AuthServices
                     options.UsePkce = true;
                     options.MapInboundClaims = false;
                     options.GetClaimsFromUserInfoEndpoint = true;
+                    options.RequireHttpsMetadata = true;
                     options.Events = new OpenIdConnectEvents()
                     {
                         //handle the logout redirection
                         OnRedirectToIdentityProviderForSignOut = context =>
                         {
                             // TODO FIX THAT URL
-                            var logouturi = AuthSettings.IssuerUrl + $"/logout?response_type=code&client_id={AuthSettings.AppClientId}&logout_uri=https://localhost:4200";
+                            var logouturi = AuthSettings.IssuerUrl + $"/logout?response_type=code&client_id={AuthSettings.AppClientId}&redirect_uri={context.ProtocolMessage.RedirectUri??AuthSettings.Domain}";
                             context.Response.Redirect(logouturi);
                             context.HandleResponse();
 
