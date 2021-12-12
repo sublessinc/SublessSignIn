@@ -85,11 +85,11 @@ namespace SublessSignIn
 
             ServicesDi.AddServicesDi(services);
             services.AddTransient<ILoginService, SublessLoginService>();
+            services.AddTransient<ILogoutService, SublessLogoutService>();
             services.AddTransient<ICorsPolicyAccessor, CorsPolicyAccessor>();
 
 
 
-            //services.Replace(descriptor2);
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
