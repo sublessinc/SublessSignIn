@@ -66,6 +66,7 @@ namespace SublessSignIn
                 options.JwtKeySetUrl = AuthSettings.JwtKeySetUrl;
                 options.PoolId = AuthSettings.PoolId;
                 options.Region = AuthSettings.Region;
+                options.Domain = AuthSettings.Domain;
             });
 
 

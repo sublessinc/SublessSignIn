@@ -1,18 +1,24 @@
 {
     "/bff/*": {
-        "target": "https://localhost:7071",
+        "target": "http://localhost:7070",
+        "secure": false,
+        "logLevel": "debug",
+        "changeOrigin": true
+    },
+    "/signin-oidc/*": {
+        "target": "http://localhost:7070",
         "secure": false,
         "logLevel": "debug",
         "changeOrigin": true
     },
     "/api/*": {
-        "target": "https://localhost:7071",
+        "target": "http://localhost:7070",
         "secure": false,
         "logLevel": "debug",
         "changeOrigin": true
     },
     "/dist/*": {
-        "target": "https://localhost:7071",
+        "target": "http://localhost:7070",
         "secure": false,
         "logLevel": "debug",
         "changeOrigin": true
