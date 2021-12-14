@@ -18,15 +18,15 @@ export class UnauthorizedInterceptor implements HttpInterceptor {
 
     intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
 
-        return next.handle(request).pipe(tap(() => { },
-            (err: any) => {
-                if (err instanceof HttpErrorResponse) {
-                    if (err.status !== 401) {
-                        return;
-                    }
-                    sessionStorage.setItem("activation", '');
-                    this.authService.redirectToLogout();
-                }
-            }));
+        return next.handle(request);
+        // .pipe(tap(() => { },
+        //     (err: any) => {
+        //         if (err instanceof HttpErrorResponse) {
+        //             if (err.status !== 401) {
+        //                 return;
+        //             }
+        //             this.authService.redirectToLogout();
+        //         }
+        //     }));
     }
 }

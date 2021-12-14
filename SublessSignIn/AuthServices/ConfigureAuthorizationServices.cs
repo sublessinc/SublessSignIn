@@ -45,10 +45,10 @@ namespace SublessSignIn.AuthServices
                 .AddCookie("cookie", options =>
                 {
                     // host prefixed cookie name
-                    options.Cookie.Name = "__Host-spa";
-
+                    options.Cookie.Name = "subless";
                     // strict SameSite handling
-                    options.Cookie.SameSite = SameSiteMode.None;
+                    options.Cookie.SameSite = SameSiteMode.Lax;
+                    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
                 })
                 .AddOpenIdConnect("oidc", options =>
                 {
@@ -60,6 +60,8 @@ namespace SublessSignIn.AuthServices
                     options.ResponseMode = "query";
                     options.UsePkce = true;
                     options.MapInboundClaims = false;
+                    options.CorrelationCookie.SameSite = SameSiteMode.Lax;
+                    options.NonceCookie.SameSite = SameSiteMode.Lax;
                     options.GetClaimsFromUserInfoEndpoint = true;
                     options.RequireHttpsMetadata = true;
                     options.Events = new OpenIdConnectEvents()
@@ -73,8 +75,17 @@ namespace SublessSignIn.AuthServices
                             context.HandleResponse();
 
                             return Task.CompletedTask;
-                        }
+                        },
                     };
+                    var redirectToIdpHandler = options.Events.OnRedirectToIdentityProvider;
+                    options.Events.OnRedirectToIdentityProvider = async context =>
+                    {
+                        // Call what Microsoft.Identity.Web is doing
+                        await redirectToIdpHandler(context);
+                        // Override the redirect URI to be what you want
+                        context.ProtocolMessage.RedirectUri = $"{AuthSettings.Domain}signin-oidc";
+                    };
+
                     // save access and refresh token to enable automatic lifetime management
                     options.SaveTokens = true;
 

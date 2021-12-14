@@ -13,7 +13,7 @@ namespace SublessSignIn.Models
             return new UserViewModel
             {
                 Email = email,
-                Id = user.Id
+                Id = user?.Id
             };
         }
     }

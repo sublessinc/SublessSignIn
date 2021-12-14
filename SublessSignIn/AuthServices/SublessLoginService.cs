@@ -45,12 +45,12 @@ namespace SublessSignIn
             //_logger.LogInformation($"ReturnUrl: {returnUrl}");
             var props = new AuthenticationProperties
             {
-                RedirectUri = returnUrl ?? "/",               
+                RedirectUri = returnUrl ?? "/",
             };
             var publicDomain = new Uri(authSettings.Domain);
             //_logger.LogInformation($"Transformed ReturnUri {props.RedirectUri}");
-            context.Request.Host =  new HostString(publicDomain.Host, publicDomain.Port);
-            context.Request.Scheme = publicDomain.Scheme;
+            //context.Request.Host =  new HostString(publicDomain.Host, publicDomain.Port);
+            //context.Request.Scheme = publicDomain.Scheme;
             await context.ChallengeAsync(props);
         }
     }
