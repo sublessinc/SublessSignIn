@@ -56,30 +56,11 @@ namespace SublessSignIn
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.Configure<ForwardedHeadersOptions>(options =>
-            {
-                options.ForwardedHeaders =
-                    ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
-            });
-
-            services.Configure<AuthSettings>(options =>
-            {
-                options.AppClientId = AuthSettings.AppClientId;
-                options.CognitoUrl = AuthSettings.CognitoUrl;
-                options.IssuerUrl = AuthSettings.IssuerUrl;
-                options.JwtKeySetUrl = AuthSettings.JwtKeySetUrl;
-                options.PoolId = AuthSettings.PoolId;
-                options.Region = AuthSettings.Region;
-                options.Domain = AuthSettings.Domain;
-            });
-
-
             services.AddBffServices(AuthSettings);
-
+            services.RegisterAuthDi(AuthSettings);
 
             DataDi.RegisterDataDi(services);
 
-            // TODO: See if mars catches this in code review, and also see if we can restrict this 
             services.AddCors(o => o.AddPolicy(CorsPolicyAccessor.UnrestrictedPolicy, builder =>
             {
                 builder.WithOrigins()
@@ -89,11 +70,6 @@ namespace SublessSignIn
             }));
 
             ServicesDi.AddServicesDi(services);
-            services.AddTransient<ILoginService, SublessLoginService>();
-            services.AddTransient<ILogoutService, SublessLogoutService>();
-            services.AddTransient<ICorsPolicyAccessor, CorsPolicyAccessor>();
-
-
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
@@ -132,6 +108,7 @@ namespace SublessSignIn
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "SublessSignIn v1"));
             }
+
             app.UseForwardedHeaders();
             app.UseStaticFiles(new StaticFileOptions
             {
@@ -144,12 +121,9 @@ namespace SublessSignIn
                       "Origin, X-Requested-With, Content-Type, Accept");
                 },
             });
+            
             app.UseAuthentication();
-
-
-            // adds antiforgery protection for local APIs
             app.UseBff();
-
             app.UseRouting();
             app.UseCors();
             app.UseAuthorization();

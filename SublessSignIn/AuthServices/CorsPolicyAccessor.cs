@@ -9,12 +9,17 @@ using System.Threading.Tasks;
 
 namespace SublessSignIn.AuthServices
 {
+    /// <summary>
+    /// The sites that are allowed to direct requests to us should match our list of partners.
+    /// This means that when our list of partners chagnes, we also need to change the list of allowed CORS origins
+    /// </summary>
     public class CorsPolicyAccessor : ICorsPolicyAccessor
     {
         public const string UnrestrictedPolicy = "Unrestricted";
         private readonly CorsOptions _options;
         private readonly IPartnerService partnerService;
         private readonly ILogger<CorsPolicyAccessor> logger;
+
 
         public CorsPolicyAccessor(IOptions<CorsOptions> options, IPartnerService partnerService, ILoggerFactory loggerFactory)
         {

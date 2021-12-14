@@ -14,6 +14,12 @@ using System.Threading.Tasks;
 
 namespace SublessSignIn.AuthServices
 {
+    /// <summary>
+    /// We're using a BFF implementation from Duende, but we have to override a few behaviors
+    /// 1) Cognito doesn't support the OIDC revoke behavior, but they have an endpoint we can call manually, so we're overriding that in SublessLogoutSerivce
+    /// 2) Duende BFF doesn't allow non-local redirects for login/logout, but we will explicitly be redirecting to and from 3rd parties, so we override that
+    /// 3) Our SSL setup is first hop, handled at the load balancer in ECS, so we need to override some URLs to be HTTPs, because the server thinks it's running in HTTP
+    /// </summary>
     public static class ConfigureAuthorizationServices
     {
         public static IServiceCollection AddBffServices(this IServiceCollection services, AuthSettings AuthSettings)
@@ -60,8 +66,11 @@ namespace SublessSignIn.AuthServices
                     options.ResponseMode = "query";
                     options.UsePkce = true;
                     options.MapInboundClaims = false;
+
+                    //These need to be lax in order to handle both remote logins and the first-hop SSL configuration on the ECS cluster
                     options.CorrelationCookie.SameSite = SameSiteMode.Lax;
                     options.NonceCookie.SameSite = SameSiteMode.Lax;
+
                     options.GetClaimsFromUserInfoEndpoint = true;
                     options.RequireHttpsMetadata = true;
                     options.Events = new OpenIdConnectEvents()
@@ -69,7 +78,6 @@ namespace SublessSignIn.AuthServices
                         //handle the logout redirection
                         OnRedirectToIdentityProviderForSignOut = context =>
                         {
-                            // TODO FIX THAT URL
                             var logouturi = AuthSettings.IssuerUrl + $"/logout?response_type=code&client_id={AuthSettings.AppClientId}&redirect_uri={context.ProtocolMessage.RedirectUri??AuthSettings.Domain}";
                             context.Response.Redirect(logouturi);
                             context.HandleResponse();

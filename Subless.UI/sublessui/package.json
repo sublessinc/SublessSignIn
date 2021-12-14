@@ -23,7 +23,6 @@
     "@angular/platform-browser": "~12.2.8",
     "@angular/platform-browser-dynamic": "~12.2.8",
     "@angular/router": "~12.2.8",
-    "angular-auth-oidc-client": "^12.0.3",
     "file-saver": "^2.0.5",
     "rxjs": "~6.6.0",
     "tslib": "^2.3.1",
