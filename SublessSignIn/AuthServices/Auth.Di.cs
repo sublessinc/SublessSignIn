@@ -10,12 +10,6 @@ namespace SublessSignIn.AuthServices
     {
         public static IServiceCollection RegisterAuthDi(this IServiceCollection services, AuthSettings authSettings)
         {
-            services.Configure<ForwardedHeadersOptions>(options =>
-            {
-                options.ForwardedHeaders =
-                    ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
-            });
-
             services.Configure<AuthSettings>(options =>
             {
                 options.AppClientId = authSettings.AppClientId;
