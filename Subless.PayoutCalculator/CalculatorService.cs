@@ -96,7 +96,7 @@ namespace Subless.PayoutCalculator
         {
             var creatorIds = hits.Select(x => x.CreatorId);
             var creators = creatorIds.Select(x => _creatorService.GetCreator(x));
-            var invalidCreators = creators.Where(x => x.ActivationCode != null || string.IsNullOrWhiteSpace(x.PayPalId));
+            var invalidCreators = creators.Where(x => x == null || x.ActivationCode != null || string.IsNullOrWhiteSpace(x.PayPalId));
             var validHits = hits.Where(x => !invalidCreators.Any(y => y.Id == x.CreatorId));
             return validHits;
         }
