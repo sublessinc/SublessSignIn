@@ -78,7 +78,7 @@ namespace SublessSignIn.AuthServices
                         //handle the logout redirection
                         OnRedirectToIdentityProviderForSignOut = context =>
                         {
-                            var logouturi = AuthSettings.IssuerUrl + $"/logout?response_type=code&client_id={AuthSettings.AppClientId}&redirect_uri={context.ProtocolMessage.RedirectUri??AuthSettings.Domain}";
+                            var logouturi = AuthSettings.IssuerUrl + $"/logout?client_id={AuthSettings.AppClientId}&logout_uri={context.ProtocolMessage.RedirectUri??AuthSettings.Domain}";
                             context.Response.Redirect(logouturi);
                             context.HandleResponse();
 
