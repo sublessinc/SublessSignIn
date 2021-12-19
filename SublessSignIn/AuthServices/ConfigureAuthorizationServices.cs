@@ -52,8 +52,8 @@ namespace SublessSignIn.AuthServices
                 {
                     // host prefixed cookie name
                     options.Cookie.Name = "subless";
-                    // strict SameSite handling
-                    options.Cookie.SameSite = SameSiteMode.Lax;
+                    // Samesite has to be none to support hit tracking
+                    options.Cookie.SameSite = SameSiteMode.None;
                     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
                 })
                 .AddOpenIdConnect("oidc", options =>
