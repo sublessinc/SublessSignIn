@@ -1,31 +1,25 @@
 import { Injectable, OnInit } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ISettings } from '../models/ISettings';
-import { ITokenResponse } from '../models/ITokenResponse';
 import { IRedirect } from '../models/IRedirect';
-import { OidcSecurityService } from 'angular-auth-oidc-client';
-import { Observable } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
+
+import { catchError, map } from 'rxjs/operators';
+import { IUser } from '../models/IUser';
 
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthorizationService {
-  private baseURI: string = '';
-  private redirectURI: string = '';
-  private logoutURI: string = '';
   private activation: string = '';
   private postActivationRedirect: string = '';
   constructor(
     private httpClient: HttpClient,
     private router: Router,
     private route: ActivatedRoute,
-    public oidcSecurityService: OidcSecurityService
   ) {
-    this.baseURI = location.protocol + '//' + window.location.hostname + (location.port ? ':' + location.port : '');
-    this.redirectURI = this.baseURI + "/login";
-    this.logoutURI = this.baseURI + "/login";
     this.route.queryParams.subscribe(params => {
       this.activation = params['activation'];
       this.postActivationRedirect = params['postActivationRedirect'];
@@ -46,16 +40,29 @@ export class AuthorizationService {
     return this.httpClient.get<number[]>('/api/Authorization/routes');
   }
 
-  checkLogin() {
-    this.oidcSecurityService.checkAuth().subscribe(({ isAuthenticated, userData, accessToken, idToken }) => {
-      if (isAuthenticated) {
-        this.redirect();
-      }
-      else {
-        this.getLoginLink();
+  getUserData(): Observable<IUser | null> {
+    return this.httpClient.get<IUser>('/api/User').pipe(
+      catchError((err: HttpErrorResponse) => {
+        if (err.status == 401) {
+          return of(null);
+        }
+        return throwError(err);
+      }));
+  }
+
+  public async checkLogin() {
+    this.getUserData().subscribe({
+      next: async data => {
+        if (data == null) {
+          await this.getLoginLink()
+        }
+        else {
+          this.redirect();
+        }
       }
     });
   }
+
   redirect() {
     const activation = sessionStorage.getItem('activation');
     var headers = new HttpHeaders();
@@ -91,32 +98,20 @@ export class AuthorizationService {
   }
 
   redirectToLogout() {
-    this.oidcSecurityService.logoff();
-    this.getSettings().subscribe({
-      next: (settings) => {
-        window.location.replace(
-          settings.issuerUrl
-          + "/logout?response_type=code&client_id="
-          + settings.appClientId
-          + "&logout_uri="
-          + this.logoutURI
-        );
-      }
-    })
+    window.location.href = "/bff/logout";
   }
 
-  getEmail(): string {
-    if (this.oidcSecurityService.isAuthenticated()) {
-      var data = this.oidcSecurityService.getUserData();
-      if (data && data.email) {
-        return data.email;
+  getEmail(): Observable<string | null> {
+    return this.getUserData().pipe(map((user: IUser | null) => {
+      if (user) {
+        return user.Email;
       }
-    }
-    return "";
+      return null;
+    }))
   }
 
-  public async getLoginLink() {
-    this.oidcSecurityService.authorize();
+  public getLoginLink() {
+    window.location.href = "/bff/login?returnUrl=" + window.location.href;
   }
 }
 

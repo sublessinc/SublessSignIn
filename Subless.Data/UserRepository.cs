@@ -275,5 +275,10 @@ namespace Subless.Data
             }
             return PaymentAuditLogs.Max(x => x.DatePaid);
         }
+
+        public IEnumerable<Uri> GetPartnerUris()
+        {
+            return Partners.Select(x => x.Site);
+        }
     }
 }

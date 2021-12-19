@@ -9,15 +9,9 @@ import { ICreator } from '../models/ICreator';
 })
 export class AdminService {
 
-  constructor(private httpClient: HttpClient,
-    private oidcSecurityService: OidcSecurityService
-  ) { }
+  constructor(private httpClient: HttpClient) { }
 
-  getId(): Observable<string> {
-    return this.httpClient.get<string>('/api/User');
-  }
-
-  getToken(): string {
-    return this.oidcSecurityService.getIdToken();
+  getId(): Observable<any> {
+    return this.httpClient.get<any>('/api/User');
   }
 }

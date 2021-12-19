@@ -1,4 +1,16 @@
 {
+    "/bff/*": {
+        "target": "http://localhost:7070",
+        "secure": false,
+        "logLevel": "debug",
+        "changeOrigin": true
+    },
+    "/signin-oidc/*": {
+        "target": "http://localhost:7070",
+        "secure": false,
+        "logLevel": "debug",
+        "changeOrigin": true
+    },
     "/api/*": {
         "target": "http://localhost:7070",
         "secure": false,

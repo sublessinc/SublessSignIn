@@ -45,5 +45,6 @@ namespace Subless.Data
         User GetUserWithRelationships(Guid id);
         Task<bool> CanAccessDatabase();
         void LogDbStats();
+        IEnumerable<Uri> GetPartnerUris();
     }
 }

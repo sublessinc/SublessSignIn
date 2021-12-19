@@ -16,6 +16,10 @@ namespace Subless.Services
                 options.WebhookSecret = Environment.GetEnvironmentVariable("STRIPE_WEBHOOK_SECRET") ?? throw new ArgumentNullException("STRIPE_WEBHOOK_SECRET");
                 options.BasicPrice = Environment.GetEnvironmentVariable("BASIC_PRICE_ID") ?? throw new ArgumentNullException("BASIC_PRICE_ID");
                 options.Domain = Environment.GetEnvironmentVariable("DOMAIN") ?? throw new ArgumentNullException("DOMAIN");
+                if (!options.Domain.EndsWith('/'))
+                {
+                    options.Domain += '/';
+                }
                 options.SublessPayPalId = Environment.GetEnvironmentVariable("PayPalId");
             });
 

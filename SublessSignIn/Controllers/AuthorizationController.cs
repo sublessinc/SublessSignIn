@@ -1,6 +1,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
@@ -41,6 +42,7 @@ namespace SublessSignIn.Controllers
             this.authorizationService = authorizationService ?? throw new ArgumentNullException(nameof(authorizationService));
         }
 
+        [AllowAnonymous]
         [HttpGet("settings")]
         [EnableCors("Unrestricted")]
         public AuthSettings Get()
@@ -51,14 +53,14 @@ namespace SublessSignIn.Controllers
 
         [Authorize]
         [HttpGet("redirect")]
-        public async Task<ActionResult<Redirection>> GetPath([FromHeader] string Activation, [FromHeader] string email)
+        public async Task<ActionResult<Redirection>> GetPath([FromHeader] string Activation)
         {
             var cognitoId = _userService.GetUserClaim(HttpContext.User);
             if (cognitoId == null)
             {
                 return Unauthorized();
             }
-            return await authorizationService.LoginWorkflow(cognitoId, Activation, email);
+            return await authorizationService.LoginWorkflow(cognitoId, Activation, HttpContext.User.FindFirst("email").Value);
         }
 
         [Authorize]
