@@ -94,10 +94,11 @@ namespace Subless.PayoutCalculator
 
         private IEnumerable<Hit> FilterInvalidCreators(IEnumerable<Hit> hits)
         {
-            var creatorIds = hits.Select(x => x.CreatorId);
-            var creators = creatorIds.Select(x => _creatorService.GetCreator(x));
-            var invalidCreators = creators.Where(x => x == null || x.ActivationCode != null || string.IsNullOrWhiteSpace(x.PayPalId));
-            var validHits = hits.Where(x => !invalidCreators.Any(y => y.Id == x.CreatorId));
+            var creatorIds = hits.Select(x => x.CreatorId).Distinct();
+            var creators = creatorIds.Select(x => _creatorService.GetCreator(x)).Where(x=> x is not null);
+            var missingCreators = creatorIds.Where(x => !creators.Any(y => y.Id == x));
+            var invalidCreators = creators.Where(x => x.ActivationCode is not null || string.IsNullOrWhiteSpace(x.PayPalId));
+            var validHits = hits.Where(x => !missingCreators.Any(y=> y==x.CreatorId) && !invalidCreators.Any(y => y.Id == x.CreatorId));
             return validHits;
         }
 
