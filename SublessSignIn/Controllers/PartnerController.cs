@@ -16,7 +16,6 @@ namespace SublessSignIn.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize]
     public class PartnerController : ControllerBase
     {
         private readonly IPartnerService _partnerService;
@@ -49,6 +48,7 @@ namespace SublessSignIn.Controllers
         }
 
         [HttpPost("CreatorRegister")]
+        [Authorize(BearerAuth.PartnerSchemeName)]
         public ActionResult<string> GetCreatorActivationLink([FromQuery] string username)
         {
             if (PartnerService.InvalidUsernameCharacters.Any(chr => username.Contains(chr)))
@@ -81,6 +81,7 @@ namespace SublessSignIn.Controllers
 
 
         [HttpGet("Creators")]
+        [Authorize(BearerAuth.PartnerSchemeName)]
         public ActionResult<IEnumerable<PartnerViewCreator>> GetCreatorsForPartner()
         {
             var cognitoClientId = User.Claims.FirstOrDefault(x => x.Type == "client_id")?.Value;
@@ -98,6 +99,7 @@ namespace SublessSignIn.Controllers
         }
 
         [HttpGet("Creators/{id}")]
+        [Authorize(BearerAuth.PartnerSchemeName)]
         public ActionResult<IEnumerable<PartnerViewCreator>> GetCreatorByPartner(Guid id)
         {
             var cognitoClientId = User.Claims.FirstOrDefault(x => x.Type == "client_id")?.Value;
@@ -120,6 +122,7 @@ namespace SublessSignIn.Controllers
 
         [TypeFilter(typeof(AdminAuthorizationFilter))]
         [HttpPost()]
+        [Authorize]
         public ActionResult<Guid> NewPartner([FromBody] Partner partner)
         {
             _partnerService.CreatePartner(partner);
@@ -131,6 +134,7 @@ namespace SublessSignIn.Controllers
 
         [TypeFilter(typeof(AdminAuthorizationFilter))]
         [HttpGet()]
+        [Authorize]
         public ActionResult<IEnumerable<Partner>> GetPartners()
         {
             return Ok(_partnerService.GetPartners());
@@ -138,6 +142,7 @@ namespace SublessSignIn.Controllers
 
         [TypeFilter(typeof(AdminAuthorizationFilter))]
         [HttpPut()]
+        [Authorize]
         public ActionResult UpdatePartner([FromBody] Partner partner)
         {
 
@@ -148,6 +153,7 @@ namespace SublessSignIn.Controllers
         }
 
         [HttpGet("config")]
+        [Authorize]
         public ActionResult<PartnerResponse> GetPartner()
         {
             var userClaim = _userService.GetUserClaim(this.User);
@@ -161,6 +167,7 @@ namespace SublessSignIn.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize]
         public ActionResult<PartnerResponse> UpdateOwnPartner([FromBody] PartnerWriteModel partner)
         {
             var userClaim = _userService.GetUserClaim(this.User);

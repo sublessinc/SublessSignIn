@@ -56,6 +56,8 @@ namespace SublessSignIn
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            //The order of these two auth schemes matters. The last one added will be the default, so we add the partner facing bearer token scheme first.
+            services = new BearerAuth().AddBearerAuthServices(services, AuthSettings);
             services.AddBffServices(AuthSettings);
             services.RegisterAuthDi(AuthSettings);
 
@@ -127,6 +129,7 @@ namespace SublessSignIn
             app.UseRouting();
             app.UseCors();
             app.UseAuthorization();
+            
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers()
