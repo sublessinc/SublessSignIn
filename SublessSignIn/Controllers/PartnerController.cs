@@ -82,7 +82,7 @@ namespace SublessSignIn.Controllers
 
         [HttpGet("Creators")]
         [Authorize(BearerAuth.PartnerSchemeName)]
-        public ActionResult<IEnumerable<PartnerViewCreator>> GetCreatorsForPartner()
+        public ActionResult<IEnumerable<PartnerViewCreator>> GetCreatorsForPartner([FromQuery] string username = null)
         {
             var cognitoClientId = User.Claims.FirstOrDefault(x => x.Type == "client_id")?.Value;
             if (string.IsNullOrWhiteSpace(cognitoClientId))
@@ -94,7 +94,21 @@ namespace SublessSignIn.Controllers
             {
                 return NotFound("No partner registered for the given client ID");
             }
-            var creators = creatorService.GetCreatorsByPartnerId(partner.Id);
+            IEnumerable<Creator> creators = null;
+            if (username != null)
+            {
+                var creator = creatorService.GetCachedCreatorFromPartnerAndUsername(username, partner.Id);
+                
+                if (creator is null) 
+                {
+                    return NotFound("No creators found for the given username");
+                }
+                creators = new List<Creator> { creator };
+            }
+            else
+            {
+                creators = creatorService.GetCreatorsByPartnerId(partner.Id);
+            }
             return Ok(creators.Select(x => x.ToPartnerView()));
         }
 
