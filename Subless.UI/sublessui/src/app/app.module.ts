@@ -11,8 +11,6 @@ import { CreatorprofileComponent } from './creatorprofile/creatorprofile.compone
 import { NavComponent } from './nav/nav.component';
 import { LoggedOutComponent } from './logged-out/logged-out.component';
 import { FormsModule } from '@angular/forms';
-import { AuthInterceptor, AuthModule, LogLevel } from 'angular-auth-oidc-client';
-import { environment } from '../environments/environment';
 import { CreatorstatsComponent } from './creatorstats/creatorstats.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
@@ -21,6 +19,7 @@ import { PartnerprofileComponent } from './partnerprofile/partnerprofile.compone
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { UnauthorizedInterceptor } from './services/auth.interceptor';
 import { StopNavGuard } from './stop-nav.guard';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 @NgModule({
   declarations: [
@@ -42,6 +41,7 @@ import { StopNavGuard } from './stop-nav.guard';
     ReactiveFormsModule,
     MatToolbarModule,
     FormsModule,
+    BrowserAnimationsModule,
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: UnauthorizedInterceptor, multi: true },
