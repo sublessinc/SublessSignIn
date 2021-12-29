@@ -20,6 +20,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { UnauthorizedInterceptor } from './services/auth.interceptor';
 import { StopNavGuard } from './stop-nav.guard';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { ThemeModule } from './theme/theme.module';
 
 @NgModule({
   declarations: [
@@ -35,6 +36,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     PartnerprofileComponent
   ],
   imports: [
+    ThemeModule,
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
