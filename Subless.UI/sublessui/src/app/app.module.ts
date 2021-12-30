@@ -11,8 +11,6 @@ import { CreatorprofileComponent } from './creatorprofile/creatorprofile.compone
 import { NavComponent } from './nav/nav.component';
 import { LoggedOutComponent } from './logged-out/logged-out.component';
 import { FormsModule } from '@angular/forms';
-import { AuthInterceptor, AuthModule, LogLevel } from 'angular-auth-oidc-client';
-import { environment } from '../environments/environment';
 import { CreatorstatsComponent } from './creatorstats/creatorstats.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';

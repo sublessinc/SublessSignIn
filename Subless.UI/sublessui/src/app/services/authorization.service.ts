@@ -104,7 +104,7 @@ export class AuthorizationService {
   getEmail(): Observable<string | null> {
     return this.getUserData().pipe(map((user: IUser | null) => {
       if (user) {
-        return user.Email;
+        return user.email;
       }
       return null;
     }))
