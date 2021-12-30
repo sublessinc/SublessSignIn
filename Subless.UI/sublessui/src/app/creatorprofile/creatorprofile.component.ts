@@ -13,7 +13,7 @@ import { ComponentCanDeactivate } from '../stop-nav.guard';
 })
 export class CreatorprofileComponent implements OnInit, ComponentCanDeactivate, AfterViewInit {
   public activationRedirectUrl: string | null = null;
-  public email: any;
+  public email: string = '';
   private model$: Observable<ICreator> | undefined;
   private formDirty = false;
   public model: ICreator = new Creator("", "", "");
@@ -26,7 +26,13 @@ export class CreatorprofileComponent implements OnInit, ComponentCanDeactivate, 
   }
 
   ngOnInit(): void {
-    this.email = this.authService.getEmail();
+    this.authService.getEmail().subscribe({
+      next: (email: string | null) => {
+        if (email) {
+          this.email = email.toString();
+        }
+      }
+    });
     this.model$ = this.creatorService.getCreator();
     this.model$.subscribe({
       next: (creator: ICreator) => {
