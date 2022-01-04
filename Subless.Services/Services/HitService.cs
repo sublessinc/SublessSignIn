@@ -78,7 +78,7 @@ namespace Subless.Services
 
         public Guid? GetCreatorFromPartnerAndUri(Uri uri, Partner partner)
         {
-            const string creatorPlaceholder = "creator";
+            const string creatorPlaceholder = "{creator}";
 
             //TODO, what do with this user
             ///www.partner.com/stories
