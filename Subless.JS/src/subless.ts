@@ -58,10 +58,10 @@ export class Subless implements SublessInterface {
                     "Content-Type": "application/json",
                 },
                 credentials: "include"
-            }).then(response => {
-                return response.status == 200;
-            });
+            }).then(response => response.json());
     }
+
+
 
     async subless_hit() {
         var loggedIn = await this.subless_LoggedIn();
