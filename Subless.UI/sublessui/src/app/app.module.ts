@@ -19,6 +19,7 @@ import { PartnerprofileComponent } from './partnerprofile/partnerprofile.compone
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { UnauthorizedInterceptor } from './services/auth.interceptor';
 import { StopNavGuard } from './stop-nav.guard';
+import { PartnerTestComponent } from './partner-test/partner-test.component';
 
 @NgModule({
   declarations: [
@@ -31,7 +32,8 @@ import { StopNavGuard } from './stop-nav.guard';
     LoggedOutComponent,
     CreatorstatsComponent,
     IdComponent,
-    PartnerprofileComponent
+    PartnerprofileComponent,
+    PartnerTestComponent
   ],
   imports: [
     BrowserModule,

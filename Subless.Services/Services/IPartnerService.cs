@@ -8,7 +8,7 @@ namespace Subless.Services
     public interface IPartnerService
     {
         Guid CreatePartner(Partner partner);
-        Task CreatorChangeWebhook(PartnerViewCreator creator);
+        Task<bool> CreatorChangeWebhook(PartnerViewCreator creator);
         Guid GenerateCreatorActivationLink(string cognitoClientId, string creatorUsername);
         Partner GetCachedPartnerByUri(Uri uri);
         IEnumerable<string> GetParterUris();

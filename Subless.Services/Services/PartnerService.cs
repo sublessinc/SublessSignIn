@@ -118,11 +118,11 @@ namespace Subless.Services
             return partner;
         }
 
-        public async Task CreatorChangeWebhook(PartnerViewCreator creator)
+        public async Task<bool> CreatorChangeWebhook(PartnerViewCreator creator)
         {
             this.logger.LogInformation($"Creator {creator.Id} activated, firing webhook");
             var partner = GetPartner(creator.PartnerId);
-            if (partner.CreatorWebhook != null) 
+            if (partner.CreatorWebhook != null)
             {
                 try
                 {
@@ -130,10 +130,11 @@ namespace Subless.Services
 
                     var result = await httpClient.PostAsync(partner.CreatorWebhook, viewModel);
                     result.EnsureSuccessStatusCode();
+                    return true;
                 }
                 catch (Exception e)
                 {
-                    logger.LogError("Webhook failed \n "+
+                    logger.LogError("Webhook failed \n " +
                         $"URI: {partner.CreatorWebhook} \n" +
                         $"Result: {e.Message} \n" +
                         $"Creator: {creator.Id} \n" +
@@ -141,8 +142,10 @@ namespace Subless.Services
                         $"Stack: {e.StackTrace} \n" +
                         $"InnerException: {e.InnerException}"
                         );
-                }                
+                    return false;
+                }
             }
+            return false;
         }
 
         public IEnumerable<string> GetParterUris()

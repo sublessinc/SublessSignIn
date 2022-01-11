@@ -18,4 +18,8 @@ export class PartnerService {
   updatePartner(partnerWrite: IPartnerWrite): Observable<IPartner> {
     return this.httpClient.put<IPartner>('/api/Partner/' + partnerWrite.id, partnerWrite);
   }
+
+  testWebhook(): Observable<Boolean> {
+    return this.httpClient.post<Boolean>('/api/Partner/WebhookTest', null);
+  }
 }
