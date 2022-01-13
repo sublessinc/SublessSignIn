@@ -1,21 +1,22 @@
-
-<mat-toolbar class="navBar">
+<mat-toolbar color='primary' class="navBar">
   <span>
     <div class="sr-header__logo"></div>
   </span>
   <span>
-    <button *ngIf="creator" id="creator"class="navButton" routerLink="/creator-profile">Creator Profile</button>
+    <button *ngIf="creator" mat-button id="creator" class="navButton" routerLink="/creator-profile">Creator
+      Profile</button>
   </span>
   <span>
-    <button *ngIf="partner" id="partner"class="navButton" routerLink="/partner-profile">Partner Profile</button> 
+    <button *ngIf="partner" mat-button id="partner" class="navButton" routerLink="/partner-profile">Partner
+      Profile</button>
   </span>
   <span>
-    <button *ngIf="user" id="user"class="navButton" routerLink="/user-profile">User Profile</button> 
+    <button *ngIf="user" mat-button id="user" class="navButton" routerLink="/user-profile">User Profile</button>
   </span>
-    <!-- This fills the remaining space of the current row -->
-    <span class="fill-remaining-space"></span>
-  
-    <span>
-      <button id="nav" class="navButton" (click)="logout()">Logout</button>
-    </span>
-  </mat-toolbar>
+  <!-- This fills the remaining space of the current row -->
+  <span class="fill-remaining-space"></span>
+
+  <span>
+    <button id="nav" mat-button class="navButton" (click)="logout()">Logout</button>
+  </span>
+</mat-toolbar>
