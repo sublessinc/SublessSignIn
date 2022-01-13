@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -193,6 +194,29 @@ namespace SublessSignIn.Controllers
             var updatedPartner = _partnerService.UpdatePartnerWritableFields(partner);
 
             return Ok(updatedPartner.GetViewModel());
+        }
+
+        [HttpPost("WebhookTest")]
+        [Authorize]
+        public async Task<ActionResult<PartnerResponse>> WebhookTest()
+        {
+            var userClaim = _userService.GetUserClaim(this.User);
+            var user = _userService.GetUserByCognitoId(userClaim);
+            var partner = _partnerService.GetPartnerByAdminId(user.Id);
+            if (partner == null)
+            {
+                return Unauthorized("Attemped to access forbidden zone");
+            }
+            var dummyCreator = new PartnerViewCreator()
+            {
+                Active = true,
+                Email = "TestSublessWebhook@webhooktest.com",
+                Id = Guid.NewGuid(),
+                IsDeleted = false,
+                PartnerId = partner.Id,
+                Username = "TestSublessWebhookUsername"
+            };
+            return Ok(await _partnerService.CreatorChangeWebhook(dummyCreator));
         }
     }
 }

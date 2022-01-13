@@ -70,16 +70,20 @@ namespace SublessSignIn.Controllers
 
         [HttpGet("loggedIn")]
         [EnableCors("Unrestricted")]
-        [Authorize]
-        public ActionResult GetLoggedIn()
+        [AllowAnonymous]
+        public ActionResult<bool> GetLoggedIn()
         {
+            if (!this.HttpContext.User.Identity.IsAuthenticated)
+            {
+                return Ok(false);
+            }
             var cognitoId = userService.GetUserClaim(HttpContext.User);
             var user = userService.GetUserByCognitoId(cognitoId);
             if (user!=null)
             {
-                return Ok();
+                return Ok(true);
             }
-            return Unauthorized();
+            return Ok(false);
         }
 
     }

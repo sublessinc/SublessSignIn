@@ -20,6 +20,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { UnauthorizedInterceptor } from './services/auth.interceptor';
 import { StopNavGuard } from './stop-nav.guard';
 import { ThemeModule } from './theme/theme.module';
+import { PartnerTestComponent } from './partner-test/partner-test.component';
 
 @NgModule({
   declarations: [
@@ -32,7 +33,8 @@ import { ThemeModule } from './theme/theme.module';
     LoggedOutComponent,
     CreatorstatsComponent,
     IdComponent,
-    PartnerprofileComponent
+    PartnerprofileComponent,
+    PartnerTestComponent
   ],
   imports: [
     ThemeModule,

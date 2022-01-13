@@ -21,4 +21,14 @@ export class CreatorService {
   unlinkCreator(creator: ICreator): Observable<boolean> {
     return this.httpClient.delete<boolean>('/api/Creator/' + creator.id + "/unlink");
   }
+
+  finalizeViaRedirect(uri: string, email: string, username: string) {
+    sessionStorage.removeItem('postActivationRedirect');
+    let baseURI = new URL(uri);
+    baseURI.searchParams.append("sublessId", email);
+    baseURI.searchParams.append("creatorId", username);
+    baseURI.searchParams.append("email", email);
+    baseURI.searchParams.append("username", username);
+    window.location.replace(baseURI.href);
+  }
 }
