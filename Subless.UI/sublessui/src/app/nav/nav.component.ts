@@ -5,7 +5,7 @@ import { AuthorizationService } from '../services/authorization.service';
 @Component({
   selector: 'app-nav',
   templateUrl: './nav.component.html',
-  styleUrls: ['./nav.component.css']
+  styleUrls: ['./nav.component.scss']
 })
 export class NavComponent implements OnInit {
 
@@ -23,7 +23,8 @@ export class NavComponent implements OnInit {
         this.user = routes.includes(2);
         this.creator = routes.includes(3);
         this.partner = routes.includes(4);
-      }});
+      }
+    });
   }
 
   logout() {

@@ -1,5 +1,5 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ICheckoutSettings } from '../models/ICheckoutSettings';
 import { ISessionResponse } from '../models/ISessionResponse';
@@ -10,13 +10,20 @@ declare var Stripe: any;
 @Component({
   selector: 'app-register-payment',
   templateUrl: './register-payment.component.html',
-  styleUrls: ['./register-payment.component.css']
+  styleUrls: ['./register-payment.component.scss']
 })
-export class RegisterPaymentComponent implements OnInit {
+export class RegisterPaymentComponent implements OnInit, AfterViewInit {
   private stripe: any;
   private settings!: ICheckoutSettings;
+  @ViewChild('sublessbackground') sublessbackground: ElementRef | null = null;
+
   constructor(
-    private checkoutService: CheckoutService) { }
+    private checkoutService: CheckoutService,
+    private elementRef: ElementRef) { }
+  ngAfterViewInit(): void {
+    this.elementRef.nativeElement.ownerDocument
+      .body.style.backgroundColor = getComputedStyle(this.sublessbackground!.nativeElement).backgroundColor;
+  }
   ngOnInit(): void {
     this.getCheckoutSettings();
   }

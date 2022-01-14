@@ -1,0 +1,419 @@
+// Custom Theming for Angular Material
+// For more information: https://material.angular.io/guide/theming
+@use '@angular/material' as mat;
+// Plus imports for other components in your app.
+
+/* For use in src/lib/core/theming/_palette.scss */
+$md-backgroundpurple: (
+    50 : #e6e4ec,
+    100 : #c1bcce,
+    200 : #988fae,
+    300 : #6f628e,
+    400 : #504075,
+    500 : #311e5d,
+    600 : #2c1a55,
+    700 : #25164b,
+    800 : #1f1241,
+    900 : #130a30,
+    A100 : #896bff,
+    A200 : #6038ff,
+    A400 : #3705ff,
+    A700 : #2f00eb,
+    contrast: (
+        50 : #000000,
+        100 : #000000,
+        200 : #000000,
+        300 : #ffffff,
+        400 : #ffffff,
+        500 : #ffffff,
+        600 : #ffffff,
+        700 : #ffffff,
+        800 : #ffffff,
+        900 : #ffffff,
+        A100 : #000000,
+        A200 : #ffffff,
+        A400 : #ffffff,
+        A700 : #ffffff,
+    )
+);
+
+$md-secondarypurple: (
+    50 : #e7e2f4,
+    100 : #c4b6e3,
+    200 : #9d86d1,
+    300 : #7555bf,
+    400 : #5830b1,
+    500 : #3a0ca3,
+    600 : #340a9b,
+    700 : #2c0891,
+    800 : #250688,
+    900 : #180377,
+    A100 : #b0a5ff,
+    A200 : #8472ff,
+    A400 : #573fff,
+    A700 : #4125ff,
+    contrast: (
+        50 : #000000,
+        100 : #000000,
+        200 : #000000,
+        300 : #ffffff,
+        400 : #ffffff,
+        500 : #ffffff,
+        600 : #ffffff,
+        700 : #ffffff,
+        800 : #ffffff,
+        900 : #ffffff,
+        A100 : #000000,
+        A200 : #000000,
+        A400 : #ffffff,
+        A700 : #ffffff,
+    )
+);
+
+$md-secondaryblue: (
+    50 : #e8f4ff,
+    100 : #c6e3ff,
+    200 : #a0d1ff,
+    300 : #79bffe,
+    400 : #5db1fe,
+    500 : #40a3fe,
+    600 : #3a9bfe,
+    700 : #3291fe,
+    800 : #2a88fe,
+    900 : #1c77fd,
+    A100 : #ffffff,
+    A200 : #fefeff,
+    A400 : #cbdeff,
+    A700 : #b2ceff,
+    contrast: (
+        50 : #000000,
+        100 : #000000,
+        200 : #000000,
+        300 : #000000,
+        400 : #000000,
+        500 : #000000,
+        600 : #000000,
+        700 : #000000,
+        800 : #ffffff,
+        900 : #ffffff,
+        A100 : #000000,
+        A200 : #000000,
+        A400 : #000000,
+        A700 : #000000,
+    )
+);
+
+$md-pinkhighlight: (
+    50 : #fee4f0,
+    100 : #fcbbd9,
+    200 : #fa8ec0,
+    300 : #f861a6,
+    400 : #f73f93,
+    500 : #f51d80,
+    600 : #f41a78,
+    700 : #f2156d,
+    800 : #f01163,
+    900 : #ee0a50,
+    A100 : #ffffff,
+    A200 : #ffe4eb,
+    A400 : #ffb1c5,
+    A700 : #ff97b3,
+    contrast: (
+        50 : #000000,
+        100 : #000000,
+        200 : #000000,
+        300 : #000000,
+        400 : #ffffff,
+        500 : #ffffff,
+        600 : #ffffff,
+        700 : #ffffff,
+        800 : #ffffff,
+        900 : #ffffff,
+        A100 : #000000,
+        A200 : #000000,
+        A400 : #000000,
+        A700 : #000000,
+    )
+);
+
+$md-backgroundwhite: (
+    50 : #fefeff,
+    100 : #fdfdfe,
+    200 : #fbfcfe,
+    300 : #f9fafd,
+    400 : #f8f9fc,
+    500 : #f7f8fc,
+    600 : #f6f7fc,
+    700 : #f5f6fb,
+    800 : #f3f5fb,
+    900 : #f1f3fa,
+    A100 : #ffffff,
+    A200 : #ffffff,
+    A400 : #ffffff,
+    A700 : #ffffff,
+    contrast: (
+        50 : #000000,
+        100 : #000000,
+        200 : #000000,
+        300 : #000000,
+        400 : #000000,
+        500 : #000000,
+        600 : #000000,
+        700 : #000000,
+        800 : #000000,
+        900 : #000000,
+        A100 : #000000,
+        A200 : #000000,
+        A400 : #000000,
+        A700 : #000000,
+    )
+);
+
+$md-subtitlegrey: (
+    50 : #f8f8f8,
+    100 : #efedee,
+    200 : #e4e1e2,
+    300 : #d9d5d6,
+    400 : #d0ccce,
+    500 : #c8c3c5,
+    600 : #c2bdbf,
+    700 : #bbb5b8,
+    800 : #b4aeb0,
+    900 : #a7a1a3,
+    A100 : #ffffff,
+    A200 : #ffffff,
+    A400 : #ffeaf3,
+    A700 : #ffd0e4,
+    contrast: (
+        50 : #000000,
+        100 : #000000,
+        200 : #000000,
+        300 : #000000,
+        400 : #000000,
+        500 : #000000,
+        600 : #000000,
+        700 : #000000,
+        800 : #000000,
+        900 : #000000,
+        A100 : #000000,
+        A200 : #000000,
+        A400 : #000000,
+        A700 : #000000,
+    )
+);
+
+$md-hoverpink: (
+    50 : #fffcfe,
+    100 : #fff8fb,
+    200 : #fff4f9,
+    300 : #fef0f7,
+    400 : #feecf5,
+    500 : #fee9f3,
+    600 : #fee6f1,
+    700 : #fee3ef,
+    800 : #fedfed,
+    900 : #fdd9ea,
+    A100 : #ffffff,
+    A200 : #ffffff,
+    A400 : #ffffff,
+    A700 : #ffffff,
+    contrast: (
+        50 : #000000,
+        100 : #000000,
+        200 : #000000,
+        300 : #000000,
+        400 : #000000,
+        500 : #000000,
+        600 : #000000,
+        700 : #000000,
+        800 : #000000,
+        900 : #000000,
+        A100 : #000000,
+        A200 : #000000,
+        A400 : #000000,
+        A700 : #000000,
+    )
+);
+
+$md-pressedpink: (
+    50 : #fef9fc,
+    100 : #fdf0f7,
+    200 : #fbe6f2,
+    300 : #f9dced,
+    400 : #f8d5e9,
+    500 : #f7cde5,
+    600 : #f6c8e2,
+    700 : #f5c1de,
+    800 : #f3bada,
+    900 : #f1aed3,
+    A100 : #ffffff,
+    A200 : #ffffff,
+    A400 : #ffffff,
+    A700 : #ffffff,
+    contrast: (
+        50 : #000000,
+        100 : #000000,
+        200 : #000000,
+        300 : #000000,
+        400 : #000000,
+        500 : #000000,
+        600 : #000000,
+        700 : #000000,
+        800 : #000000,
+        900 : #000000,
+        A100 : #000000,
+        A200 : #000000,
+        A400 : #000000,
+        A700 : #000000,
+    )
+);
+
+$md-selectedpurple: (
+    50 : #f2e5ee,
+    100 : #e0bed5,
+    200 : #cb92b9,
+    300 : #b6669c,
+    400 : #a64687,
+    500 : #962572,
+    600 : #8e216a,
+    700 : #831b5f,
+    800 : #791655,
+    900 : #680d42,
+    A100 : #ff9cd1,
+    A200 : #ff69ba,
+    A400 : #ff36a3,
+    A700 : #ff1c97,
+    contrast: (
+        50 : #000000,
+        100 : #000000,
+        200 : #000000,
+        300 : #000000,
+        400 : #ffffff,
+        500 : #ffffff,
+        600 : #ffffff,
+        700 : #ffffff,
+        800 : #ffffff,
+        900 : #ffffff,
+        A100 : #000000,
+        A200 : #000000,
+        A400 : #ffffff,
+        A700 : #ffffff,
+    )
+);
+
+$md-hoverpurple: (
+    50 : #ece5ed,
+    100 : #cebdd1,
+    200 : #ae92b3,
+    300 : #8e6695,
+    400 : #75457e,
+    500 : #5d2467,
+    600 : #55205f,
+    700 : #4b1b54,
+    800 : #41164a,
+    900 : #300d39,
+    A100 : #e074ff,
+    A200 : #d541ff,
+    A400 : #c90eff,
+    A700 : #bd00f3,
+    contrast: (
+        50 : #000000,
+        100 : #000000,
+        200 : #000000,
+        300 : #ffffff,
+        400 : #ffffff,
+        500 : #ffffff,
+        600 : #ffffff,
+        700 : #ffffff,
+        800 : #ffffff,
+        900 : #ffffff,
+        A100 : #000000,
+        A200 : #000000,
+        A400 : #ffffff,
+        A700 : #ffffff,
+    )
+);
+
+.analysicsCard-font{
+    font-family: DM Sans;
+    font-size: 64px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 83px;
+    letter-spacing: 0em;
+    text-align: center;
+}
+
+h1-font {
+    font-family: DM Sans;
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 31px;
+    letter-spacing: 0em;
+    text-align: center;
+
+}
+
+h3-font {
+    font-family: DM Sans;
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 23px;
+    letter-spacing: 0em;
+    text-align: center;
+
+}
+body-font {
+    font-family: DM Sans;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 21px;
+    letter-spacing: 0em;
+    text-align: center;
+}
+
+// Include the common styles for Angular Material. We include this here so that you only
+// have to load a single css file for Angular Material in your app.
+// Be sure that you only ever include this mixin once!
+@include mat.core();
+
+$subless-app-primary: mat.define-palette($md-secondarypurple);
+$subless-app-accent: mat.define-palette($md-pinkhighlight, A200, A100, A400);
+
+// The warn palette is optional (defaults to red).
+$subless-app-warn: mat.define-palette($md-secondaryblue);
+
+// Create the theme object. A theme consists of configurations for individual
+// theming systems such as "color" or "typography".
+$subless-app-theme: mat.define-light-theme((
+  color: (
+    primary: $subless-app-primary,
+    accent: $subless-app-accent,
+    warn: $subless-app-warn,
+  )
+));
+
+// Include theme styles for core and each component used in your app.
+// Alternatively, you can import and @include the theme mixins for each component
+// that you are using.
+@include mat.all-component-themes($subless-app-theme);
+@mixin mix-button-theme($subless-app-theme) {
+    .mat-button {
+      background-color: map-get($md-pinkhighlight, 500);
+      color: map-get($md-backgroundwhite, 500);
+      font-family: DM Sans;
+        font-size: 20px;
+        font-style: normal;
+        font-weight: 700;
+        line-height: 26px;
+        letter-spacing: 0em;
+        height: 58px;
+        padding: 16px, 117px, 16px, 117px;
+
+    }
+  
+  }
+@include mix-button-theme($subless-app-theme);

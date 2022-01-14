@@ -1,23 +1,29 @@
-<div class="subless-background"></div>
-<div class="container">
-    <app-nav class="header"></app-nav>
-    <div id="bodyWrapper">
-
-        <div class="sr-root">
-            <div class="sr-main sr-main-unpaid">
-                <h1>Choose a plan</h1>
-                <div class="price-table-container">
-                    <section>
-                        <img src="/assets/img/SublessLogoOnly.png" width="120" height="120" />
-                        <div class="name">Donation Plan</div>
-
-                        <div class="price">$5</div>
-                        <div class="duration">per month</div>
-                        <button id="basic-plan-btn" (click)='redirectToCheckout()'>Select</button>
-                    </section>
-                </div>
-                <app-id></app-id>
-            </div>
-        </div>
+<div #sublessbackground class="subless-background">
+    <div class='title'>
+        <h1>Choose your own price</h1>
     </div>
+    <div class='subtitle'>
+        <h1>Proceeds to the creators you love</h1>
+    </div>
+    <mat-card class="price-card">
+        <mat-card-content class="price-picker">
+            <mat-card-content class="name">Set your budget</mat-card-content>
+
+            <input *ngIf="false" matInput class="price-input">
+            <mat-button-toggle-group class="price-picker" name="pricePicker" aria-label="pricePicker">
+                <mat-button-toggle value="5">$5</mat-button-toggle>
+                <mat-button-toggle value="10">$10</mat-button-toggle>
+                <mat-button-toggle value="15">$15</mat-button-toggle>
+            </mat-button-toggle-group>
+        </mat-card-content>
+        <mat-card-content class="plan-details">&#10004; Split among the creators you
+            view</mat-card-content>
+        <mat-card-content class="plan-details">&#10004; Billed once at the beginning of the month</mat-card-content>
+        <mat-card-content class="plan-details">&#10004; Split at the end of the month</mat-card-content>
+        <mat-card-content class="plan-details">&#10004; Cancel anytime</mat-card-content>
+        <mat-card-content class="plan-details">&#10004; Browse till the end of the month after cancelling
+        </mat-card-content>
+        <button mat-button class="select-plan" (click)='redirectToCheckout()'>Select this budget</button>
+    </mat-card>
+    <app-id></app-id>
 </div>
