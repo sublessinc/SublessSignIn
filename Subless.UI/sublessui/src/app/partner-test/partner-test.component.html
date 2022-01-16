@@ -6,7 +6,7 @@
         To test this, ensure your webhook URI is saved in your partner profile, and hit this button.
     </mat-card-content>
 
-    <button (click)="fireWebhook()">Test webhook</button>
+    <button mat-button (click)="fireWebhook()">Test webhook</button>
     <label *ngIf="webhookFired">Webhook Fired</label>
     <label *ngIf="webhookFailed">Webhook Failed</label>
 </div>
@@ -34,7 +34,8 @@
                 Username is required
             </div>
         </div>
-        <button id='fire' type="submit" class="btn btn-success" [disabled]="!redirectTesterForm.form.valid">Test
+        <button mat-button id='fire' type="submit" class="btn btn-success"
+            [disabled]="!redirectTesterForm.form.valid">Test
             Activation</button>
     </form>
 </div>

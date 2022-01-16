@@ -30,9 +30,10 @@
                             </div>
                         </div>
                         <div class='buttonWrapper'>
-                            <button id='save' type="submit" class="btn btn-success creatorButton"
+                            <button mat-button id='save' type="submit" class="btn btn-success creatorButton"
                                 [disabled]="!creatorForm.form.valid">Save</button>
-                            <button id='unlink' class='btn btn-success creatorButton' (click)="unlink()">Delete Creator
+                            <button mat-button id='unlink' class='btn btn-success creatorButton'
+                                (click)="unlink()">Delete Creator
                                 Profile</button>
                         </div>
                     </form>
@@ -41,7 +42,7 @@
                     <app-creatorstats></app-creatorstats>
                 </div>
                 <div class="completed-view-section" *ngIf="activationRedirectUrl">
-                    <button (click)="finalize()">Finalize activation and return to partner</button>
+                    <button mat-button (click)="finalize()">Finalize activation and return to partner</button>
                 </div>
             </div>
             <app-id></app-id>

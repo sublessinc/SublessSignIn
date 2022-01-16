@@ -42,7 +42,7 @@
                             <input type="text" class="form-control" id="webhook" required [readonly]="false "
                                 [(ngModel)]="model.creatorWebhook" name="webhook" #webhook="ngModel">
                         </div>
-                        <button id='save' type="submit" class="btn btn-success"
+                        <button mat-button id='save' type="submit" class="btn btn-success"
                             [disabled]="!partnerForm.form.valid">Save</button>
                     </form>
                 </div>

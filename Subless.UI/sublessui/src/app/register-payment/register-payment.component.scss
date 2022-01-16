@@ -62,17 +62,30 @@ color: #5C5C5C;
 }
 .price-picker {
     @extend body-font;
+    border-style: hidden;
 }
 
 @mixin mix-app-theme($subless-app-theme) {
     .mat-button-toggle {
       background-color: map-get($md-backgroundwhite,500);
       color: map-get($md-secondarypurple, 500);
+      border-style: solid;
+      border-width: medium;
+      font-weight: bold;
+      border-left-color: map-get($md-secondarypurple, 500) !important;
+      border-left-width: medium!important;
+      margin: 10px;
+      border-radius: 10px;
     }
   
     .mat-button-toggle-checked {
       background-color: map-get($md-secondarypurple,500);
-      color: map-get($md-backgroundwhite, 500);
+      color: map-get($md-backgroundwhite, 500) !important;
+      border-style: solid;
+      border-width: medium;
+      border-left-color: map-get($md-backgroundwhite, 500) !important;
+      border-left-width: medium!important;
+      border-radius: 10px;
     }
   }
 @include mix-app-theme($subless-app-theme);
