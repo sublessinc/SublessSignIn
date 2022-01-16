@@ -1,19 +1,11 @@
-<div class="container">
-    <app-nav class="header"></app-nav>
-    <div id="bodyWrapper">
-        <div class="subless-background"></div>
-        <div class="sr-root">
-            <div class="sr-main-post-checkout">
-                <div class="sr-payment-summary completed-view">
-                    <h1>Your profile</h1>
-                </div>
-                <div class="completed-view-section horizontalGroup">
-                    <button mat-button (click)='returnToStripe()'>Manage Billing</button>
-                    <button mat-button (click)='cancelSubscription()'>Cancel Subscription</button>
-                    <button mat-button (click)='deleteAccount()'>Delete Account</button>
-                </div>
-                <app-id></app-id>
-            </div>
-        </div>
+<div class="sr-main-post-checkout">
+    <div class="sr-payment-summary completed-view">
+        <h1>Your profile</h1>
     </div>
+    <div class="completed-view-section horizontalGroup">
+        <button mat-button (click)='returnToStripe()'>Manage Billing</button>
+        <button mat-button (click)='cancelSubscription()'>Cancel Subscription</button>
+        <button mat-button (click)='deleteAccount()'>Delete Account</button>
+    </div>
+    <app-id></app-id>
 </div>

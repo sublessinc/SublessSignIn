@@ -1,14 +1,60 @@
-.navButton {
-    margin: 10px;
+@use 'sass:map';
+@use '@angular/material' as mat;
+@import "../theme/theme";
+.logo {
+    content: url("../../assets/img/SublessLogo.svg");
+    max-width: 180px;
+    margin-left: 12.5%;
 }
-.fill-remaining-space {
-    /* This fills the remaining space, by using flexbox. 
-       Every toolbar row uses a flexbox row layout. */
-    flex: 1 1 auto;
+
+.drawer{
+    background-color: map.get($md-backgroundpurple, 500);
+    width: 10%;
+    min-width: 240px;
+    display: flex;
+    flex-direction: column;
+}
+
+#account {
+    justify-self: flex-end;
+}
+#logout {
+    justify-self: flex-end;
+}
+
+.root {
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+}
+@mixin mix-navlist-theme($subless-app-theme) {
+    .mat-list-item {
+      background-color: map-get($md-backgroundpurple, 500);
+      color: map-get($md-backgroundwhite, 500) !important; 
+      font-family: DM Sans;
+        font-size: 16px;
+        font-style: normal;
+        font-weight: 500;
+        line-height: 26px;
+        letter-spacing: 0em;
+        height: 58px;
+        padding: 16px, 117px, 16px, 117px;
+
+    }
   }
+@include mix-navlist-theme($subless-app-theme);
 
-.navBar{
-    z-index:4;
-    position:relative;
+@mixin mix-select-theme($subless-app-theme) {
+    .mat-form-field-wrapper {
+        padding-bottom: 0% !important;
+    }
+    .mat-form-field{
+        background-color: map-get($md-backgroundwhite, 500);
+        padding-bottom: 0% !important;
 
-}
+    }
+    .mat-form-field-underline{
+        visibility: hidden;
+    }
+  }
+@include mix-select-theme($subless-app-theme);

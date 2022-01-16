@@ -1,22 +1,41 @@
-<mat-toolbar color='primary' class="navBar">
-  <span>
-    <div class="sr-header__logo"></div>
-  </span>
-  <span>
-    <button *ngIf="creator" mat-button id="creator" class="navButton" routerLink="/creator-profile">Creator
-      Profile</button>
-  </span>
-  <span>
-    <button *ngIf="partner" mat-button id="partner" class="navButton" routerLink="/partner-profile">Partner
-      Profile</button>
-  </span>
-  <span>
-    <button *ngIf="user" mat-button id="user" class="navButton" routerLink="/user-profile">User Profile</button>
-  </span>
-  <!-- This fills the remaining space of the current row -->
-  <span class="fill-remaining-space"></span>
+<mat-sidenav-container color='primary' id='root'>
 
-  <span>
-    <button id="nav" mat-button class="navButton" (click)="logout()">Logout</button>
-  </span>
-</mat-toolbar>
+  <mat-sidenav class="drawer" #drawer mode="side" *ngIf="user || partner || creator" opened role="navigation">
+    <div class="logo"></div>
+
+    <mat-nav-list>
+
+      <a mat-list-item id="creator" *ngIf="creator" routerLink='/creator-profile'>
+        <img matListAvatar src="../../assets/img/profile.png">
+        <div>Creator Profile</div>
+      </a>
+      <a mat-list-item id="partner" *ngIf="partner" routerLink='/partner-profile'> <img matListAvatar
+          src="../../assets/img/profile.png">
+        <div>Partner Profile</div>
+      </a>
+      <a mat-list-item id="user" *ngIf="user" routerLink='/user-profile'> <img matListAvatar
+          src="../../assets/img/profile.png">
+        <div>Subscriber Profile</div>
+      </a>
+      <a mat-list-item id="billing" class="navButton" (click)="returnToStripe()">
+        <img matListAvatar src="../../assets/img/billingNormalized.png">
+        <div>Billing Information</div>
+      </a>
+      <a mat-list-item id="plan" class="navButton" routerLink="/register-payment">
+        <img matListAvatar src="../../assets/img/planNormalized.png">
+        <div>Change Plan</div>
+      </a>
+      <a mat-list-item id="account" class="navButton" routerLink="/user-profile">
+        <img matListAvatar src="../../assets/img/accountNormalized.png">
+        <div>Account Settings</div>
+      </a>
+      <a mat-list-item id="logout" class="navButton" (click)="logout()">
+        <img matListAvatar src="../../assets/img/LogoutNormalized.png">
+        <div>Log Out</div>
+      </a>
+    </mat-nav-list>
+  </mat-sidenav>
+  <mat-sidenav-content>
+    <router-outlet></router-outlet>
+  </mat-sidenav-content>
+</mat-sidenav-container>

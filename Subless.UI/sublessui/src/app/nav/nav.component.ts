@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { IStripeRedirect } from '../models/IStripeRedirect';
+import { SessionId } from '../models/SessionId';
 import { AuthorizationService } from '../services/authorization.service';
+import { CheckoutService } from '../services/checkout.service';
 
 @Component({
   selector: 'app-nav',
@@ -14,7 +17,8 @@ export class NavComponent implements OnInit {
   public partner: boolean = false;
   constructor(
     private router: Router,
-    private authService: AuthorizationService
+    private authService: AuthorizationService,
+    private checkoutService: CheckoutService
   ) { }
 
   ngOnInit(): void {
@@ -26,7 +30,17 @@ export class NavComponent implements OnInit {
       }
     });
   }
-
+  returnToStripe() {
+    this.checkoutService.getUserSession().subscribe({
+      next: (sessionId: SessionId) => {
+        this.checkoutService.loadCustomerPortal(sessionId.id).subscribe({
+          next: (redirect: IStripeRedirect) => {
+            window.location.href = redirect.url;
+          }
+        });
+      }
+    });
+  }
   logout() {
     sessionStorage.removeItem("activation");
     sessionStorage.removeItem("postActivationRedirect");

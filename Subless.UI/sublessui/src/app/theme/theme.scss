@@ -1,6 +1,7 @@
 // Custom Theming for Angular Material
 // For more information: https://material.angular.io/guide/theming
 @use '@angular/material' as mat;
+@use 'sass:map';
 // Plus imports for other components in your app.
 
 /* For use in src/lib/core/theming/_palette.scss */
@@ -396,6 +397,9 @@ $subless-app-theme: mat.define-light-theme((
   )
 ));
 
+
+
+
 // Include theme styles for core and each component used in your app.
 // Alternatively, you can import and @include the theme mixins for each component
 // that you are using.
@@ -414,6 +418,23 @@ $subless-app-theme: mat.define-light-theme((
         padding: 16px, 117px, 16px, 117px;
 
     }
-  
+    .mat-button-disabled {
+        background-color: map-get($md-subtitlegrey, 500);
+
+    }
   }
 @include mix-button-theme($subless-app-theme);
+
+
+
+// @mixin mix-ripple-theme($subless-app-theme) {
+//     .mat-ripple-element {
+//       color: map-get($md-pinkhighlight, 500);
+//     }
+//   }
+// @include mix-ripple-theme($subless-app-theme);
+
+purple-background {
+    background-color: map.get($md-backgroundpurple, 500);
+    display: flex;
+}

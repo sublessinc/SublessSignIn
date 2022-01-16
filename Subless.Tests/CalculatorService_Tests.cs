@@ -262,8 +262,8 @@ namespace Subless.Tests
                     allPayments = y;
                 });
             var creatorService = new Mock<ICreatorService>();
-            creatorService.Setup(x => x.GetCreator(It.Is<Guid>(x => x == creator1))).Returns(new Creator() { PayPalId = "Creator1" });
-            creatorService.Setup(x => x.GetCreator(It.Is<Guid>(x => x == creator2))).Returns(new Creator() { PayPalId = "Creator2" });
+            creatorService.Setup(x => x.GetCreator(It.Is<Guid>(x => x == creator1))).Returns(new Creator() { PayPalId = "Creator1" , Id = creator1});
+            creatorService.Setup(x => x.GetCreator(It.Is<Guid>(x => x == creator2))).Returns(new Creator() { PayPalId = "Creator2", Id = creator2 });
             var partnerService = PartnerServiceBuilder("Partner");
             var sut = CalculatorServiceBuilder(
                 stripe: stripeService,

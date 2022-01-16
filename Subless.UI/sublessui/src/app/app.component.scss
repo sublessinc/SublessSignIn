@@ -1,6 +1,12 @@
-#routeroutlet {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-     width: 90%;
+// #routeroutlet {
+//     display: flex;
+//     align-items: center;
+//     justify-content: center;
+//      width: 90%;
+//   }
+
+html, body {
+    min-height: 100vh;
+    height: auto;
+    margin: 0;
   }
