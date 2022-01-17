@@ -14,23 +14,23 @@ declare var Stripe: any;
   templateUrl: './register-payment.component.html',
   styleUrls: ['./register-payment.component.scss']
 })
-export class RegisterPaymentComponent implements OnInit, AfterViewInit {
+export class RegisterPaymentComponent implements OnInit {
   private stripe: any;
   private settings!: ICheckoutSettings;
+  public backgroundClass: string = "lightBackground";
   public priceChosen: number | null = null;
-  @ViewChild('sublessbackground') sublessbackground: ElementRef | null = null;
 
   constructor(
     private checkoutService: CheckoutService,
     private elementRef: ElementRef,
-    private changeDetector: ChangeDetectorRef
+    private changeDetector: ChangeDetectorRef,
+    private router: Router
   ) { }
-  ngAfterViewInit(): void {
-    this.elementRef.nativeElement.ownerDocument
-      .body.style.backgroundColor = getComputedStyle(this.sublessbackground!.nativeElement).backgroundColor;
-  }
   ngOnInit(): void {
     this.getCheckoutSettings();
+    if (this.router.url.startsWith("/register-payment")) {
+      this.backgroundClass = "darkBackground";
+    }
   }
 
   getCheckoutSettings() {

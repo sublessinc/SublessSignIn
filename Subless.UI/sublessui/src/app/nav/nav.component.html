@@ -20,7 +20,7 @@
         <img matListAvatar src="../../assets/img/billingNormalized.png">
         <div>Billing Information</div>
       </a>
-      <a mat-list-item id="plan" class="navButton" [routerLinkActive]="['is-active']" routerLink="/register-payment">
+      <a mat-list-item id="plan" class="navButton" [routerLinkActive]="['is-active']" routerLink="/change-plan">
         <img matListAvatar src="../../assets/img/planNormalized.png">
         <div>Change Plan</div>
       </a>
@@ -37,7 +37,7 @@
       </a>
     </mat-nav-list>
   </mat-sidenav>
-  <mat-sidenav-content class="content">
+  <mat-sidenav-content #content class="content">
     <router-outlet></router-outlet>
   </mat-sidenav-content>
 </mat-sidenav-container>
