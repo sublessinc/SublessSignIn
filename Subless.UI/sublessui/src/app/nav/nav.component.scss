@@ -15,17 +15,17 @@
     flex-direction: column;
 }
 
-#account {
-    justify-self: flex-end;
+#bottom-nav {
+    position: absolute;
+    bottom: 0;
 }
-#logout {
-    justify-self: flex-end;
-}
-
 .root {
     height: 100vh;
     width: 100vw;
     display: flex;
+}
+.content {
+    height: 100vh;
 }
 @mixin mix-navlist-theme($subless-app-theme) {
     .mat-list-item {

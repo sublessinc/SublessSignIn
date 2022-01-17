@@ -4,7 +4,6 @@
     <div class="logo"></div>
 
     <mat-nav-list>
-
       <a mat-list-item id="creator" *ngIf="creator" routerLink='/creator-profile'>
         <img matListAvatar src="../../assets/img/profile.png">
         <div>Creator Profile</div>
@@ -25,6 +24,8 @@
         <img matListAvatar src="../../assets/img/planNormalized.png">
         <div>Change Plan</div>
       </a>
+    </mat-nav-list>
+    <mat-nav-list id="bottom-nav">
       <a mat-list-item id="account" class="navButton" routerLink="/user-profile">
         <img matListAvatar src="../../assets/img/accountNormalized.png">
         <div>Account Settings</div>
@@ -35,7 +36,7 @@
       </a>
     </mat-nav-list>
   </mat-sidenav>
-  <mat-sidenav-content>
+  <mat-sidenav-content class="content">
     <router-outlet></router-outlet>
   </mat-sidenav-content>
 </mat-sidenav-container>

@@ -438,3 +438,9 @@ purple-background {
     background-color: map.get($md-backgroundpurple, 500);
     display: flex;
 }
+
+html, body {
+    //min-height: 100vh;
+    //height: auto;
+    margin: 0;
+  }
