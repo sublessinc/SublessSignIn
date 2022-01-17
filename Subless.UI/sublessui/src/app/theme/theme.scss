@@ -406,9 +406,9 @@ $subless-app-theme: mat.define-light-theme((
 @include mat.all-component-themes($subless-app-theme);
 @mixin mix-button-theme($subless-app-theme) {
     .mat-button {
-      background-color: map-get($md-pinkhighlight, 500);
-      color: map-get($md-backgroundwhite, 500);
-      font-family: DM Sans;
+        background-color: map-get($md-pinkhighlight, 500);
+        color: map-get($md-backgroundwhite, 500);
+        font-family: DM Sans;
         font-size: 16px;
         font-style: normal;
         font-weight: 500;
@@ -416,14 +416,25 @@ $subless-app-theme: mat.define-light-theme((
         letter-spacing: 0em;
         height: 58px;
         padding: 16px, 117px, 16px, 117px;
-
     }
     .mat-button-disabled {
         background-color: map-get($md-subtitlegrey, 500);
-
     }
   }
 @include mix-button-theme($subless-app-theme);
+@mixin mix-card-theme($subless-app-theme) {
+    .mat-card {
+        margin: 5vh;
+        font-family: DM Sans;
+    }
+    .mat-card-title {
+        @extend h3-font;
+    }
+    .mat-card-content {
+        @extend body-font;
+    }
+  }
+@include mix-card-theme($subless-app-theme);
 
 
 

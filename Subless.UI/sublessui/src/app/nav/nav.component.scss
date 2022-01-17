@@ -14,7 +14,9 @@
     display: flex;
     flex-direction: column;
 }
-
+.is-active {
+    background-color: map.get($md-selectedpurple, 500) !important;
+}
 #bottom-nav {
     position: absolute;
     bottom: 0;

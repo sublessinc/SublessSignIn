@@ -4,29 +4,30 @@
     <div class="logo"></div>
 
     <mat-nav-list>
-      <a mat-list-item id="creator" *ngIf="creator" routerLink='/creator-profile'>
+      <a mat-list-item id="creator" *ngIf="creator" [routerLinkActive]="['is-active']" routerLink='/creator-profile'>
         <img matListAvatar src="../../assets/img/profile.png">
         <div>Creator Profile</div>
       </a>
-      <a mat-list-item id="partner" *ngIf="partner" routerLink='/partner-profile'> <img matListAvatar
-          src="../../assets/img/profile.png">
+      <a mat-list-item id="partner" *ngIf="partner" [routerLinkActive]="['is-active']" routerLink='/partner-profile'>
+        <img matListAvatar src="../../assets/img/profile.png">
         <div>Partner Profile</div>
       </a>
-      <a mat-list-item id="user" *ngIf="user" routerLink='/user-profile'> <img matListAvatar
-          src="../../assets/img/profile.png">
+      <a mat-list-item id="user" *ngIf="user" [routerLinkActive]="['is-active']" routerLink='/user-profile'> <img
+          matListAvatar src="../../assets/img/profile.png">
         <div>Subscriber Profile</div>
       </a>
       <a mat-list-item id="billing" class="navButton" (click)="returnToStripe()">
         <img matListAvatar src="../../assets/img/billingNormalized.png">
         <div>Billing Information</div>
       </a>
-      <a mat-list-item id="plan" class="navButton" routerLink="/register-payment">
+      <a mat-list-item id="plan" class="navButton" [routerLinkActive]="['is-active']" routerLink="/register-payment">
         <img matListAvatar src="../../assets/img/planNormalized.png">
         <div>Change Plan</div>
       </a>
     </mat-nav-list>
     <mat-nav-list id="bottom-nav">
-      <a mat-list-item id="account" class="navButton" routerLink="/user-profile">
+      <a mat-list-item id="account" *ngIf="false" class="navButton" [routerLinkActive]="['is-active']"
+        routerLink="/user-profile">
         <img matListAvatar src="../../assets/img/accountNormalized.png">
         <div>Account Settings</div>
       </a>
