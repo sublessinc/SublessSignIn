@@ -5,6 +5,14 @@
 }
 .card {
     margin: 5vh;
+    width: auto;
     display: flex;
     flex-direction: column;
+    justify-content: center;
+}
+.button {
+    max-width: 15vw;
+    min-width: 100px;
+    justify-self: center;
+    align-self: center;
 }
