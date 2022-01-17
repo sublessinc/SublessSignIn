@@ -1,4 +1,4 @@
-<div class="completed-view-section">
+<mat-card class="completed-view-section">
 
     <mat-card-content>Upon creator activation or deactivation, a webhook will be fired back to the partner, if it has
         been
@@ -9,8 +9,8 @@
     <button mat-button (click)="fireWebhook()">Test webhook</button>
     <label *ngIf="webhookFired">Webhook Fired</label>
     <label *ngIf="webhookFailed">Webhook Failed</label>
-</div>
-<div class="completed-view-section">
+</mat-card>
+<mat-card class="completed-view-section">
 
     <mat-card-content> Upon completing the activation of a creator account, the creator will be redirected back to the
         partner site.
@@ -38,4 +38,4 @@
             [disabled]="!redirectTesterForm.form.valid">Test
             Activation</button>
     </form>
-</div>
+</mat-card>

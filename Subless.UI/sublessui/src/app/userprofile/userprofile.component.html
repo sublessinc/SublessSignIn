@@ -1,11 +1,16 @@
 <div class="profile">
-    <div class="sr-payment-summary completed-view">
-        <h1>Your profile</h1>
-    </div>
-    <div class="completed-view-section horizontalGroup">
-        <button mat-button (click)='returnToStripe()'>Manage Billing</button>
-        <button mat-button (click)='cancelSubscription()'>Cancel Subscription</button>
-        <button mat-button (click)='deleteAccount()'>Delete Account</button>
+    <div class="actions">
+        <mat-card class="card">
+            <mat-card-title>Cancel subless subscription</mat-card-title>
+            <mat-card-content>If you'd like to stop being billed monthly, this will allow you to re-activate later
+            </mat-card-content>
+            <button mat-button (click)='cancelSubscription()'>Cancel Subscription</button>
+        </mat-card>
+        <mat-card class="card">
+            <mat-card-title>Delete Subless account</mat-card-title>
+            <mat-card-content>Once deleted, your account cannot be recovered</mat-card-content>
+            <button mat-button (click)='deleteAccount()'>Delete Account</button>
+        </mat-card>
     </div>
     <app-id></app-id>
 </div>
