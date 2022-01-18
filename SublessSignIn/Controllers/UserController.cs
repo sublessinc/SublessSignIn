@@ -27,8 +27,9 @@ namespace SublessSignIn.Controllers
         private readonly IUserService userService;
         private readonly ICognitoService cognitoService;
         private readonly IPartnerService partnerService;
+        private readonly IHitService hitService;
         private readonly ILogger _logger;
-        public UserController(IStripeService stripeService, ILoggerFactory loggerFactory, IUserService userService, ICognitoService cognitoService, IPartnerService partnerService)
+        public UserController(IStripeService stripeService, ILoggerFactory loggerFactory, IUserService userService, ICognitoService cognitoService, IPartnerService partnerService, IHitService hitService)
         {
             if (loggerFactory is null)
             {
@@ -39,6 +40,7 @@ namespace SublessSignIn.Controllers
             this.userService = userService ?? throw new ArgumentNullException(nameof(userService));
             this.cognitoService = cognitoService ?? throw new ArgumentNullException(nameof(cognitoService));
             this.partnerService = partnerService ?? throw new ArgumentNullException(nameof(partnerService));
+            this.hitService = hitService ?? throw new ArgumentNullException(nameof(hitService));
             _logger = loggerFactory?.CreateLogger<PartnerController>() ?? throw new ArgumentNullException(nameof(loggerFactory));
         }
 
@@ -66,6 +68,15 @@ namespace SublessSignIn.Controllers
             var user = userService.GetUserByCognitoId(cognitoId);
             var viewModel = user.ToViewModel(HttpContext.User.FindFirst("email").Value);
             return Ok(viewModel);
+        }
+
+        [HttpGet("Analytics")]
+        public ActionResult<UserStats> GetUserAnalytics()
+        {
+            var cognitoId = userService.GetUserClaim(HttpContext.User);
+            var user = userService.GetUserByCognitoId(cognitoId);
+            var hits = hitService.GetHitsByDate(DateTime.Now.AddMonths(-1), DateTime.UtcNow, user.Id);
+            return Ok(hits.GetUserStats());
         }
 
         [HttpGet("loggedIn")]

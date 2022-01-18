@@ -1,18 +1,47 @@
-.actions {
+@use 'sass:map';
+@use '@angular/material' as mat;
+@import "../theme/theme";
+.stats {
     display: flex;
     flex-direction: column;
     justify-content: space-around;
 }
 .card {
     margin: 5vh;
-    width: auto;
+    width: 30vh;
+    min-width: 100px;
+    display: flex;
+    
+    padding: 0%;
+    border-radius:10px;
+}
+.iconWrapper {
     display: flex;
     flex-direction: column;
     justify-content: center;
+    align-items: center;
+    width: 100px;
+    border-radius:10px;
+
+    background-color: map.get($md-secondarypurple, 500);
 }
-.button {
-    max-width: 15vw;
-    min-width: 100px;
-    justify-self: center;
-    align-self: center;
+.icon {
+    width: 30px;
+}
+.statText {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.numberText {
+    color: map.get($md-secondarypurple, 500);
+    font-family: DM Sans;
+    font-size: 48px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 62px;
+    letter-spacing: 0em;
+    text-align: left;
+
 }

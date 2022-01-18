@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { IAnalytics } from '../models/IAnalytics';
 import { IStripeRedirect } from '../models/IStripeRedirect';
 import { SessionId } from '../models/SessionId';
 import { AuthorizationService } from '../services/authorization.service';
@@ -12,41 +13,23 @@ import { UserService } from '../services/user.service';
   styleUrls: ['./userprofile.component.scss']
 })
 export class UserprofileComponent implements OnInit {
+  public analytics: IAnalytics = { views: 0, creators: 0, partners: 0 };
   constructor(
-    private route: ActivatedRoute,
-    private checkoutService: CheckoutService,
-    private authService: AuthorizationService,
-    private userService: UserService
+    private userService: UserService,
+    private changeDetector: ChangeDetectorRef
   ) { }
 
-  ngOnInit(): void { }
+  ngOnInit(): void {
+    this.getAnalytics();
+  }
 
-  returnToStripe() {
-    this.checkoutService.getUserSession().subscribe({
-      next: (sessionId: SessionId) => {
-        this.checkoutService.loadCustomerPortal(sessionId.id).subscribe({
-          next: (redirect: IStripeRedirect) => {
-            window.location.href = redirect.url;
-          }
-        });
+  getAnalytics() {
+    this.userService.getAnalytics().subscribe({
+      next: (analytics: IAnalytics) => {
+        this.analytics = analytics;
+        this.changeDetector.detectChanges();
       }
     });
   }
 
-  deleteAccount() {
-    this.userService.deleteUser().subscribe({
-      next: (completed: boolean) => {
-        this.authService.redirectToLogout();
-      }
-    })
-  }
-
-
-  cancelSubscription() {
-    this.checkoutService.cancelSubscription().subscribe({
-      next: (completed: boolean) => {
-        this.authService.redirect();
-      }
-    })
-  }
 }

@@ -1,16 +1,32 @@
-<div class="profile">
-    <div class="actions">
-        <mat-card class="card">
-            <mat-card-title>Cancel subless subscription</mat-card-title>
-            <mat-card-content>If you'd like to stop being billed monthly, this will allow you to re-activate later
-            </mat-card-content>
-            <button class="button" mat-button (click)='cancelSubscription()'>Cancel Subscription</button>
-        </mat-card>
-        <mat-card class="card">
-            <mat-card-title>Delete Subless account</mat-card-title>
-            <mat-card-content>Once deleted, your account cannot be recovered</mat-card-content>
-            <button class="button" mat-button (click)='deleteAccount()'>Delete Account</button>
-        </mat-card>
-    </div>
-    <app-id></app-id>
+<div class="stats">
+    <mat-card class="card">
+        <div class="iconWrapper">
+            <img class="icon" src="../../assets/img/views.png">
+        </div>
+        <div class="statText">
+            <mat-card-content>Total Views</mat-card-content>
+            <mat-card-content class="numberText">{{analytics.views}}</mat-card-content>
+            <mat-card-content>Views in the last month</mat-card-content>
+        </div>
+    </mat-card>
+    <mat-card class="card">
+        <div class="iconWrapper">
+            <img class="icon" src="../../assets/img/creators.png">
+        </div>
+        <div class="statText">
+            <mat-card-content>Creators Supported</mat-card-content>
+            <mat-card-content class="numberText">{{analytics.creators}}</mat-card-content>
+            <mat-card-content>Creators viewed in the last month</mat-card-content>
+        </div>
+    </mat-card>
+    <mat-card class="card">
+        <div class="iconWrapper">
+            <img class="icon" src="../../assets/img/partners.png">
+        </div>
+        <div class="statText">
+            <mat-card-content>Partners Supported</mat-card-content>
+            <mat-card-content class="numberText">{{analytics.partners}}</mat-card-content>
+            <mat-card-content>Partners viewed in the last month</mat-card-content>
+        </div>
+    </mat-card>
 </div>

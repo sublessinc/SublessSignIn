@@ -26,8 +26,7 @@
       </a>
     </mat-nav-list>
     <mat-nav-list id="bottom-nav">
-      <a mat-list-item id="account" *ngIf="false" class="navButton" [routerLinkActive]="['is-active']"
-        routerLink="/user-profile">
+      <a mat-list-item id="account" class="navButton" [routerLinkActive]="['is-active']" routerLink="/account-settings">
         <img matListAvatar src="../../assets/img/accountNormalized.png">
         <div>Account Settings</div>
       </a>
@@ -39,5 +38,6 @@
   </mat-sidenav>
   <mat-sidenav-content #content class="content">
     <router-outlet></router-outlet>
+    <app-id></app-id>
   </mat-sidenav-content>
 </mat-sidenav-container>
