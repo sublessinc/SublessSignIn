@@ -11,6 +11,7 @@ fi
 echo "environment: " $environment;
 
 cd ./Subless.UI/sublessui
+npm install
 ng build --configuration $environment && cp -r ./dist/sublessui/* ../../SublessSignIn/wwwroot
 cd ./../../
 cd ./Subless.JS/
