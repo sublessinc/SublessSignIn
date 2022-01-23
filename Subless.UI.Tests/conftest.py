@@ -8,7 +8,7 @@ from webdriver_manager.firefox import GeckoDriverManager
 from ApiLib import Admin
 from EmailLib.MailSlurp import get_inbox_from_name
 from PageObjectModels.LoginPage import LoginPage
-from UsersLib.Users import get_user_id_and_token
+from UsersLib.Users import get_user_id_and_cookie
 
 
 def pytest_addoption(parser):
@@ -59,6 +59,7 @@ def user_data():
 
 # ideally this would be some sort of API call
 #   but we're working with what we've got available
+#   returns new user, with browser at plan selection screen
 @pytest.fixture
 def subless_account(mailslurp_inbox, firefox_driver):
     from ApiLib import User
@@ -67,7 +68,7 @@ def subless_account(mailslurp_inbox, firefox_driver):
     mailbox = get_inbox_from_name('BasicUser')
     # create
     id, token = create_user(firefox_driver, mailbox)
-    LoginPage(firefox_driver).logout()  # ugly
+    # LoginPage(firefox_driver).logout()  # do we need to logout here??
     yield id, token
 
     User.delete(token)
@@ -83,17 +84,17 @@ def subless_account(mailslurp_inbox, firefox_driver):
 def subless_admin_account(subless_god_account):
     from ApiLib import User
     from UsersLib.Users import create_user
-    god_id, god_token = subless_god_account
+    god_id, god_cookie = subless_god_account
 
     mailbox = get_inbox_from_name('AdminUser')
     # create
-    id, token = create_user(firefox_driver, mailbox)
-    Admin.set_admin(id, god_token)
-    LoginPage(firefox_driver).logout()  # ugly
+    id, cookie = create_user(firefox_driver, mailbox)
+    Admin.set_admin(id, god_cookie)
+    # LoginPage(firefox_driver).logout()  # do we need to logout here??
 
-    yield id, token
+    yield id, cookie
 
-    User.delete(token)
+    User.delete(cookie)
 
 
 @pytest.fixture
@@ -103,13 +104,13 @@ def subless_partner_account():
 
     mailbox = get_inbox_from_name('PartnerUser')
     # create
-    id, token = create_user(firefox_driver, mailbox)
-    LoginPage(firefox_driver).logout()  # ugly
+    id, cookie = create_user(firefox_driver, mailbox)
+    # LoginPage(firefox_driver).logout()  # do we need to logout here??
     # TODO:  set partner perms
 
-    yield id, token
+    yield id, cookie
 
-    User.delete(token)
+    User.delete(cookie)
 
 
 @pytest.fixture
@@ -119,14 +120,14 @@ def subless_creator_user():
 
     mailbox = get_inbox_from_name('CreatorUser')
     # create
-    id, token = create_user(firefox_driver, mailbox)
+    id, cookie = create_user(firefox_driver, mailbox)
     # TODO: set creator perms
     # Admin.set_admin(id, test_data['GodUser']['token'])
-    LoginPage(firefox_driver).logout() # ugly
+    # LoginPage(firefox_driver).logout() # # do we need to logout here??
 
-    yield id, token
+    yield id, cookie
 
-    User.delete(token)
+    User.delete(cookie)
 
 
 @pytest.fixture
@@ -136,15 +137,15 @@ def subless_god_account(user_data, firefox_driver):
     login_page = LoginPage(firefox_driver).open()
     login_page.sign_in(Keys.god_email, Keys.god_password)
 
-    id, token = get_user_id_and_token(firefox_driver)
+    id, cookie = get_user_id_and_cookie(firefox_driver)
 
-    login_page.logout()
+    # login_page.logout()  # do we need to logout here??
 
     user_data['GodUser'] = {'id': id,
                             'email': Keys.god_email,
-                            'token': token}
+                            'cookie': cookie}
 
-    yield id, token
+    yield id, cookie
 
 
 @pytest.fixture(params=[

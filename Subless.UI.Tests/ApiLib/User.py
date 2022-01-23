@@ -8,7 +8,7 @@ def delete(auth_token):
 
     payload = {}
     headers = {
-        'Authorization': f'Bearer {auth_token}'
+        'subless': f'{auth_token}'
     }
 
     response = requests.request("DELETE", url, headers=headers, data=payload)

@@ -4,12 +4,12 @@ import os
 import requests
 
 
-def set_admin(user_id, auth_token):
+def set_admin(user_id, cookie):
     url = f'https://{os.environ["environment"]}.subless.com/api/Admin/setadmin?userId={user_id}'
 
     payload = {}
     headers = {
-        'Authorization': f'Bearer {auth_token}'
+        'subless': f'{auth_token}'
     }
 
     response = requests.request("POST", url, headers=headers, data=payload)
@@ -17,12 +17,12 @@ def set_admin(user_id, auth_token):
     print(f'SetAdmin returned code: {response.status_code} - {response.reason} - {response.text}')
 
 
-def get_user_capabilities(user_id, auth_token):
+def get_user_capabilities(user_id, cookie):
     url = f'https://{os.environ["environment"]}.subless.com/api/Admin/userCapabilties?userId={user_id}'
 
     payload = {}
     headers = {
-        'Authorization': f'Bearer {auth_token}'
+        'subless': f'{auth_token}'
     }
 
     response = requests.request("GET", url, headers=headers, data=payload)

@@ -41,7 +41,7 @@ class LoginPage(BasePage):
 
     def open(self):
         self.driver.get(f'https://{os.environ["environment"]}.subless.com')
-        time.sleep(1)
+        time.sleep(5)
         return self
 
     def click_sign_up(self):

@@ -3,7 +3,7 @@ import pytest
 import ApiLib.User
 from EmailLib import MailSlurp
 from PageObjectModels.LoginPage import LoginPage
-from UsersLib.Users import create_user, get_all_test_user_data, save_user_test_data, get_user_id_and_token
+from UsersLib.Users import create_user, get_all_test_user_data, save_user_test_data, get_user_id_and_cookie
 
 usertypes = [
     'AdminUser',
@@ -39,7 +39,7 @@ def test_delete_users_smart(usertype, firefox_driver):
 
     login_page.sign_in(MailSlurp.get_inbox_from_name(usertype).email_address, 'SublessTestUser')
 
-    id, token = get_user_id_and_token(firefox_driver)
+    id, token = get_user_id_and_cookie(firefox_driver)
 
     login_page.logout()
 

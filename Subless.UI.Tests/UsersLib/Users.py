@@ -20,20 +20,19 @@ def create_user(driver, inbox):
 
     otp_page.confirm_otp(MailSlurp.get_newest_otp(inbox_id=inbox.id))
 
-    id, token = get_user_id_and_token(driver)
+    id, cookie = get_user_id_and_cookie(driver)
 
-    return id, token
+    return id, cookie
 
 
 # note: assumes you are on a page where pulling IDs is valid
-def get_user_id_and_token(driver):
+def get_user_id_and_cookie(driver):
     driver.get(f'{driver.current_url}#id')
     time.sleep(1)  # seemingly need to wait a sec for both these fields to populate
     id_field = driver.find_elements_by_id('id')[0]
     id = id_field.get_attribute('value')
-    token_field = driver.find_elements_by_id('token')[0]
-    token = token_field.get_attribute('value')
-    return id, token
+    cookie = list(x for x in driver.get_cookies() if x['name'] == 'subless')[0]['value']
+    return id, cookie
 
 
 def get_all_test_user_data():
