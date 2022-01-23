@@ -29,6 +29,10 @@
 .content {
     height: 100vh;
 }
+.avatar {
+    padding: .5em;
+}
+
 @mixin mix-navlist-theme($subless-app-theme) {
     .mat-list-item {
       background-color: map-get($md-backgroundpurple, 500);
