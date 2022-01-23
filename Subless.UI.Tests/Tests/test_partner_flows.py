@@ -13,7 +13,7 @@ def test_register_partner_as_admin(subless_god_account, subless_account):
     register_partner(user_id, god_token)
 
     # THEN: That user should have partner permissions
-    user = get_user_capabilities(id, god_token)
+    user = get_user_capabilities(user_id, god_token)
     assert len(user['partners']) == 1
     assert user['partners'][0]['admin'] == user_id
 
