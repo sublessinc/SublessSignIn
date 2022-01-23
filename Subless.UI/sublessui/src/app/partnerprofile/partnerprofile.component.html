@@ -1,5 +1,4 @@
 <div class="container">
-    <app-nav class="header"></app-nav>
     <div id="bodyWrapper">
         <div class="subless-background"></div>
         <div class="sr-root">
@@ -8,7 +7,7 @@
                     <h1>Your partner profile</h1>
 
                 </div>
-                <div class="completed-view-section">
+                <mat-card>
 
 
 
@@ -42,10 +41,10 @@
                             <input type="text" class="form-control" id="webhook" required [readonly]="false "
                                 [(ngModel)]="model.creatorWebhook" name="webhook" #webhook="ngModel">
                         </div>
-                        <button id='save' type="submit" class="btn btn-success"
+                        <button mat-button id='save' type="submit" class="btn btn-success"
                             [disabled]="!partnerForm.form.valid">Save</button>
                     </form>
-                </div>
+                </mat-card>
                 <app-partner-test></app-partner-test>
                 <app-id></app-id>
             </div>

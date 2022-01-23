@@ -13,6 +13,7 @@ import { UserprofileComponent } from './userprofile/userprofile.component';
 const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: 'register-payment', component: RegisterPaymentComponent, canActivate: [AuthGuard] },
+  { path: 'change-plan', component: RegisterPaymentComponent, canActivate: [AuthGuard] },
   { path: 'user-profile', component: UserprofileComponent, canActivate: [AuthGuard] },
   { path: 'creator-profile', component: CreatorprofileComponent, canActivate: [AuthGuard], canDeactivate: [StopNavGuard] },
   { path: 'partner-profile', component: PartnerprofileComponent, canActivate: [AuthGuard], canDeactivate: [StopNavGuard] },

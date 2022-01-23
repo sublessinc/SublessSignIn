@@ -16,9 +16,9 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
 import { IdComponent } from './id/id.component';
 import { PartnerprofileComponent } from './partnerprofile/partnerprofile.component';
-import { MatToolbarModule } from '@angular/material/toolbar';
 import { UnauthorizedInterceptor } from './services/auth.interceptor';
 import { StopNavGuard } from './stop-nav.guard';
+import { ThemeModule } from './theme/theme.module';
 import { PartnerTestComponent } from './partner-test/partner-test.component';
 
 @NgModule({
@@ -36,11 +36,11 @@ import { PartnerTestComponent } from './partner-test/partner-test.component';
     PartnerTestComponent
   ],
   imports: [
+    ThemeModule,
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
     ReactiveFormsModule,
-    MatToolbarModule,
     FormsModule,
   ],
   providers: [
