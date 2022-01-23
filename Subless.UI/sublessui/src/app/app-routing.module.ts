@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { AccountSettingsComponent } from './account-settings/account-settings.component';
 import { CreatorprofileComponent } from './creatorprofile/creatorprofile.component';
 import { IdComponent } from './id/id.component';
 import { LoggedOutComponent } from './logged-out/logged-out.component';
@@ -13,6 +14,7 @@ import { UserprofileComponent } from './userprofile/userprofile.component';
 const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: 'register-payment', component: RegisterPaymentComponent, canActivate: [AuthGuard] },
+  { path: 'account-settings', component: AccountSettingsComponent, canActivate: [AuthGuard] },
   { path: 'change-plan', component: RegisterPaymentComponent, canActivate: [AuthGuard] },
   { path: 'user-profile', component: UserprofileComponent, canActivate: [AuthGuard] },
   { path: 'creator-profile', component: CreatorprofileComponent, canActivate: [AuthGuard], canDeactivate: [StopNavGuard] },

@@ -1,16 +1,34 @@
-<div class="profile">
-    <div class="actions">
-        <mat-card class="card">
-            <mat-card-title>Cancel subless subscription</mat-card-title>
-            <mat-card-content>If you'd like to stop being billed monthly, this will allow you to re-activate later
+<div class="stats">
+    <mat-card class="card">
+        <div class="iconWrapper">
+            <img class="icon" src="../../assets/img/views.png">
+        </div>
+        <div class="statText">
+            <mat-card-content class="statHeader">Total Views</mat-card-content>
+            <mat-card-content class="numberText">{{analytics.thisMonth.views}}</mat-card-content>
+            <mat-card-content><b>{{analytics.lastMonth.views}}</b> Views last month</mat-card-content>
+        </div>
+    </mat-card>
+    <mat-card class="card">
+        <div class="iconWrapper">
+            <img class="icon" src="../../assets/img/creators.png">
+        </div>
+        <div class="statText">
+            <mat-card-content class="statHeader">Creators Supported</mat-card-content>
+            <mat-card-content class="numberText">{{analytics.thisMonth.creators}}</mat-card-content>
+            <mat-card-content><b>{{analytics.lastMonth.creators}}</b> Creators viewed last month
             </mat-card-content>
-            <button class="button" mat-button (click)='cancelSubscription()'>Cancel Subscription</button>
-        </mat-card>
-        <mat-card class="card">
-            <mat-card-title>Delete Subless account</mat-card-title>
-            <mat-card-content>Once deleted, your account cannot be recovered</mat-card-content>
-            <button class="button" mat-button (click)='deleteAccount()'>Delete Account</button>
-        </mat-card>
-    </div>
-    <app-id></app-id>
+        </div>
+    </mat-card>
+    <mat-card class="card">
+        <div class="iconWrapper">
+            <img class="icon" src="../../assets/img/partners.png">
+        </div>
+        <div class="statText">
+            <mat-card-content class="statHeader">Partners Supported</mat-card-content>
+            <mat-card-content class="numberText">{{analytics.thisMonth.partners}}</mat-card-content>
+            <mat-card-content><b>{{analytics.lastMonth.partners}}</b> Partners viewed last month
+            </mat-card-content>
+        </div>
+    </mat-card>
 </div>
