@@ -1,10 +1,5 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
 import { IAnalytics } from '../models/IAnalytics';
-import { IStripeRedirect } from '../models/IStripeRedirect';
-import { SessionId } from '../models/SessionId';
-import { AuthorizationService } from '../services/authorization.service';
-import { CheckoutService } from '../services/checkout.service';
 import { UserService } from '../services/user.service';
 
 @Component({
