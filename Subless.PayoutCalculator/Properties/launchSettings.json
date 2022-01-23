@@ -15,7 +15,11 @@
             "userPoolId": "us-east-1_6U7tGA4YG",
             "AccessKey":"AKIAX7PZWNTP5WPGBOUK",
             "SecretKey":"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",
-            "PayoneerId":"sublessPayoneer"
+            "PayoneerId":"sublessPayoneer",
+            "BucketName": "devpays3bucket",
+            "ExecutionsPerYear": "365",
+            "RunOnStart": "true",
+            "PayPalId": "contact@subless.com"
         }
     }
   }
