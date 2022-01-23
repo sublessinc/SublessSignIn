@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Subless.Data;
 using Subless.Models;
@@ -127,12 +128,23 @@ namespace Subless.Tests
                         Username = x,
                         UserId = guid
                     });
+
+            var serviceProvider = new ServiceCollection()
+                .AddLogging(x => {
+                    x.AddSimpleConsole();
+                })
+                .BuildServiceProvider();
+            var factory = serviceProvider.GetService<ILoggerFactory>();
+            var logger = factory.CreateLogger<HitService>();
+            var mockLoggerFactory = new Mock<ILoggerFactory>();
+            mockLoggerFactory.Setup(x => x.CreateLogger(It.IsAny<string>())).Returns(() => logger);
+
             return new HitService(
                 new Mock<IUserService>().Object,
                 new Mock<IUserRepository>().Object,
                 creatorService.Object,
                 new Mock<IPartnerService>().Object,
-                new Mock<ILoggerFactory>().Object);
+                mockLoggerFactory.Object);
         }
 
         public Partner ValidPartner()
