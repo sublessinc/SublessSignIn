@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Subless.Data;
 
@@ -19,6 +20,11 @@ namespace Subless.Services
             _userService = userService ?? throw new ArgumentNullException(nameof(userService));
             _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
             _logger = loggerFactory.CreateLogger<AdministrationService>();
+        }
+
+        public async Task<bool> CanAccessDatabase()
+        {
+            return await _userRepository.CanAccessDatabase();
         }
 
         public void OutputAdminKeyIfNoAdmins()

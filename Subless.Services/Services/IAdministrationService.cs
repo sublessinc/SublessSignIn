@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace Subless.Services
 {
@@ -6,6 +7,7 @@ namespace Subless.Services
     {
         void ActivateAdmin(Guid userId);
         void ActivateAdminWithKey(Guid submittedKey, string cognitoId);
+        Task<bool> CanAccessDatabase();
         void OutputAdminKeyIfNoAdmins();
     }
 }
