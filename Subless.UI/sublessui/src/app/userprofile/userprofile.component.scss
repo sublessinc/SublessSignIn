@@ -5,10 +5,14 @@
     display: flex;
     flex-direction: column;
     justify-content: space-around;
+    align-content: center;
+    align-items: stretch;
+    height: 100%;
+    width: 100%;
 }
 .card {
-    margin: 5vh;
-    width: 30vh;
+    margin: 2vh;
+    max-width: 50vh;
     min-width: 100px;
     display: flex;
     
@@ -26,12 +30,15 @@
     background-color: map.get($md-secondarypurple, 500);
 }
 .icon {
-    width: 30px;
+    width: 100px;
 }
 .statText {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-content:center;
+    align-items:flex-start;
+    padding: 20px;
+    
 }
 
 .numberText {
@@ -45,3 +52,14 @@
     text-align: left;
 
 }
+.statHeader {
+    font-size: 1.2em;
+}
+
+@mixin mix-card-theme($subless-app-theme) {
+    .mat-card-content {
+        text-align: left;
+    }
+  }
+@include mix-card-theme($subless-app-theme);
+

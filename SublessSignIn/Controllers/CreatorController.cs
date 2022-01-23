@@ -41,6 +41,7 @@ namespace SublessSignIn.Controllers
             }
             catch (UnauthorizedAccessException e)
             {
+                _logger.LogWarning(e, "Unauthorized user attempted to get creator data");
                 return Unauthorized("Not a creator account");
             }
         }
@@ -59,6 +60,7 @@ namespace SublessSignIn.Controllers
             }
             catch (UnauthorizedAccessException e)
             {
+                _logger.LogWarning(e, "Unauthorized user attempted to update creator data");
                 return Unauthorized("Not a creator account");
             }
         }
@@ -79,6 +81,7 @@ namespace SublessSignIn.Controllers
             }
             catch (UnauthorizedAccessException e)
             {
+                _logger.LogWarning(e, "Unauthorized user attempted to get creator stats");
                 return Unauthorized();
             }
         }
@@ -98,6 +101,7 @@ namespace SublessSignIn.Controllers
             }
             catch (UnauthorizedAccessException e)
             {
+                _logger.LogWarning(e, "Unauthorized user attempted to unlink creator account");
                 return Unauthorized();
             }
         }
@@ -133,6 +137,8 @@ namespace SublessSignIn.Controllers
             }
             catch (UnauthorizedAccessException e)
             {
+                _logger.LogWarning(e, "Unauthorized user attempted to get creator stats");
+
                 return Unauthorized();
             }
         }

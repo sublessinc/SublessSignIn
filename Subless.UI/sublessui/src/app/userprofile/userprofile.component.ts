@@ -13,7 +13,10 @@ import { UserService } from '../services/user.service';
   styleUrls: ['./userprofile.component.scss']
 })
 export class UserprofileComponent implements OnInit {
-  public analytics: IAnalytics = { views: 0, creators: 0, partners: 0 };
+  public analytics: IAnalytics = {
+    thisMonth: { views: 0, creators: 0, partners: 0 },
+    lastMonth: { views: 0, creators: 0, partners: 0 }
+  };
   constructor(
     private userService: UserService,
     private changeDetector: ChangeDetectorRef

@@ -1,5 +1,6 @@
+import { IUserStats } from "./IUserStats";
+
 export interface IAnalytics {
-    views: number;
-    creators: number;
-    partners: number;
+    lastMonth: IUserStats;
+    thisMonth: IUserStats;
 }

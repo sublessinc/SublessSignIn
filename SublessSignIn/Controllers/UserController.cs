@@ -28,8 +28,16 @@ namespace SublessSignIn.Controllers
         private readonly ICognitoService cognitoService;
         private readonly IPartnerService partnerService;
         private readonly IHitService hitService;
+        private readonly IPaymentLogsService paymentLogsService;
         private readonly ILogger _logger;
-        public UserController(IStripeService stripeService, ILoggerFactory loggerFactory, IUserService userService, ICognitoService cognitoService, IPartnerService partnerService, IHitService hitService)
+        public UserController(
+            IStripeService stripeService, 
+            ILoggerFactory loggerFactory, 
+            IUserService userService, 
+            ICognitoService cognitoService, 
+            IPartnerService partnerService, 
+            IHitService hitService,
+            IPaymentLogsService paymentLogsService)
         {
             if (loggerFactory is null)
             {
@@ -41,6 +49,7 @@ namespace SublessSignIn.Controllers
             this.cognitoService = cognitoService ?? throw new ArgumentNullException(nameof(cognitoService));
             this.partnerService = partnerService ?? throw new ArgumentNullException(nameof(partnerService));
             this.hitService = hitService ?? throw new ArgumentNullException(nameof(hitService));
+            this.paymentLogsService = paymentLogsService ?? throw new ArgumentNullException(nameof(paymentLogsService));
             _logger = loggerFactory?.CreateLogger<PartnerController>() ?? throw new ArgumentNullException(nameof(loggerFactory));
         }
 
@@ -75,8 +84,14 @@ namespace SublessSignIn.Controllers
         {
             var cognitoId = userService.GetUserClaim(HttpContext.User);
             var user = userService.GetUserByCognitoId(cognitoId);
-            var hits = hitService.GetHitsByDate(DateTime.Now.AddMonths(-1), DateTime.UtcNow, user.Id);
-            return Ok(hits.GetUserStats());
+            var paymentDate = paymentLogsService.GetLastPaymentDate();
+            if (paymentDate == DateTime.MinValue)
+            {
+                paymentDate = DateTime.Now.AddMonths(-1);
+            }
+            var hitsThisMonth = hitService.GetHitsByDate(paymentDate, DateTime.UtcNow, user.Id);
+            var hitsLastMonth = hitService.GetHitsByDate(paymentDate.AddMonths(-1), paymentDate, user.Id);
+            return Ok(UserStatsExtensions.GetHistoricalUserStats(hitsThisMonth, hitsLastMonth));
         }
 
         [HttpGet("loggedIn")]

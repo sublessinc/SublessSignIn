@@ -23,5 +23,13 @@ namespace SublessSignIn.Models
                 Partners = hits.Select(x => x.PartnerId).Distinct().Count(),
             };
         }
+        public static HistoricalUserStats GetHistoricalUserStats(IEnumerable<Hit> thisMonth, IEnumerable<Hit> LastMonth)
+        {
+            return new HistoricalUserStats()
+            {
+                LastMonth = LastMonth.GetUserStats(),
+                thisMonth = thisMonth.GetUserStats()
+            };
+        }
     }
 }

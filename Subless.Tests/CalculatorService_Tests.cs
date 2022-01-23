@@ -335,7 +335,7 @@ namespace Subless.Tests
             var result = sut.GetCreatorPayees(4.55, hits, 1, CalculatorService.PartnerFraction, CalculatorService.SublessFraction);
 
             //assert
-            Assert.Equal(1, result.Count());
+            Assert.Single(result);
 
             //these are .01 lower than the sheet in some cases due to rounding down
             Assert.Equal(3.5672, result.Single(x => x.PayPalId == creator1.Key.ToString()).Payment);
@@ -507,7 +507,7 @@ namespace Subless.Tests
             var result = sut.GetPartnerPayees(4.55, hits, 15, CalculatorService.PartnerFraction, CalculatorService.SublessFraction);
 
             //assert
-            Assert.Equal(1, result.Count());
+            Assert.Single(result);
 
             //these are .01 lower than the sheet in some cases due to rounding down
             Assert.Equal(.8917, result.Single(x => x.PayPalId == partner1.ToString()).Payment);

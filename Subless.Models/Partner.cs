@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Subless.Models
 {
+
     [Index(nameof(CognitoAppClientId), IsUnique = true)]
     public class Partner
     {
@@ -14,6 +15,7 @@ namespace Subless.Models
         public string UserPattern { get; set; }
         public ICollection<Creator> Creators { get; set; }
         public Guid Admin { get; set; }
+#nullable enable
         public Uri? CreatorWebhook { get; set; }
     }
 }
