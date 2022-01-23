@@ -21,32 +21,39 @@ namespace PayoutCalculator
             {
                 // initialize configuration
                 var logger = scope.ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<Program>();
-                var healthCheck = scope.ServiceProvider.GetRequiredService<IHealthCheck>();
-                var configuration = scope.ServiceProvider.GetRequiredService<IOptions<CalculatorConfiguration>>();
-                var shouldExecuteOnStart = configuration.Value.RunOnStart;
-                var executionsPerYear = configuration.Value.ExecutionsPerYear;
-                if (shouldExecuteOnStart) { logger.LogError("EXECUTING CALUCLATOR ON START! THIS IS A TESTING FEATURE AND SHOULD NOT EXECUTE IN PRODUCTION."); }
+                var logging_env_var = System.Environment.GetEnvironmentVariable("Logging__LogLevel__Default");
+                logger.LogInformation($"Logging env var value is {logging_env_var}");
+                try {
+                    logger.LogDebug("Logging in debug mode.");
+                    var healthCheck = scope.ServiceProvider.GetRequiredService<IHealthCheck>();
+                    var configuration = scope.ServiceProvider.GetRequiredService<IOptions<CalculatorConfiguration>>();
+                    var shouldExecuteOnStart = configuration.Value.RunOnStart;
+                    var executionsPerYear = configuration.Value.ExecutionsPerYear;
+                    if (shouldExecuteOnStart) { logger.LogError("EXECUTING CALUCLATOR ON START! THIS IS A TESTING FEATURE AND SHOULD NOT EXECUTE IN PRODUCTION."); }
 
-                if (!(await healthCheck.IsHealthy()))
-                {
-                    throw new Exception("Could not start due to health check failure");
-                }
-                logger.LogInformation("All dependencies responding, starting services");
-                while (true)
-                {
-                    logger.LogInformation("Checking if calculator should be run");
-                    var logsService = scope.ServiceProvider.GetRequiredService<IPaymentLogsService>();
-                    var calculator = scope.ServiceProvider.GetRequiredService<ICalculatorService>();
-                    var lastExecution = logsService.GetLastPaymentDate();
-                    
-                    if (ShouldExecuteScheduledRun(executionsPerYear, lastExecution) || shouldExecuteOnStart)
+                    if (!(await healthCheck.IsHealthy()))
                     {
-                        shouldExecuteOnStart = false;
-                        logger.LogInformation("Running calculation");
-                        calculator.CalculatePayments(lastExecution, DateTime.UtcNow);
-                        logger.LogInformation("Calculation complete");
+                        throw new Exception("Could not start due to health check failure");
                     }
-                    Thread.Sleep(1000 * 60);
+                    logger.LogInformation("All dependencies responding, starting services");
+                    while (true)
+                    {
+                        logger.LogInformation("Checking if calculator should be run");
+                        var logsService = scope.ServiceProvider.GetRequiredService<IPaymentLogsService>();
+                        var calculator = scope.ServiceProvider.GetRequiredService<ICalculatorService>();
+                        var lastExecution = logsService.GetLastPaymentDate();
+                        
+                        if (ShouldExecuteScheduledRun(executionsPerYear, lastExecution) || shouldExecuteOnStart)
+                        {
+                            shouldExecuteOnStart = false;
+                            logger.LogInformation("Running calculation");
+                            calculator.CalculatePayments(lastExecution, DateTime.UtcNow);
+                            logger.LogInformation("Calculation complete");
+                        }
+                        Thread.Sleep(1000 * 60);
+                    }
+                } catch (Exception e) {
+                    logger.LogCritical(e, "Critical unhandled exception in calculator. Shutting down. Good luck.");
                 }
             }
         }

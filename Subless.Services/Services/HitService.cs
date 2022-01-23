@@ -33,6 +33,7 @@ namespace Subless.Services
 
         public void SaveHit(string userId, Uri uri)
         {
+            _logger.LogDebug("SaveHit hit.");
             var partner = _partnerService.GetCachedPartnerByUri(new Uri(uri.GetLeftPart(UriPartial.Authority)));
             if (partner == null)
             {
@@ -40,6 +41,7 @@ namespace Subless.Services
                 return;
             }
             var creatorId = GetCreatorFromPartnerAndUri(uri, partner);
+            _logger.LogDebug($"Saving a hit for creator {creatorId}.");
             _userRepository.SaveHit(new Hit()
             {
                 CognitoId = userId,
@@ -52,13 +54,17 @@ namespace Subless.Services
 
         public Hit TestHit(string userId, Uri uri)
         {
+            _logger.LogDebug($"TestHit hit with user {userId} and uri {uri}");
             var partner = _partnerService.GetCachedPartnerByUri(new Uri(uri.GetLeftPart(UriPartial.Authority)));
+            _logger.LogDebug($"Resolved partner {partner} for {uri}");
             if (partner == null)
             {
                 _logger.LogError($"Unknown partner recieved hit from URL {uri}");
                 return null;
             }
             var creatorId = GetCreatorFromPartnerAndUri(uri, partner);
+            _logger.LogDebug($"Resolved {creatorId} for the uri {uri} and partner {partner}");
+
             return new Hit()
             {
                 CognitoId = userId,
@@ -86,7 +92,7 @@ namespace Subless.Services
             ///www.partner.com/creator/pictures; www.partner.com/profile/creator; www.partner.com/stories/creator/
             ///www.partner.com\/profile\/?.*\.php
             var patterns = partner.UserPattern.Split(";");
-
+            _logger.LogDebug($"Parter {partner.Site} has {patterns.Count()} patterns to try.");
 
             // iterate through the possible patterns
             foreach (var pattern in patterns)
@@ -104,6 +110,7 @@ namespace Subless.Services
                 }
                 foreach (Match match in matches)
                 {
+                    _logger.LogDebug($"Matched the uri {uri} using the pattern {pattern}");
                     foreach (Group group in match.Groups)
                     {
                         if (group.Value != uri.ToString() && !string.IsNullOrWhiteSpace(group.Value) && !PartnerService.InvalidUsernameCharacters.Any(x => group.Value.Contains(x)))
@@ -113,6 +120,8 @@ namespace Subless.Services
                     }
                 }
             }
+
+            _logger.LogDebug($"Couldn't find a creator for the uri {uri} and partner {partner}");
             return null;
         }
     }
