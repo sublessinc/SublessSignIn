@@ -56,6 +56,7 @@ namespace Subless.PayoutCalculator
                 return;
             }
             // for each user
+            _logger.LogInformation("Preparing to process {0} payers' payments.", payers.Count());
             foreach (var payer in payers)
             {
                 var payees = new List<Payee>();
@@ -69,6 +70,7 @@ namespace Subless.PayoutCalculator
                 var partnerVisits = GetVisitsPerPartner(hits);
                 // fraction each creator by the percentage of total visits
                 // multiply payment by that fraction
+                _logger.LogInformation("Found creators visited and {1} partners visited for a payer.", creatorVisits.Count(), partnerVisits.Count());
                 payees.AddRange(GetCreatorPayees(payer.Payment, creatorVisits, hits.Count(), PartnerFraction, SublessFraction));
                 payees.AddRange(GetPartnerPayees(payer.Payment, creatorVisits, hits.Count(), PartnerFraction, SublessFraction));
                 // set aside 2% for us
@@ -95,10 +97,15 @@ namespace Subless.PayoutCalculator
         private IEnumerable<Hit> FilterInvalidCreators(IEnumerable<Hit> hits)
         {
             var creatorIds = hits.Select(x => x.CreatorId).Distinct();
+            _logger.LogInformation("Filter step 1: we have {0} unique creator IDs", creatorIds.Count());
             var creators = creatorIds.Select(x => _creatorService.GetCreator(x)).Where(x=> x is not null);
+            _logger.LogInformation("Filter step 2: we have {0} unique creators based on those IDs", creators.Count());
             var missingCreators = creatorIds.Where(x => !creators.Any(y => y.Id == x));
+            _logger.LogInformation("Filter step 2: we have {0} missing creators", missingCreators.Count());
             var invalidCreators = creators.Where(x => x.ActivationCode is not null || string.IsNullOrWhiteSpace(x.PayPalId));
+            _logger.LogInformation("Filter step 3: we have {0} invalid creators", invalidCreators.Count());
             var validHits = hits.Where(x => !missingCreators.Any(y=> y==x.CreatorId) && !invalidCreators.Any(y => y.Id == x.CreatorId));
+            _logger.LogInformation("Filter step 4: we have {0} valid hits", validHits.Count());
             return validHits;
         }
 
@@ -171,6 +178,8 @@ namespace Subless.PayoutCalculator
                     PayPalId = creator.PayPalId
                 });
             }
+
+            _logger.LogInformation("For a patron who visited {0} creators, we've found {1} creator payees.", creatorHits.Count(), payees.Count());
             return payees;
         }
 
@@ -198,11 +207,14 @@ namespace Subless.PayoutCalculator
                     payees.Add(payee);
                 }
             }
+
+            _logger.LogInformation("For a patron who visited {0} partners, we've found {1} partner payees.", creatorHits.Count(), payees.Count());
             return payees;
         }
 
         private void SavePaymentDetails(IEnumerable<Payee> payees, Payer payer, DateTime endDate)
         {
+            _logger.LogInformation("Saving payment details for one patron and {0} payees", payees.Count());
             var logs = new List<Payment>();
             foreach (var payee in payees)
             {
@@ -219,6 +231,7 @@ namespace Subless.PayoutCalculator
 
         private void AddPayeesToMasterList(Dictionary<string, double> masterPayoutList, IEnumerable<Payee> payees)
         {
+            var newPayees = 0;
             foreach (var payee in payees)
             {
                 if (masterPayoutList.ContainsKey(payee.PayPalId))
@@ -228,18 +241,24 @@ namespace Subless.PayoutCalculator
                 else
                 {
                     masterPayoutList.Add(payee.PayPalId, payee.Payment);
+                    newPayees += 1;
                 }
             }
+
+            _logger.LogInformation("Updated payeeMasterList with {0} payees, {1} of which were newly added.",
+                payees.Count(), newPayees);
         }
 
         private void SaveMasterList(Dictionary<string, double> masterPayoutList, DateTime endDate)
         {
             var payments = masterPayoutList.Select(x => new PaymentAuditLog() { Payment = x.Value, PayPalId = x.Key, DatePaid = DateTime.UtcNow });
+            _logger.LogInformation("Saving our audit logs.");
             _paymentLogsService.SaveAuditLogs(payments);
         }
 
         private void SavePayoutsToS3(Dictionary<string, double> masterPayoutList)
         {
+            _logger.LogInformation("Writing out payout information to cloud stoarge.");
             _s3Service.WritePaymentsToCloudFileStore(masterPayoutList);
         }
     }

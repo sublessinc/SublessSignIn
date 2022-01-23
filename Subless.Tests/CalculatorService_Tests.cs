@@ -8,6 +8,7 @@ using Subless.Models;
 using Subless.PayoutCalculator;
 using Subless.Services;
 using Xunit;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Subless.Tests
 {
@@ -262,7 +263,7 @@ namespace Subless.Tests
                     allPayments = y;
                 });
             var creatorService = new Mock<ICreatorService>();
-            creatorService.Setup(x => x.GetCreator(It.Is<Guid>(x => x == creator1))).Returns(new Creator() { PayPalId = "Creator1" , Id = creator1});
+            creatorService.Setup(x => x.GetCreator(It.Is<Guid>(x => x == creator1))).Returns(new Creator() { PayPalId = "Creator1", Id = creator1});
             creatorService.Setup(x => x.GetCreator(It.Is<Guid>(x => x == creator2))).Returns(new Creator() { PayPalId = "Creator2", Id = creator2 });
             var partnerService = PartnerServiceBuilder("Partner");
             var sut = CalculatorServiceBuilder(
@@ -521,6 +522,20 @@ namespace Subless.Tests
             Mock<IPartnerService> partnerService = null
             )
         {
+
+            var serviceProvider = new ServiceCollection()
+                .AddLogging(x => {
+                    x.AddSimpleConsole();
+                })
+                .BuildServiceProvider();
+
+            var factory = serviceProvider.GetService<ILoggerFactory>();
+
+            var logger = factory.CreateLogger<CalculatorService>();
+
+            var mockLoggerFactory = new Mock<ILoggerFactory>();
+            mockLoggerFactory.Setup(x => x.CreateLogger(It.IsAny<string>())).Returns(() => logger);
+
             return new CalculatorService(
                 stripe?.Object ?? StripeServiceBuilder().Object,
                 hitService?.Object ?? new Mock<IHitService>().Object,
@@ -529,7 +544,7 @@ namespace Subless.Tests
                 new Mock<IPaymentLogsService>().Object,
                 s3Service?.Object ?? new Mock<IFileStorageService>().Object,
                 CreateOptions(),
-                new Mock<ILoggerFactory>().Object
+                mockLoggerFactory.Object
                 );
         }
 
