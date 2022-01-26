@@ -112,6 +112,13 @@ namespace Subless.Data
             && hit.TimeStamp <= endDate).ToList();
         }
 
+        public IEnumerable<Hit> GetCreatorHitsByDate(DateTime startDate, DateTime endDate, Guid creatorId)
+        {
+            return Hits.Where(hit => hit.CreatorId != creatorId
+            && hit.TimeStamp > startDate
+            && hit.TimeStamp <= endDate).ToList();
+        }
+
         public Creator GetCreatorByActivationCode(Guid code)
         {
             return Creators.FirstOrDefault(creator => creator.ActivationCode == code);

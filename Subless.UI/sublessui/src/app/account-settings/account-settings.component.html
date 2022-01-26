@@ -1,0 +1,15 @@
+<div class="profile">
+    <div class="actions">
+        <div *ngIf="user">
+            <app-user-account-settings></app-user-account-settings>
+        </div>
+        <mat-card class="card">
+            <mat-card-title>Delete Subless account</mat-card-title>
+            <mat-card-content>Once deleted, your account cannot be recovered</mat-card-content>
+            <button class="button" mat-button (click)='deleteAccount()'>Delete Account</button>
+        </mat-card>
+        <div *ngIf="creator">
+            <app-creator-account-settings></app-creator-account-settings>
+        </div>
+    </div>
+</div>

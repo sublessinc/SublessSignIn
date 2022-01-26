@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Subless.Models;
 using Subless.Services;
+using SublessSignIn.Models;
 
 namespace SublessSignIn.Controllers
 {
@@ -19,11 +20,15 @@ namespace SublessSignIn.Controllers
     {
         private readonly ICreatorService _creatorService;
         private readonly IUserService userService;
+        private readonly IHitService hitService;
+        private readonly IPaymentLogsService paymentLogsService;
         private readonly ILogger _logger;
-        public CreatorController(ICreatorService creatorService, ILoggerFactory loggerFactory, IUserService userService)
+        public CreatorController(ICreatorService creatorService, ILoggerFactory loggerFactory, IUserService userService, IHitService hitService, IPaymentLogsService paymentLogsService)
         {
             _creatorService = creatorService ?? throw new ArgumentNullException(nameof(creatorService));
             this.userService = userService ?? throw new ArgumentNullException(nameof(userService));
+            this.hitService = hitService ?? throw new ArgumentNullException(nameof(hitService));
+            this.paymentLogsService = paymentLogsService ?? throw new ArgumentNullException(nameof(paymentLogsService));
             _logger = loggerFactory?.CreateLogger<PartnerController>() ?? throw new ArgumentNullException(nameof(loggerFactory));
         }
 
@@ -41,6 +46,7 @@ namespace SublessSignIn.Controllers
             }
             catch (UnauthorizedAccessException e)
             {
+                _logger.LogWarning(e, "Unauthorized user attempted to get creator data");
                 return Unauthorized("Not a creator account");
             }
         }
@@ -59,6 +65,7 @@ namespace SublessSignIn.Controllers
             }
             catch (UnauthorizedAccessException e)
             {
+                _logger.LogWarning(e, "Unauthorized user attempted to update creator data");
                 return Unauthorized("Not a creator account");
             }
         }
@@ -79,6 +86,7 @@ namespace SublessSignIn.Controllers
             }
             catch (UnauthorizedAccessException e)
             {
+                _logger.LogWarning(e, "Unauthorized user attempted to get creator stats");
                 return Unauthorized();
             }
         }
@@ -98,10 +106,37 @@ namespace SublessSignIn.Controllers
             }
             catch (UnauthorizedAccessException e)
             {
+                _logger.LogWarning(e, "Unauthorized user attempted to unlink creator account");
                 return Unauthorized();
             }
         }
 
+        [HttpGet("Analytics")]
+        public ActionResult<UserStats> GetUserAnalytics()
+        {
+            var cognitoId = userService.GetUserClaim(HttpContext.User);
+            if (cognitoId == null)
+            {
+                return Unauthorized();
+            }
+            try
+            {
+                var creator = _creatorService.GetCreatorByCognitoid(cognitoId);
+                var paymentDate = paymentLogsService.GetLastPaymentDate();
+                if (paymentDate == DateTime.MinValue)
+                {
+                    paymentDate = DateTime.Now.AddMonths(-1);
+                }
+                var hitsThisMonth = hitService.GetCreatorHitsByDate(paymentDate, DateTime.UtcNow, creator.Id);
+                var hitsLastMonth = hitService.GetCreatorHitsByDate(paymentDate.AddMonths(-1), paymentDate, creator.Id);
+                return Ok(CreatorStatsExtensions.GetHistoricalCreatorStats(hitsThisMonth, hitsLastMonth));
+            }
+            catch (UnauthorizedAccessException e)
+            {
+                _logger.LogWarning(e, "Unauthorized user attempted to get creator stats");
+                return Unauthorized();
+            }
+        }
         [HttpGet("statscsv")]
         public ActionResult<string> GetStatsCsv()
         {
@@ -133,6 +168,8 @@ namespace SublessSignIn.Controllers
             }
             catch (UnauthorizedAccessException e)
             {
+                _logger.LogWarning(e, "Unauthorized user attempted to get creator stats");
+
                 return Unauthorized();
             }
         }

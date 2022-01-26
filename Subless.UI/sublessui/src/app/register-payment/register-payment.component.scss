@@ -1,24 +1,6 @@
 @use 'sass:map';
 @use '@angular/material' as mat;
 @import "../theme/theme";
-.subless-background {
-    
-    display: flex;
-    flex-direction: column;
-    justify-content: space-evenly;
-    align-items: center;
-    height: 100%
-}
-
-.darkBackground {
-    @extend .subless-background;
-    background-color: map.get($md-backgroundpurple, 500);
-}
-
-.lightBackground {
-    @extend .subless-background;
-    background-color: map.get($md-backgroundwhite, 500);
-}
 .title {
     @extend h1-font;
     
