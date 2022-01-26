@@ -33,6 +33,7 @@ namespace Subless.Services.Services
             if (activationCode != null && Guid.TryParse(activationCode, out Guid code) && (user.Creators == null || !user.Creators.Any() || user.Creators.Any(x => !x.Active)))
             {
                 await creatorService.ActivateCreator(user.Id, code, email);
+                user = userService.GetUserWithRelationships(user.Id);
             }
 
             if ((user.Creators != null && user.Creators.Any(x => string.IsNullOrWhiteSpace(x.PayPalId))))

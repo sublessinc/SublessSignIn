@@ -18,7 +18,7 @@ export class AccountSettingsComponent implements OnInit {
   public partner: boolean = false;
 
   constructor(
-    private checkoutService: CheckoutService,
+
     private authService: AuthorizationService,
     private userService: UserService,
   ) { }
@@ -33,17 +33,7 @@ export class AccountSettingsComponent implements OnInit {
     });
   }
 
-  returnToStripe() {
-    this.checkoutService.getUserSession().subscribe({
-      next: (sessionId: SessionId) => {
-        this.checkoutService.loadCustomerPortal(sessionId.id).subscribe({
-          next: (redirect: IStripeRedirect) => {
-            window.location.href = redirect.url;
-          }
-        });
-      }
-    });
-  }
+
 
   deleteAccount() {
     this.userService.deleteUser().subscribe({
@@ -54,13 +44,6 @@ export class AccountSettingsComponent implements OnInit {
   }
 
 
-  cancelSubscription() {
-    this.checkoutService.cancelSubscription().subscribe({
-      next: (completed: boolean) => {
-        this.authService.redirect();
-      }
-    })
-  }
 
 
 
