@@ -9,7 +9,7 @@ namespace Subless.Services
     {
         Task<bool> CanAccessStripe();
         bool CancelSubscription(string cognitoId);
-        Task<CreateCheckoutSessionResponse> CreateCheckoutSession(string priceId, string cognitoId);
+        Task<CreateCheckoutSessionResponse> CreateCheckoutSession(long userBudget, string cognitoId);
         bool CustomerHasPaid(string cognitoId);
         Task<Stripe.BillingPortal.Session> GetCustomerPortalLink(string cognitoId);
         IEnumerable<Payer> GetInvoicesForRange(DateTime startDate, DateTime endDate);

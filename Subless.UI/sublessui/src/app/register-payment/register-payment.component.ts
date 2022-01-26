@@ -47,7 +47,7 @@ export class RegisterPaymentComponent implements OnInit {
     console.warn(this.priceChosen);
   }
   redirectToCheckout() {
-    this.checkoutService.createCheckoutSession(this.settings.basicPrice).subscribe({
+    this.checkoutService.createCheckoutSession(this.priceChosen).subscribe({
       next: (session: ISessionResponse) => {
         this.stripe.redirectToCheckout({ sessionId: session.sessionId });
       }

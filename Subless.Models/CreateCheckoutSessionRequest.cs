@@ -5,6 +5,6 @@ namespace Subless.Models
     public class CreateCheckoutSessionRequest
     {
         [JsonProperty("priceId")]
-        public string PriceId { get; set; }
+        public int PriceId { get; set; }
     }
 }

@@ -20,9 +20,9 @@ export class CheckoutService {
     return this.httpClient.get<ICheckoutSettings>('/api/Checkout/setup');
   }
 
-  createCheckoutSession(priceId: string): Observable<ISessionResponse> {
+  createCheckoutSession(price: number | null): Observable<ISessionResponse> {
     return this.httpClient.post<ISessionResponse>("/api/Checkout/create-checkout-session", {
-      priceId: priceId
+      priceId: price
     });
   }
 
