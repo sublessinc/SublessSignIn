@@ -64,3 +64,21 @@
     }
   }
 @include mix-select-theme($subless-app-theme);
+
+.logout2 {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    font-family: DM Sans;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 26px;
+    letter-spacing: 0em;
+    height: 58px;
+    padding: 16px, 117px, 16px, 117px;
+    color: map-get($md-backgroundwhite, 500); 
+}

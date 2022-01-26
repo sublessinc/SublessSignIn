@@ -15,32 +15,34 @@
           matListAvatar class="avatar" src="../../assets/img/profile.svg">
         <div>Subscriber Profile</div>
       </a>
-      <a mat-list-item id="billing" *ngIf="user" class="navButton" (click)="returnToStripe()">
+      <a mat-list-item id="billing" *ngIf="user" (click)="returnToStripe()">
         <img matListAvatar class="avatar" src="../../assets/img/billing.svg">
         <div>Billing Information</div>
       </a>
-      <a mat-list-item id="payout" *ngIf="creator" class="navButton" routerLink='/creator-payout-settings'>
+      <a mat-list-item id="payout" *ngIf="creator" routerLink='/creator-payout-settings'>
         <img matListAvatar class="avatar" src="../../assets/img/billing.svg">
         <div>Payout Settings</div>
       </a>
-      <a mat-list-item id="plan" class="navButton" [routerLinkActive]="['is-active']" routerLink="/change-plan">
+      <a mat-list-item id="plan" [routerLinkActive]="['is-active']" routerLink="/change-plan">
         <img matListAvatar class="avatar" src="../../assets/img/plan.svg">
         <div>Change Plan</div>
       </a>
     </mat-nav-list>
     <mat-nav-list id="bottom-nav">
-      <a mat-list-item id="account" class="navButton" [routerLinkActive]="['is-active']" routerLink="/account-settings">
+      <a mat-list-item id="account" [routerLinkActive]="['is-active']" routerLink="/account-settings">
         <img matListAvatar class="avatar" src="../../assets/img/account.svg">
         <div>Account Settings</div>
       </a>
-      <a mat-list-item id="logout" class="navButton" (click)="logout()">
+      <a mat-list-item id="logout" (click)="logout()">
         <img matListAvatar class="avatar" src="../../assets/img/logout.svg">
         <div>Log Out</div>
       </a>
     </mat-nav-list>
   </mat-sidenav>
   <mat-sidenav-content #content class="content">
-    <a id="logout2" *ngIf="!showDrawer" (click)="logout()">
+    <a *ngIf="!showDrawer()" id="logout2" class="logout2" (click)="logout()">
+      <img matListAvatar class="avatar" src="../../assets/img/logout.svg">
+      <div>Log Out</div>
     </a>
     <router-outlet></router-outlet>
     <app-id></app-id>
