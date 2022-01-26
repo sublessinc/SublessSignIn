@@ -24,7 +24,6 @@ namespace SublessSignIn.Controllers
         {
             _stripeConfig = stripeConfig ?? throw new ArgumentNullException(nameof(stripeConfig));
             _ = stripeConfig.Value.PublishableKey ?? throw new ArgumentNullException(nameof(stripeConfig.Value.PublishableKey));
-            _ = stripeConfig.Value.BasicPrice ?? throw new ArgumentNullException(nameof(stripeConfig.Value.BasicPrice));
             _ = stripeConfig.Value.Domain ?? throw new ArgumentNullException(nameof(stripeConfig.Value.Domain));
             _ = stripeConfig.Value.SecretKey ?? throw new ArgumentNullException(nameof(stripeConfig.Value.SecretKey));
             _ = stripeConfig.Value.WebhookSecret ?? throw new ArgumentNullException(nameof(stripeConfig.Value.WebhookSecret));
@@ -41,7 +40,6 @@ namespace SublessSignIn.Controllers
         {
             return new StripeCheckoutViewModel
             {
-                BasicPrice = _stripeConfig.Value.BasicPrice,
                 PublishableKey = _stripeConfig.Value.PublishableKey,
             };
 
@@ -61,10 +59,10 @@ namespace SublessSignIn.Controllers
                 return Unauthorized();
             }
 
+            var userBudget = req.PriceId;
             try
             {
-
-                return Ok(await _stripeService.CreateCheckoutSession(req.PriceId, cognitoId));
+                return Ok(await _stripeService.CreateCheckoutSession((long)userBudget, cognitoId));
             }
             catch (StripeException e)
             {
