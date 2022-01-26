@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace SublessSignIn.Models
 {
-    public class HistoricalUserStats
+    public class HistoricalStats<T>
     {
-        public UserStats thisMonth { get; set; }
-        public UserStats LastMonth { get; set; }
+        public T thisMonth { get; set; }
+        public T LastMonth { get; set; }
     }
 }

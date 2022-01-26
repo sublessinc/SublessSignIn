@@ -19,6 +19,8 @@ export class NavComponent implements OnInit {
   constructor(
     private authService: AuthorizationService,
     private checkoutService: CheckoutService,
+    private router: Router
+
   ) { }
 
   ngOnInit(): void {
@@ -29,6 +31,9 @@ export class NavComponent implements OnInit {
         this.partner = routes.includes(4);
       }
     });
+  }
+  showDrawer() {
+    return this.router.url != "/register-payment" && this.router.url != "/creator-payout-setup";
   }
   returnToStripe() {
     this.checkoutService.getUserSession().subscribe({

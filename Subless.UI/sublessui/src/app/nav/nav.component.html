@@ -1,5 +1,5 @@
 <mat-sidenav-container color='primary' id='root'>
-  <mat-sidenav class="drawer" #drawer mode="side" *ngIf="user || partner || creator" opened role="navigation">
+  <mat-sidenav class="drawer" #drawer mode="side" *ngIf="showDrawer()" opened role="navigation">
     <div class="logo"></div>
 
     <mat-nav-list>
@@ -15,9 +15,13 @@
           matListAvatar class="avatar" src="../../assets/img/profile.svg">
         <div>Subscriber Profile</div>
       </a>
-      <a mat-list-item id="billing" class="navButton" (click)="returnToStripe()">
+      <a mat-list-item id="billing" *ngIf="user" class="navButton" (click)="returnToStripe()">
         <img matListAvatar class="avatar" src="../../assets/img/billing.svg">
         <div>Billing Information</div>
+      </a>
+      <a mat-list-item id="payout" *ngIf="creator" class="navButton" routerLink='/creator-payout-settings'>
+        <img matListAvatar class="avatar" src="../../assets/img/billing.svg">
+        <div>Payout Settings</div>
       </a>
       <a mat-list-item id="plan" class="navButton" [routerLinkActive]="['is-active']" routerLink="/change-plan">
         <img matListAvatar class="avatar" src="../../assets/img/plan.svg">
@@ -36,7 +40,7 @@
     </mat-nav-list>
   </mat-sidenav>
   <mat-sidenav-content #content class="content">
-    <a id="logout2" *ngIf="!user && !partner && !creator" (click)="logout()">
+    <a id="logout2" *ngIf="!showDrawer" (click)="logout()">
     </a>
     <router-outlet></router-outlet>
     <app-id></app-id>
