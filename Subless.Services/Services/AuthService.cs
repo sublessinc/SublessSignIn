@@ -30,16 +30,18 @@ namespace Subless.Services.Services
             {
                 user = userService.CreateUserByCognitoId(cognitoId);
             }
-
             if (activationCode != null && Guid.TryParse(activationCode, out Guid code) && (user.Creators == null || !user.Creators.Any() || user.Creators.Any(x => !x.Active)))
             {
                 await creatorService.ActivateCreator(user.Id, code, email);
-                return new Redirection()
-                {
-                    RedirectionPath = RedirectionPath.ActivatedCreator
-                };
             }
 
+            if ((user.Creators != null && user.Creators.Any(x => string.IsNullOrWhiteSpace(x.PayPalId))))
+            {
+                return new Redirection()
+                {
+                    RedirectionPath = RedirectionPath.CreatorWithoutPayment
+                };
+            }
             if (user.Creators != null && user.Creators.Any())
             {
                 return new Redirection()

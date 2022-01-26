@@ -47,6 +47,9 @@ export class PayoutsettingsComponent implements OnInit, ComponentCanDeactivate {
     if (this.activationRedirectUrl) {
       this.creatorService.finalizeViaRedirect(this.activationRedirectUrl, this.email, this.model.username);
     }
+    else {
+      this.router.navigate(["creator-payout-settings"]);
+    }
   }
   onSubmit(): void {
     this.model$ = this.creatorService.updateCreator(this.model);

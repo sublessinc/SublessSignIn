@@ -33,7 +33,7 @@ export class NavComponent implements OnInit {
     });
   }
   showDrawer() {
-    return this.router.url != "/register-payment" && this.router.url != "/creator-payout-setup";
+    return !this.router.url.startsWith("/register-payment") && !this.router.url.startsWith("/creator-payout-setup");
   }
   returnToStripe() {
     this.checkoutService.getUserSession().subscribe({
