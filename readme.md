@@ -23,7 +23,6 @@ docker run -e POSTGRES_PASSWORD=[password] -p 5432:5432 postgres
 Define environment variables
 ```bash
 STRIPE_PUBLISHABLE_KEY=
-BASIC_PRICE_ID=
 STRIPE_SECRET_KEY=
 DOMAIN=
 STRIPE_WEBHOOK_SECRET=

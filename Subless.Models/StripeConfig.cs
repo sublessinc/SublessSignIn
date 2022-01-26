@@ -6,7 +6,6 @@
         public string SecretKey { get; set; }
         public string WebhookSecret { get; set; }
 
-        public string BasicPrice { get; set; }
         public string Domain { get; set; }
         public string SublessPayPalId { get; set; }
     }
