@@ -20,6 +20,10 @@ import { UnauthorizedInterceptor } from './services/auth.interceptor';
 import { StopNavGuard } from './stop-nav.guard';
 import { ThemeModule } from './theme/theme.module';
 import { PartnerTestComponent } from './partner-test/partner-test.component';
+import { AccountSettingsComponent } from './account-settings/account-settings.component';
+import { PayoutsettingsComponent } from './payoutsettings/payoutsettings.component';
+import { CreatorAccountSettingsComponent } from './creator-account-settings/creator-account-settings.component';
+import { UserAccountSettingsComponent } from './user-account-settings/user-account-settings.component';
 
 @NgModule({
   declarations: [
@@ -33,7 +37,11 @@ import { PartnerTestComponent } from './partner-test/partner-test.component';
     CreatorstatsComponent,
     IdComponent,
     PartnerprofileComponent,
-    PartnerTestComponent
+    PartnerTestComponent,
+    AccountSettingsComponent,
+    PayoutsettingsComponent,
+    CreatorAccountSettingsComponent,
+    UserAccountSettingsComponent
   ],
   imports: [
     ThemeModule,

@@ -1,0 +1,23 @@
+<div class="{{backgroundClass}}">
+    <div class="root">
+        <div class="spacer"></div>
+        <div class="logo"></div>
+        <mat-card class="card">
+            <form (ngSubmit)="onSubmit()" #paypalForm="ngForm">
+                <mat-card-title class="title">Payout Information</mat-card-title>
+                <mat-card-content class="text">Enter your paypal email or phone number</mat-card-content>
+                <mat-card-content class="text">This will be used to payout monthly funds from views to your content
+                </mat-card-content>
+                <mat-card-content>
+                    <mat-form-field class="paypalid">
+                        <input matInput #payPalId="ngModel" required type="text" name="payPalId"
+                            [(ngModel)]="model.payPalId" placeholder="PayPal Email or Phone Number">
+
+                    </mat-form-field>
+                </mat-card-content>
+                <mat-card-content><button class="submit" [disabled]="!paypalForm.form.valid" type="submit" mat-button>
+                        Submit</button></mat-card-content>
+            </form>
+        </mat-card>
+    </div>
+</div>

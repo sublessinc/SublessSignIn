@@ -1,18 +1,65 @@
-.actions {
+@use 'sass:map';
+@use '@angular/material' as mat;
+@import "../theme/theme";
+.stats {
     display: flex;
     flex-direction: column;
     justify-content: space-around;
+    align-content: center;
+    align-items: stretch;
+    height: 100%;
+    width: 100%;
 }
 .card {
-    margin: 5vh;
-    width: auto;
+    margin: 2vh;
+    max-width: 50vh;
+    min-width: 100px;
+    display: flex;
+    
+    padding: 0%;
+    border-radius:10px;
+}
+.iconWrapper {
     display: flex;
     flex-direction: column;
     justify-content: center;
+    align-items: center;
+    width: 100px;
+    border-radius:10px;
+
+    background-color: map.get($md-secondarypurple, 500);
 }
-.button {
-    max-width: 15vw;
-    min-width: 100px;
-    justify-self: center;
-    align-self: center;
+.icon {
+    width: 100px;
 }
+.statText {
+    display: flex;
+    flex-direction: column;
+    align-content:center;
+    align-items:flex-start;
+    padding: 20px;
+    
+}
+
+.numberText {
+    color: map.get($md-secondarypurple, 500);
+    font-family: DM Sans;
+    font-size: 48px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 62px;
+    letter-spacing: 0em;
+    text-align: left;
+
+}
+.statHeader {
+    font-size: 1.2em;
+}
+
+@mixin mix-card-theme($subless-app-theme) {
+    .mat-card-content {
+        text-align: left;
+    }
+  }
+@include mix-card-theme($subless-app-theme);
+

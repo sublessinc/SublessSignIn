@@ -46,5 +46,6 @@ namespace Subless.Data
         Task<bool> CanAccessDatabase();
         void LogDbStats();
         IEnumerable<Uri> GetPartnerUris();
+        IEnumerable<Hit> GetCreatorHitsByDate(DateTime startDate, DateTime endDate, Guid creatorId);
     }
 }

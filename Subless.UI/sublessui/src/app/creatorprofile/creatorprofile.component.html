@@ -1,37 +1,37 @@
-<mat-card>
-    <form (ngSubmit)="onSubmit()" #creatorForm="ngForm">
-        <div class="form-group">
-            <label class='lbl' for="name">Name</label>
-            <input type="text" class="form-control" id="name" [readonly]="true" required [(ngModel)]="model.username"
-                name="name" #name="ngModel">
-            <div [hidden]="name.valid || name.pristine" class="alert alert-danger">
-                Name is required
-            </div>
+<div class="stats">
+    <mat-card class="card">
+        <div class="iconWrapper">
+            <img class="icon" src="../../assets/img/views.svg">
         </div>
-        <div class="form-group">
-            <div>
-                <label>We use PayPal for payouts, if you don't have an account, register one </label>
-                <a class="link" href="https://www.payPal.com/"> here</a>
-            </div>
-            <label class='lbl' for="payPalId">PayPal Email or Phone Number</label>
-            <input type="text" class="form-control" id="payPalId" required [(ngModel)]="model.payPalId" name="payPalId"
-                #payPalId="ngModel">
-            <div [hidden]="payPalId.valid || payPalId.pristine" class="alert alert-danger">
-                PayPal Id is required
-            </div>
+        <div class="statText">
+            <mat-card-content class="statHeader">Total Views</mat-card-content>
+            <mat-card-content class="numberText">{{analytics.thisMonth.views}}</mat-card-content>
+            <mat-card-content><b>{{analytics.lastMonth.views}}</b> Views last month</mat-card-content>
         </div>
-        <div class='buttonWrapper'>
-            <button mat-button id='save' type="submit" class="btn btn-success creatorButton"
-                [disabled]="!creatorForm.form.valid">Save</button>
-            <button mat-button id='unlink' class='btn btn-success creatorButton' (click)="unlink()">Delete Creator
-                Profile</button>
+    </mat-card>
+    <mat-card class="card">
+        <div class="iconWrapper">
+            <img class="icon" src="../../assets/img/creators.svg">
         </div>
-    </form>
-</mat-card>
-<mat-card>
-    <app-creatorstats></app-creatorstats>
-</mat-card>
-<mat-card *ngIf="activationRedirectUrl">
-    <button mat-button (click)="finalize()">Finalize activation and return to partner</button>
-</mat-card>
-<app-id></app-id>
+        <div class="statText">
+            <mat-card-content class="statHeader">Unique Visitors</mat-card-content>
+            <mat-card-content class="numberText">{{analytics.thisMonth.visitors}}</mat-card-content>
+            <mat-card-content><b>{{analytics.lastMonth.visitors}}</b> Visitors last month
+            </mat-card-content>
+        </div>
+    </mat-card>
+    <mat-card class="card">
+        <div class="iconWrapper">
+            <img class="icon" src="../../assets/img/picture.svg">
+        </div>
+        <div class="statText">
+            <mat-card-content class="statHeader">Unqiue content viewed</mat-card-content>
+            <mat-card-content class="numberText">{{analytics.thisMonth.piecesOfContent}}</mat-card-content>
+            <mat-card-content><b>{{analytics.lastMonth.piecesOfContent}}</b> Unqiue content viewed last month
+            </mat-card-content>
+        </div>
+    </mat-card>
+    <div class="card downloadWrapper">
+        <app-creatorstats></app-creatorstats>
+    </div>
+</div>

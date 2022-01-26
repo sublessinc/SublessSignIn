@@ -1,43 +1,50 @@
 <mat-sidenav-container color='primary' id='root'>
-
-  <mat-sidenav class="drawer" #drawer mode="side" *ngIf="user || partner || creator" opened role="navigation">
+  <mat-sidenav class="drawer" #drawer mode="side" *ngIf="showDrawer()" opened role="navigation">
     <div class="logo"></div>
 
     <mat-nav-list>
       <a mat-list-item id="creator" *ngIf="creator" [routerLinkActive]="['is-active']" routerLink='/creator-profile'>
-        <img matListAvatar src="../../assets/img/profile.png">
+        <img matListAvatar class="avatar" src="../../assets/img/profile.svg">
         <div>Creator Profile</div>
       </a>
       <a mat-list-item id="partner" *ngIf="partner" [routerLinkActive]="['is-active']" routerLink='/partner-profile'>
-        <img matListAvatar src="../../assets/img/profile.png">
+        <img matListAvatar class="avatar" src="../../assets/img/profile.svg">
         <div>Partner Profile</div>
       </a>
       <a mat-list-item id="user" *ngIf="user" [routerLinkActive]="['is-active']" routerLink='/user-profile'> <img
-          matListAvatar src="../../assets/img/profile.png">
+          matListAvatar class="avatar" src="../../assets/img/profile.svg">
         <div>Subscriber Profile</div>
       </a>
-      <a mat-list-item id="billing" class="navButton" (click)="returnToStripe()">
-        <img matListAvatar src="../../assets/img/billingNormalized.png">
+      <a mat-list-item id="billing" *ngIf="user" (click)="returnToStripe()">
+        <img matListAvatar class="avatar" src="../../assets/img/billing.svg">
         <div>Billing Information</div>
       </a>
-      <a mat-list-item id="plan" class="navButton" [routerLinkActive]="['is-active']" routerLink="/change-plan">
-        <img matListAvatar src="../../assets/img/planNormalized.png">
+      <a mat-list-item id="payout" *ngIf="creator" routerLink='/creator-payout-settings'>
+        <img matListAvatar class="avatar" src="../../assets/img/billing.svg">
+        <div>Payout Settings</div>
+      </a>
+      <a mat-list-item id="plan" [routerLinkActive]="['is-active']" routerLink="/change-plan">
+        <img matListAvatar class="avatar" src="../../assets/img/plan.svg">
         <div>Change Plan</div>
       </a>
     </mat-nav-list>
     <mat-nav-list id="bottom-nav">
-      <a mat-list-item id="account" *ngIf="false" class="navButton" [routerLinkActive]="['is-active']"
-        routerLink="/user-profile">
-        <img matListAvatar src="../../assets/img/accountNormalized.png">
+      <a mat-list-item id="account" [routerLinkActive]="['is-active']" routerLink="/account-settings">
+        <img matListAvatar class="avatar" src="../../assets/img/account.svg">
         <div>Account Settings</div>
       </a>
-      <a mat-list-item id="logout" class="navButton" (click)="logout()">
-        <img matListAvatar src="../../assets/img/LogoutNormalized.png">
+      <a mat-list-item id="logout" (click)="logout()">
+        <img matListAvatar class="avatar" src="../../assets/img/logout.svg">
         <div>Log Out</div>
       </a>
     </mat-nav-list>
   </mat-sidenav>
   <mat-sidenav-content #content class="content">
+    <a *ngIf="!showDrawer()" id="logout2" class="logout2" (click)="logout()">
+      <img matListAvatar class="avatar" src="../../assets/img/logout.svg">
+      <div>Log Out</div>
+    </a>
     <router-outlet></router-outlet>
+    <app-id></app-id>
   </mat-sidenav-content>
 </mat-sidenav-container>
