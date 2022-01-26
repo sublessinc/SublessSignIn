@@ -21,6 +21,8 @@ const routes: Routes = [
   { path: 'creator-profile', component: CreatorprofileComponent, canActivate: [AuthGuard] },
   { path: 'creator-payout-settings', component: PayoutsettingsComponent, canActivate: [AuthGuard] },
   { path: 'creator-payout-setup', component: PayoutsettingsComponent, canActivate: [AuthGuard] },
+  { path: 'partner-payout-settings', component: PayoutsettingsComponent, canActivate: [AuthGuard] },
+  { path: 'partner-payout-setup', component: PayoutsettingsComponent, canActivate: [AuthGuard] },
   { path: 'partner-profile', component: PartnerprofileComponent, canActivate: [AuthGuard], canDeactivate: [StopNavGuard] },
   { path: 'id', component: IdComponent, canActivate: [AuthGuard] },
   { path: 'login', component: LoginComponent },
@@ -33,3 +35,4 @@ const routes: Routes = [
   exports: [RouterModule]
 })
 export class AppRoutingModule { }
+
