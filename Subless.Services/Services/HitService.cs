@@ -82,6 +82,12 @@ namespace Subless.Services
             return _userRepository.GetValidHitsByDate(startDate, endDate, user.CognitoId);
         }
 
+        public IEnumerable<Hit> GetCreatorHitsByDate(
+            DateTime startDate, DateTime endDate, Guid creatorId)
+        {
+            return _userRepository.GetCreatorHitsByDate(startDate, endDate, creatorId);
+        }
+
         public Guid? GetCreatorFromPartnerAndUri(Uri uri, Partner partner)
         {
             const string creatorPlaceholder = "{creator}";

@@ -2,6 +2,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ICreator } from '../models/ICreator';
+import { ICreatorAnalytics } from '../models/ICreatorAnalytics';
 
 @Injectable({
   providedIn: 'root'
@@ -21,7 +22,9 @@ export class CreatorService {
   unlinkCreator(creator: ICreator): Observable<boolean> {
     return this.httpClient.delete<boolean>('/api/Creator/' + creator.id + "/unlink");
   }
-
+  getAnalytics(): Observable<ICreatorAnalytics> {
+    return this.httpClient.get<ICreatorAnalytics>("/api/Creator/analytics");
+  }
   finalizeViaRedirect(uri: string, email: string, username: string) {
     sessionStorage.removeItem('postActivationRedirect');
     let baseURI = new URL(uri);

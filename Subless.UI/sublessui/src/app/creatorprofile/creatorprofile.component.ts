@@ -1,93 +1,39 @@
-import { AfterViewInit, Component, HostListener, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { Observable } from 'rxjs';
+import { Creator } from '../models/Creator';
 import { ICreator } from '../models/ICreator';
+import { ICreatorAnalytics } from '../models/ICreatorAnalytics';
+import { ICreatorStats } from '../models/ICreatorStats';
 import { AuthorizationService } from '../services/authorization.service';
 import { CreatorService } from '../services/creator.service';
-import { ComponentCanDeactivate } from '../stop-nav.guard';
 
 @Component({
   selector: 'app-creatorprofile',
   templateUrl: './creatorprofile.component.html',
-  styleUrls: ['./creatorprofile.component.css']
+  styleUrls: ['./creatorprofile.component.scss']
 })
-export class CreatorprofileComponent implements OnInit, ComponentCanDeactivate, AfterViewInit {
-  public activationRedirectUrl: string | null = null;
-  public email: string = '';
-  private model$: Observable<ICreator> | undefined;
-  private formDirty = false;
-  public model: ICreator = new Creator("", "", "");
-  @ViewChild('creatorForm', { read: NgForm }) payPalForm: any;
+export class CreatorprofileComponent implements OnInit {
 
-  constructor(private authService: AuthorizationService,
-    private creatorService: CreatorService) {
-    this.activationRedirectUrl = sessionStorage.getItem('postActivationRedirect');
-
-  }
+  public analytics: ICreatorAnalytics = {
+    thisMonth: { views: 0, visitors: 0, piecesOfContent: 0 },
+    lastMonth: { views: 0, visitors: 0, piecesOfContent: 0 }
+  };
+  constructor(
+    private creatorService: CreatorService,
+    private changeDetector: ChangeDetectorRef
+  ) { }
 
   ngOnInit(): void {
-    this.authService.getEmail().subscribe({
-      next: (email: string | null) => {
-        if (email) {
-          this.email = email.toString();
-        }
-      }
-    });
-    this.model$ = this.creatorService.getCreator();
-    this.model$.subscribe({
-      next: (creator: ICreator) => {
-        this.model = creator;
-      }
-    })
-
+    this.getAnalytics();
   }
 
-  ngAfterViewInit(): void {
-    this.payPalForm.valueChanges
-      .subscribe((value: string) => {
-        this.formDirty = this.payPalForm.dirty;
-      });
-  }
-
-  finalize() {
-    if (this.activationRedirectUrl) {
-      this.creatorService.finalizeViaRedirect(this.activationRedirectUrl, this.email, this.model.username);
-    }
-  }
-  onSubmit(): void {
-    this.model$ = this.creatorService.updateCreator(this.model);
-    this.model$.subscribe({
-      next: (creator: ICreator) => {
-        this.model = creator;
-      }
-    })
-    this.formDirty = false;
-  }
-
-  unlink(): void {
-    this.creatorService.unlinkCreator(this.model).subscribe({
-      next: (success: boolean) => {
-        this.authService.redirectToLogout();
+  getAnalytics() {
+    this.creatorService.getAnalytics().subscribe({
+      next: (analytics: ICreatorAnalytics) => {
+        this.analytics = analytics;
+        this.changeDetector.detectChanges();
       }
     });
   }
-
-
-
-  @HostListener('window:beforeunload')
-  canDeactivate(): Observable<boolean> | boolean {
-    // insert logic to check if there are pending changes here;
-    // returning true will navigate without confirmation
-    // returning false will show a confirm dialog before navigating away
-    return !((this.model.payPalId == null || this.model.payPalId == "") && !this.formDirty);
-  }
-
-}
-
-class Creator implements ICreator {
-  constructor(
-    public username: string,
-    public payPalId: string,
-    public id: string
-  ) { }
 }

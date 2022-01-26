@@ -1,15 +1,15 @@
 <div class="profile">
     <div class="actions">
-        <mat-card class="card">
-            <mat-card-title>Cancel subless subscription</mat-card-title>
-            <mat-card-content>If you'd like to stop being billed monthly, this will allow you to re-activate later
-            </mat-card-content>
-            <button class="button" mat-button (click)='cancelSubscription()'>Cancel Subscription</button>
-        </mat-card>
+        <div *ngIf="user">
+            <app-user-account-settings></app-user-account-settings>
+        </div>
         <mat-card class="card">
             <mat-card-title>Delete Subless account</mat-card-title>
             <mat-card-content>Once deleted, your account cannot be recovered</mat-card-content>
             <button class="button" mat-button (click)='deleteAccount()'>Delete Account</button>
         </mat-card>
+        <div *ngIf="creator">
+            <app-creator-account-settings></app-creator-account-settings>
+        </div>
     </div>
 </div>
