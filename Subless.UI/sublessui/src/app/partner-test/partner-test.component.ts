@@ -6,7 +6,7 @@ import { PartnerService } from '../services/partner.service';
 @Component({
   selector: 'app-partner-test',
   templateUrl: './partner-test.component.html',
-  styleUrls: ['./partner-test.component.css']
+  styleUrls: ['./partner-test.component.scss']
 })
 export class PartnerTestComponent implements OnInit {
 

@@ -1,18 +1,21 @@
-<mat-card class="completed-view-section">
-
-    <mat-card-content>Upon creator activation or deactivation, a webhook will be fired back to the partner, if it has
+<mat-card class="card">
+    <mat-card-title class="title">Webhook Tester</mat-card-title>
+    <mat-card-content class="text">Upon creator activation or deactivation, a webhook will be fired back to the
+        partner, if it has
         been
         configured.
         To test this, ensure your webhook URI is saved in your partner profile, and hit this button.
     </mat-card-content>
 
-    <button mat-button (click)="fireWebhook()">Test webhook</button>
-    <label *ngIf="webhookFired">Webhook Fired</label>
-    <label *ngIf="webhookFailed">Webhook Failed</label>
+    <button mat-button (click)="fireWebhook()" class="input">Test webhook</button>
+    <mat-label *ngIf="webhookFired">Webhook Fired</mat-label>
+    <mat-label *ngIf="webhookFailed">Webhook Failed</mat-label>
 </mat-card>
-<mat-card class="completed-view-section">
+<mat-card class="card">
+    <mat-card-title class="title">Redirect Tester</mat-card-title>
 
-    <mat-card-content> Upon completing the activation of a creator account, the creator will be redirected back to the
+    <mat-card-content class="text"> Upon completing the activation of a creator account, the creator will be
+        redirected back to the
         partner site.
         To test this behavior, you can input the redirect url and username that was provided when the creator was
         directed
@@ -20,22 +23,28 @@
         subless.</mat-card-content>
     <form (ngSubmit)="triggerRedirect()" #redirectTesterForm="ngForm">
         <div class="form-group">
-            <label class='lbl' for="model.uri">Uri</label>
-            <input type="text" class="form-control" id="uri" required [(ngModel)]="model.uri" name="uri" #uri="ngModel">
-            <div [hidden]="uri.valid || uri.pristine" class="alert alert-danger">
-                Uri is required
-            </div>
+
+            <mat-form-field class="input">
+                <mat-label>Uri</mat-label>
+                <input class="input" matInput type="text" class="form-control" id="uri" required [(ngModel)]="model.uri"
+                    name="uri" #uri="ngModel">
+                <div [hidden]="uri.valid || uri.pristine" class="alert alert-danger">
+                    Uri is required
+                </div>
+            </mat-form-field>
         </div>
         <div class="form-group">
-            <label class='lbl' for="Site">Username</label>
-            <input type="text" class="form-control" id="username" required [(ngModel)]="model.username" name="username"
-                #username="ngModel">
-            <div [hidden]="username.valid || username.pristine" class="alert alert-danger">
-                Username is required
-            </div>
+            <mat-form-field class="input">
+                <mat-label class='lbl' for="Site">Username</mat-label>
+
+                <input class="input" matInput type="text" class="form-control" id="username" required
+                    [(ngModel)]="model.username" name="username" #username="ngModel">
+                <div [hidden]="username.valid || username.pristine" class="alert alert-danger">
+                    Username is required
+                </div>
+            </mat-form-field>
         </div>
-        <button mat-button id='fire' type="submit" class="btn btn-success"
-            [disabled]="!redirectTesterForm.form.valid">Test
+        <button mat-button id='fire' type="submit" class="input" [disabled]="!redirectTesterForm.form.valid">Test
             Activation</button>
     </form>
 </mat-card>

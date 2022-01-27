@@ -7,7 +7,7 @@ import { PartnerService } from '../services/partner.service';
 @Component({
   selector: 'app-integrationtest',
   templateUrl: './integrationtest.component.html',
-  styleUrls: ['./integrationtest.component.css']
+  styleUrls: ['./integrationtest.component.scss']
 })
 export class IntegrationtestComponent implements OnInit {
   private model$: Observable<IPartner> | undefined;
