@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace SublessSignIn.Models
 {
@@ -6,8 +7,5 @@ namespace SublessSignIn.Models
     {
         [JsonProperty("publishableKey")]
         public string PublishableKey { get; set; }
-
-        [JsonProperty("basicPrice")]
-        public string BasicPrice { get; set; }
     }
 }

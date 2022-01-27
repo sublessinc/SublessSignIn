@@ -39,8 +39,15 @@ namespace Subless.Services
             return false;
         }
 
-        public async Task<CreateCheckoutSessionResponse> CreateCheckoutSession(string priceId, string cognitoId)
+        public async Task<CreateCheckoutSessionResponse> CreateCheckoutSession(long userBudget, string cognitoId)
         {
+            var priceId = this.GetPriceIDByDollarAmount(userBudget);
+            if (priceId == null)
+            {
+                _logger.LogCritical($"Price not found for budget of {userBudget}.");
+                throw new ArgumentException("Invalid Price given.");
+            }
+
             var user = _userService.GetUserByCognitoId(cognitoId);
             var customer = user.StripeCustomerId;
 
@@ -88,6 +95,25 @@ namespace Subless.Services
             var customer = service.Create(customerDetails);
             _userService.AddStripeCustomerId(cognitoId, customer.Id);
             return customer;
+        }
+
+        private StripeList<Price> GetPrices()
+        {
+            //TODO: productoptions should filter to only susbcription plans
+            var productOptions = new PriceListOptions();
+            var productService = new PriceService(_client);
+            var prices = productService.List(productOptions);
+            return prices;
+        }
+
+        private string GetPriceIDByDollarAmount(long dollarAmount)
+        {
+            var prices = this.GetPrices().ToList<Price>();
+            //Stripe keeps the price in cents.
+            long dollarAmountInCents = dollarAmount*100;
+            var price = prices.Where(x => x.UnitAmount == dollarAmountInCents).FirstOrDefault();
+
+            return price?.Id;
         }
 
         public bool CustomerHasPaid(string cognitoId)
