@@ -1,52 +1,34 @@
-<div class="container">
-    <div id="bodyWrapper">
-        <div class="subless-background"></div>
-        <div class="sr-root">
-            <div class="sr-main-post-checkout">
-                <div class="sr-payment-summary completed-view">
-                    <h1>Your partner profile</h1>
-
-                </div>
-                <mat-card>
-
-
-
-                    <form (ngSubmit)="onSubmit()" #partnerForm="ngForm">
-                        <div class="form-group">
-                            <label class='lbl' for="PayPalId">PayPal Id</label>
-                            <input type="text" class="form-control" id="PayPalId" required [(ngModel)]="model.payPalId"
-                                name="PayPalId" #PayPalId="ngModel">
-                            <div [hidden]="PayPalId.valid || PayPalId.pristine" class="alert alert-danger">
-                                PayPalId is required
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class='lbl' for="Site">Site</label>
-                            <input type="text" class="form-control" id="Site" required [readonly]="true"
-                                [(ngModel)]="model.site" name="Site" #Site="ngModel">
-                            <div [hidden]="Site.valid || Site.pristine" class="alert alert-danger">
-                                Site is required
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class='lbl' for="UserPattern">User Pattern</label>
-                            <input type="text" class="form-control" id="UserPattern" required [readonly]="true"
-                                [(ngModel)]="model.userPattern" name="UserPattern" #UserPattern="ngModel">
-                            <div [hidden]="UserPattern.valid || UserPattern.pristine" class="alert alert-danger">
-                                UserPattern is required
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class='lbl' for="webhook">Creator change webhook</label>
-                            <input type="text" class="form-control" id="webhook" required [readonly]="false "
-                                [(ngModel)]="model.creatorWebhook" name="webhook" #webhook="ngModel">
-                        </div>
-                        <button mat-button id='save' type="submit" class="btn btn-success"
-                            [disabled]="!partnerForm.form.valid">Save</button>
-                    </form>
-                </mat-card>
-                <app-partner-test></app-partner-test>
-            </div>
+<div class="stats">
+    <mat-card class="card">
+        <div class="iconWrapper">
+            <img class="icon" src="../../assets/img/views.svg">
         </div>
-    </div>
+        <div class="statText">
+            <mat-card-content class="statHeader">Total views this month</mat-card-content>
+            <mat-card-content class="numberText">{{analytics.thisMonth.views}}</mat-card-content>
+            <mat-card-content><b>{{analytics.lastMonth.views}}</b> Total views last month</mat-card-content>
+        </div>
+    </mat-card>
+    <mat-card class="card">
+        <div class="iconWrapper">
+            <img class="icon" src="../../assets/img/creators.svg">
+        </div>
+        <div class="statText">
+            <mat-card-content class="statHeader">Unique visitors this month</mat-card-content>
+            <mat-card-content class="numberText">{{analytics.thisMonth.visitors}}</mat-card-content>
+            <mat-card-content><b>{{analytics.lastMonth.visitors}}</b> Unique visitors last month
+            </mat-card-content>
+        </div>
+    </mat-card>
+    <mat-card class="card">
+        <div class="iconWrapper">
+            <img class="icon" src="../../assets/img/partners.svg">
+        </div>
+        <div class="statText">
+            <mat-card-content class="statHeader">Creators visited this month</mat-card-content>
+            <mat-card-content class="numberText">{{analytics.thisMonth.creators}}</mat-card-content>
+            <mat-card-content><b>{{analytics.lastMonth.creators}}</b> Creators visited last month
+            </mat-card-content>
+        </div>
+    </mat-card>
 </div>

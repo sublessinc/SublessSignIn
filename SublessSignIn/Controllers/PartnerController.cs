@@ -251,7 +251,7 @@ namespace SublessSignIn.Controllers
                 }
                 var hitsThisMonth = hitService.GetPartnerHitsByDate(paymentDate, DateTime.UtcNow, partner.Id);
                 var hitsLastMonth = hitService.GetPartnerHitsByDate(paymentDate.AddMonths(-1), paymentDate, partner.Id);
-                return Ok(PartnerStatExtensions.GetHistoricalPartnerStats(hitsThisMonth, hitsLastMonth));
+                return Ok(PartnerStatsExtensions.GetHistoricalPartnerStats(hitsThisMonth, hitsLastMonth));
             }
             catch (UnauthorizedAccessException e)
             {

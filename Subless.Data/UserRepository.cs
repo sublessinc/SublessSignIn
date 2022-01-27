@@ -119,6 +119,13 @@ namespace Subless.Data
             && hit.TimeStamp <= endDate).ToList();
         }
 
+        public IEnumerable<Hit> GetPartnerHitsByDate(DateTime startDate, DateTime endDate, Guid partnerId)
+        {
+            return Hits.Where(hit => hit.PartnerId != partnerId
+            && hit.TimeStamp > startDate
+            && hit.TimeStamp <= endDate).ToList();
+        }
+
         public Creator GetCreatorByActivationCode(Guid code)
         {
             return Creators.FirstOrDefault(creator => creator.ActivationCode == code);

@@ -1,0 +1,22 @@
+<mat-card>
+    <form (ngSubmit)="onSubmit()" #partnerForm="ngForm">
+        <div class="form-group">
+            <label class='lbl' for="Site">Site</label>
+            <input type="text" class="form-control" id="Site" required [readonly]="true" [(ngModel)]="model.site"
+                name="Site" #Site="ngModel">
+        </div>
+        <div class="form-group">
+            <label class='lbl' for="UserPattern">User Pattern</label>
+            <input type="text" class="form-control" id="UserPattern" required [readonly]="true"
+                [(ngModel)]="model.userPattern" name="UserPattern" #UserPattern="ngModel">
+        </div>
+        <div class="form-group">
+            <label class='lbl' for="webhook">Creator change webhook</label>
+            <input type="text" class="form-control" id="webhook" required [readonly]="false "
+                [(ngModel)]="model.creatorWebhook" name="webhook" #webhook="ngModel">
+        </div>
+        <button mat-button id='save' type="submit" class="btn btn-success"
+            [disabled]="!partnerForm.form.valid">Save</button>
+    </form>
+</mat-card>
+<app-partner-test></app-partner-test>

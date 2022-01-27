@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { IPartner } from '../models/IPartner';
+import { IPartnerAnalytics } from '../models/IPartnerAnalytics';
 import { IPartnerWrite } from '../models/IPartnerWrite';
 
 @Injectable({
@@ -21,5 +22,8 @@ export class PartnerService {
 
   testWebhook(): Observable<Boolean> {
     return this.httpClient.post<Boolean>('/api/Partner/WebhookTest', null);
+  }
+  getAnalytics(): Observable<IPartnerAnalytics> {
+    return this.httpClient.get<IPartnerAnalytics>("/api/Partner/analytics");
   }
 }
