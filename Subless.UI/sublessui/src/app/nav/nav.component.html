@@ -19,13 +19,9 @@
         <img matListAvatar class="avatar" src="../../assets/img/billing.svg">
         <div>Billing Information</div>
       </a>
-      <a mat-list-item id="payout" *ngIf="creator" routerLink='/creator-payout-settings'>
+      <a mat-list-item id="payout" *ngIf="creator || partner" routerLink='/payout-settings'>
         <img matListAvatar class="avatar" src="../../assets/img/billing.svg">
-        <div>Creator Payout Settings</div>
-      </a>
-      <a mat-list-item id="payout" *ngIf="creator" routerLink='/partner-payout-settings'>
-        <img matListAvatar class="avatar" src="../../assets/img/billing.svg">
-        <div>Partner Payout Settings</div>
+        <div>Payout Settings</div>
       </a>
       <a mat-list-item id="plan" [routerLinkActive]="['is-active']" routerLink="/change-plan">
         <img matListAvatar class="avatar" src="../../assets/img/plan.svg">

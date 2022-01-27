@@ -4,6 +4,9 @@ import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { Creator } from '../models/Creator';
 import { ICreator } from '../models/ICreator';
+import { IPartner } from '../models/IPartner';
+import { Partner } from '../models/Partner';
+import { AuthorizationService } from '../services/authorization.service';
 import { CreatorService } from '../services/creator.service';
 import { PartnerService } from '../services/partner.service';
 import { ComponentCanDeactivate } from '../stop-nav.guard';
@@ -16,44 +19,77 @@ import { ComponentCanDeactivate } from '../stop-nav.guard';
 export class PayoutsettingsComponent implements OnInit, ComponentCanDeactivate {
   public activationRedirectUrl: string | null = null;
   public email: string = '';
-  private model$: Observable<ICreator> | undefined;
-  public model: ICreator = new Creator("", "", "");
+  private creatorModel$: Observable<ICreator> | undefined;
+  public creatorModel: ICreator = new Creator("", "", "");
+  private partnerModel$: Observable<IPartner> | undefined;
+  public partnerModel: IPartner = new Partner("", "", "", "", "", "");
   public backgroundClass: string = "lightBackground";
   public isModal: boolean = false;
+  public creator: boolean = false;
+  public partner: boolean = false;
 
   constructor(private router: Router,
     private creatorService: CreatorService,
-    private partnerService: PartnerService
+    private partnerService: PartnerService,
+    private authService: AuthorizationService
   ) {
     this.activationRedirectUrl = sessionStorage.getItem('postActivationRedirect');
   }
 
   ngOnInit(): void {
-    if (this.router.url.startsWith("/creator-payout-setup")) {
+    if (this.router.url.startsWith("/payout-setup")) {
       this.isModal = true;
       this.backgroundClass = "darkBackground";
     }
-    this.model$ = this.creatorService.getCreator();
-    this.model$.subscribe({
-      next: (creator: ICreator) => {
-        this.model = creator;
+
+    this.authService.getRoutes().subscribe({
+      next: (routes: number[]) => {
+        this.creator = routes.includes(3);
+        this.partner = routes.includes(4);
+        if (this.creator) {
+          this.creatorModel$ = this.creatorService.getCreator();
+          this.creatorModel$.subscribe({
+            next: (creator: ICreator) => {
+              this.creatorModel = creator;
+            }
+          })
+        }
+        if (this.partner) {
+          this.partnerModel$ = this.partnerService.getPartner();
+          this.partnerModel$.subscribe({
+            next: (partner: IPartner) => {
+              this.partnerModel = partner;
+            }
+          })
+        }
       }
-    })
+    });
   }
 
   finalize() {
     if (this.activationRedirectUrl) {
-      this.creatorService.finalizeViaRedirect(this.activationRedirectUrl, this.email, this.model.username);
+      this.creatorService.finalizeViaRedirect(this.activationRedirectUrl, this.email, this.creatorModel.username);
     }
     else {
-      this.router.navigate(["creator-payout-settings"]);
+      this.router.navigate(["payout-settings"]);
     }
   }
-  onSubmit(): void {
-    this.model$ = this.creatorService.updateCreator(this.model);
-    this.model$.subscribe({
+  onCreatorSubmit(): void {
+    this.creatorModel$ = this.creatorService.updateCreator(this.creatorModel);
+    this.creatorModel$.subscribe({
       next: (creator: ICreator) => {
-        this.model = creator;
+        this.creatorModel = creator;
+        if (this.isModal) {
+          this.finalize();
+        }
+      }
+    })
+  }
+  onPartnerSubmit(): void {
+    this.partnerModel$ = this.partnerService.updatePartner(this.partnerModel);
+    this.partnerModel$.subscribe({
+      next: (partner: IPartner) => {
+        this.partnerModel = partner;
         if (this.isModal) {
           this.finalize();
         }
@@ -67,7 +103,7 @@ export class PayoutsettingsComponent implements OnInit, ComponentCanDeactivate {
     // insert logic to check if there are pending changes here;
     // returning true will navigate without confirmation
     // returning false will show a confirm dialog before navigating away
-    return !((this.model.payPalId == null || this.model.payPalId == ""));
+    return !((this.creatorModel.payPalId == null || this.creatorModel.payPalId == ""));
   }
 
 }

@@ -93,7 +93,7 @@ export class AuthorizationService {
             this.router.navigate(['partner-profile']);
             break;
           case 5:
-            this.router.navigate(['creator-payout-setup']);
+            this.router.navigate(['payout-setup']);
             break;
           default: {
             break;

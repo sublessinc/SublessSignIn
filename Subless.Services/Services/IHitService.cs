@@ -6,6 +6,7 @@ namespace Subless.Services
 {
     public interface IHitService
     {
+        IEnumerable<Hit> GetPartnerHitsByDate(DateTime startDate, DateTime endDate, Guid partnerId);
         IEnumerable<Hit> GetCreatorHitsByDate(DateTime startDate, DateTime endDate, Guid creatorId);
         IEnumerable<Hit> GetHitsByDate(DateTime startDate, DateTime endDate, Guid userId);
         void SaveHit(string userId, Uri uri);

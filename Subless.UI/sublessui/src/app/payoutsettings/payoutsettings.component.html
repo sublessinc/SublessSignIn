@@ -2,16 +2,34 @@
     <div class="root">
         <div class="spacer"></div>
         <div class="logo"></div>
-        <mat-card class="card">
-            <form (ngSubmit)="onSubmit()" #paypalForm="ngForm">
-                <mat-card-title class="title">Payout Information</mat-card-title>
-                <mat-card-content class="text">Enter your paypal email or phone number</mat-card-content>
+        <mat-card *ngIf="creator" class="card">
+            <form (ngSubmit)="onCreatorSubmit()" #paypalForm="ngForm">
+                <mat-card-title class="title">Creator Payout Information</mat-card-title>
+                <mat-card-content class="text">Enter your paypal email or phone number for the creator
+                    {{creatorModel.username}}</mat-card-content>
                 <mat-card-content class="text">This will be used to payout monthly funds from views to your content
                 </mat-card-content>
                 <mat-card-content>
                     <mat-form-field class="paypalid">
                         <input matInput #payPalId="ngModel" required type="text" name="payPalId"
                             [(ngModel)]="creatorModel.payPalId" placeholder="PayPal Email or Phone Number">
+
+                    </mat-form-field>
+                </mat-card-content>
+                <mat-card-content><button class="submit" [disabled]="!paypalForm.form.valid" type="submit" mat-button>
+                        Submit</button></mat-card-content>
+            </form>
+        </mat-card>
+        <mat-card *ngIf="partner" class="card">
+            <form (ngSubmit)="onPartnerSubmit()" #paypalForm="ngForm">
+                <mat-card-title class="title">Partner Payout Information</mat-card-title>
+                <mat-card-content class="text">Enter your paypal email or phone number</mat-card-content>
+                <mat-card-content class="text">This will be used to payout monthly funds from views to your site
+                </mat-card-content>
+                <mat-card-content>
+                    <mat-form-field class="paypalid">
+                        <input matInput #payPalId="ngModel" required type="text" name="payPalId"
+                            [(ngModel)]="partnerModel.payPalId" placeholder="PayPal Email or Phone Number">
 
                     </mat-form-field>
                 </mat-card-content>

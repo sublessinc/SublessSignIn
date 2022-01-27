@@ -112,7 +112,7 @@ namespace SublessSignIn.Controllers
         }
 
         [HttpGet("Analytics")]
-        public ActionResult<UserStats> GetUserAnalytics()
+        public ActionResult<HistoricalStats<UserStats>> GetUserAnalytics()
         {
             var cognitoId = userService.GetUserClaim(HttpContext.User);
             if (cognitoId == null)

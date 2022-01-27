@@ -88,6 +88,12 @@ namespace Subless.Services
             return _userRepository.GetCreatorHitsByDate(startDate, endDate, creatorId);
         }
 
+        public IEnumerable<Hit> GetPartnerHitsByDate(
+    DateTime startDate, DateTime endDate, Guid partnerId)
+        {
+            return _userRepository.GetPartnerHitsByDate(startDate, endDate, partnerId);
+        }
+
         public Guid? GetCreatorFromPartnerAndUri(Uri uri, Partner partner)
         {
             const string creatorPlaceholder = "{creator}";
