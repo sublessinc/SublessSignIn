@@ -85,11 +85,11 @@ namespace SublessSignIn.Controllers
             var cognitoId = userService.GetUserClaim(HttpContext.User);
             var user = userService.GetUserByCognitoId(cognitoId);
             var paymentDate = paymentLogsService.GetLastPaymentDate();
-            if (paymentDate == DateTime.MinValue)
+            if (paymentDate == DateTimeOffset.MinValue)
             {
-                paymentDate = DateTime.UtcNow.AddMonths(-1);
+                paymentDate = DateTimeOffset.UtcNow.AddMonths(-1);
             }
-            var hitsThisMonth = hitService.GetHitsByDate(paymentDate, DateTime.UtcNow, user.Id);
+            var hitsThisMonth = hitService.GetHitsByDate(paymentDate, DateTimeOffset.UtcNow, user.Id);
             var hitsLastMonth = hitService.GetHitsByDate(paymentDate.AddMonths(-1), paymentDate, user.Id);
             return Ok(UserStatsExtensions.GetHistoricalUserStats(hitsThisMonth, hitsLastMonth));
         }

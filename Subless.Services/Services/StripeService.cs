@@ -161,15 +161,16 @@ namespace Subless.Services
             return await service.GetAsync(sessionId);
         }
 
-        public IEnumerable<Payer> GetInvoicesForRange(DateTime startDate, DateTime endDate)
+        public IEnumerable<Payer> GetInvoicesForRange(DateTimeOffset startDate, DateTimeOffset endDate)
         {
+            //Stripe seems to convert datetimes to json and back, and use the local time when doing so. We need to pass a local time to prevent a double UTC conversion.
             var filters = new InvoiceListOptions()
             {
                 Status = "paid",
                 Created = new DateRangeOptions
                 {
-                    GreaterThan = startDate,
-                    LessThanOrEqual = endDate
+                    GreaterThan = startDate.ToLocalTime().DateTime,
+                    LessThanOrEqual = endDate.ToLocalTime().DateTime
                 }
             };
             var invoiceService = new InvoiceService(_client);

@@ -6,7 +6,7 @@ namespace Subless.Services
 {
     public interface IPaymentLogsService
     {
-        DateTime GetLastPaymentDate();
+        DateTimeOffset GetLastPaymentDate();
         void SaveAuditLogs(IEnumerable<PaymentAuditLog> paymentAuditLogs);
         void SaveLogs(IEnumerable<Payment> paymentLogs);
     }

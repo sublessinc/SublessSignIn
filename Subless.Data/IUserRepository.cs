@@ -31,9 +31,9 @@ namespace Subless.Data
         Partner GetPartner(Guid id);
         void SavePaymentLogs(IEnumerable<Payment> logs);
         void SavePaymentAuditLogs(IEnumerable<PaymentAuditLog> logs);
-        DateTime GetLastPaymentDate();
+        DateTimeOffset GetLastPaymentDate();
         void SaveHit(Hit hit);
-        IEnumerable<Hit> GetValidHitsByDate(DateTime startDate, DateTime endDate, string cognitoId);
+        IEnumerable<Hit> GetValidHitsByDate(DateTimeOffset startDate, DateTimeOffset endDate, string cognitoId);
         IEnumerable<Creator> GetCreatorsByPartnerId(Guid partnerId);
         Creator GetCreatorByUsernameAndPartnerId(string username, Guid partnerId);
         Partner GetPartnerByUri(Uri uri);
@@ -46,7 +46,7 @@ namespace Subless.Data
         Task<bool> CanAccessDatabase();
         void LogDbStats();
         IEnumerable<Uri> GetPartnerUris();
-        IEnumerable<Hit> GetCreatorHitsByDate(DateTime startDate, DateTime endDate, Guid creatorId);
-        IEnumerable<Hit> GetPartnerHitsByDate(DateTime startDate, DateTime endDate, Guid partnerId);
+        IEnumerable<Hit> GetCreatorHitsByDate(DateTimeOffset startDate, DateTimeOffset endDate, Guid creatorId);
+        IEnumerable<Hit> GetPartnerHitsByDate(DateTimeOffset startDate, DateTimeOffset endDate, Guid partnerId);
     }
 }

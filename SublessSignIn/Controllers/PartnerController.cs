@@ -245,11 +245,11 @@ namespace SublessSignIn.Controllers
                 var user = _userService.GetUserByCognitoId(cognitoId);
                 var partner = _partnerService.GetPartnerByAdminId(user.Id);
                 var paymentDate = paymentLogsService.GetLastPaymentDate();
-                if (paymentDate == DateTime.MinValue)
+                if (paymentDate == DateTimeOffset.MinValue)
                 {
-                    paymentDate = DateTime.UtcNow.AddMonths(-1);
+                    paymentDate = DateTimeOffset.UtcNow.AddMonths(-1);
                 }
-                var hitsThisMonth = hitService.GetPartnerHitsByDate(paymentDate, DateTime.UtcNow, partner.Id);
+                var hitsThisMonth = hitService.GetPartnerHitsByDate(paymentDate, DateTimeOffset.UtcNow, partner.Id);
                 var hitsLastMonth = hitService.GetPartnerHitsByDate(paymentDate.AddMonths(-1), paymentDate, partner.Id);
                 return Ok(PartnerStatsExtensions.GetHistoricalPartnerStats(hitsThisMonth, hitsLastMonth));
             }

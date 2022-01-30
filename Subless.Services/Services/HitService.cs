@@ -46,7 +46,7 @@ namespace Subless.Services
             {
                 CognitoId = userId,
                 Uri = uri,
-                TimeStamp = DateTime.UtcNow,
+                TimeStamp = DateTimeOffset.UtcNow,
                 PartnerId = partner.Id,
                 CreatorId = creatorId ?? Guid.Empty
             });
@@ -69,27 +69,27 @@ namespace Subless.Services
             {
                 CognitoId = userId,
                 Uri = uri,
-                TimeStamp = DateTime.UtcNow,
+                TimeStamp = DateTimeOffset.UtcNow,
                 PartnerId = partner.Id,
                 CreatorId = creatorId ?? Guid.Empty
             };
         }
 
 
-        public IEnumerable<Hit> GetHitsByDate(DateTime startDate, DateTime endDate, Guid userId)
+        public IEnumerable<Hit> GetHitsByDate(DateTimeOffset startDate, DateTimeOffset endDate, Guid userId)
         {
             var user = _userService.GetUser(userId);
             return _userRepository.GetValidHitsByDate(startDate, endDate, user.CognitoId);
         }
 
         public IEnumerable<Hit> GetCreatorHitsByDate(
-            DateTime startDate, DateTime endDate, Guid creatorId)
+            DateTimeOffset startDate, DateTimeOffset endDate, Guid creatorId)
         {
             return _userRepository.GetCreatorHitsByDate(startDate, endDate, creatorId);
         }
 
         public IEnumerable<Hit> GetPartnerHitsByDate(
-    DateTime startDate, DateTime endDate, Guid partnerId)
+    DateTimeOffset startDate, DateTimeOffset endDate, Guid partnerId)
         {
             return _userRepository.GetPartnerHitsByDate(startDate, endDate, partnerId);
         }

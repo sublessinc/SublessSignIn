@@ -47,7 +47,7 @@ namespace PayoutCalculator
                         {
                             shouldExecuteOnStart = false;
                             logger.LogInformation("Running calculation");
-                            calculator.CalculatePayments(lastExecution, DateTime.UtcNow);
+                            calculator.CalculatePayments(lastExecution, DateTimeOffset.UtcNow);
                             logger.LogInformation("Calculation complete");
                         }
                         Thread.Sleep(1000 * 60);
@@ -79,11 +79,11 @@ namespace PayoutCalculator
             });
         }
 
-        private static bool ShouldExecuteScheduledRun(int execPerYear, DateTime lastRunDate)
+        private static bool ShouldExecuteScheduledRun(int execPerYear, DateTimeOffset lastRunDate)
         {
             var secondsPerYear = TimeSpan.FromDays(365).TotalSeconds;
             var secondsBetweenRuns = secondsPerYear / execPerYear;
-            return lastRunDate.AddSeconds(secondsBetweenRuns) < DateTime.UtcNow;
+            return lastRunDate.AddSeconds(secondsBetweenRuns) < DateTimeOffset.UtcNow;
         }
     }
 }

@@ -12,7 +12,7 @@ namespace Subless.Services
         Task<CreateCheckoutSessionResponse> CreateCheckoutSession(long userBudget, string cognitoId);
         bool CustomerHasPaid(string cognitoId);
         Task<Stripe.BillingPortal.Session> GetCustomerPortalLink(string cognitoId);
-        IEnumerable<Payer> GetInvoicesForRange(DateTime startDate, DateTime endDate);
+        IEnumerable<Payer> GetInvoicesForRange(DateTimeOffset startDate, DateTimeOffset endDate);
         Task<Stripe.Checkout.Session> GetSession(string sessionId);
     }
 }

@@ -26,10 +26,10 @@ namespace Subless.Services
             _userRepository.SavePaymentAuditLogs(paymentAuditLogs);
         }
 
-        public DateTime GetLastPaymentDate()
+        public DateTimeOffset GetLastPaymentDate()
         {
             var date = _userRepository.GetLastPaymentDate();
-            _logger.LogInformation($"Last payment date {date}");
+            _logger.LogInformation($"Last payment date {date}, time now {DateTimeOffset.UtcNow}");
             return date;
         }
     }

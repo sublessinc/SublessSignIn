@@ -45,7 +45,7 @@ namespace Subless.PayoutCalculator
             SublessPayPalId = stripeOptions.Value.SublessPayPalId ?? throw new ArgumentNullException(nameof(stripeOptions.Value.SublessPayPalId));
         }
 
-        public void CalculatePayments(DateTime startDate, DateTime endDate)
+        public void CalculatePayments(DateTimeOffset startDate, DateTimeOffset endDate)
         {
             Dictionary<string, double> allPayouts = new Dictionary<string, double>();
             // get what we were paid (after fees), and by who
@@ -111,7 +111,7 @@ namespace Subless.PayoutCalculator
             return validHits;
         }
 
-        private IEnumerable<Payer> GetPayments(DateTime startDate, DateTime endDate)
+        private IEnumerable<Payer> GetPayments(DateTimeOffset startDate, DateTimeOffset endDate)
         {
             return _stripeService.GetInvoicesForRange(startDate, endDate);
         }
@@ -133,7 +133,7 @@ namespace Subless.PayoutCalculator
             };
         }
 
-        private IEnumerable<Hit> RetrieveUsersMonthlyHits(Guid userId, DateTime startDate, DateTime endDate)
+        private IEnumerable<Hit> RetrieveUsersMonthlyHits(Guid userId, DateTimeOffset startDate, DateTimeOffset endDate)
         {
             return _hitService.GetHitsByDate(startDate, endDate, userId);
         }
@@ -214,7 +214,7 @@ namespace Subless.PayoutCalculator
             return payees;
         }
 
-        private void SavePaymentDetails(IEnumerable<Payee> payees, Payer payer, DateTime endDate)
+        private void SavePaymentDetails(IEnumerable<Payee> payees, Payer payer, DateTimeOffset endDate)
         {
             _logger.LogInformation($"Saving payment details for one patron and {0} payees", payees.Count());
             var logs = new List<Payment>();
@@ -251,9 +251,9 @@ namespace Subless.PayoutCalculator
                 payees.Count(), newPayees);
         }
 
-        private void SaveMasterList(Dictionary<string, double> masterPayoutList, DateTime endDate)
+        private void SaveMasterList(Dictionary<string, double> masterPayoutList, DateTimeOffset endDate)
         {
-            var payments = masterPayoutList.Select(x => new PaymentAuditLog() { Payment = x.Value, PayPalId = x.Key, DatePaid = DateTime.UtcNow });
+            var payments = masterPayoutList.Select(x => new PaymentAuditLog() { Payment = x.Value, PayPalId = x.Key, DatePaid = DateTimeOffset.UtcNow });
             _logger.LogInformation("Saving our audit logs.");
             _paymentLogsService.SaveAuditLogs(payments);
         }

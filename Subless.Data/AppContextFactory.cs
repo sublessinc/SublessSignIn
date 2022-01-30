@@ -1,6 +1,8 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using static Subless.Data.DataDi;
 
 namespace Subless.Data
 {
@@ -13,10 +15,12 @@ namespace Subless.Data
 
         public UserRepository CreateDbContext(string[] args)
         {
+            var dbCreds = JsonConvert.DeserializeObject<DbCreds>(Environment.GetEnvironmentVariable("dbCreds"));
+
+                
             var options = new DatabaseSettings()
             {
-                ConnectionString = Environment.GetEnvironmentVariable("MigrationsGenerationConnectionString")
-
+                ConnectionString = dbCreds.GetDatabaseConnection()
             };
             return new UserRepository(Microsoft.Extensions.Options.Options.Create(options), new LoggerFactory());
         }
