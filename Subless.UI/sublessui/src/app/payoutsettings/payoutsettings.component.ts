@@ -37,6 +37,11 @@ export class PayoutsettingsComponent implements OnInit, ComponentCanDeactivate {
   }
 
   ngOnInit(): void {
+    this.authService.getEmail().subscribe({
+      next: (email: string | null) => {
+        this.email = email ?? '';
+      }
+    });
     if (this.router.url.startsWith("/payout-setup")) {
       this.isModal = true;
       this.backgroundClass = "darkBackground";
