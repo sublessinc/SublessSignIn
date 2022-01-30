@@ -83,7 +83,7 @@ namespace PayoutCalculator
         {
             var secondsPerYear = TimeSpan.FromDays(365).TotalSeconds;
             var secondsBetweenRuns = secondsPerYear / execPerYear;
-            return lastRunDate.AddSeconds(secondsBetweenRuns) < DateTime.Now;
+            return lastRunDate.AddSeconds(secondsBetweenRuns) < DateTime.UtcNow;
         }
     }
 }

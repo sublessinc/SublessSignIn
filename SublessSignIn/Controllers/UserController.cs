@@ -87,7 +87,7 @@ namespace SublessSignIn.Controllers
             var paymentDate = paymentLogsService.GetLastPaymentDate();
             if (paymentDate == DateTime.MinValue)
             {
-                paymentDate = DateTime.Now.AddMonths(-1);
+                paymentDate = DateTime.UtcNow.AddMonths(-1);
             }
             var hitsThisMonth = hitService.GetHitsByDate(paymentDate, DateTime.UtcNow, user.Id);
             var hitsLastMonth = hitService.GetHitsByDate(paymentDate.AddMonths(-1), paymentDate, user.Id);
