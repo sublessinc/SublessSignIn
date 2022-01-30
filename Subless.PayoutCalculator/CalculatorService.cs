@@ -88,6 +88,8 @@ namespace Subless.PayoutCalculator
             }
             // make sure we're not sending inappropriate fractions
             RoundPaymentsForFinalPayment(allPayouts);
+            // stripe sends payments in cents, paypal expects payouts in dollars
+            ConvertCentsToDollars(allPayouts);
             // record to database
             SaveMasterList(allPayouts, endDate);
             // record to s3 bucket
@@ -260,6 +262,14 @@ namespace Subless.PayoutCalculator
         {
             _logger.LogInformation("Writing out payout information to cloud stoarge.");
             _s3Service.WritePaymentsToCloudFileStore(masterPayoutList);
+        }
+
+        private void ConvertCentsToDollars(Dictionary<string, double> masterPayoutList)
+        {
+            foreach (var key in masterPayoutList.Keys)
+            {
+                masterPayoutList[key] = masterPayoutList[key] / 100;
+            }
         }
     }
 }
