@@ -46,7 +46,7 @@ namespace Subless.Tests
             {
                 new Payer()
                 {
-                    Payment = 1,
+                    Payment = 100,
                     UserId = Guid.NewGuid()
                 }
             });
@@ -84,7 +84,7 @@ namespace Subless.Tests
             {
                 new Payer()
                 {
-                    Payment = 1,
+                    Payment = 100,
                     UserId = Guid.NewGuid()
                 }
             });
@@ -130,7 +130,7 @@ namespace Subless.Tests
             {
                 new Payer()
                 {
-                    Payment = 1,
+                    Payment = 100,
                     UserId = Guid.NewGuid()
                 }
             });
@@ -168,7 +168,7 @@ namespace Subless.Tests
             {
                 new Payer()
                 {
-                    Payment = .67,
+                    Payment = 67,
                     UserId = Guid.NewGuid()
                 }
             });
@@ -207,7 +207,7 @@ namespace Subless.Tests
             {
                 new Payer()
                 {
-                    Payment = .67,
+                    Payment = 67,
                     UserId = Guid.NewGuid()
                 }
             });
@@ -245,7 +245,7 @@ namespace Subless.Tests
             {
                 new Payer()
                 {
-                    Payment = 9.40,
+                    Payment = 940,
                     UserId = Guid.NewGuid()
                 }
             });

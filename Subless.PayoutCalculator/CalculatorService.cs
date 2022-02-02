@@ -86,10 +86,10 @@ namespace Subless.PayoutCalculator
                 SavePaymentDetails(payees, payer, endDate);
                 AddPayeesToMasterList(allPayouts, payees);
             }
-            // make sure we're not sending inappropriate fractions
-            RoundPaymentsForFinalPayment(allPayouts);
             // stripe sends payments in cents, paypal expects payouts in dollars
             ConvertCentsToDollars(allPayouts);
+            // make sure we're not sending inappropriate fractions
+            RoundPaymentsForFinalPayment(allPayouts);
             // record to database
             SaveMasterList(allPayouts, endDate);
             // record to s3 bucket
