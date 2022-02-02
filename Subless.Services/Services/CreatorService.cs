@@ -32,7 +32,7 @@ namespace Subless.Services
         public async Task ActivateCreator(Guid userId, Guid activationCode, string email)
         {
             var creator = _userRepository.GetCreatorByActivationCode(activationCode);
-            if (creator == null || creator.ActivationExpiration < DateTime.UtcNow)
+            if (creator == null || creator.ActivationExpiration < DateTimeOffset.UtcNow)
             {
                 throw new UnauthorizedAccessException("Activation code is invalid or expired");
             }
@@ -73,7 +73,7 @@ namespace Subless.Services
                 return creator;
             }
             creator = _userRepository.GetCreatorByUsernameAndPartnerId(username, partnerId);
-            cache.Set(key, creator, DateTime.UtcNow.AddHours(1));
+            cache.Set(key, creator, DateTimeOffset.UtcNow.AddHours(1));
             return creator;
         }
 
@@ -101,11 +101,11 @@ namespace Subless.Services
                 throw new ArgumentNullException(nameof(creator));
             }
             var payments = _userRepository.GetPaymentsByPayeePayPalId(creator.PayPalId);
-            var paymentStats = new Dictionary<DateTime, MontlyPaymentStats>();
+            var paymentStats = new Dictionary<DateTimeOffset, MontlyPaymentStats>();
             foreach (var payment in payments)
             {
-                var paymentMonth = new DateTime(payment.DateSent.Year, payment.DateSent.Month, 1);
-                if (!paymentStats.Keys.Any(x => new DateTime(x.Year, x.Month, 1) == paymentMonth))
+                var paymentMonth =  new DateTimeOffset(new DateTime(payment.DateSent.Year, payment.DateSent.Month, 1));
+                if (!paymentStats.Keys.Any(x => new DateTimeOffset(new DateTime(x.Year, x.Month, 1)) == paymentMonth))
                 {
                     paymentStats.Add(paymentMonth, new MontlyPaymentStats()
                     {

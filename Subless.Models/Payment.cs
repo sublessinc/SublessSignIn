@@ -8,7 +8,7 @@ namespace Subless.Models
         public Payee Payee { get; set; }
         public Payer Payer { get; set; }
         public double Amount { get; set; }
-        public DateTime DateSent { get; set; }
+        public DateTimeOffset DateSent { get; set; }
     }
 
 }

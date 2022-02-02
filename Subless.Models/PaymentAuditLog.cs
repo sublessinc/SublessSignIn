@@ -8,6 +8,6 @@ namespace Subless.Models
         public Guid Id { get; set; }
         public string PayPalId { get; set; }
         public double Payment { get; set; }
-        public DateTime DatePaid { get; set; }
+        public DateTimeOffset DatePaid { get; set; }
     }
 }

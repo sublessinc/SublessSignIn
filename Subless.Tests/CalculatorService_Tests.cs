@@ -29,7 +29,7 @@ namespace Subless.Tests
 
 
             //Act
-            sut.CalculatePayments(DateTime.UtcNow.AddMonths(-1), DateTime.UtcNow);
+            sut.CalculatePayments(DateTimeOffset.UtcNow.AddMonths(-1), DateTimeOffset.UtcNow);
 
             //Assert
             Assert.Empty(allPayments); // We shouldn't be paying anyone
@@ -46,7 +46,7 @@ namespace Subless.Tests
             {
                 new Payer()
                 {
-                    Payment = 1,
+                    Payment = 100,
                     UserId = Guid.NewGuid()
                 }
             });
@@ -68,7 +68,7 @@ namespace Subless.Tests
                 partnerService: partnerService
                 );
             //Act
-            sut.CalculatePayments(DateTime.UtcNow.AddMonths(-1), DateTime.UtcNow);
+            sut.CalculatePayments(DateTimeOffset.UtcNow.AddMonths(-1), DateTimeOffset.UtcNow);
 
             //Assert
             Assert.NotEmpty(allPayments); // We should have a payment directed at subless, even if it's zero
@@ -84,7 +84,7 @@ namespace Subless.Tests
             {
                 new Payer()
                 {
-                    Payment = 1,
+                    Payment = 100,
                     UserId = Guid.NewGuid()
                 }
             });
@@ -114,7 +114,7 @@ namespace Subless.Tests
                 partnerService: partnerService
                 );
             //Act
-            sut.CalculatePayments(DateTime.UtcNow.AddMonths(-1), DateTime.UtcNow);
+            sut.CalculatePayments(DateTimeOffset.UtcNow.AddMonths(-1), DateTimeOffset.UtcNow);
 
             //Assert
             Assert.NotEmpty(allPayments); // We should have a payment directed at subless, even if it's zero
@@ -130,7 +130,7 @@ namespace Subless.Tests
             {
                 new Payer()
                 {
-                    Payment = 1,
+                    Payment = 100,
                     UserId = Guid.NewGuid()
                 }
             });
@@ -152,7 +152,7 @@ namespace Subless.Tests
                 partnerService: partnerService
                 );
             //Act
-            sut.CalculatePayments(DateTime.UtcNow.AddMonths(-1), DateTime.UtcNow);
+            sut.CalculatePayments(DateTimeOffset.UtcNow.AddMonths(-1), DateTimeOffset.UtcNow);
 
             //Assert
             Assert.NotEmpty(allPayments); // We should have a payment directed at subless
@@ -168,7 +168,7 @@ namespace Subless.Tests
             {
                 new Payer()
                 {
-                    Payment = .67,
+                    Payment = 67,
                     UserId = Guid.NewGuid()
                 }
             });
@@ -190,7 +190,7 @@ namespace Subless.Tests
                 partnerService: partnerService
                 );
             //Act
-            sut.CalculatePayments(DateTime.UtcNow.AddMonths(-1), DateTime.UtcNow);
+            sut.CalculatePayments(DateTimeOffset.UtcNow.AddMonths(-1), DateTimeOffset.UtcNow);
 
             //Assert
             Assert.NotEmpty(allPayments); // We should have a payment directed at subless
@@ -207,7 +207,7 @@ namespace Subless.Tests
             {
                 new Payer()
                 {
-                    Payment = .67,
+                    Payment = 67,
                     UserId = Guid.NewGuid()
                 }
             });
@@ -229,7 +229,7 @@ namespace Subless.Tests
                 partnerService: partnerService
                 );
             //Act
-            sut.CalculatePayments(DateTime.UtcNow.AddMonths(-1), DateTime.UtcNow);
+            sut.CalculatePayments(DateTimeOffset.UtcNow.AddMonths(-1), DateTimeOffset.UtcNow);
 
             //Assert
             Assert.NotEmpty(allPayments); // We should have a payment directed at subless
@@ -245,7 +245,7 @@ namespace Subless.Tests
             {
                 new Payer()
                 {
-                    Payment = 9.40,
+                    Payment = 940,
                     UserId = Guid.NewGuid()
                 }
             });
@@ -274,7 +274,7 @@ namespace Subless.Tests
                 partnerService: partnerService
                 );
             //Act
-            sut.CalculatePayments(DateTime.UtcNow.AddMonths(-1), DateTime.UtcNow);
+            sut.CalculatePayments(DateTimeOffset.UtcNow.AddMonths(-1), DateTimeOffset.UtcNow);
 
             //Assert
             Assert.NotEmpty(allPayments); // We should have a payment directed at subless
@@ -559,14 +559,14 @@ namespace Subless.Tests
         private Mock<IStripeService> StripeServiceBuilder(List<Payer> payers = null)
         {
             var service = new Mock<IStripeService>();
-            service.Setup(x => x.GetInvoicesForRange(It.IsAny<DateTime>(), It.IsAny<DateTime>())).Returns(payers ?? new List<Payer>());
+            service.Setup(x => x.GetInvoicesForRange(It.IsAny<DateTimeOffset>(), It.IsAny<DateTimeOffset>())).Returns(payers ?? new List<Payer>());
             return service;
         }
 
         private Mock<IHitService> HitServiceBuilder(List<Hit> hits)
         {
             var service = new Mock<IHitService>();
-            service.Setup(x => x.GetHitsByDate(It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<Guid>())).Returns(hits);
+            service.Setup(x => x.GetHitsByDate(It.IsAny<DateTimeOffset>(), It.IsAny<DateTimeOffset>(), It.IsAny<Guid>())).Returns(hits);
             return service;
         }
 

@@ -84,7 +84,7 @@ namespace Subless.Services
             }
             var code = Guid.NewGuid();
             creator.ActivationCode = code;
-            creator.ActivationExpiration = DateTime.UtcNow.AddMinutes(10);
+            creator.ActivationExpiration = DateTimeOffset.UtcNow.AddMinutes(10);
             _userRepository.UpsertCreator(creator);
             return code;
         }
@@ -114,7 +114,7 @@ namespace Subless.Services
                 return (Partner)cache.Get(uri.ToString());
             }
             partner = _userRepository.GetPartnerByUri(uri);
-            cache.Set(uri.ToString(), partner, DateTime.UtcNow.AddHours(1));
+            cache.Set(uri.ToString(), partner, DateTimeOffset.UtcNow.AddHours(1));
             return partner;
         }
 

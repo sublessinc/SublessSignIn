@@ -13,7 +13,7 @@ namespace Subless.Models
         public Guid CreatorId { get; set; }
         public Guid PartnerId { get; set; }
         public Uri Uri { get; set; }
-        public DateTime TimeStamp { get; set; }
+        public DateTimeOffset TimeStamp { get; set; }
         public User User { get; set; }
     }
 }

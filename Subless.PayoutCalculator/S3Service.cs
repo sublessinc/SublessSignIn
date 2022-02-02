@@ -58,7 +58,7 @@ namespace Subless.Services
 
         private string GetPathToGeneratedCsv(List<PayPalItem> masterPayoutList)
         {
-            var filePath = Path.Join(Path.GetTempPath(), DateTime.UtcNow.ToString("yyyy-MM-dd-HH-mm-ss") + ".csv");
+            var filePath = Path.Join(Path.GetTempPath(), DateTimeOffset.UtcNow.ToString("yyyy-MM-dd-HH-mm-ss") + ".csv");
             using (var writer = new StreamWriter(filePath))
             using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
             {

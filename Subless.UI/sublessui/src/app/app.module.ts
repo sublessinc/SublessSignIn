@@ -24,6 +24,7 @@ import { AccountSettingsComponent } from './account-settings/account-settings.co
 import { PayoutsettingsComponent } from './payoutsettings/payoutsettings.component';
 import { CreatorAccountSettingsComponent } from './creator-account-settings/creator-account-settings.component';
 import { UserAccountSettingsComponent } from './user-account-settings/user-account-settings.component';
+import { IntegrationtestComponent } from './integrationtest/integrationtest.component';
 
 @NgModule({
   declarations: [
@@ -41,7 +42,8 @@ import { UserAccountSettingsComponent } from './user-account-settings/user-accou
     AccountSettingsComponent,
     PayoutsettingsComponent,
     CreatorAccountSettingsComponent,
-    UserAccountSettingsComponent
+    UserAccountSettingsComponent,
+    IntegrationtestComponent
   ],
   imports: [
     ThemeModule,

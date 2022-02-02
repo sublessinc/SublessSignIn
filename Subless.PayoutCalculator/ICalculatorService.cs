@@ -4,6 +4,6 @@ namespace Subless.PayoutCalculator
 {
     public interface ICalculatorService
     {
-        void CalculatePayments(DateTime startDate, DateTime endDate);
+        void CalculatePayments(DateTimeOffset startDate, DateTimeOffset endDate);
     }
 }

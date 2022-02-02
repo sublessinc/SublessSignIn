@@ -112,7 +112,7 @@ namespace SublessSignIn.Controllers
         }
 
         [HttpGet("Analytics")]
-        public ActionResult<UserStats> GetUserAnalytics()
+        public ActionResult<HistoricalStats<UserStats>> GetUserAnalytics()
         {
             var cognitoId = userService.GetUserClaim(HttpContext.User);
             if (cognitoId == null)
@@ -123,11 +123,11 @@ namespace SublessSignIn.Controllers
             {
                 var creator = _creatorService.GetCreatorByCognitoid(cognitoId);
                 var paymentDate = paymentLogsService.GetLastPaymentDate();
-                if (paymentDate == DateTime.MinValue)
+                if (paymentDate == DateTimeOffset.MinValue)
                 {
-                    paymentDate = DateTime.Now.AddMonths(-1);
+                    paymentDate = DateTimeOffset.UtcNow.AddMonths(-1);
                 }
-                var hitsThisMonth = hitService.GetCreatorHitsByDate(paymentDate, DateTime.UtcNow, creator.Id);
+                var hitsThisMonth = hitService.GetCreatorHitsByDate(paymentDate, DateTimeOffset.UtcNow, creator.Id);
                 var hitsLastMonth = hitService.GetCreatorHitsByDate(paymentDate.AddMonths(-1), paymentDate, creator.Id);
                 return Ok(CreatorStatsExtensions.GetHistoricalCreatorStats(hitsThisMonth, hitsLastMonth));
             }

@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { AccountSettingsComponent } from './account-settings/account-settings.component';
 import { CreatorprofileComponent } from './creatorprofile/creatorprofile.component';
 import { IdComponent } from './id/id.component';
+import { IntegrationtestComponent } from './integrationtest/integrationtest.component';
 import { LoggedOutComponent } from './logged-out/logged-out.component';
 import { LoginComponent } from './login/login.component';
 import { PartnerprofileComponent } from './partnerprofile/partnerprofile.component';
@@ -19,9 +20,10 @@ const routes: Routes = [
   { path: 'change-plan', component: RegisterPaymentComponent, canActivate: [AuthGuard] },
   { path: 'user-profile', component: UserprofileComponent, canActivate: [AuthGuard] },
   { path: 'creator-profile', component: CreatorprofileComponent, canActivate: [AuthGuard] },
-  { path: 'creator-payout-settings', component: PayoutsettingsComponent, canActivate: [AuthGuard] },
-  { path: 'creator-payout-setup', component: PayoutsettingsComponent, canActivate: [AuthGuard] },
-  { path: 'partner-profile', component: PartnerprofileComponent, canActivate: [AuthGuard], canDeactivate: [StopNavGuard] },
+  { path: 'payout-settings', component: PayoutsettingsComponent, canActivate: [AuthGuard] },
+  { path: 'integration', component: IntegrationtestComponent, canActivate: [AuthGuard] },
+  { path: 'partner-profile', component: PartnerprofileComponent, canActivate: [AuthGuard] },
+  { path: 'payout-setup', component: PayoutsettingsComponent, canActivate: [AuthGuard], canDeactivate: [StopNavGuard] },
   { path: 'id', component: IdComponent, canActivate: [AuthGuard] },
   { path: 'login', component: LoginComponent },
   { path: 'logged-out', component: LoggedOutComponent },
@@ -33,3 +35,4 @@ const routes: Routes = [
   exports: [RouterModule]
 })
 export class AppRoutingModule { }
+

@@ -104,7 +104,7 @@ namespace Subless.Data
             SaveChanges();
         }
 
-        public IEnumerable<Hit> GetValidHitsByDate(DateTime startDate, DateTime endDate, string cognitoId)
+        public IEnumerable<Hit> GetValidHitsByDate(DateTimeOffset startDate, DateTimeOffset endDate, string cognitoId)
         {
             return Hits.Where(hit => hit.CognitoId == cognitoId
             && hit.CreatorId != Guid.Empty
@@ -112,9 +112,16 @@ namespace Subless.Data
             && hit.TimeStamp <= endDate).ToList();
         }
 
-        public IEnumerable<Hit> GetCreatorHitsByDate(DateTime startDate, DateTime endDate, Guid creatorId)
+        public IEnumerable<Hit> GetCreatorHitsByDate(DateTimeOffset startDate, DateTimeOffset endDate, Guid creatorId)
         {
-            return Hits.Where(hit => hit.CreatorId != creatorId
+            return Hits.Where(hit => hit.CreatorId == creatorId
+            && hit.TimeStamp > startDate
+            && hit.TimeStamp <= endDate).ToList();
+        }
+
+        public IEnumerable<Hit> GetPartnerHitsByDate(DateTimeOffset startDate, DateTimeOffset endDate, Guid partnerId)
+        {
+            return Hits.Where(hit => hit.PartnerId == partnerId
             && hit.TimeStamp > startDate
             && hit.TimeStamp <= endDate).ToList();
         }
@@ -274,11 +281,11 @@ namespace Subless.Data
             return Payments.Where(x => x.Payee.PayPalId == payPalId);
         }
 
-        public DateTime GetLastPaymentDate()
+        public DateTimeOffset GetLastPaymentDate()
         {
            if (!PaymentAuditLogs.Any())
             {
-                return new DateTime();
+                return new DateTimeOffset();
             }
             return PaymentAuditLogs.Max(x => x.DatePaid);
         }

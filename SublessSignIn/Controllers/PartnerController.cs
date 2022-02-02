@@ -22,11 +22,21 @@ namespace SublessSignIn.Controllers
         private readonly IPartnerService _partnerService;
         private readonly IUserService _userService;
         private readonly ICreatorService creatorService;
+        private readonly IHitService hitService;
+        private readonly IPaymentLogsService paymentLogsService;
         private readonly ICorsPolicyAccessor corsPolicyAccessor;
         private readonly ILogger _logger;
         //this is a weird place to get this from, but it'll work. Probs split it out later
         private readonly StripeConfig _settings;
-        public PartnerController(IPartnerService partnerService, IUserService userService, ICreatorService creatorService, IOptions<StripeConfig> authSettings, ICorsPolicyAccessor corsPolicyAccessor, ILoggerFactory loggerFactory)
+        public PartnerController(
+            IPartnerService partnerService, 
+            IUserService userService, 
+            ICreatorService creatorService, 
+            IHitService hitService,
+            IPaymentLogsService paymentLogsService,
+            IOptions<StripeConfig> authSettings, 
+            ICorsPolicyAccessor corsPolicyAccessor, 
+            ILoggerFactory loggerFactory)
         {
             if (authSettings is null)
             {
@@ -41,6 +51,8 @@ namespace SublessSignIn.Controllers
             _partnerService = partnerService ?? throw new ArgumentNullException(nameof(partnerService));
             _userService = userService ?? throw new ArgumentNullException(nameof(userService));
             this.creatorService = creatorService ?? throw new ArgumentNullException(nameof(creatorService));
+            this.hitService = hitService ?? throw new ArgumentNullException(nameof(hitService));
+            this.paymentLogsService = paymentLogsService ?? throw new ArgumentNullException(nameof(paymentLogsService));
             this.corsPolicyAccessor = corsPolicyAccessor;
             _logger = loggerFactory?.CreateLogger<PartnerController>() ?? throw new ArgumentNullException(nameof(loggerFactory));
             _settings = authSettings.Value ?? throw new ArgumentNullException(nameof(authSettings));
@@ -217,6 +229,35 @@ namespace SublessSignIn.Controllers
                 Username = "TestSublessWebhookUsername"
             };
             return Ok(await _partnerService.CreatorChangeWebhook(dummyCreator));
+        }
+
+        [HttpPost("Analytics")]
+        [Authorize]
+        public ActionResult<HistoricalStats<UserStats>> GetPartnerAnalytics()
+        {
+            var cognitoId = _userService.GetUserClaim(HttpContext.User);
+            if (cognitoId == null)
+            {
+                return Unauthorized();
+            }
+            try
+            {
+                var user = _userService.GetUserByCognitoId(cognitoId);
+                var partner = _partnerService.GetPartnerByAdminId(user.Id);
+                var paymentDate = paymentLogsService.GetLastPaymentDate();
+                if (paymentDate == DateTimeOffset.MinValue)
+                {
+                    paymentDate = DateTimeOffset.UtcNow.AddMonths(-1);
+                }
+                var hitsThisMonth = hitService.GetPartnerHitsByDate(paymentDate, DateTimeOffset.UtcNow, partner.Id);
+                var hitsLastMonth = hitService.GetPartnerHitsByDate(paymentDate.AddMonths(-1), paymentDate, partner.Id);
+                return Ok(PartnerStatsExtensions.GetHistoricalPartnerStats(hitsThisMonth, hitsLastMonth));
+            }
+            catch (UnauthorizedAccessException e)
+            {
+                _logger.LogWarning(e, "Unauthorized user attempted to get creator stats");
+                return Unauthorized();
+            }
         }
     }
 }
