@@ -28,7 +28,7 @@
         <img matListAvatar class="avatar" src="../../assets/img/plan.svg">
         <div>Change Plan</div>
       </a>
-      <a mat-list-item id="integration" [routerLinkActive]="['is-active']" routerLink="/integration">
+      <a mat-list-item id="integration" *ngIf="partner" [routerLinkActive]="['is-active']" routerLink="/integration">
         <img matListAvatar class="avatar" src="../../assets/img/integration.svg">
         <div>Integration Settings</div>
       </a>
