@@ -7,6 +7,7 @@ using Serilog;
 using Subless.Data;
 using Subless.Services;
 using SublessSignIn.AuthServices;
+using System;
 
 namespace SublessSignIn
 {
@@ -14,11 +15,16 @@ namespace SublessSignIn
     {
         public static void Main(string[] args)
         {
+            Enum.TryParse(Environment.GetEnvironmentVariable("Logging__LogLevel__Default"), out LogLevel level);
             Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Debug()
                 .Enrich.FromLogContext()
                 .WriteTo.Console()
                 .CreateLogger();
             Log.Logger.Information("Subless bootstrapping...");
+            Log.Logger.Debug("Debug");
+            Log.Logger.Warning("Warn");
+            Log.Logger.Error("Error");
 
             var host = CreateHostBuilder(args).Build();
             using (var scope = host.Services.CreateScope())
@@ -46,7 +52,7 @@ namespace SublessSignIn
                 .ConfigureLogging(logging =>
                 {
                     logging.AddConsole();
-                    logging.SetMinimumLevel(LogLevel.Information);
+                    logging.SetMinimumLevel(LogLevel.Debug);
                 })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {

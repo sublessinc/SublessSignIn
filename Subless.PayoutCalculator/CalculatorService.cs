@@ -113,7 +113,9 @@ namespace Subless.PayoutCalculator
 
         private IEnumerable<Payer> GetPayments(DateTimeOffset startDate, DateTimeOffset endDate)
         {
-            return _stripeService.GetInvoicesForRange(startDate, endDate);
+            _logger.LogDebug($"Searching in range {startDate} to end date {endDate}");
+            var payers = _stripeService.GetInvoicesForRange(startDate, endDate);
+            return payers;
         }
 
         private void RoundPaymentsForFinalPayment(Dictionary<string, double> masterPayoutList)

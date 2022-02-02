@@ -41,15 +41,16 @@ namespace Subless.Services
                 return;
             }
             var creatorId = GetCreatorFromPartnerAndUri(uri, partner);
-            _logger.LogDebug($"Saving a hit for creator {creatorId}.");
-            _userRepository.SaveHit(new Hit()
+            var hit = new Hit()
             {
                 CognitoId = userId,
                 Uri = uri,
                 TimeStamp = DateTimeOffset.UtcNow,
                 PartnerId = partner.Id,
                 CreatorId = creatorId ?? Guid.Empty
-            });
+            };
+            _logger.LogDebug($"Saving a hit for creator {creatorId} at time {hit.TimeStamp}.");
+            _userRepository.SaveHit(hit);
         }
 
         public Hit TestHit(string userId, Uri uri)
@@ -79,18 +80,21 @@ namespace Subless.Services
         public IEnumerable<Hit> GetHitsByDate(DateTimeOffset startDate, DateTimeOffset endDate, Guid userId)
         {
             var user = _userService.GetUser(userId);
+            _logger.LogDebug($"Getting hits for range {startDate} to {endDate}");
             return _userRepository.GetValidHitsByDate(startDate, endDate, user.CognitoId);
         }
 
         public IEnumerable<Hit> GetCreatorHitsByDate(
             DateTimeOffset startDate, DateTimeOffset endDate, Guid creatorId)
         {
+            _logger.LogDebug($"Getting hits for range {startDate} to {endDate}");
             return _userRepository.GetCreatorHitsByDate(startDate, endDate, creatorId);
         }
 
         public IEnumerable<Hit> GetPartnerHitsByDate(
     DateTimeOffset startDate, DateTimeOffset endDate, Guid partnerId)
         {
+            _logger.LogDebug($"Getting hits for range {startDate} to {endDate}");
             return _userRepository.GetPartnerHitsByDate(startDate, endDate, partnerId);
         }
 

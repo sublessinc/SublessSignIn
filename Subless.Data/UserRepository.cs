@@ -114,14 +114,14 @@ namespace Subless.Data
 
         public IEnumerable<Hit> GetCreatorHitsByDate(DateTimeOffset startDate, DateTimeOffset endDate, Guid creatorId)
         {
-            return Hits.Where(hit => hit.CreatorId != creatorId
+            return Hits.Where(hit => hit.CreatorId == creatorId
             && hit.TimeStamp > startDate
             && hit.TimeStamp <= endDate).ToList();
         }
 
         public IEnumerable<Hit> GetPartnerHitsByDate(DateTimeOffset startDate, DateTimeOffset endDate, Guid partnerId)
         {
-            return Hits.Where(hit => hit.PartnerId != partnerId
+            return Hits.Where(hit => hit.PartnerId == partnerId
             && hit.TimeStamp > startDate
             && hit.TimeStamp <= endDate).ToList();
         }
