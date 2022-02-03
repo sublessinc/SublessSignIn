@@ -19,6 +19,7 @@ namespace SublessSignIn.AuthServices
                 options.PoolId = authSettings.PoolId;
                 options.Region = authSettings.Region;
                 options.Domain = authSettings.Domain;
+                options.IdentityServerLicenseKey = authSettings.IdentityServerLicenseKey;
             });
 
             services.AddTransient<ILoginService, SublessLoginService>();

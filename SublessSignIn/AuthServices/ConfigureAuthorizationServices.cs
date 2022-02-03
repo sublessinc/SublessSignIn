@@ -25,7 +25,7 @@ namespace SublessSignIn.AuthServices
         public static IServiceCollection AddBffServices(this IServiceCollection services, AuthSettings AuthSettings)
         {
             var cookieServices = services.Where<ServiceDescriptor>(x => x.ServiceType == typeof(IPostConfigureOptions<CookieAuthenticationOptions>));
-            services.AddBff().AddServerSideSessions();
+            services.AddBff(a=> a.LicenseKey = AuthSettings.IdentityServerLicenseKey).AddServerSideSessions();
 
             var descriptor =
                 new ServiceDescriptor(
