@@ -33,7 +33,7 @@
         "userPoolId": "us-east-2_HfL2wDx4q",
         "issuerUrl": "https://devpayidp.auth.us-east-2.amazoncognito.com",
         "Logging__LogLevel__Default": "Debug",
-        "IdentityServerLicenseKey": "eyJhbGciOiJQUzI1NiIsImtpZCI6IklkZW50aXR5U2VydmVyTGljZW5zZWtleS83Y2VhZGJiNzgxMzA0NjllODgwNjg5MTAyNTQxNGYxNiIsInR5cCI6ImxpY2Vuc2Urand0In0.eyJpc3MiOiJodHRwczovL2R1ZW5kZXNvZnR3YXJlLmNvbSIsImF1ZCI6IklkZW50aXR5U2VydmVyIiwiaWF0IjoxNjQzMzExODM0LCJleHAiOjE2NzQ4NDc4MzQsImNvbXBhbnlfbmFtZSI6IlN1Ymxlc3MgTExDIiwiY29udGFjdF9pbmZvIjoiam9uQHN1Ymxlc3MuY29tIiwiZWRpdGlvbiI6IkNvbW11bml0eSJ9.FzMIUKl7HLmqLUc4i_s6gi5HIDmUlAWqnEu1E16WezRR8j-Ich8FZ2FIyTDCJKq7QqnW6l6-ktunjtgyXLADsf1E8hA0gbWw2oVI-3pn1JPsoUNxYJsxm3skibA3kAVreI9bixaga2h85UuziYj912bZR-T4AX0B627fOm2pD-1kyxjyHnl1LkRsR3v4WmQzWrh0XkNsBvltlfIMdlnXawiXBgz30mk27gJyRcHFu9VR__L2AqIt1zAL36-razm976bEQ9KIpi4jIUuYg1-rxvI4mwp1rVvx5MMIx9I_ZmPbj0uRDGDVwgYPh6rpA8bQBOU7mKZixndK16o8XYSF-w"
+        "IdentityServerLicenseKey": ""
 
       },
       "dotnetRunMessages": "true",
