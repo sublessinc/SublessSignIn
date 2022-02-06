@@ -58,11 +58,17 @@ namespace SublessSignIn.Controllers
             {
                 return Unauthorized();
             }
-
+            var user = _userService.GetUserByCognitoId(cognitoId);
+            
             var userBudget = req.PriceId;
             try
             {
-                return Ok(await _stripeService.CreateCheckoutSession((long)userBudget, cognitoId));
+                var session = await _stripeService.CreateCheckoutSession((long)userBudget, cognitoId);
+                if (session == null)
+                {
+                    return Ok();
+                }
+                return Ok(session);
             }
             catch (StripeException e)
             {
