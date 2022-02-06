@@ -42,6 +42,7 @@ namespace SublessSignIn
             AuthSettings.CognitoUrl = $"https://cognito-idp.{AuthSettings.Region}.amazonaws.com/{AuthSettings.PoolId}";
             AuthSettings.JwtKeySetUrl = AuthSettings.CognitoUrl + "/.well-known/jwks.json";
             AuthSettings.Domain = Environment.GetEnvironmentVariable("DOMAIN") ?? throw new ArgumentNullException("DOMAIN");
+            AuthSettings.IdentityServerLicenseKey = Environment.GetEnvironmentVariable("IdentityServerLicenseKey") ?? "";
             if (!AuthSettings.Domain.EndsWith('/'))
             {
                 AuthSettings.Domain += '/';
