@@ -184,8 +184,8 @@ namespace Subless.Services
         {
             var customerService = new CustomerService(_client);
             var customer = customerService.Get(stripeCustomerId);
-            var subscriptionServiec = new SubscriptionService(_client);
-            var subscriptions = subscriptionServiec.List(new SubscriptionListOptions()
+            var subscriptionService = new SubscriptionService(_client);
+            var subscriptions = subscriptionService.List(new SubscriptionListOptions()
             {
                 Customer = customer.Id
             });
