@@ -4,8 +4,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Serilog;
+using Serilog.Core;
+using Serilog.Events;
 using Subless.Data;
 using Subless.Services;
+using Subless.Services.Services;
 using SublessSignIn.AuthServices;
 using System;
 
@@ -15,10 +18,8 @@ namespace SublessSignIn
     {
         public static void Main(string[] args)
         {
-            Log.Logger = new LoggerConfiguration()
-                .Enrich.FromLogContext()
-                .WriteTo.Console()
-                .CreateLogger();
+
+            Log.Logger = LoggerConfig.GetLogger();
             Log.Logger.Information("Subless bootstrapping...");
 
             var host = CreateHostBuilder(args).Build();
@@ -43,17 +44,14 @@ namespace SublessSignIn
         public static IHostBuilder CreateHostBuilder(string[] args)
         {
             return Host.CreateDefaultBuilder(args)
-                .UseSerilog()
-                .ConfigureLogging(logging =>
-                {
-                    logging.AddConsole();
-                    logging.SetMinimumLevel(LogLevel.Information);
-                })
+                .UseSerilog(LoggerConfig.GetLogger())
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
                     webBuilder.UseUrls("http://0.0.0.0:7070/");    
                 });
         }
+
+
     }
 }
