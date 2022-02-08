@@ -14,5 +14,6 @@ namespace Subless.Services
         Task<Stripe.BillingPortal.Session> GetCustomerPortalLink(string cognitoId);
         IEnumerable<Payer> GetInvoicesForRange(DateTimeOffset startDate, DateTimeOffset endDate);
         Task<Stripe.Checkout.Session> GetSession(string sessionId);
+        void RolloverPaymentForIdleCustomer(string customerId);
     }
 }

@@ -22,6 +22,7 @@ namespace Subless.PayoutCalculator
         private readonly IPaymentLogsService _paymentLogsService;
         private readonly ILoggerFactory _loggerFactory;
         private readonly IFileStorageService _s3Service;
+        private readonly IUserService userService;
         private readonly ILogger _logger;
 
         public CalculatorService(
@@ -31,6 +32,7 @@ namespace Subless.PayoutCalculator
             IPartnerService partnerService,
             IPaymentLogsService paymentLogsService,
             IFileStorageService s3Service,
+            IUserService userService,
             IOptions<StripeConfig> stripeOptions,
             ILoggerFactory loggerFactory)
         {
@@ -41,6 +43,7 @@ namespace Subless.PayoutCalculator
             _paymentLogsService = paymentLogsService ?? throw new ArgumentNullException(nameof(paymentLogsService));
             _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
             _s3Service = s3Service ?? throw new ArgumentNullException(nameof(s3Service));
+            this.userService = userService ?? throw new ArgumentNullException(nameof(userService));
             _logger = _loggerFactory.CreateLogger<CalculatorService>();
             SublessPayPalId = stripeOptions.Value.SublessPayPalId ?? throw new ArgumentNullException(nameof(stripeOptions.Value.SublessPayPalId));
         }
@@ -64,6 +67,12 @@ namespace Subless.PayoutCalculator
                 var hits = RetrieveUsersMonthlyHits(payer.UserId, startDate, endDate);
                 // filter out incomplete creators
                 hits = FilterInvalidCreators(hits);
+                if (!hits.Any())
+                {
+                    var user = userService.GetUser(payer.UserId);
+                    _stripeService.RolloverPaymentForIdleCustomer(user.StripeCustomerId);
+                    break;
+                }
                 // group all visits to payee
                 var creatorVisits = GetVisitsPerCreator(hits);
                 // get partner share
