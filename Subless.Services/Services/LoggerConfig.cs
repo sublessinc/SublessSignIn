@@ -26,16 +26,9 @@ namespace Subless.Services.Services
 
         private static LoggingLevelSwitch GetLogLevelSwitch()
         {
-
-            return new LoggingLevelSwitch(GetLogLevel());
-        }
-
-        private static LogEventLevel GetLogLevel()
-        {
             var level = Environment.GetEnvironmentVariable("Logging__LogLevel__Default");
             Enum.TryParse(level, out LogEventLevel parsedlevel);
-            return parsedlevel;
+            return new LoggingLevelSwitch(parsedlevel);
         }
-
     }
 }
