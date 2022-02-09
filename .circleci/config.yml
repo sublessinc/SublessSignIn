@@ -4,33 +4,33 @@ orbs:
 workflows:
   build_and_push_site:
     jobs:
-      - aws-ecr/build-and-push-site:
+      - aws-ecr/build-and-push-image:
           account-url: AWS_ACCOUNT_URL
           aws-access-key-id: AWS_ACCESS_KEY_ID
           aws-secret-access-key: AWS_SECRET_ACCESS_KEY
           #context: myContext
           #create-repo: true
-          dockerfile: Dockerfile
+          #dockerfile: myDockerfile
           #no-output-timeout: 20m
           #path: pathToMyDockerfile
           #profile-name: myProfileName
           region: AWS_DEFAULT_REGION
           repo: subless-pay
           skip-when-tags-exist: false
-          tag: 'dev'
+          tag: 'latest,myECRRepoTag'
   build_and_push_calculator:
     jobs:
-      - aws-ecr/build-and-push-calculator:
+      - aws-ecr/build-and-push-image:
           account-url: AWS_ACCOUNT_URL
           aws-access-key-id: AWS_ACCESS_KEY_ID
           aws-secret-access-key: AWS_SECRET_ACCESS_KEY
           #context: myContext
           #create-repo: true
-          dockerfile: CalculatorDockerfile
+          #dockerfile: myDockerfile
           #no-output-timeout: 20m
           #path: pathToMyDockerfile
           #profile-name: myProfileName
           region: AWS_DEFAULT_REGION
           repo: subless-pay
           skip-when-tags-exist: false
-          tag: 'dev'
+          tag: 'latest,myECRRepoTag'
