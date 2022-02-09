@@ -6,9 +6,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Serilog;
 using Subless.Data;
 using Subless.PayoutCalculator;
 using Subless.Services;
+using Subless.Services.Services;
 
 namespace PayoutCalculator
 {
@@ -61,6 +63,7 @@ namespace PayoutCalculator
         private static IHostBuilder CreateHostBuilder(string[] args)
         {
             return Host.CreateDefaultBuilder(args)
+            .UseSerilog(LoggerConfig.GetLogger())
             .ConfigureServices((_, services) =>
             {
                 services.Configure<CalculatorConfiguration>(options =>
