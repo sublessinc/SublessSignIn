@@ -48,6 +48,7 @@ jobs:
           command: |
             if [ "${CIRCLE_BRANCH}" == "feature/docker-ecr" ]; then  
               echo "getting password"
+              docker login --help | grep password
               export DOCKER_PWD=$(aws ecr get-login-password --region us-east-2)
               echo ${DOCKER_PWD}
               echo "trying login"
