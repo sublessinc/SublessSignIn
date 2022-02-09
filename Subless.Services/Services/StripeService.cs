@@ -65,7 +65,7 @@ namespace Subless.Services
 
             var subs = GetSubscriptions(customer);
             var service = new SubscriptionService(_client);
-            var subscription = subs.First(); // TODO - figure out how to reduce to a single sub
+            var subscription = subs.Single();
 
 
             var items = new List<SubscriptionItemOptions> {
@@ -142,7 +142,7 @@ namespace Subless.Services
             var prices = this.GetPrices().ToList<Price>();
             //Stripe keeps the price in cents.
             long dollarAmountInCents = dollarAmount * 100;
-            var price = prices.Where(x => x.UnitAmount == dollarAmountInCents).FirstOrDefault();
+            var price = prices.Where(x => x.UnitAmount == dollarAmountInCents).Single();
 
             return price?.Id;
         }
@@ -217,8 +217,8 @@ namespace Subless.Services
         {
             var customerService = new CustomerService(_client);
             var customer = customerService.Get(stripeCustomerId);
-            var subscriptionServiec = new SubscriptionService(_client);
-            var subscriptions = subscriptionServiec.List(new SubscriptionListOptions()
+            var subscriptionService = new SubscriptionService(_client);
+            var subscriptions = subscriptionService.List(new SubscriptionListOptions()
             {
                 Customer = customer.Id
             });
