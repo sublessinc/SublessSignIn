@@ -2,7 +2,7 @@
 ARG build_environment=dev
 
 
-FROM node:latest as angularbuild
+FROM node:16-alpine as angularbuild
 ARG build_environment
 RUN echo "building for $build_environment"
 WORKDIR /src
