@@ -2,7 +2,7 @@ version: '2.1'
 orbs:
   aws-ecr: circleci/aws-ecr@7.3.0
 workflows:
-  build_and_push_image:
+  build_and_push_site:
     jobs:
       - aws-ecr/build-and-push-site:
           account-url: AWS_ACCOUNT_URL
@@ -18,6 +18,8 @@ workflows:
           repo: subless-pay
           skip-when-tags-exist: false
           tag: 'dev'
+  build_and_push_calculator:
+    jobs:
       - aws-ecr/build-and-push-calculator:
           account-url: AWS_ACCOUNT_URL
           aws-access-key-id: AWS_ACCESS_KEY_ID
