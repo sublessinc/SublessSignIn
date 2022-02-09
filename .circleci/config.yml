@@ -41,6 +41,13 @@ jobs:
       - checkout
       - run: cd ./Subless.UI/sublessui && npm ci
       - run: cd ./Subless.UI/sublessui && npm run-script build
+  build-js:
+    docker:
+      - image: cimg/node:16-alpine
+    steps:
+      - checkout
+      - run: cd ./Subless.JS && npm ci
+      - run: cd ./Subless.JS && npm run build:dev
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
@@ -50,3 +57,4 @@ workflows:
       - test-dotnet
       - build-dotnet
       - build-ng
+      - build-js
