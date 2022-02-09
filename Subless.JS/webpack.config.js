@@ -10,7 +10,7 @@ const config = {
     outputModule: true,
   },
   output: {
-    filename: '../../SublessSignIn/wwwroot/dist/subless.js',
+    filename: '../dist/subless.js',
     library: {
       type: "module"
     }
