@@ -35,15 +35,16 @@ jobs:
       - run: dotnet restore
       - run: dotnet build
   build-ng:
-    working_directory: ~/Subless.UI/sublessui
     docker:
       - image: cimg/node:17.2.0
     steps:
       - checkout
       - run:
+          working_directory: ~/Subless.UI/sublessui
           name: install
           command: npm ci
       - run:
+          working_directory: ~/Subless.UI/sublessui
           command: npm run-script build
           name: Build app
 # Invoke jobs via workflows
