@@ -26,11 +26,11 @@ workflows:
           aws-secret-access-key: AWS_SECRET_ACCESS_KEY
           #context: myContext
           #create-repo: true
-          #dockerfile: myDockerfile
+          dockerfile: CalculatorDockerfile
           #no-output-timeout: 20m
           #path: pathToMyDockerfile
           #profile-name: myProfileName
           region: AWS_DEFAULT_REGION
-          repo: subless-pay
+          repo: subless-calculator
           skip-when-tags-exist: false
           tag: 'latest,myECRRepoTag'
