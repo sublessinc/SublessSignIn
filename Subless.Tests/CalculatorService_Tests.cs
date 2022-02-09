@@ -554,7 +554,7 @@ namespace Subless.Tests
             sut.CalculatePayments(DateTimeOffset.UtcNow.AddMonths(-1), DateTimeOffset.UtcNow);
 
             //Assert
-            Assert.Empty(allPayments); // We should have a payment directed at subless
+            Assert.Empty(allPayments); 
             mockStripe.Verify(mock=> mock.RolloverPaymentForIdleCustomer(It.IsAny<string>()), Times.Once());
         }
 
