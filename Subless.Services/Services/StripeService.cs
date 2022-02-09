@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Stripe;
 using Stripe.Checkout;
 using Subless.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Subless.Services
 {
@@ -27,8 +27,8 @@ namespace Subless.Services
 
         public async Task<bool> CanAccessStripe()
         {
-            var service= new CustomerService(_client);
-            var list= service.List(new CustomerListOptions()
+            var service = new CustomerService(_client);
+            var list = service.List(new CustomerListOptions()
             {
                 Limit = 1
             });
@@ -51,11 +51,42 @@ namespace Subless.Services
             var user = _userService.GetUserByCognitoId(cognitoId);
             var customer = user.StripeCustomerId;
 
-            if (string.IsNullOrEmpty(user.StripeCustomerId))
+            if (string.IsNullOrEmpty(user.StripeCustomerId) || !CustomerHasPaid(cognitoId))
             {
-                customer = CreateCustomer(cognitoId).Id;
+                return await NewCustomer(cognitoId, priceId);
             }
+            UpgradeCustomer(customer, cognitoId, priceId);
+            return null;
 
+        }
+
+        private void UpgradeCustomer(string customer, string cognitoId, string priceId)
+        {
+
+            var subs = GetSubscriptions(customer);
+            var service = new SubscriptionService(_client);
+            var subscription = subs.Single();
+
+
+            var items = new List<SubscriptionItemOptions> {
+                new SubscriptionItemOptions {
+                    Id = subscription.Items.Data[0].Id,
+                    Price = priceId,
+                },
+            };
+
+            var options = new SubscriptionUpdateOptions
+            {
+                CancelAtPeriodEnd = false,
+                ProrationBehavior = "create_prorations",
+                Items = items,
+            };
+            service.Update(subscription.Id, options);
+        }
+
+        private async Task<CreateCheckoutSessionResponse> NewCustomer(string cognitoId, string priceId)
+        {
+            var customer = CreateCustomer(cognitoId).Id;
             var options = new SessionCreateOptions
             {
                 Customer = customer,
@@ -110,27 +141,55 @@ namespace Subless.Services
         {
             var prices = this.GetPrices().ToList<Price>();
             //Stripe keeps the price in cents.
-            long dollarAmountInCents = dollarAmount*100;
-            var price = prices.Where(x => x.UnitAmount == dollarAmountInCents).FirstOrDefault();
+            long dollarAmountInCents = dollarAmount * 100;
+            var price = prices.Where(x => x.UnitAmount == dollarAmountInCents).Single();
 
             return price?.Id;
         }
 
         public bool CustomerHasPaid(string cognitoId)
         {
+
+            var activePrices = GetActiveSubscriptionPrice(cognitoId);
+            var allPrices = GetPrices();
+            return allPrices.Any(x => activePrices.Contains(x.Id));
+        }
+
+        public List<string> GetActiveSubscriptionPrice(string cognitoId)
+        {
+            var prices = new List<string>();
             var user = _userService.GetUserByCognitoId(cognitoId);
-            if (user.StripeSessionId == null)
+            if (user.StripeCustomerId == null)
             {
-                return false;
+                return prices;
             }
 
-            var service = new SessionService(_client);
-            var session = service.Get(user.StripeSessionId);
-            if (session.PaymentStatus == "paid")
+            var subscriptions = GetSubscriptions(user.StripeCustomerId);
+
+            foreach (var sub in subscriptions)
             {
-                return true;
+                if (sub.Status == "active")
+                {
+                    foreach (var item in sub.Items)
+                    {
+                        prices.Add(item.Price.Id);
+                    }
+                }
             }
-            return false;
+
+            return prices;
+        }
+
+        private StripeList<Subscription> GetSubscriptions(string stripeCustomerId)
+        {
+            var customerService = new CustomerService(_client);
+            var customer = customerService.Get(stripeCustomerId);
+            var subscriptionService = new SubscriptionService(_client);
+            var subscriptions = subscriptionService.List(new SubscriptionListOptions()
+            {
+                Customer = customer.Id
+            });
+            return subscriptions;
         }
 
         public async Task<Stripe.BillingPortal.Session> GetCustomerPortalLink(string cognitoId)
