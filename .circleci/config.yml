@@ -47,8 +47,7 @@ jobs:
           name: Push application Docker image
           command: |
             if [ "${CIRCLE_BRANCH}" == "feature/push-docker-to-ecr" ]; then  
-              login="$(aws ecr get-login)"
-              ${login}
-              docker tag app "${ECR_ENDPOINT}/app:${CIRCLE_SHA1}"
-              docker push "${ECR_ENDPOINT}/app:${CIRCLE_SHA1}"
+              aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin 548668861663.dkr.ecr.us-east-2.amazonaws.com
+              docker tag app 548668861663.dkr.ecr.us-east-2.amazonaws.com/subless-pay:dev
+              docker push 548668861663.dkr.ecr.us-east-2.amazonaws.com/subless-pay:dev
             fi
