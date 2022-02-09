@@ -48,7 +48,7 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 COPY ./SublessSignIn/wwwroot /app/wwwroot
-COPY --from=angularbuild /src/dist/sublessui /app/wwwroot
+COPY --from=angularbuild /src/src/dist/sublessui /app/wwwroot
 COPY --from=jsbuild /src/dist /app/wwwroot/dist
 ENTRYPOINT ["dotnet", "SublessSignIn.dll"]
 
