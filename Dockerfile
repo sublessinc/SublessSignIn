@@ -6,6 +6,7 @@ FROM node:16-alpine as angularbuild
 ARG build_environment
 RUN echo "building for $build_environment"
 WORKDIR /src
+RUN chmod 777 -R /src
 RUN mkdir -p /src/build
 COPY /Subless.UI/sublessui/package*.json ./
 RUN npm install -g @angular/cli
@@ -17,6 +18,7 @@ FROM node:16-alpine as jsbuild
 ARG build_environment
 RUN echo "building for $build_environment"
 WORKDIR /src
+RUN chmod 777 -R /src
 COPY ./Subless.JS/package*.json ./
 RUN npm install
 COPY ./Subless.JS/ /src
