@@ -12,12 +12,12 @@ workflows:
           #create-repo: true
           #dockerfile: myDockerfile
           #no-output-timeout: 20m
-          #path: pathToMyDockerfile
+          path: ./
           #profile-name: myProfileName
           region: AWS_DEFAULT_REGION
           repo: subless-pay
           skip-when-tags-exist: false
-          tag: 'latest,myECRRepoTag'
+          tag: 'dev'
   build_and_push_calculator:
     jobs:
       - aws-ecr/build-and-push-image:
@@ -28,9 +28,9 @@ workflows:
           #create-repo: true
           dockerfile: CalculatorDockerfile
           #no-output-timeout: 20m
-          #path: pathToMyDockerfile
+          path: ./
           #profile-name: myProfileName
           region: AWS_DEFAULT_REGION
           repo: subless-calculator
           skip-when-tags-exist: false
-          tag: 'latest,myECRRepoTag'
+          tag: 'dev'
