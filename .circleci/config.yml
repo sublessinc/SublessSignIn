@@ -47,7 +47,8 @@ jobs:
           name: Push application Docker image
           command: |
             if [ "${CIRCLE_BRANCH}" == "feature/push-docker-to-ecr" ]; then  
-              aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin 548668861663.dkr.ecr.us-east-2.amazonaws.com
+              export DOCKER_PWD = $(aws ecr get-login-password --region us-east-2)
+              echo ${DOCKER_PWD} | docker login --username AWS --password-stdin 548668861663.dkr.ecr.us-east-2.amazonaws.com
               docker tag app 548668861663.dkr.ecr.us-east-2.amazonaws.com/subless-pay:dev
               docker push 548668861663.dkr.ecr.us-east-2.amazonaws.com/subless-pay:dev
             fi
