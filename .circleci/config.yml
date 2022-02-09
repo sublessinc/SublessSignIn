@@ -39,14 +39,8 @@ jobs:
       - image: cimg/node:17.2.0
     steps:
       - checkout
-      - run:
-          working_directory: ~/Subless.UI/sublessui
-          name: install
-          command: npm ci
-      - run:
-          working_directory: ~/Subless.UI/sublessui
-          command: npm run-script build
-          name: Build app
+      - run: cd ~/Subless.UI/sublessui && npm ci
+      - run: cd ~/Subless.UI/sublessui && npm run-script build
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
