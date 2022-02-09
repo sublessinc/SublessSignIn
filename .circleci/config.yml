@@ -50,8 +50,11 @@ jobs:
               docker login --help | grep password
               echo "aws version"
               aws --version
+              echo "Access key"
+              echo $AWS_ACCESS_KEY_ID
+              echo "region"
+              echo $AWS_DEFAULT_REGION
               echo "getting password"
-              
               export DOCKER_LOGIN=$(aws ecr get-login)
               echo "trying login"
               $DOCKER_LOGIN
