@@ -32,7 +32,8 @@
         "appClientId": "3bp497rc3vgtaknl4t0c91fkef",
         "userPoolId": "us-east-2_HfL2wDx4q",
         "issuerUrl": "https://devpayidp.auth.us-east-2.amazoncognito.com",
-        "Logging__LogLevel__Default": "Debug"
+        "Logging__LogLevel__Default": "Debug",
+        "IdentityServerLicenseKey": ""
 
       },
       "dotnetRunMessages": "true",
