@@ -47,8 +47,12 @@ jobs:
           name: Push application Docker image
           command: |
             if [ "${CIRCLE_BRANCH}" == "feature/docker-ecr" ]; then  
-              echo "getting password"
               docker login --help | grep password
+              echo "aws version"
+              aws --version
+              echo "getting password"
+                           
+              
               export DOCKER_PWD=$(aws ecr get-login-password --region us-east-2)
               echo ${DOCKER_PWD}
               echo "trying login"
