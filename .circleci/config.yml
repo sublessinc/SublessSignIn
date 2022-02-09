@@ -43,20 +43,65 @@ jobs:
       #     name: Run tests
       #     command: |
       #       docker-compose -f ./docker-compose.test.yml up
-      - deploy:
-          name: Push application Docker image
+  deploy:
+    docker:
+      - image: circleci/python:3.6.1
+    environment:
+      AWS_DEFAULT_OUTPUT: json
+    steps:
+      - checkout
+      - setup_remote_docker
+      - attach_workspace:
+          at: workspace
+      - restore_cache:
+          key: v1-{{ checksum "requirements.txt" }}
+      - run:
+          name: Install awscli
           command: |
-            if [ "${CIRCLE_BRANCH}" == "feature/docker-ecr" ]; then  
-              docker login --help | grep password
-              echo "aws version"
-              aws --version
-              echo "getting password"
-                           
-              
-              export DOCKER_PWD=$(aws ecr get-login-password --region us-east-2)
-              echo ${DOCKER_PWD}
-              echo "trying login"
-              echo ${DOCKER_PWD} | docker login --username AWS --password-stdin 548668861663.dkr.ecr.us-east-2.amazonaws.com
-              docker tag app 548668861663.dkr.ecr.us-east-2.amazonaws.com/subless-pay:dev
-              docker push 548668861663.dkr.ecr.us-east-2.amazonaws.com/subless-pay:dev
-            fi
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install -r requirements.txt
+      - save_cache:
+          key: v1-{{ checksum "requirements.txt" }}
+          paths:
+            - "venv"
+      - run:
+          name: Load image
+          command: |
+            docker load --input workspace/docker-image/image.tar
+      - run:
+          name: Setup common environment variables
+          command: |
+            echo 'export ECR_REPOSITORY_NAME="${AWS_RESOURCE_NAME_PREFIX}"' >> $BASH_ENV
+            echo 'export ECS_CLUSTER_NAME="${AWS_RESOURCE_NAME_PREFIX}-cluster"' >> $BASH_ENV
+            echo 'export ECS_SERVICE_NAME="${AWS_RESOURCE_NAME_PREFIX}-service"' >> $BASH_ENV
+      - run:
+          name: Push image
+          command: |
+            . venv/bin/activate
+            eval $(aws ecr get-login --region $AWS_DEFAULT_REGION --no-include-email)
+            docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_NAME:$CIRCLE_SHA1
+      # name: Push application Docker image
+      # command: |
+      #   if [ "${CIRCLE_BRANCH}" == "feature/docker-ecr" ]; then  
+      #     docker login --help | grep password
+      #     echo "aws version"
+      #     aws --version
+      #     echo "getting password"
+                        
+          
+      #     export DOCKER_PWD=$(aws ecr get-login-password --region us-east-2)
+      #     echo ${DOCKER_PWD}
+      #     echo "trying login"
+      #     echo ${DOCKER_PWD} | docker login --username AWS --password-stdin 548668861663.dkr.ecr.us-east-2.amazonaws.com
+      #     docker tag app 548668861663.dkr.ecr.us-east-2.amazonaws.com/subless-pay:dev
+      #     docker push 548668861663.dkr.ecr.us-east-2.amazonaws.com/subless-pay:dev
+      #   fi
+workflows:
+  version: 2
+  build-deploy:
+    jobs:
+      - build
+      - deploy:
+          requires:
+            - build
