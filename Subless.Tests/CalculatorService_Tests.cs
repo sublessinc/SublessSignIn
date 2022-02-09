@@ -514,6 +514,50 @@ namespace Subless.Tests
             Assert.Equal(.8917, result.Single(x => x.PayPalId == partner1.ToString()).Payment);
         }
 
+        [Fact]
+        public void Payer_WithNoHits_RollsOverPayment()
+        {
+            //Arrange
+            var allPayments = new Dictionary<string, double>();
+            var mockStripe = new Mock<IStripeService>();
+            mockStripe.Setup(x => x.RolloverPaymentForIdleCustomer(It.IsAny<string>()));
+            
+            var stripeService = StripeServiceBuilder(new List<Payer>
+            {
+                new Payer()
+                {
+                    Payment = 940,
+                    UserId = Guid.NewGuid()
+                }
+            }, mockStripe);
+
+            var hit = new List<Hit> {
+
+            };
+            var hitService = HitServiceBuilder(hit);
+            var s3Service = new Mock<IFileStorageService>();
+            s3Service.Setup(x => x.WritePaymentsToCloudFileStore(It.IsAny<Dictionary<string, double>>()))
+                .Callback<Dictionary<string, double>>(y =>
+                {
+                    allPayments = y;
+                });
+            var creatorService = new Mock<ICreatorService>();
+            var partnerService = PartnerServiceBuilder("Partner");
+            var sut = CalculatorServiceBuilder(
+                stripe: stripeService,
+                s3Service: s3Service,
+                hitService: hitService,
+                creatorService: creatorService,
+                partnerService: partnerService
+                );
+            //Act
+            sut.CalculatePayments(DateTimeOffset.UtcNow.AddMonths(-1), DateTimeOffset.UtcNow);
+
+            //Assert
+            Assert.Empty(allPayments); 
+            mockStripe.Verify(mock=> mock.RolloverPaymentForIdleCustomer(It.IsAny<string>()), Times.Once());
+        }
+
         private CalculatorService CalculatorServiceBuilder(
             Mock<IStripeService> stripe = null,
             Mock<IHitService> hitService = null,
@@ -535,6 +579,8 @@ namespace Subless.Tests
 
             var mockLoggerFactory = new Mock<ILoggerFactory>();
             mockLoggerFactory.Setup(x => x.CreateLogger(It.IsAny<string>())).Returns(() => logger);
+            var userSerivce = new Mock<IUserService>();
+            userSerivce.Setup(x => x.GetUser(It.IsAny<Guid>())).Returns(new User());
 
             return new CalculatorService(
                 stripe?.Object ?? StripeServiceBuilder().Object,
@@ -543,6 +589,7 @@ namespace Subless.Tests
                 partnerService?.Object ?? new Mock<IPartnerService>().Object,
                 new Mock<IPaymentLogsService>().Object,
                 s3Service?.Object ?? new Mock<IFileStorageService>().Object,
+                userSerivce.Object,
                 CreateOptions(),
                 mockLoggerFactory.Object
                 );
@@ -556,9 +603,9 @@ namespace Subless.Tests
             });
         }
 
-        private Mock<IStripeService> StripeServiceBuilder(List<Payer> payers = null)
+        private Mock<IStripeService> StripeServiceBuilder(List<Payer> payers = null, Mock<IStripeService> stripeService = null)
         {
-            var service = new Mock<IStripeService>();
+            var service = stripeService ?? new Mock<IStripeService>() ;
             service.Setup(x => x.GetInvoicesForRange(It.IsAny<DateTimeOffset>(), It.IsAny<DateTimeOffset>())).Returns(payers ?? new List<Payer>());
             return service;
         }

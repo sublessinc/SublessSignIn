@@ -147,6 +147,39 @@ namespace Subless.Services
             return price?.Id;
         }
 
+        public void RolloverPaymentForIdleCustomer(string customerId)
+        {
+            _logger.LogInformation($"Rolling over payment for idle customer {customerId}");
+            var coupon = CreateOneTimeCoupon();
+            ApplyCouponToSubscription(coupon, customerId);
+        }
+
+        private Coupon CreateOneTimeCoupon()
+        {
+            var options = new CouponCreateOptions
+            {
+                Duration = "once",
+                Id = "rollover",
+                PercentOff = 100,
+                MaxRedemptions = 1
+            };
+            var service = new CouponService(_client);
+            return service.Create(options);
+
+        }
+
+        private Subscription ApplyCouponToSubscription(Coupon coupon, string customerId)
+        {
+
+            var sub = GetSubscriptions(customerId).First(); //TODO figure out which sub to choose
+            var updateOptions = new SubscriptionUpdateOptions()
+            {
+                Coupon = coupon.Id,
+            };
+            var service = new SubscriptionService(_client);           
+            return service.Update(sub.Id, updateOptions);
+        }
+
         public bool CustomerHasPaid(string cognitoId)
         {
 
