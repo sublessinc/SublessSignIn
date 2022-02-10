@@ -1,4 +1,30 @@
 #See https://aka.ms/containerfastmode to understand how Visual Studio uses this Dockerfile to build your images for faster debugging.
+ARG build_environment=dev
+
+
+FROM node:latest as angularbuild
+ARG build_environment
+RUN echo "building for $build_environment"
+WORKDIR /src
+RUN mkdir -p /src/build
+RUN mkdir -p /SublessSignIn/wwwroot
+COPY /Subless.UI/sublessui/package*.json ./
+RUN npm install -g @angular/cli
+RUN npm install
+COPY  /Subless.UI/sublessui ./
+RUN ng build --configuration $build_environment && cp -r ./dist/sublessui/* ../../SublessSignIn/wwwroot
+RUN ls /SublessSignIn/wwwroot
+
+FROM node:16-alpine as jsbuild
+ARG build_environment
+RUN echo "building for $build_environment"
+RUN mkdir -p /SublessSignIn/wwwroot/dist
+WORKDIR /src
+COPY ./Subless.JS/package*.json ./
+RUN npm install
+COPY ./Subless.JS/ /src
+RUN npm run build:$build_environment
+
 
 FROM mcr.microsoft.com/dotnet/aspnet:5.0 AS base
 WORKDIR /app
@@ -25,4 +51,7 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 COPY ./SublessSignIn/wwwroot /app/wwwroot
+COPY --from=angularbuild /SublessSignIn/wwwroot ./
+COPY --from=jsbuild /SublessSignIn/wwwroot ./
 ENTRYPOINT ["dotnet", "SublessSignIn.dll"]
+
