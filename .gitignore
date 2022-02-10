@@ -46,3 +46,5 @@ Subless.UI.Tests/.env
 
 Subless.JS/node_modules/**
 SublessSignIn/wwwroot/**
+Subless.JS/dist/**
+
