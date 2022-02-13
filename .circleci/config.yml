@@ -7,13 +7,7 @@ workflows:
     when:
       and:
         - not:
-          equal: [ main, << pipeline.git.branch >> ]
-        - not:
-          equal: [ dev, << pipeline.git.branch >> ]
-        - not:
-          equal: [ stage, << pipeline.git.branch >> ]
-        - not:
-          equal: [ prod, << pipeline.git.branch >> ]
+          matches: { pattern: "((prod)|(dev)|(stage))", value: << pipeline.git.branch >> }
     jobs:
       - aws-ecr/build-and-push-image:
           account-url: AWS_ACCOUNT_URL
