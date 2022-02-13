@@ -16,17 +16,8 @@ jobs:
           repo: subless-pay
           skip-when-tags-exist: false
           tag: 'dev'
-  deploy-site:
-    docker:
-      - image: 'cimg/python:3.6'
-    steps:
-      - aws-ecs/deploy-service-update:
-          cluster-name: 'dev_pay_ecs_Payments'
-          family: 'devStackdevpayecspaySitepaymentSiteServiceTaskDef8814A6F9'
-          service-name: 'devStack-devpayecspaySitepaymentSiteService735C5EA0-b9ZeluJTims3'
-          force-new-deployment: true
-          requires:
-            - build-site
+
+
   build-calculator:
     docker:
       - image: 'cimg/python:3.6'
@@ -41,15 +32,7 @@ jobs:
           repo: subless-calculator
           skip-when-tags-exist: false
           tag: 'dev'
-  deploy-calculator:
-    docker:
-      - image: 'cimg/python:3.6'
-    steps:
-      - aws-ecs/deploy-service-update:
-          cluster-name: 'dev_pay_ecs_Payments'
-          family: 'devStackdevpayecscalculatorcalculatorTask1ED54CB3'
-          service-name: 'devStack-devpayecscalculatorcalculatorService340918A9-h8ejb8OfoZ7R'
-          force-new-deployment: true
+
 workflows:
   build_only_site:
     jobs:
@@ -63,8 +46,12 @@ workflows:
         - equal: [ prod, << pipeline.git.branch >> ]
     jobs:
       - build-site
-      - deploy-site:
-          requires:
+      - aws-ecs/deploy-service-update:
+          cluster-name: 'dev_pay_ecs_Payments'
+          family: 'devStackdevpayecspaySitepaymentSiteServiceTaskDef8814A6F9'
+          service-name: 'devStack-devpayecspaySitepaymentSiteService735C5EA0-b9ZeluJTims3'
+          force-new-deployment: true
+          requires: 
             - build-site
 
   build_only_calculator:
@@ -79,6 +66,10 @@ workflows:
         - equal: [ prod, << pipeline.git.branch >> ]
     jobs:
       - build-calculator
-      - deploy-calculator:
+      - aws-ecs/deploy-service-update:
+          cluster-name: 'dev_pay_ecs_Payments'
+          family: 'devStackdevpayecscalculatorcalculatorTask1ED54CB3'
+          service-name: 'devStack-devpayecscalculatorcalculatorService340918A9-h8ejb8OfoZ7R'
+          force-new-deployment: true
           requires:
             -  build-calculator
