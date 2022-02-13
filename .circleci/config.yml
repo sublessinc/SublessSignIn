@@ -1,6 +1,7 @@
 version: '2.1'
 orbs:
   aws-ecr: circleci/aws-ecr@7.3.0
+  aws-ecs: circleci/aws-ecs@2.0.0
 workflows:
   build_and_push_site:
     jobs:
@@ -18,6 +19,13 @@ workflows:
           repo: subless-pay
           skip-when-tags-exist: false
           tag: 'dev'
+      - aws-ecs/deploy-service-update:
+          cluster-name: 'dev_pay_ecs_Payments'
+          #container-image-name-updates: 'container=${MY_APP_PREFIX}-service,tag=${CIRCLE_SHA1}'
+          family: 'devStackdevpayecspaySitepaymentSiteServiceTaskDef8814A6F9'
+          service-name: devStack-devpayecspaySitepaymentSiteService735C5EA0-b9ZeluJTims3
+          requires:
+            - aws-ecr/build-and-push-image
   build_and_push_calculator:
     jobs:
       - aws-ecr/build-and-push-image:
