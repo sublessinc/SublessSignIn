@@ -13,64 +13,52 @@ workflows:
           repo: subless-pay
           skip-when-tags-exist: false
           tag: '$CIRCLE_BRANCH'
-  # build_and_push_site:
-  #   when: 
-  #     - equal: [ dev, $CIRCLE_BRANCH ]
-  #     - or: [ stage, $CIRCLE_BRANCH ]
-  #     - or: [ prod, $CIRCLE_BRANCH ]
-  #   jobs:
-  #     - aws-ecr/build-and-push-image:
-  #         account-url: AWS_ACCOUNT_URL
-  #         aws-access-key-id: AWS_ACCESS_KEY_ID
-  #         aws-secret-access-key: AWS_SECRET_ACCESS_KEY
-  #         path: ./
-  #         region: AWS_DEFAULT_REGION
-  #         repo: subless-pay
-  #         skip-when-tags-exist: false
-  #         tag: '$CIRCLE_BRANCH'
-  #     - aws-ecs/deploy-service-update:
-  #         cluster-name: 'dev_pay_ecs_Payments'
-  #         family: 'devStackdevpayecspaySitepaymentSiteServiceTaskDef8814A6F9'
-  #         service-name: 'devStack-devpayecspaySitepaymentSiteService735C5EA0-b9ZeluJTims3'
-  #         force-new-deployment: true
-  #         requires:
-  #           - aws-ecr/build-and-push-image
-  # build_only_calculator:
-  #   when: 
-  #     - not: [ dev, $CIRCLE_BRANCH ]
-  #     - not: [ stage, $CIRCLE_BRANCH ]
-  #     - not: [ prod, $CIRCLE_BRANCH ]
-  #   jobs:
-  #     - aws-ecr/build-and-push-image:
-  #         account-url: AWS_ACCOUNT_URL
-  #         aws-access-key-id: AWS_ACCESS_KEY_ID
-  #         aws-secret-access-key: AWS_SECRET_ACCESS_KEY
-  #         dockerfile: CalculatorDockerfile
-  #         path: ./
-  #         region: AWS_DEFAULT_REGION
-  #         repo: subless-calculator
-  #         skip-when-tags-exist: false
-  #         tag: 'dev'
-  # build_and_push_calculator:
-  #   when: 
-  #     - equal: [ dev, $CIRCLE_BRANCH ]
-  #     - or: [ stage, $CIRCLE_BRANCH ]
-  #     - or: [ prod, $CIRCLE_BRANCH ]
-  #   jobs:
-  #     - aws-ecr/build-and-push-image:
-  #         account-url: AWS_ACCOUNT_URL
-  #         aws-access-key-id: AWS_ACCESS_KEY_ID
-  #         aws-secret-access-key: AWS_SECRET_ACCESS_KEY
-  #         dockerfile: CalculatorDockerfile
-  #         path: ./
-  #         region: AWS_DEFAULT_REGION
-  #         repo: subless-calculator
-  #         skip-when-tags-exist: false
-  #         tag: 'dev'
-  #     - aws-ecs/deploy-service-update:
-  #         cluster-name: 'dev_pay_ecs_Payments'
-  #         family: 'devStackdevpayecscalculatorcalculatorTask1ED54CB3'
-  #         service-name: 'devStack-devpayecscalculatorcalculatorService340918A9-h8ejb8OfoZ7R'
-  #         force-new-deployment: true
-  #         requires:
-  #           - aws-ecr/build-and-push-image
+  build_and_push_site:
+    jobs:
+      - aws-ecr/build-and-push-image:
+          account-url: AWS_ACCOUNT_URL
+          aws-access-key-id: AWS_ACCESS_KEY_ID
+          aws-secret-access-key: AWS_SECRET_ACCESS_KEY
+          path: ./
+          region: AWS_DEFAULT_REGION
+          repo: subless-pay
+          skip-when-tags-exist: false
+          tag: '$CIRCLE_BRANCH'
+      - aws-ecs/deploy-service-update:
+          cluster-name: 'dev_pay_ecs_Payments'
+          family: 'devStackdevpayecspaySitepaymentSiteServiceTaskDef8814A6F9'
+          service-name: 'devStack-devpayecspaySitepaymentSiteService735C5EA0-b9ZeluJTims3'
+          force-new-deployment: true
+          requires:
+            - aws-ecr/build-and-push-image
+  build_only_calculator:
+    jobs:
+      - aws-ecr/build-and-push-image:
+          account-url: AWS_ACCOUNT_URL
+          aws-access-key-id: AWS_ACCESS_KEY_ID
+          aws-secret-access-key: AWS_SECRET_ACCESS_KEY
+          dockerfile: CalculatorDockerfile
+          path: ./
+          region: AWS_DEFAULT_REGION
+          repo: subless-calculator
+          skip-when-tags-exist: false
+          tag: 'dev'
+  build_and_push_calculator:
+    jobs:
+      - aws-ecr/build-and-push-image:
+          account-url: AWS_ACCOUNT_URL
+          aws-access-key-id: AWS_ACCESS_KEY_ID
+          aws-secret-access-key: AWS_SECRET_ACCESS_KEY
+          dockerfile: CalculatorDockerfile
+          path: ./
+          region: AWS_DEFAULT_REGION
+          repo: subless-calculator
+          skip-when-tags-exist: false
+          tag: 'dev'
+      - aws-ecs/deploy-service-update:
+          cluster-name: 'dev_pay_ecs_Payments'
+          family: 'devStackdevpayecscalculatorcalculatorTask1ED54CB3'
+          service-name: 'devStack-devpayecscalculatorcalculatorService340918A9-h8ejb8OfoZ7R'
+          force-new-deployment: true
+          requires:
+            - aws-ecr/build-and-push-image
