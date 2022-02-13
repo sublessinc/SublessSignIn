@@ -9,19 +9,13 @@ workflows:
           account-url: AWS_ACCOUNT_URL
           aws-access-key-id: AWS_ACCESS_KEY_ID
           aws-secret-access-key: AWS_SECRET_ACCESS_KEY
-          #context: myContext
-          #create-repo: true
-          #dockerfile: myDockerfile
-          #no-output-timeout: 20m
           path: ./
-          #profile-name: myProfileName
           region: AWS_DEFAULT_REGION
           repo: subless-pay
           skip-when-tags-exist: false
           tag: 'dev'
       - aws-ecs/deploy-service-update:
           cluster-name: 'dev_pay_ecs_Payments'
-          #container-image-name-updates: 'container=${MY_APP_PREFIX}-service,tag=${CIRCLE_SHA1}'
           family: 'devStackdevpayecspaySitepaymentSiteServiceTaskDef8814A6F9'
           service-name: 'devStack-devpayecspaySitepaymentSiteService735C5EA0-b9ZeluJTims3'
           force-new-deployment: true
@@ -33,19 +27,14 @@ workflows:
           account-url: AWS_ACCOUNT_URL
           aws-access-key-id: AWS_ACCESS_KEY_ID
           aws-secret-access-key: AWS_SECRET_ACCESS_KEY
-          #context: myContext
-          #create-repo: true
           dockerfile: CalculatorDockerfile
-          #no-output-timeout: 20m
           path: ./
-          #profile-name: myProfileName
           region: AWS_DEFAULT_REGION
           repo: subless-calculator
           skip-when-tags-exist: false
           tag: 'dev'
       - aws-ecs/deploy-service-update:
           cluster-name: 'dev_pay_ecs_Payments'
-          #container-image-name-updates: 'container=${MY_APP_PREFIX}-service,tag=${CIRCLE_SHA1}'
           family: 'devStackdevpayecscalculatorcalculatorTask1ED54CB3'
           service-name: 'devStack-devpayecscalculatorcalculatorService340918A9-h8ejb8OfoZ7R'
           force-new-deployment: true
