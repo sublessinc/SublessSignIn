@@ -8,6 +8,12 @@ workflows:
       and:
         - not:
           equal: [ main, << pipeline.git.branch >> ]
+        - not:
+          equal: [ dev, << pipeline.git.branch >> ]
+        - not:
+          equal: [ stage, << pipeline.git.branch >> ]
+        - not:
+          equal: [ prod, << pipeline.git.branch >> ]
     jobs:
       - aws-ecr/build-and-push-image:
           account-url: AWS_ACCOUNT_URL
@@ -17,7 +23,7 @@ workflows:
           region: AWS_DEFAULT_REGION
           repo: subless-pay
           skip-when-tags-exist: false
-          tag: '$CIRCLE_BRANCH'
+          tag: 'dev'
   build_and_push_site:
     jobs:
       - aws-ecr/build-and-push-image:
@@ -28,7 +34,7 @@ workflows:
           region: AWS_DEFAULT_REGION
           repo: subless-pay
           skip-when-tags-exist: false
-          tag: '$CIRCLE_BRANCH'
+          tag: 'dev'
       - aws-ecs/deploy-service-update:
           cluster-name: 'dev_pay_ecs_Payments'
           family: 'devStackdevpayecspaySitepaymentSiteServiceTaskDef8814A6F9'
@@ -37,6 +43,16 @@ workflows:
           requires:
             - aws-ecr/build-and-push-image
   build_only_calculator:
+    when:
+      and:
+        - not:
+          equal: [ main, << pipeline.git.branch >> ]
+        - not:
+          equal: [ dev, << pipeline.git.branch >> ]
+        - not:
+          equal: [ stage, << pipeline.git.branch >> ]
+        - not:
+          equal: [ prod, << pipeline.git.branch >> ]
     jobs:
       - aws-ecr/build-and-push-image:
           account-url: AWS_ACCOUNT_URL
