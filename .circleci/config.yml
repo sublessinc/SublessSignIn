@@ -1,16 +1,17 @@
-version: '2.1'
+version: 2.1
 orbs:
   aws-ecr: circleci/aws-ecr@7.3.0
   aws-ecs: circleci/aws-ecs@2.2.1
 workflows:
-  build_only_site:
-    when: 
-      and:
-        - not: [ dev, $CIRCLE_BRANCH ]
-        - not: [ stage, $CIRCLE_BRANCH ]
-        - not: [ prod, $CIRCLE_BRANCH ]
     jobs:
       - aws-ecr/build-and-push-image:
+          filters:
+            branches:
+              ignore:
+                - main
+                - dev
+                - stage
+                - prod
           account-url: AWS_ACCOUNT_URL
           aws-access-key-id: AWS_ACCESS_KEY_ID
           aws-secret-access-key: AWS_SECRET_ACCESS_KEY
