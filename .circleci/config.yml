@@ -2,6 +2,24 @@ version: 2.1
 orbs:
   aws-ecr: circleci/aws-ecr@7.3.0
   aws-ecs: circleci/aws-ecs@2.2.1
+jobs:
+  setupenv:
+    docker: # use the Docker executor
+      # CircleCI node images available at: https://hub.docker.com/r/circleci/node/
+      - image: cimg/node:17.2.0
+        auth:
+          username: mydockerhub-user
+          password: $DOCKERHUB_PASSWORD  # context / project UI env-var reference
+    steps:
+      - run:
+          name: "Setup custom environment variables"
+          command: echo 'export $CLUSTERNAME"_pay_ecs_Payments"' >> $BASH_ENV
+      - run:
+          name: "Setup custom environment variables"
+          command: echo 'export $CIRCLE_BRANCH"Stack"$CIRCLE_BRANCH"payecspaySitepaymentSiteServiceTaskDef8814A6F9"' >> $BASH_ENV
+      - run:
+          name: "Setup custom environment variables"
+          command: echo 'export $CIRCLE_BRANCH"Stack-"$CIRCLE_BRANCH"payecspaySitepaymentSiteService735C5EA0-b9ZeluJTims3"' >> $BASH_ENV
 workflows:
   build_and_push_site:
     jobs:
@@ -13,7 +31,7 @@ workflows:
           region: AWS_DEFAULT_REGION
           repo: subless-pay
           skip-when-tags-exist: false
-          tag: CIRCLE_BRANCH
+          tag: $CIRCLE_BRANCH
       - aws-ecs/deploy-service-update:
           filters:
             branches:
@@ -22,9 +40,9 @@ workflows:
                 - stage
                 - prod
                 - feature/deploy-to-branch
-          cluster-name: CIRCLE_BRANCH+'_pay_ecs_Payments'
-          family: CIRCLE_BRANCH+'Stack"+CIRCLE_BRANCH+"payecspaySitepaymentSiteServiceTaskDef8814A6F9'
-          service-name: CIRCLE_BRANCH+'Stack-"+CIRCLE_BRANCH+"payecspaySitepaymentSiteService735C5EA0-b9ZeluJTims3'
+          cluster-name: ${CLUSTERNAME}
+          family: ${TASKNAME}
+          service-name: ${SERVICENAME}
           force-new-deployment: true
           requires:
             - aws-ecr/build-and-push-image
