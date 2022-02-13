@@ -21,6 +21,7 @@ workflows:
                 - dev
                 - stage
                 - prod
+                - feature/deploy-to-branch
           cluster-name: 'dev_pay_ecs_Payments'
           family: 'devStackdevpayecspaySitepaymentSiteServiceTaskDef8814A6F9'
           service-name: 'devStack-devpayecspaySitepaymentSiteService735C5EA0-b9ZeluJTims3'
