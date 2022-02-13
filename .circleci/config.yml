@@ -23,6 +23,7 @@ jobs:
 workflows:
   build_and_push_site:
     jobs:
+      - setupenv
       - aws-ecr/build-and-push-image:
           account-url: AWS_ACCOUNT_URL
           aws-access-key-id: AWS_ACCESS_KEY_ID
@@ -57,7 +58,7 @@ workflows:
           region: AWS_DEFAULT_REGION
           repo: subless-calculator
           skip-when-tags-exist: false
-          tag: CIRCLE_BRANCH
+          tag: $CIRCLE_BRANCH
       - aws-ecs/deploy-service-update:
           filters:
             branches:
