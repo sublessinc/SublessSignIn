@@ -43,3 +43,11 @@ workflows:
           repo: subless-calculator
           skip-when-tags-exist: false
           tag: 'dev'
+      - aws-ecs/deploy-service-update:
+          cluster-name: 'dev_pay_ecs_Payments'
+          #container-image-name-updates: 'container=${MY_APP_PREFIX}-service,tag=${CIRCLE_SHA1}'
+          family: 'devStackdevpayecscalculatorcalculatorTask1ED54CB3'
+          service-name: 'devStack-devpayecscalculatorcalculatorService340918A9-h8ejb8OfoZ7R'
+          force-new-deployment: true
+          requires:
+            - aws-ecr/build-and-push-image
