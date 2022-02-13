@@ -13,13 +13,19 @@ jobs:
     steps:
       - run:
           name: "Setup custom environment variables"
-          command: echo 'export $CLUSTERNAME"_pay_ecs_Payments"' >> $BASH_ENV
+          command: echo 'export $CLUSTERNAME=$CIRCLE_BRANCH"_pay_ecs_Payments"' >> $BASH_ENV
       - run:
           name: "Setup custom environment variables"
-          command: echo 'export $CIRCLE_BRANCH"Stack"$CIRCLE_BRANCH"payecspaySitepaymentSiteServiceTaskDef8814A6F9"' >> $BASH_ENV
+          command: echo 'export $SITETASKNAME=$CIRCLE_BRANCH"Stack"$CIRCLE_BRANCH"payecspaySitepaymentSiteServiceTaskDef8814A6F9"' >> $BASH_ENV
       - run:
           name: "Setup custom environment variables"
-          command: echo 'export $CIRCLE_BRANCH"Stack-"$CIRCLE_BRANCH"payecspaySitepaymentSiteService735C5EA0-b9ZeluJTims3"' >> $BASH_ENV
+          command: echo 'export $SITESERVICENAME=$CIRCLE_BRANCH"Stack-"$CIRCLE_BRANCH"payecspaySitepaymentSiteService735C5EA0-b9ZeluJTims3"' >> $BASH_ENV
+      - run:
+          name: "Setup custom environment variables"
+          command: echo 'export $CALCTASKNAME=$CIRCLE_BRANCH"Stack"$CIRCLE_BRANCH"payecscalculatorcalculatorTask1ED54CB3"' >> $BASH_ENV
+      - run:
+          name: "Setup custom environment variables"
+          command: echo 'export $CALCSERVICENAME=$CIRCLE_BRANCH"Stack-"$CIRCLE_BRANCH"payecscalculatorcalculatorService340918A9-mpkABvsKD0Ip"' >> $BASH_ENV
 workflows:
   build_and_push_site:
     jobs:
@@ -42,8 +48,8 @@ workflows:
                 - prod
                 - feature/deploy-to-branch
           cluster-name: ${CLUSTERNAME}
-          family: ${TASKNAME}
-          service-name: ${SERVICENAME}
+          family: ${SITETASKNAME}
+          service-name: ${SITESERVICENAME}
           force-new-deployment: true
           requires:
             - aws-ecr/build-and-push-image
@@ -66,9 +72,9 @@ workflows:
                 - dev
                 - stage
                 - prod
-          cluster-name: 'dev_pay_ecs_Payments'
-          family: 'devStackdevpayecscalculatorcalculatorTask1ED54CB3'
-          service-name: 'devStack-devpayecscalculatorcalculatorService340918A9-h8ejb8OfoZ7R'
+          cluster-name:  ${CLUSTERNAME}
+          family: ${CALCTASKNAME}
+          service-name: ${CALCSERVICENAME}
           force-new-deployment: true
           requires:
             - aws-ecr/build-and-push-image
