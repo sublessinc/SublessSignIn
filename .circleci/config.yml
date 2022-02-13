@@ -3,6 +3,7 @@ orbs:
   aws-ecr: circleci/aws-ecr@7.3.0
   aws-ecs: circleci/aws-ecs@2.2.1
 workflows:
+  build_only_site:
     jobs:
       - aws-ecr/build-and-push-image:
           account-url: AWS_ACCOUNT_URL
