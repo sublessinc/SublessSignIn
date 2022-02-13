@@ -3,7 +3,11 @@ orbs:
   aws-ecr: circleci/aws-ecr@7.3.0
   aws-ecs: circleci/aws-ecs@2.2.1
 workflows:
-  build_and_push_site:
+  build_only_site:
+    when: 
+      - not: [ dev, $CIRCLE_BRANCH ]
+      - not: [ stage, $CIRCLE_BRANCH ]
+      - not: [ prod, $CIRCLE_BRANCH ]
     jobs:
       - aws-ecr/build-and-push-image:
           account-url: AWS_ACCOUNT_URL
@@ -13,7 +17,22 @@ workflows:
           region: AWS_DEFAULT_REGION
           repo: subless-pay
           skip-when-tags-exist: false
-          tag: 'dev'
+          tag: '$CIRCLE_BRANCH'
+  build_and_push_site:
+    when: 
+      - equal: [ dev, $CIRCLE_BRANCH ]
+      - or: [ stage, $CIRCLE_BRANCH ]
+      - or: [ prod, $CIRCLE_BRANCH ]
+    jobs:
+      - aws-ecr/build-and-push-image:
+          account-url: AWS_ACCOUNT_URL
+          aws-access-key-id: AWS_ACCESS_KEY_ID
+          aws-secret-access-key: AWS_SECRET_ACCESS_KEY
+          path: ./
+          region: AWS_DEFAULT_REGION
+          repo: subless-pay
+          skip-when-tags-exist: false
+          tag: '$CIRCLE_BRANCH'
       - aws-ecs/deploy-service-update:
           cluster-name: 'dev_pay_ecs_Payments'
           family: 'devStackdevpayecspaySitepaymentSiteServiceTaskDef8814A6F9'
@@ -21,7 +40,27 @@ workflows:
           force-new-deployment: true
           requires:
             - aws-ecr/build-and-push-image
+  build_only_calculator:
+    when: 
+      - not: [ dev, $CIRCLE_BRANCH ]
+      - not: [ stage, $CIRCLE_BRANCH ]
+      - not: [ prod, $CIRCLE_BRANCH ]
+    jobs:
+      - aws-ecr/build-and-push-image:
+          account-url: AWS_ACCOUNT_URL
+          aws-access-key-id: AWS_ACCESS_KEY_ID
+          aws-secret-access-key: AWS_SECRET_ACCESS_KEY
+          dockerfile: CalculatorDockerfile
+          path: ./
+          region: AWS_DEFAULT_REGION
+          repo: subless-calculator
+          skip-when-tags-exist: false
+          tag: 'dev'
   build_and_push_calculator:
+    when: 
+      - equal: [ dev, $CIRCLE_BRANCH ]
+      - or: [ stage, $CIRCLE_BRANCH ]
+      - or: [ prod, $CIRCLE_BRANCH ]
     jobs:
       - aws-ecr/build-and-push-image:
           account-url: AWS_ACCOUNT_URL
