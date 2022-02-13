@@ -5,13 +5,6 @@ orbs:
 workflows:
     jobs:
       - aws-ecr/build-and-push-image:
-          filters:
-            branches:
-              ignore:
-                - main
-                - dev
-                - stage
-                - prod
           account-url: AWS_ACCOUNT_URL
           aws-access-key-id: AWS_ACCESS_KEY_ID
           aws-secret-access-key: AWS_SECRET_ACCESS_KEY
