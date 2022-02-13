@@ -4,6 +4,10 @@ orbs:
   aws-ecs: circleci/aws-ecs@2.2.1
 workflows:
   build_only_site:
+    when:
+      and:
+        - not:
+          equal: [ main, << pipeline.git.branch >> ]
     jobs:
       - aws-ecr/build-and-push-image:
           account-url: AWS_ACCOUNT_URL
