@@ -52,6 +52,7 @@ workflows:
           service-name: ${SITESERVICENAME}
           force-new-deployment: true
           requires:
+            - setupenv
             - aws-ecr/build-and-push-image
   build_and_push_calculator:
     jobs:
@@ -78,4 +79,5 @@ workflows:
           service-name: ${CALCSERVICENAME}
           force-new-deployment: true
           requires:
+            - setupenv
             - aws-ecr/build-and-push-image
