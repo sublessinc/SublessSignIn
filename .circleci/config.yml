@@ -13,7 +13,7 @@ workflows:
           region: AWS_DEFAULT_REGION
           repo: subless-pay
           skip-when-tags-exist: false
-          tag: 'dev'
+          tag: CIRCLE_BRANCH
       - aws-ecs/deploy-service-update:
           filters:
             branches:
@@ -22,9 +22,9 @@ workflows:
                 - stage
                 - prod
                 - feature/deploy-to-branch
-          cluster-name: 'dev_pay_ecs_Payments'
-          family: 'devStackdevpayecspaySitepaymentSiteServiceTaskDef8814A6F9'
-          service-name: 'devStack-devpayecspaySitepaymentSiteService735C5EA0-b9ZeluJTims3'
+          cluster-name: CIRCLE_BRANCH+'_pay_ecs_Payments'
+          family: CIRCLE_BRANCH+'Stack"+CIRCLE_BRANCH+"payecspaySitepaymentSiteServiceTaskDef8814A6F9'
+          service-name: CIRCLE_BRANCH+'Stack-"+CIRCLE_BRANCH+"payecspaySitepaymentSiteService735C5EA0-b9ZeluJTims3'
           force-new-deployment: true
           requires:
             - aws-ecr/build-and-push-image
@@ -39,7 +39,7 @@ workflows:
           region: AWS_DEFAULT_REGION
           repo: subless-calculator
           skip-when-tags-exist: false
-          tag: 'dev'
+          tag: CIRCLE_BRANCH
       - aws-ecs/deploy-service-update:
           filters:
             branches:
