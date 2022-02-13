@@ -10,13 +10,6 @@ if [ -z "$environment" ]; then
 fi
 echo "environment: " $environment;
 
-# cd ./Subless.UI/sublessui
-# npm install
-# ng build --configuration $environment && cp -r ./dist/sublessui/* ../../SublessSignIn/wwwroot
-# cd ./../../
-# cd ./Subless.JS/
-# npm run build:$environment
-# cd ./../
 aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin 548668861663.dkr.ecr.us-east-2.amazonaws.com
 docker build --build_environment $environment -t subless-pay:$environment .
 docker tag subless-pay:$environment 548668861663.dkr.ecr.us-east-2.amazonaws.com/subless-pay:$environment

@@ -1,36 +1,97 @@
-version: '2.1'
+version: 2.1
 orbs:
   aws-ecr: circleci/aws-ecr@7.3.0
+  aws-ecs: circleci/aws-ecs@2.2.1
 workflows:
-  build_and_push_site:
+  build_only_site:
+    when:
+      and:
+        - not:
+          equal: [ main, << pipeline.git.branch >> ]
+        - not:
+          equal: [ dev, << pipeline.git.branch >> ]
+        - not:
+          equal: [ stage, << pipeline.git.branch >> ]
+        - not:
+          equal: [ prod, << pipeline.git.branch >> ]
     jobs:
       - aws-ecr/build-and-push-image:
           account-url: AWS_ACCOUNT_URL
           aws-access-key-id: AWS_ACCESS_KEY_ID
           aws-secret-access-key: AWS_SECRET_ACCESS_KEY
-          #context: myContext
-          #create-repo: true
-          #dockerfile: myDockerfile
-          #no-output-timeout: 20m
           path: ./
-          #profile-name: myProfileName
           region: AWS_DEFAULT_REGION
           repo: subless-pay
           skip-when-tags-exist: false
           tag: 'dev'
-  build_and_push_calculator:
+  build_and_push_site:
+    when:
+      or:
+        - equal: [ main, << pipeline.git.branch >> ]
+        - equal: [ dev, << pipeline.git.branch >> ]
+        - equal: [ stage, << pipeline.git.branch >> ]
+        - equal: [ prod, << pipeline.git.branch >> ]
     jobs:
       - aws-ecr/build-and-push-image:
           account-url: AWS_ACCOUNT_URL
           aws-access-key-id: AWS_ACCESS_KEY_ID
           aws-secret-access-key: AWS_SECRET_ACCESS_KEY
-          #context: myContext
-          #create-repo: true
-          dockerfile: CalculatorDockerfile
-          #no-output-timeout: 20m
           path: ./
-          #profile-name: myProfileName
+          region: AWS_DEFAULT_REGION
+          repo: subless-pay
+          skip-when-tags-exist: false
+          tag: 'dev'
+      - aws-ecs/deploy-service-update:
+          cluster-name: 'dev_pay_ecs_Payments'
+          family: 'devStackdevpayecspaySitepaymentSiteServiceTaskDef8814A6F9'
+          service-name: 'devStack-devpayecspaySitepaymentSiteService735C5EA0-b9ZeluJTims3'
+          force-new-deployment: true
+          requires:
+            - aws-ecr/build-and-push-image
+  build_only_calculator:
+    when:
+      and:
+        - not:
+          equal: [ main, << pipeline.git.branch >> ]
+        - not:
+          equal: [ dev, << pipeline.git.branch >> ]
+        - not:
+          equal: [ stage, << pipeline.git.branch >> ]
+        - not:
+          equal: [ prod, << pipeline.git.branch >> ]
+    jobs:
+      - aws-ecr/build-and-push-image:
+          account-url: AWS_ACCOUNT_URL
+          aws-access-key-id: AWS_ACCESS_KEY_ID
+          aws-secret-access-key: AWS_SECRET_ACCESS_KEY
+          dockerfile: CalculatorDockerfile
+          path: ./
           region: AWS_DEFAULT_REGION
           repo: subless-calculator
           skip-when-tags-exist: false
           tag: 'dev'
+  build_and_push_calculator:
+    when:
+      or:
+        - equal: [ main, << pipeline.git.branch >> ]
+        - equal: [ dev, << pipeline.git.branch >> ]
+        - equal: [ stage, << pipeline.git.branch >> ]
+        - equal: [ prod, << pipeline.git.branch >> ]
+    jobs:
+      - aws-ecr/build-and-push-image:
+          account-url: AWS_ACCOUNT_URL
+          aws-access-key-id: AWS_ACCESS_KEY_ID
+          aws-secret-access-key: AWS_SECRET_ACCESS_KEY
+          dockerfile: CalculatorDockerfile
+          path: ./
+          region: AWS_DEFAULT_REGION
+          repo: subless-calculator
+          skip-when-tags-exist: false
+          tag: 'dev'
+      - aws-ecs/deploy-service-update:
+          cluster-name: 'dev_pay_ecs_Payments'
+          family: 'devStackdevpayecscalculatorcalculatorTask1ED54CB3'
+          service-name: 'devStack-devpayecscalculatorcalculatorService340918A9-h8ejb8OfoZ7R'
+          force-new-deployment: true
+          requires:
+            - aws-ecr/build-and-push-image

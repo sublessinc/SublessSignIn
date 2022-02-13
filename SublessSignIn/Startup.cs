@@ -104,8 +104,18 @@ namespace SublessSignIn
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, Microsoft.Extensions.Hosting.IApplicationLifetime applicationLifetime)
         {
+            applicationLifetime.ApplicationStarted.Register(OnStarted);
+            applicationLifetime.ApplicationStopping.Register(OnStopping);
+            applicationLifetime.ApplicationStopped.Register(OnStopped);
+
+            Console.CancelKeyPress += (sender, eventArgs) =>
+            {
+                applicationLifetime.StopApplication();
+                // Don't terminate the process immediately, wait for the Main thread to exit gracefully.
+                eventArgs.Cancel = true;
+            };
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -143,6 +153,21 @@ namespace SublessSignIn
                 endpoints.MapFallbackToFile("/index.html");
             });
             
+        }
+
+        private void OnStarted()
+        {
+            Console.WriteLine("Started");
+        }
+
+        private void OnStopping()
+        {
+            Console.WriteLine("Stopping");
+        }
+
+        private void OnStopped()
+        {
+            Console.WriteLine("Stopped");
         }
     }
 }
