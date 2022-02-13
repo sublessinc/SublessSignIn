@@ -55,6 +55,7 @@ workflows:
             - aws-ecr/build-and-push-image
   build_and_push_calculator:
     jobs:
+      - setupenv
       - aws-ecr/build-and-push-image:
           account-url: AWS_ACCOUNT_URL
           aws-access-key-id: AWS_ACCESS_KEY_ID
