@@ -2,34 +2,9 @@ version: 2.1
 orbs:
   aws-ecr: circleci/aws-ecr@7.3.0
   aws-ecs: circleci/aws-ecs@2.2.1
-jobs:
-  setupenv:
-    docker: # use the Docker executor
-      # CircleCI node images available at: https://hub.docker.com/r/circleci/node/
-      - image: cimg/node:17.2.0
-        auth:
-          username: mydockerhub-user
-          password: $DOCKERHUB_PASSWORD  # context / project UI env-var reference
-    steps:
-      - run:
-          name: "Setup custom environment variables"
-          command: echo 'export $CLUSTERNAME=$CIRCLE_BRANCH"_pay_ecs_Payments"' >> $BASH_ENV
-      - run:
-          name: "Setup custom environment variables"
-          command: echo 'export $SITETASKNAME=$CIRCLE_BRANCH"Stack"$CIRCLE_BRANCH"payecspaySitepaymentSiteServiceTaskDef8814A6F9"' >> $BASH_ENV
-      - run:
-          name: "Setup custom environment variables"
-          command: echo 'export $SITESERVICENAME=$CIRCLE_BRANCH"Stack-"$CIRCLE_BRANCH"payecspaySitepaymentSiteService735C5EA0-b9ZeluJTims3"' >> $BASH_ENV
-      - run:
-          name: "Setup custom environment variables"
-          command: echo 'export $CALCTASKNAME=$CIRCLE_BRANCH"Stack"$CIRCLE_BRANCH"payecscalculatorcalculatorTask1ED54CB3"' >> $BASH_ENV
-      - run:
-          name: "Setup custom environment variables"
-          command: echo 'export $CALCSERVICENAME=$CIRCLE_BRANCH"Stack-"$CIRCLE_BRANCH"payecscalculatorcalculatorService340918A9-mpkABvsKD0Ip"' >> $BASH_ENV
 workflows:
   build_and_push_site:
     jobs:
-      - setupenv
       - aws-ecr/build-and-push-image:
           account-url: AWS_ACCOUNT_URL
           aws-access-key-id: AWS_ACCESS_KEY_ID
@@ -46,10 +21,9 @@ workflows:
                 - dev
           cluster-name: "dev_pay_ecs_Payments"
           family: "devStackdevpayecspaySitepaymentSiteServiceTaskDef8814A6F9"
-          service-name: "devStack-devpayecspaySitepaymentSiteService735C5EA0-b9ZeluJTims3"
+          service-name: "devStack-devpayecspaySitepaymentSiteService735C5EA0-0N0hrHOvoPFa"
           force-new-deployment: true
           requires:
-            - setupenv
             - aws-ecr/build-and-push-image
       - aws-ecs/deploy-service-update:
           filters:
@@ -61,7 +35,6 @@ workflows:
           service-name: "stageStack-stagepayecspaySitepaymentSiteServiceA490E237-7gnuYguViwew"
           force-new-deployment: true
           requires:
-            - setupenv
             - aws-ecr/build-and-push-image
       - aws-ecs/deploy-service-update:
           filters:
@@ -73,11 +46,9 @@ workflows:
           service-name: "prodStack-prodpayecspaySitepaymentSiteService7D42131B-AbNNE2P4GcW0"
           force-new-deployment: true
           requires:
-            - setupenv
             - aws-ecr/build-and-push-image
   build_and_push_calculator:
     jobs:
-      - setupenv
       - aws-ecr/build-and-push-image:
           account-url: AWS_ACCOUNT_URL
           aws-access-key-id: AWS_ACCESS_KEY_ID
@@ -98,7 +69,6 @@ workflows:
           service-name: "devpayecscalculatorcalculatorService340918A9-mpkABvsKD0Ip"
           force-new-deployment: true
           requires:
-            - setupenv
             - aws-ecr/build-and-push-image
       - aws-ecs/deploy-service-update:
           filters:
@@ -110,7 +80,6 @@ workflows:
           service-name: "stageStack-stagepayecscalculatorcalculatorService2037D9D6-W8W37yjQ7614"
           force-new-deployment: true
           requires:
-            - setupenv
             - aws-ecr/build-and-push-image
       - aws-ecs/deploy-service-update:
           filters:
@@ -122,5 +91,4 @@ workflows:
           service-name: "prodStack-prodpayecscalculatorcalculatorService4074FCCD-WwSPmUBBRmig"
           force-new-deployment: true
           requires:
-            - setupenv
             - aws-ecr/build-and-push-image
