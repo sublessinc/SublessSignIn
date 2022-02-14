@@ -44,12 +44,33 @@ workflows:
             branches:
               only:
                 - dev
+          cluster-name: "dev_pay_ecs_Payments"
+          family: "devStackdevpayecspaySitepaymentSiteServiceTaskDef8814A6F9"
+          service-name: "devStack-devpayecspaySitepaymentSiteService735C5EA0-b9ZeluJTims3"
+          force-new-deployment: true
+          requires:
+            - setupenv
+            - aws-ecr/build-and-push-image
+      - aws-ecs/deploy-service-update:
+          filters:
+            branches:
+              only:
                 - stage
+          cluster-name: "stage_pay_ecs_Payments"
+          family: "stageStackstagepayecspaySitepaymentSiteServiceTaskDef06EA38A0"
+          service-name: "stageStack-stagepayecspaySitepaymentSiteServiceA490E237-7gnuYguViwew"
+          force-new-deployment: true
+          requires:
+            - setupenv
+            - aws-ecr/build-and-push-image
+      - aws-ecs/deploy-service-update:
+          filters:
+            branches:
+              only:
                 - prod
-                - feature/deploy-to-branch
-          cluster-name: ${CLUSTERNAME}
-          family: ${SITETASKNAME}
-          service-name: ${SITESERVICENAME}
+          cluster-name: "prod_pay_ecs_PaymentsUpdate "
+          family: "prodStackprodpayecspaySitepaymentSiteServiceTaskDefCB42646A"
+          service-name: "prodStack-prodpayecspaySitepaymentSiteService7D42131B-AbNNE2P4GcW0"
           force-new-deployment: true
           requires:
             - setupenv
@@ -72,11 +93,33 @@ workflows:
             branches:
               only:
                 - dev
+          cluster-name:  "dev_pay_ecs_Payments"
+          family: "devStackdevpayecscalculatorcalculatorTask1ED54CB3"
+          service-name: "devpayecscalculatorcalculatorService340918A9-mpkABvsKD0Ip"
+          force-new-deployment: true
+          requires:
+            - setupenv
+            - aws-ecr/build-and-push-image
+      - aws-ecs/deploy-service-update:
+          filters:
+            branches:
+              only:
                 - stage
+          cluster-name:  "stage_pay_ecs_Payments"
+          family: "stageStackstagepayecscalculatorcalculatorTaskE2CCA8D9"
+          service-name: "stageStack-stagepayecscalculatorcalculatorService2037D9D6-W8W37yjQ7614"
+          force-new-deployment: true
+          requires:
+            - setupenv
+            - aws-ecr/build-and-push-image
+      - aws-ecs/deploy-service-update:
+          filters:
+            branches:
+              only:
                 - prod
-          cluster-name:  ${CLUSTERNAME}
-          family: ${CALCTASKNAME}
-          service-name: ${CALCSERVICENAME}
+          cluster-name:  "prod_pay_ecs_Payments"
+          family: "prodStackprodpayecscalculatorcalculatorTask56C667E4"
+          service-name: "prodStack-prodpayecscalculatorcalculatorService4074FCCD-WwSPmUBBRmig"
           force-new-deployment: true
           requires:
             - setupenv
