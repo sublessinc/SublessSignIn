@@ -75,6 +75,7 @@ workflows:
             branches:
               only:
                 - stage
+                - /release-.*/
           cluster-name:  "stage_pay_ecs_Payments"
           family: "stageStackstagepayecscalculatorcalculatorTaskE2CCA8D9"
           service-name: "stageStack-stagepayecscalculatorcalculatorService2037D9D6-W8W37yjQ7614"
@@ -85,7 +86,7 @@ workflows:
           filters:
             branches:
               only:
-                - prod
+                - main
           cluster-name:  "prod_pay_ecs_Payments"
           family: "prodStackprodpayecscalculatorcalculatorTask56C667E4"
           service-name: "prodStack-prodpayecscalculatorcalculatorService4074FCCD-WwSPmUBBRmig"
