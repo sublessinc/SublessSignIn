@@ -192,7 +192,7 @@ namespace Subless.Services
         {
             var prices = new List<string>();
             var user = _userService.GetUserByCognitoId(cognitoId);
-            if (user.StripeCustomerId == null)
+            if (user?.StripeCustomerId == null)
             {
                 return prices;
             }
