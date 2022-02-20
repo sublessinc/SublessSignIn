@@ -231,7 +231,7 @@ namespace SublessSignIn.Controllers
             return Ok(await _partnerService.CreatorChangeWebhook(dummyCreator));
         }
 
-        [HttpPost("Analytics")]
+        [HttpGet("Analytics")]
         [Authorize]
         public ActionResult<HistoricalStats<UserStats>> GetPartnerAnalytics()
         {
