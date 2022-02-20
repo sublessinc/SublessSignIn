@@ -2,7 +2,6 @@ version: 2.1
 orbs:
   aws-ecr: circleci/aws-ecr@7.3.0
   aws-ecs: circleci/aws-ecs@2.2.1
-  postmedia-retag: postmedia-orbs/postmedia-retag@1.0.2
 workflows:
   build_and_push_site:
     jobs:
@@ -15,7 +14,7 @@ workflows:
           repo: subless-pay
           skip-when-tags-exist: false
           tag: $CIRCLE_SHA1
-      - postmedia-retag/retag-deploy:
+      - aws-ecr/push-image:
           filters:
             branches:
               only:
@@ -24,7 +23,9 @@ workflows:
                 - prod
           ecr-url: AWS_ACCOUNT_URL
           repo: subless-pay
-          dest-tag: $CIRCLE_BRANCH
+          tag: $CIRCLE_BRANCH
+          requires:
+            - aws-ecr/build-and-push-image
       - aws-ecs/deploy-service-update:
           filters:
             branches:
@@ -70,7 +71,7 @@ workflows:
           repo: subless-calculator
           skip-when-tags-exist: false
           tag: $CIRCLE_SHA1
-      - postmedia-retag/retag-deploy:
+      - aws-ecr/push-image:
           filters:
             branches:
               only:
@@ -79,7 +80,9 @@ workflows:
                 - prod
           ecr-url: AWS_ACCOUNT_URL
           repo: subless-calculator
-          dest-tag: $CIRCLE_BRANCH
+          tag: $CIRCLE_BRANCH
+          requires:
+            - aws-ecr/build-and-push-image
       - aws-ecs/deploy-service-update:
           filters:
             branches:
