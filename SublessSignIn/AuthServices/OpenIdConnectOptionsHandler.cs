@@ -67,30 +67,13 @@ namespace SublessSignIn.AuthServices
                 // Override the redirect URI to be what you want
                 context.ProtocolMessage.RedirectUri = $"{AuthSettings.Domain}signin-oidc";
             };
-
-            options.Events.OnTicketReceived = async context =>
-            {
-                Console.WriteLine("Test");
-            };
             options.Events.OnUserInformationReceived = async context =>
-            {//2
-                Console.WriteLine("Test");
-                Console.WriteLine(context.Principal.Claims.First(x => x.Type == "cognito:username").Value);
-                Console.WriteLine(context.User);
-                Console.WriteLine(context.Properties.RedirectUri);
+            {
                 var cognitoId = userService.GetUserClaim(context.Principal);
                 if (!stripeService.CustomerHasPaid(cognitoId))
                 {
                     context.Properties.RedirectUri = "/";
                 }
-                // if (!userservice.HasPaid(cognitoid))
-                // { context.Properties.RedirectUri == "/" }
-
-            };
-            options.Events.OnTokenValidated = async context =>
-            {//1
-                Console.WriteLine("Test");
-                Console.WriteLine(context.Principal.Claims.First(x => x.Type == "cognito:username").Value);
             };
             // save access and refresh token to enable automatic lifetime management
             options.SaveTokens = true;
