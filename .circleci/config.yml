@@ -6,6 +6,12 @@ workflows:
   build_and_push_site:
     jobs:
       - aws-ecr/build-and-push-image:
+          filters:
+            branches:
+              ignore:
+                - dev
+                - stage
+                - prod
           account-url: AWS_ACCOUNT_URL
           aws-access-key-id: AWS_ACCESS_KEY_ID
           aws-secret-access-key: AWS_SECRET_ACCESS_KEY
@@ -14,18 +20,21 @@ workflows:
           repo: subless-pay
           skip-when-tags-exist: false
           tag: $CIRCLE_SHA1
-      - aws-ecr/push-image:
+      - aws-ecr/build-and-push-image:
           filters:
             branches:
               only:
                 - dev
                 - stage
                 - prod
-          ecr-url: AWS_ACCOUNT_URL
+          account-url: AWS_ACCOUNT_URL
+          aws-access-key-id: AWS_ACCESS_KEY_ID
+          aws-secret-access-key: AWS_SECRET_ACCESS_KEY
+          path: ./
+          region: AWS_DEFAULT_REGION
           repo: subless-pay
+          skip-when-tags-exist: false
           tag: $CIRCLE_BRANCH
-          requires:
-            - aws-ecr/build-and-push-image
       - aws-ecs/deploy-service-update:
           filters:
             branches:
@@ -62,6 +71,12 @@ workflows:
   build_and_push_calculator:
     jobs:
       - aws-ecr/build-and-push-image:
+          filters:
+            branches:
+              ignore:
+                - dev
+                - stage
+                - prod
           account-url: AWS_ACCOUNT_URL
           aws-access-key-id: AWS_ACCESS_KEY_ID
           aws-secret-access-key: AWS_SECRET_ACCESS_KEY
@@ -71,18 +86,22 @@ workflows:
           repo: subless-calculator
           skip-when-tags-exist: false
           tag: $CIRCLE_SHA1
-      - aws-ecr/push-image:
+      - aws-ecr/build-and-push-image:
           filters:
             branches:
               only:
                 - dev
                 - stage
                 - prod
-          ecr-url: AWS_ACCOUNT_URL
+          account-url: AWS_ACCOUNT_URL
+          aws-access-key-id: AWS_ACCESS_KEY_ID
+          aws-secret-access-key: AWS_SECRET_ACCESS_KEY
+          dockerfile: CalculatorDockerfile
+          path: ./
+          region: AWS_DEFAULT_REGION
           repo: subless-calculator
+          skip-when-tags-exist: false
           tag: $CIRCLE_BRANCH
-          requires:
-            - aws-ecr/build-and-push-image
       - aws-ecs/deploy-service-update:
           filters:
             branches:
