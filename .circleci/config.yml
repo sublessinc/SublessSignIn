@@ -70,6 +70,16 @@ workflows:
           repo: subless-calculator
           skip-when-tags-exist: false
           tag: $CIRCLE_SHA1
+      - postmedia-retag/retag-deploy:
+          filters:
+            branches:
+              only:
+                - dev
+                - stage
+                - prod
+          ecr-url: AWS_ACCOUNT_URL
+          repo: subless-calculator
+          dest-tag: $CIRCLE_BRANCH
       - aws-ecs/deploy-service-update:
           filters:
             branches:
