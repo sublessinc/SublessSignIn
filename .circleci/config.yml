@@ -6,7 +6,7 @@ workflows:
   build_and_push_site:
     jobs:
       - aws-ecr/build-and-push-image:
-          name: build-push-site-branch-tag
+          name: build-push-site-commit-tag
           filters:
             branches:
               ignore:
