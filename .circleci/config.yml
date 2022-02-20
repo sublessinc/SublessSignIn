@@ -6,7 +6,7 @@ workflows:
   build_and_push_site:
     jobs:
       - aws-ecr/build-and-push-image:
-          name: build-push-branch-tag
+          name: build-push-site-branch-tag
           filters:
             branches:
               ignore:
@@ -22,7 +22,7 @@ workflows:
           skip-when-tags-exist: false
           tag: $CIRCLE_SHA1
       - aws-ecr/build-and-push-image:
-          name: build-push-env-tag
+          name: build-push-site-env-tag
           filters:
             branches:
               only:
@@ -38,6 +38,7 @@ workflows:
           skip-when-tags-exist: false
           tag: $CIRCLE_BRANCH
       - aws-ecs/deploy-service-update:
+          name: deploy-site-to-dev
           filters:
             branches:
               only:
@@ -47,8 +48,9 @@ workflows:
           service-name: "devStack-devpayecspaySitepaymentSiteService735C5EA0-0N0hrHOvoPFa"
           force-new-deployment: true          
           requires:
-            - aws-ecr/build-and-push-image
+            - build-push-site-env-tag
       - aws-ecs/deploy-service-update:
+          name: deploy-site-to-stage
           filters:
             branches:
               only:
@@ -58,8 +60,9 @@ workflows:
           service-name: "stageStack-stagepayecspaySitepaymentSiteServiceA490E237-7gnuYguViwew"
           force-new-deployment: true
           requires:
-            - aws-ecr/build-and-push-image
+            - build-push-site-env-tag
       - aws-ecs/deploy-service-update:
+          name: deploy-site-to-prod
           filters:
             branches:
               only:
@@ -69,11 +72,11 @@ workflows:
           service-name: "prodStack-prodpayecspaySitepaymentSiteService7D42131B-AbNNE2P4GcW0"
           force-new-deployment: true
           requires:
-            - aws-ecr/build-and-push-image
+            - build-push-site-env-tag
   build_and_push_calculator:
     jobs:
       - aws-ecr/build-and-push-image:
-          name: build-push-commit-tag
+          name: build-push-calc-commit-tag
           filters:
             branches:
               ignore:
@@ -90,7 +93,7 @@ workflows:
           skip-when-tags-exist: false
           tag: $CIRCLE_SHA1
       - aws-ecr/build-and-push-image:
-          name: build-push-env-tag
+          name: build-push-calc-env-tag
           filters:
             branches:
               only:
@@ -107,6 +110,7 @@ workflows:
           skip-when-tags-exist: false
           tag: $CIRCLE_BRANCH
       - aws-ecs/deploy-service-update:
+          name: deploy-calc-to-dev
           filters:
             branches:
               only:
@@ -116,8 +120,9 @@ workflows:
           service-name: "devStack-devpayecscalculatorcalculatorService340918A9-s4v6AwRWAg6x"
           force-new-deployment: true
           requires:
-            - aws-ecr/build-and-push-image
+            - build-push-calc-env-tag
       - aws-ecs/deploy-service-update:
+          name: deploy-calc-to-stage
           filters:
             branches:
               only:
@@ -128,8 +133,9 @@ workflows:
           service-name: "stageStack-stagepayecscalculatorcalculatorService2037D9D6-W8W37yjQ7614"
           force-new-deployment: true
           requires:
-            - aws-ecr/build-and-push-image
+            - build-push-calc-env-tag
       - aws-ecs/deploy-service-update:
+          name: deploy-calc-to-prod
           filters:
             branches:
               only:
@@ -139,4 +145,4 @@ workflows:
           service-name: "prodStack-prodpayecscalculatorcalculatorService4074FCCD-WwSPmUBBRmig"
           force-new-deployment: true
           requires:
-            - aws-ecr/build-and-push-image
+            - build-push-calc-env-tag
