@@ -6,6 +6,7 @@ workflows:
   build_and_push_site:
     jobs:
       - aws-ecr/build-and-push-image:
+          name: build-push-branch-tag
           filters:
             branches:
               ignore:
@@ -21,6 +22,7 @@ workflows:
           skip-when-tags-exist: false
           tag: $CIRCLE_SHA1
       - aws-ecr/build-and-push-image:
+          name: build-push-env-tag
           filters:
             branches:
               only:
@@ -71,6 +73,7 @@ workflows:
   build_and_push_calculator:
     jobs:
       - aws-ecr/build-and-push-image:
+          name: build-push-commit-tag
           filters:
             branches:
               ignore:
@@ -87,6 +90,7 @@ workflows:
           skip-when-tags-exist: false
           tag: $CIRCLE_SHA1
       - aws-ecr/build-and-push-image:
+          name: build-push-env-tag
           filters:
             branches:
               only:
