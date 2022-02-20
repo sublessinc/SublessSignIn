@@ -2,6 +2,7 @@ version: 2.1
 orbs:
   aws-ecr: circleci/aws-ecr@7.3.0
   aws-ecs: circleci/aws-ecs@2.2.1
+  postmedia-retag: postmedia-orbs/postmedia-retag@1.0.2
 workflows:
   build_and_push_site:
     jobs:
@@ -13,7 +14,17 @@ workflows:
           region: AWS_DEFAULT_REGION
           repo: subless-pay
           skip-when-tags-exist: false
-          tag: $CIRCLE_BRANCH
+          tag: $CIRCLE_SHA1
+      - postmedia-retag/retag-deploy:
+          filters:
+            branches:
+              only:
+                - dev
+                - stage
+                - prod
+          ecr-url: AWS_ACCOUNT_URL
+          repo: subless-pay
+          dest-tag: $CIRCLE_BRANCH
       - aws-ecs/deploy-service-update:
           filters:
             branches:
@@ -22,7 +33,7 @@ workflows:
           cluster-name: "dev_pay_ecs_Payments"
           family: "devStackdevpayecspaySitepaymentSiteServiceTaskDef8814A6F9"
           service-name: "devStack-devpayecspaySitepaymentSiteService735C5EA0-0N0hrHOvoPFa"
-          force-new-deployment: true
+          force-new-deployment: true          
           requires:
             - aws-ecr/build-and-push-image
       - aws-ecs/deploy-service-update:
@@ -58,7 +69,7 @@ workflows:
           region: AWS_DEFAULT_REGION
           repo: subless-calculator
           skip-when-tags-exist: false
-          tag: $CIRCLE_BRANCH
+          tag: $CIRCLE_SHA1
       - aws-ecs/deploy-service-update:
           filters:
             branches:
