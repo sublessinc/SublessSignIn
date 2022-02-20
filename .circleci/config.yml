@@ -43,9 +43,9 @@ workflows:
             branches:
               only:
                 - dev
-          cluster-name: "dev_pay_ecs_Payments"
-          family: "devStackdevpayecspaySitepaymentSiteServiceTaskDef8814A6F9"
-          service-name: "devStack-devpayecspaySitepaymentSiteService735C5EA0-0N0hrHOvoPFa"
+          cluster-name: "dev_pay2_ecs_Payments"
+          family: "devStackdevpay2ecspaySitepaymentSiteServiceTaskDefB8DCB8D4"
+          service-name: "devStack-devpay2ecspaySitepaymentSiteService31421C2C-po6WOZFk7sjE"
           force-new-deployment: true          
           requires:
             - build-push-site-env-tag
@@ -115,9 +115,9 @@ workflows:
             branches:
               only:
                 - dev
-          cluster-name:  "dev_pay_ecs_Payments"
-          family: "devStackdevpayecscalculatorcalculatorTask1ED54CB3"
-          service-name: "devStack-devpayecscalculatorcalculatorService340918A9-s4v6AwRWAg6x"
+          cluster-name:  "dev_pay2_ecs_Payments"
+          family: "devStackdevpay2ecscalculatorcalculatorTask7F8364F4"
+          service-name: "devStack-devpay2ecscalculatorcalculatorService8D13E879-9AmCgagHeCbC"
           force-new-deployment: true
           requires:
             - build-push-calc-env-tag
