@@ -159,7 +159,7 @@ namespace Subless.Services
             var options = new CouponCreateOptions
             {
                 Duration = "once",
-                Id = "rollover",
+                Id = "rollover"+Guid.NewGuid(),
                 PercentOff = 100,
                 MaxRedemptions = 1
             };

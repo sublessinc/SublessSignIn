@@ -28,10 +28,10 @@ namespace SublessSignIn
                 var services = scope.ServiceProvider;
                 using (var context = services.GetService<UserRepository>())
                 {
-                    
-                    //Log.Logger.Information("Running migrations");
-                    //context.Database.Migrate();
-                    //context.SaveChanges();
+
+                    Log.Logger.Information("Running migrations");
+                    context.Database.Migrate();
+                    context.SaveChanges();
                     context.LogDbStats();
                 }
                 var adminService = services.GetService<IAdministrationService>();
