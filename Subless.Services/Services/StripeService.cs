@@ -150,8 +150,15 @@ namespace Subless.Services
         public void RolloverPaymentForIdleCustomer(string customerId)
         {
             _logger.LogInformation($"Rolling over payment for idle customer {customerId}");
+            var activeSubs = GetSubscriptions(customerId);
+            if (!activeSubs.Any())
+            {
+                _logger.LogInformation("Customer {custId} cancelled their sub before we could rollover their payment", customerId);
+                return;
+            }
+            var sub = activeSubs.First(); //TODO figure out which sub to choose
             var coupon = CreateOneTimeCoupon();
-            ApplyCouponToSubscription(coupon, customerId);
+            ApplyCouponToSubscription(coupon, sub);
         }
 
         private Coupon CreateOneTimeCoupon()
@@ -168,10 +175,8 @@ namespace Subless.Services
 
         }
 
-        private Subscription ApplyCouponToSubscription(Coupon coupon, string customerId)
+        private Subscription ApplyCouponToSubscription(Coupon coupon, Subscription sub)
         {
-
-            var sub = GetSubscriptions(customerId).First(); //TODO figure out which sub to choose
             var updateOptions = new SubscriptionUpdateOptions()
             {
                 Coupon = coupon.Id,
