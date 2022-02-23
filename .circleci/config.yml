@@ -47,7 +47,7 @@ workflows:
           family: "devStackdevpay2ecspaySitepaymentSiteServiceTaskDefB8DCB8D4"
           service-name: "devStack-devpay2ecspaySitepaymentSiteService31421C2C-po6WOZFk7sjE"
           force-new-deployment: true       
-          container-image-name-updates: "subless-pay:dev"   
+          container-image-name-updates: "container=subless-pay,tag=dev"   
           requires:
             - build-push-site-env-tag
       - aws-ecs/deploy-service-update:
@@ -59,7 +59,7 @@ workflows:
           cluster-name: "stage_pay_ecs_Payments"
           family: "stageStackstagepayecspaySitepaymentSiteServiceTaskDef06EA38A0"
           service-name: "stageStack-stagepayecspaySitepaymentSiteServiceA490E237-7gnuYguViwew"
-          container-image-name-updates: "subless-pay:stage"
+          container-image-name-updates: "container=subless-pay,tag=stage"
           force-new-deployment: true
           requires:
             - build-push-site-env-tag
@@ -72,7 +72,7 @@ workflows:
           cluster-name: "prod_pay_ecs_PaymentsUpdate "
           family: "prodStackprodpayecspaySitepaymentSiteServiceTaskDefCB42646A"
           service-name: "prodStack-prodpayecspaySitepaymentSiteService7D42131B-AbNNE2P4GcW0"
-          container-image-name-updates: "subless-pay:prod"
+          container-image-name-updates: "container=subless-pay,tag=prod"
           force-new-deployment: true
           requires:
             - build-push-site-env-tag
@@ -122,7 +122,7 @@ workflows:
           family: "devStackdevpay2ecscalculatorcalculatorTask7F8364F4"
           service-name: "devStack-devpay2ecscalculatorcalculatorService8D13E879-9AmCgagHeCbC"
           force-new-deployment: true
-          container-image-name-updates: "subless-calculator:dev"
+          container-image-name-updates: "container=subless-calculator,tag=dev"
           requires:
             - build-push-calc-env-tag
       - aws-ecs/deploy-service-update:
@@ -136,7 +136,7 @@ workflows:
           family: "stageStackstagepayecscalculatorcalculatorTaskE2CCA8D9"
           service-name: "stageStack-stagepayecscalculatorcalculatorService2037D9D6-W8W37yjQ7614"
           force-new-deployment: true
-          container-image-name-updates: "subless-calculator:stage"
+          container-image-name-updates: "container=subless-calculator,tag=stage"
           requires:
             - build-push-calc-env-tag
       - aws-ecs/deploy-service-update:
@@ -148,7 +148,7 @@ workflows:
           cluster-name:  "prod_pay_ecs_Payments"
           family: "prodStackprodpayecscalculatorcalculatorTask56C667E4"
           service-name: "prodStack-prodpayecscalculatorcalculatorService4074FCCD-WwSPmUBBRmig"
-          container-image-name-updates: "subless-calculator:prod"
+          container-image-name-updates: "container=subless-calculator,tag=prod"
           force-new-deployment: true
           requires:
             - build-push-calc-env-tag
