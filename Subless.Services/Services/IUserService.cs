@@ -14,11 +14,10 @@ namespace Subless.Services
         IEnumerable<User> GetAdmins();
         void SetUserAdmin(Guid userId);
         bool IsUserAdmin(string cognitoId);
-        void AddStripeCustomerId(string cognitoId, string stripeId);
+        void AddStripeCustomerId(string user, string stripeId);
         IEnumerable<User> GetUsersFromStripeIds(IEnumerable<string> customerIds);
         User GetUser(Guid id);
         string GetUserClaim(ClaimsPrincipal user);
-        void ClearStripePayment(Guid id);
         void DemoteUser(Guid id);
         User GetUserWithRelationships(Guid id);
     }

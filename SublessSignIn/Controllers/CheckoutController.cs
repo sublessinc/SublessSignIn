@@ -58,7 +58,6 @@ namespace SublessSignIn.Controllers
             {
                 return Unauthorized();
             }
-            var user = _userService.GetUserByCognitoId(cognitoId);
             
             var userBudget = req.PriceId;
             try
