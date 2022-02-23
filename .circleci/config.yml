@@ -30,6 +30,7 @@ workflows:
                 - stage
                 - prod
           account-url: AWS_ACCOUNT_URL
+          extra-build-args: --build-arg build_environment=$CIRCLE_BRANCH
           aws-access-key-id: AWS_ACCESS_KEY_ID
           aws-secret-access-key: AWS_SECRET_ACCESS_KEY
           path: ./
@@ -43,9 +44,9 @@ workflows:
             branches:
               only:
                 - dev
-          cluster-name: "dev_pay2_ecs_Payments"
-          family: "devStackdevpay2ecspaySitepaymentSiteServiceTaskDefB8DCB8D4"
-          service-name: "devStack-devpay2ecspaySitepaymentSiteService31421C2C-po6WOZFk7sjE"
+          cluster-name: $DEV_CLUSTER_NAME
+          family: $DEV_SITE_TASK
+          service-name: $DEV_SITE_SERVICE
           force-new-deployment: true       
           container-image-name-updates: "container=web,tag=dev"   
           requires:
@@ -56,9 +57,9 @@ workflows:
             branches:
               only:
                 - stage
-          cluster-name: "stage_pay_ecs_Payments"
-          family: "stageStackstagepayecspaySitepaymentSiteServiceTaskDef06EA38A0"
-          service-name: "stageStack-stagepayecspaySitepaymentSiteServiceA490E237-7gnuYguViwew"
+          cluster-name: $STAGE_CLUSTER_NAME
+          family: $STAGE_SITE_TASK
+          service-name: $STAGE_SITE_SERVICE
           container-image-name-updates: "container=web,tag=stage"
           force-new-deployment: true
           requires:
@@ -69,9 +70,9 @@ workflows:
             branches:
               only:
                 - prod
-          cluster-name: "prod_pay_ecs_PaymentsUpdate "
-          family: "prodStackprodpayecspaySitepaymentSiteServiceTaskDefCB42646A"
-          service-name: "prodStack-prodpayecspaySitepaymentSiteService7D42131B-AbNNE2P4GcW0"
+          cluster-name: $PROD_CLUSTER_NAME
+          family: $PROD_SITE_TASK
+          service-name: $PROD_SITE_SERVICE
           container-image-name-updates: "container=web,tag=prod"
           force-new-deployment: true
           requires:
@@ -118,9 +119,9 @@ workflows:
             branches:
               only:
                 - dev
-          cluster-name:  "dev_pay2_ecs_Payments"
-          family: "devStackdevpay2ecscalculatorcalculatorTask7F8364F4"
-          service-name: "devStack-devpay2ecscalculatorcalculatorService8D13E879-9AmCgagHeCbC"
+          cluster-name: $DEV_CLUSTER_NAME
+          family: $DEV_CALC_TASK
+          service-name: $DEV_CALC_SERVICE
           force-new-deployment: true
           container-image-name-updates: "container=dev_pay2_ecs_calculator_calculatorContainer,tag=dev"
           requires:
@@ -132,11 +133,11 @@ workflows:
               only:
                 - stage
                 - /release-.*/
-          cluster-name:  "stage_pay_ecs_Payments"
-          family: "stageStackstagepayecscalculatorcalculatorTaskE2CCA8D9"
-          service-name: "stageStack-stagepayecscalculatorcalculatorService2037D9D6-W8W37yjQ7614"
+          cluster-name: $STAGE_CLUSTER_NAME
+          family: $STAGE_CALC_TASK
+          service-name: $STAGE_CALC_SERVICE
           force-new-deployment: true
-          container-image-name-updates: "container=dev_pay2_ecs_calculator_calculatorContainer,tag=stage"
+          container-image-name-updates: "container=stage_pay2_ecs_calculator_calculatorContainer,tag=stage"
           requires:
             - build-push-calc-env-tag
       - aws-ecs/deploy-service-update:
@@ -145,10 +146,10 @@ workflows:
             branches:
               only:
                 - main
-          cluster-name:  "prod_pay_ecs_Payments"
-          family: "prodStackprodpayecscalculatorcalculatorTask56C667E4"
-          service-name: "prodStack-prodpayecscalculatorcalculatorService4074FCCD-WwSPmUBBRmig"
-          container-image-name-updates: "container=dev_pay2_ecs_calculator_calculatorContainer,tag=prod"
+          cluster-name: $PROD_CLUSTER_NAME
+          family: $PROD_CALC_TASK
+          service-name: $PROD_CALC_SERVICE
+          container-image-name-updates: "container=prod_pay_ecs_calculator_calculatorContainer,tag=prod"
           force-new-deployment: true
           requires:
             - build-push-calc-env-tag
