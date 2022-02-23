@@ -122,7 +122,7 @@ workflows:
           family: "devStackdevpay2ecscalculatorcalculatorTask7F8364F4"
           service-name: "devStack-devpay2ecscalculatorcalculatorService8D13E879-9AmCgagHeCbC"
           force-new-deployment: true
-          container-image-name-updates: "container=dev_pay_ecs_calculator_calculatorContainer,tag=dev"
+          container-image-name-updates: "container=dev_pay2_ecs_calculator_calculatorContainer,tag=dev"
           requires:
             - build-push-calc-env-tag
       - aws-ecs/deploy-service-update:
@@ -136,7 +136,7 @@ workflows:
           family: "stageStackstagepayecscalculatorcalculatorTaskE2CCA8D9"
           service-name: "stageStack-stagepayecscalculatorcalculatorService2037D9D6-W8W37yjQ7614"
           force-new-deployment: true
-          container-image-name-updates: "container=dev_pay_ecs_calculator_calculatorContainer,tag=stage"
+          container-image-name-updates: "container=dev_pay2_ecs_calculator_calculatorContainer,tag=stage"
           requires:
             - build-push-calc-env-tag
       - aws-ecs/deploy-service-update:
@@ -148,7 +148,7 @@ workflows:
           cluster-name:  "prod_pay_ecs_Payments"
           family: "prodStackprodpayecscalculatorcalculatorTask56C667E4"
           service-name: "prodStack-prodpayecscalculatorcalculatorService4074FCCD-WwSPmUBBRmig"
-          container-image-name-updates: "container=dev_pay_ecs_calculator_calculatorContainer,tag=prod"
+          container-image-name-updates: "container=dev_pay2_ecs_calculator_calculatorContainer,tag=prod"
           force-new-deployment: true
           requires:
             - build-push-calc-env-tag
