@@ -30,6 +30,7 @@ workflows:
                 - stage
                 - prod
           account-url: AWS_ACCOUNT_URL
+          extra-build-args: build_environment=$CIRCLE_BRANCH
           aws-access-key-id: AWS_ACCESS_KEY_ID
           aws-secret-access-key: AWS_SECRET_ACCESS_KEY
           path: ./
