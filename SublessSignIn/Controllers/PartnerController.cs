@@ -236,14 +236,18 @@ namespace SublessSignIn.Controllers
         public ActionResult<HistoricalStats<UserStats>> GetPartnerAnalytics()
         {
             var cognitoId = _userService.GetUserClaim(HttpContext.User);
+            var user = _userService.GetUserByCognitoId(cognitoId);
             if (cognitoId == null)
             {
                 return Unauthorized();
             }
+            var partner = _partnerService.GetPartnerByAdminId(user.Id);
+            if (partner == null)
+            {
+                return Unauthorized("Attemped to access forbidden zone");
+            }
             try
             {
-                var user = _userService.GetUserByCognitoId(cognitoId);
-                var partner = _partnerService.GetPartnerByAdminId(user.Id);
                 var paymentDate = paymentLogsService.GetLastPaymentDate();
                 if (paymentDate == DateTimeOffset.MinValue)
                 {
