@@ -44,9 +44,9 @@ workflows:
             branches:
               only:
                 - dev
-          cluster-name: DEV_CLUSTER_NAME
-          family: DEV_SITE_TASK
-          service-name: DEV_SITE_SERVICE
+          cluster-name: $DEV_CLUSTER_NAME
+          family: $DEV_SITE_TASK
+          service-name: $DEV_SITE_SERVICE
           force-new-deployment: true       
           container-image-name-updates: "container=web,tag=dev"   
           requires:
@@ -57,9 +57,9 @@ workflows:
             branches:
               only:
                 - stage
-          cluster-name: STAGE_CLUSTER_NAME
-          family: STAGE_SITE_TASK
-          service-name: STAGE_SITE_SERVICE
+          cluster-name: $STAGE_CLUSTER_NAME
+          family: $STAGE_SITE_TASK
+          service-name: $STAGE_SITE_SERVICE
           container-image-name-updates: "container=web,tag=stage"
           force-new-deployment: true
           requires:
@@ -70,9 +70,9 @@ workflows:
             branches:
               only:
                 - prod
-          cluster-name: PROD_CLUSTER_NAME
-          family: PROD_SITE_TASK
-          service-name: PROD_SITE_SERVICE
+          cluster-name: $PROD_CLUSTER_NAME
+          family: $PROD_SITE_TASK
+          service-name: $PROD_SITE_SERVICE
           container-image-name-updates: "container=web,tag=prod"
           force-new-deployment: true
           requires:
@@ -119,9 +119,9 @@ workflows:
             branches:
               only:
                 - dev
-          cluster-name:  DEV_CLUSTER_NAME
-          family: "devStackdevpay2ecscalculatorcalculatorTask7F8364F4"
-          service-name: "devStack-devpay2ecscalculatorcalculatorService8D13E879-9AmCgagHeCbC"
+          cluster-name: $DEV_CLUSTER_NAME
+          family: $DEV_CALC_TASK
+          service-name: $DEV_CALC_SERVICE
           force-new-deployment: true
           container-image-name-updates: "container=dev_pay2_ecs_calculator_calculatorContainer,tag=dev"
           requires:
@@ -133,9 +133,9 @@ workflows:
               only:
                 - stage
                 - /release-.*/
-          cluster-name:  STAGE_CLUSTER_NAME
-          family: STAGE_CALC_TASK
-          service-name: STAGE_CALC_SERVICE
+          cluster-name: $STAGE_CLUSTER_NAME
+          family: $STAGE_CALC_TASK
+          service-name: $STAGE_CALC_SERVICE
           force-new-deployment: true
           container-image-name-updates: "container=stage_pay2_ecs_calculator_calculatorContainer,tag=stage"
           requires:
@@ -146,9 +146,9 @@ workflows:
             branches:
               only:
                 - main
-          cluster-name:  PROD_CLUSTER_NAME
-          family: PROD_CALC_TASK
-          service-name: PROD_CALC_SERVICE
+          cluster-name: $PROD_CLUSTER_NAME
+          family: $PROD_CALC_TASK
+          service-name: $PROD_CALC_SERVICE
           container-image-name-updates: "container=prod_pay_ecs_calculator_calculatorContainer,tag=prod"
           force-new-deployment: true
           requires:
