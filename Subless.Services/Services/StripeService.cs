@@ -51,9 +51,9 @@ namespace Subless.Services
             var user = _userService.GetUserByCognitoId(cognitoId);
             var customer = user.StripeCustomerId;
 
-            if (string.IsNullOrEmpty(user.StripeCustomerId) || !CustomerHasPaid(cognitoId))
+            if (!CustomerHasPaid(cognitoId))
             {
-                return await NewCustomer(cognitoId, priceId);
+                return await NewSubscription(user, priceId);
             }
             UpgradeCustomer(customer, cognitoId, priceId);
             return null;
@@ -62,11 +62,9 @@ namespace Subless.Services
 
         private void UpgradeCustomer(string customer, string cognitoId, string priceId)
         {
-
             var subs = GetSubscriptions(customer);
             var service = new SubscriptionService(_client);
             var subscription = subs.Single();
-
 
             var items = new List<SubscriptionItemOptions> {
                 new SubscriptionItemOptions {
@@ -84,12 +82,15 @@ namespace Subless.Services
             service.Update(subscription.Id, options);
         }
 
-        private async Task<CreateCheckoutSessionResponse> NewCustomer(string cognitoId, string priceId)
+        private async Task<CreateCheckoutSessionResponse> NewSubscription(User user, string priceId)
         {
-            var customer = CreateCustomer(cognitoId).Id;
+            if (user.StripeCustomerId == null)
+            {
+                user.StripeCustomerId = CreateCustomer(user.CognitoId).Id;
+            }
             var options = new SessionCreateOptions
             {
-                Customer = customer,
+                Customer = user.StripeCustomerId,
                 SuccessUrl = $"{_stripeConfig.Value.Domain}/user-profile",
                 CancelUrl = $"{_stripeConfig.Value.Domain}/register-payment",
                 PaymentMethodTypes = new List<string>
@@ -109,7 +110,7 @@ namespace Subless.Services
 
             var service = new SessionService(_client);
             var session = await service.CreateAsync(options);
-            _userService.AddStripeSessionId(cognitoId, session.Id);
+            _userService.AddStripeSessionId(user.CognitoId, session.Id);
             return new CreateCheckoutSessionResponse
             {
                 SessionId = session.Id,
@@ -325,8 +326,6 @@ namespace Subless.Services
                 };
                 Subscription subscription = service.Cancel(sub.Id, cancelOptions);
             }
-
-            _userService.ClearStripePayment(user.Id);
             return true;
         }
     }
