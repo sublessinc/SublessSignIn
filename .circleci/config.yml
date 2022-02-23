@@ -132,7 +132,6 @@ workflows:
             branches:
               only:
                 - stage
-                - /release-.*/
           cluster-name: $STAGE_CLUSTER_NAME
           family: $STAGE_CALC_TASK
           service-name: $STAGE_CALC_SERVICE
@@ -145,7 +144,7 @@ workflows:
           filters:
             branches:
               only:
-                - main
+                - prod
           cluster-name: $PROD_CLUSTER_NAME
           family: $PROD_CALC_TASK
           service-name: $PROD_CALC_SERVICE
