@@ -148,7 +148,7 @@ workflows:
           cluster-name: $PROD_CLUSTER_NAME
           family: $PROD_CALC_TASK
           service-name: $PROD_CALC_SERVICE
-          container-image-name-updates: "container=prod_pay_ecs_calculator_calculatorContainer,tag=prod"
+          container-image-name-updates: "container=prod_pay2_ecs_calculator_calculatorContainer,tag=prod"
           force-new-deployment: true
           requires:
             - build-push-calc-env-tag
