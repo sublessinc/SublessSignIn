@@ -46,9 +46,11 @@ RUN dotnet publish "./SublessSignIn/SublessSignIn.csproj" -c Release -o /app/pub
 
 FROM base AS final
 WORKDIR /app
+RUN mkdir -p /app/wwwroot/dist/assets
 COPY --from=publish /app/publish .
 COPY ./SublessSignIn/wwwroot /app/wwwroot
 COPY --from=angularbuild /src/dist/sublessui /app/wwwroot
+COPY --from=angularbuild /src/dist/sublessui/assets/redist /app/wwwroot/dist/assets
 COPY --from=jsbuild /src/dist /app/wwwroot/dist
 ENTRYPOINT ["dotnet", "SublessSignIn.dll"]
 
