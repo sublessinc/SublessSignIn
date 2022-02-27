@@ -220,6 +220,11 @@ namespace Subless.Data
             return Partners.FirstOrDefault(x => x.CognitoAppClientId == partnerClientId);
         }
 
+        public IEnumerable<Guid> FilterInvalidCreators(IEnumerable<Guid> creatorIds)
+        {
+            return Creators.Where(x => creatorIds.Contains(x.Id) && x.Active == true).Select(x => x.Id);
+        }
+
         public void SetAdminKey(Guid? key)
         {
             if (Configurations.Any())

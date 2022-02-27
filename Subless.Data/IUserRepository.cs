@@ -48,5 +48,6 @@ namespace Subless.Data
         IEnumerable<Uri> GetPartnerUris();
         IEnumerable<Hit> GetCreatorHitsByDate(DateTimeOffset startDate, DateTimeOffset endDate, Guid creatorId);
         IEnumerable<Hit> GetPartnerHitsByDate(DateTimeOffset startDate, DateTimeOffset endDate, Guid partnerId);
+        IEnumerable<Guid> FilterInvalidCreators(IEnumerable<Guid> creatorIds);
     }
 }
