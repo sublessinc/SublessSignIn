@@ -138,6 +138,11 @@ namespace Subless.Services
             }
         }
 
+        public IEnumerable<Guid> FilterInactiveCreators(IEnumerable<Guid> creatorIds)
+        {
+            return _userRepository.FilterInvalidCreators(creatorIds);
+        }
+
         public async Task UnlinkCreator(string cognitoId, Guid id)
         {
             var creators = _userRepository.GetCreatorsByCognitoId(cognitoId);
