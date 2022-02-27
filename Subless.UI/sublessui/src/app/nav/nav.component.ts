@@ -32,20 +32,23 @@ export class NavComponent implements OnInit {
       }
     });
   }
+
   showDrawer() {
     return !this.router.url.startsWith("/register-payment") && !this.router.url.startsWith("/payout-setup");
   }
+
   returnToStripe() {
     this.checkoutService.getUserSession().subscribe({
       next: (sessionId: SessionId) => {
         this.checkoutService.loadCustomerPortal(sessionId.id).subscribe({
           next: (redirect: IStripeRedirect) => {
-            window.location.href = redirect.url;
+            window.open(redirect.url, "_blank", 'noreferrer')!.focus();
           }
         });
       }
     });
   }
+
   logout() {
     sessionStorage.removeItem("activation");
     sessionStorage.removeItem("postActivationRedirect");
