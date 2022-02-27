@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using Subless.Data;
 using Subless.Models;
 using Subless.Services.Extensions;
+using Subless.Services.Services;
 
 namespace Subless.Services
 {
@@ -17,14 +18,14 @@ namespace Subless.Services
         public static List<char> InvalidUsernameCharacters = new List<char> { ';', '/', '?', ':', '&', '=', '+', ',', '$' };
 
         private readonly IUserRepository _userRepository;
-        private readonly IMemoryCache cache;
+        private readonly ICacheService cache;
         private readonly HttpClient httpClient;
         private readonly ILogger<PartnerService> logger;
 
         public PartnerService(
             IUserRepository userRepository,
             IHttpClientFactory httpClientFactory,
-            IMemoryCache cache,
+            ICacheService cache,
             ILoggerFactory loggerFactory
             )
         {
@@ -86,6 +87,7 @@ namespace Subless.Services
             creator.ActivationCode = code;
             creator.ActivationExpiration = DateTimeOffset.UtcNow.AddMinutes(10);
             _userRepository.UpsertCreator(creator);
+            cache.InvalidateCache();
             return code;
         }
 
@@ -93,6 +95,7 @@ namespace Subless.Services
         {
             partner.Site = new Uri(partner.Site.GetLeftPart(UriPartial.Authority));
             _userRepository.AddPartner(partner);
+            cache.InvalidateCache();
             return partner.Id;
         }
 
@@ -100,6 +103,7 @@ namespace Subless.Services
         public void UpdatePartner(Partner partner)
         {
             _userRepository.UpdatePartner(partner);
+            cache.InvalidateCache();
         }
 
         public IEnumerable<Partner> GetPartners()
@@ -109,12 +113,12 @@ namespace Subless.Services
 
         public Partner GetCachedPartnerByUri(Uri uri)
         {
-            if (cache.TryGetValue(uri.ToString(), out Partner partner))
+            if (cache.Cache.TryGetValue(uri.ToString(), out Partner partner))
             {
-                return (Partner)cache.Get(uri.ToString());
+                return (Partner)cache.Cache.Get(uri.ToString());
             }
             partner = _userRepository.GetPartnerByUri(uri);
-            cache.Set(uri.ToString(), partner, DateTimeOffset.UtcNow.AddHours(1));
+            cache.Cache.Set(uri.ToString(), partner, DateTimeOffset.UtcNow.AddHours(1));
             return partner;
         }
 

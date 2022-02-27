@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using Subless.Data;
 using Subless.Models;
 using Subless.Services.Extensions;
+using Subless.Services.Services;
 
 namespace Subless.Services
 {
@@ -14,13 +15,13 @@ namespace Subless.Services
     {
         private readonly IUserRepository _userRepository;
         private readonly IPartnerService partnerService;
-        private readonly IMemoryCache cache;
+        private readonly ICacheService cache;
         private readonly ILogger<CreatorService> logger;
 
         public CreatorService(
             IUserRepository userRepository,
             IPartnerService partnerService,
-            IMemoryCache cache,
+            ICacheService cache,
             ILoggerFactory loggerFactory)
         {
             _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
@@ -68,12 +69,12 @@ namespace Subless.Services
         public Creator GetCachedCreatorFromPartnerAndUsername(string username, Guid partnerId)
         {
             var key = username + partnerId;
-            if (cache.TryGetValue(key, out Creator creator))
+            if (cache.Cache.TryGetValue(key, out Creator creator))
             {
                 return creator;
             }
             creator = _userRepository.GetCreatorByUsernameAndPartnerId(username, partnerId);
-            cache.Set(key, creator, DateTimeOffset.UtcNow.AddHours(1));
+            cache.Cache.Set(key, creator, DateTimeOffset.UtcNow.AddHours(1));
             return creator;
         }
 
@@ -152,6 +153,7 @@ namespace Subless.Services
             }
             var creator = creators.Single(x => x.Id == id);
             _userRepository.DeleteCreator(creator);
+            cache.InvalidateCache();
             await partnerService.CreatorChangeWebhook(creator.ToPartnerView(true));
         }
     }
