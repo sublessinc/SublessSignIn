@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -114,6 +115,25 @@ namespace SublessSignIn.Controllers
             {
                 Id = _userService.GetStripeIdFromCognitoId(cognitoId)
             });
+        }
+
+        /// <summary>
+        /// Retreives the session information from stripe after the user completed the payment
+        /// </summary>
+        [HttpGet("plan")]
+        public IActionResult GetPlan()
+        {
+            var cognitoId = _userService.GetUserClaim(HttpContext.User);
+            if (cognitoId == null)
+            {
+                return Unauthorized();
+            }
+            var plan = _stripeService.GetActiveSubscriptionPrice(cognitoId);
+            if (plan == null || !plan.Any())
+            {
+                Ok(null);
+            }
+            return Ok(plan.Single().UnitAmount / 100);
         }
 
         [HttpDelete]

@@ -189,14 +189,18 @@ namespace Subless.Services
         public bool CustomerHasPaid(string cognitoId)
         {
 
-            var activePrices = GetActiveSubscriptionPrice(cognitoId);
+            var activePrices = GetActiveSubscriptionPriceId(cognitoId);
             var allPrices = GetPrices();
             return allPrices.Any(x => activePrices.Contains(x.Id));
         }
-
-        public List<string> GetActiveSubscriptionPrice(string cognitoId)
+        private List<string> GetActiveSubscriptionPriceId(string cognitoId)
         {
-            var prices = new List<string>();
+            return GetActiveSubscriptionPrice(cognitoId).Select(x => x.Id).ToList();
+        }
+
+        public List<Price> GetActiveSubscriptionPrice(string cognitoId)
+        {
+            var prices = new List<Price>();
             var user = _userService.GetUserByCognitoId(cognitoId);
             if (user?.StripeCustomerId == null)
             {
@@ -211,7 +215,7 @@ namespace Subless.Services
                 {
                     foreach (var item in sub.Items)
                     {
-                        prices.Add(item.Price.Id);
+                        prices.Add(item.Price);
                     }
                 }
             }
