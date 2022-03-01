@@ -14,8 +14,6 @@ namespace Subless.Data
         private readonly IOptions<DatabaseSettings> _options;
         internal DbSet<User> Users { get; set; }
         internal DbSet<Hit> Hits { get; set; }
-        internal DbSet<Partner> Partners { get; set; }
-        internal DbSet<Creator> Creators { get; set; }
         internal DbSet<Payment> Payments { get; set; }
         internal DbSet<PaymentAuditLog> PaymentAuditLogs { get; set; }
         internal DbSet<RuntimeConfiguration> Configurations { get; set; }
@@ -86,17 +84,8 @@ namespace Subless.Data
             SaveChanges();
         }
 
-        public void DeleteCreator(Creator creator)
-        {
-            Creators.Remove(creator);
-            SaveChanges();
-        }
 
-        public void DeletePartner(Partner partner)
-        {
-            Partners.Remove(partner);
-            SaveChanges();
-        }
+
 
         public void SaveHit(Hit hit)
         {
@@ -126,41 +115,16 @@ namespace Subless.Data
             && hit.TimeStamp <= endDate).ToList();
         }
 
-        public Creator GetCreatorByActivationCode(Guid code)
-        {
-            return Creators.FirstOrDefault(creator => creator.ActivationCode == code);
-        }
+
 
         public IEnumerable<Creator> GetCreatorsByCognitoId(string cognitoId)
         {
             return Users.Include(x => x.Creators).FirstOrDefault(x => x.CognitoId == cognitoId)?.Creators?.ToList();
         }
 
-        public Creator GetCreator(Guid id)
-        {
-            return Creators.Find(id);
-        }
 
-        public IEnumerable<Creator> GetCreatorsByPartnerId(Guid partnerId)
-        {
-            return Creators.Where(x => x.PartnerId == partnerId);
-        }
 
-        public Creator GetCreatorByUsernameAndPartnerId(string username, Guid partnerId)
-        {
-            return Creators.FirstOrDefault(creator => creator.Username == username && creator.PartnerId == partnerId);
-        }
 
-        public Partner GetPartnerByUri(Uri uri)
-        {
-            return Partners.FirstOrDefault(partner => partner.Site == uri);
-        }
-
-        public void UpdateCreator(Creator creator)
-        {
-            Creators.Update(creator);
-            SaveChanges();
-        }
 
         public Creator GetCreatorByPartnerAndUsername(string partnerCognitoId, string username)
         {
@@ -170,55 +134,8 @@ namespace Subless.Data
             return creator;
         }
 
-        public void SaveCreator(Creator creator)
-        {
-            Creators.Add(creator);
-            SaveChanges();
-        }
 
-        public void UpsertCreator(Creator creator)
-        {
-            if (creator.Id == Guid.Empty)
-            {
-                SaveCreator(creator);
-            }
-            else
-            {
-                UpdateCreator(creator);
-            }
-        }
 
-        public void AddPartner(Partner partner)
-        {
-            Partners.Add(partner);
-            SaveChanges();
-        }
-
-        public void UpdatePartner(Partner partner)
-        {
-            Partners.Update(partner);
-            SaveChanges();
-        }
-
-        public IEnumerable<Partner> GetPartners()
-        {
-            return Partners.Include(p=>p.Creators).ToList();
-        }
-
-        public Partner GetPartner(Guid id)
-        {
-            return Partners.Find(id);
-        }
-
-        public Partner GetPartnerByAdminId(Guid id)
-        {
-            return Partners.FirstOrDefault(x => x.Admin == id);
-        }
-
-        public Partner GetPartnerByCognitoId(string partnerClientId)
-        {
-            return Partners.FirstOrDefault(x => x.CognitoAppClientId == partnerClientId);
-        }
 
         public void SetAdminKey(Guid? key)
         {
@@ -290,9 +207,6 @@ namespace Subless.Data
             return PaymentAuditLogs.Max(x => x.DatePaid);
         }
 
-        public IEnumerable<Uri> GetPartnerUris()
-        {
-            return Partners.Select(x => x.Site);
-        }
+
     }
 }
