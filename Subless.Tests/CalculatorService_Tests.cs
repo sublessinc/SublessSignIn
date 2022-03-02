@@ -1,14 +1,14 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
 using Subless.Models;
 using Subless.PayoutCalculator;
 using Subless.Services;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using Xunit;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Subless.Tests
 {
@@ -90,7 +90,7 @@ namespace Subless.Tests
             });
             var inActiveCreatorId = Guid.NewGuid();
             var activeCreatorId = Guid.NewGuid();
-            var hit = new List<Hit> { 
+            var hit = new List<Hit> {
                 new Hit { CognitoId = "test",  CreatorId = activeCreatorId },
                 new Hit { CognitoId = "inactive", CreatorId = inActiveCreatorId },
             };
@@ -102,8 +102,8 @@ namespace Subless.Tests
                     allPayments = y;
                 });
             var creatorService = new Mock<ICreatorService>();
-            creatorService.Setup(x => x.GetCreator(It.Is<Guid>(x=> x == activeCreatorId))).Returns(new Creator() { Id=activeCreatorId, PayPalId = "test" });
-            creatorService.Setup(x => x.GetCreator(It.Is<Guid>(x => x == inActiveCreatorId))).Returns(new Creator() { Id=inActiveCreatorId, PayPalId = null });
+            creatorService.Setup(x => x.GetCreator(It.Is<Guid>(x => x == activeCreatorId))).Returns(new Creator() { Id = activeCreatorId, PayPalId = "test" });
+            creatorService.Setup(x => x.GetCreator(It.Is<Guid>(x => x == inActiveCreatorId))).Returns(new Creator() { Id = inActiveCreatorId, PayPalId = null });
 
             var partnerService = PartnerServiceBuilder();
             var sut = CalculatorServiceBuilder(
@@ -263,7 +263,7 @@ namespace Subless.Tests
                     allPayments = y;
                 });
             var creatorService = new Mock<ICreatorService>();
-            creatorService.Setup(x => x.GetCreator(It.Is<Guid>(x => x == creator1))).Returns(new Creator() { PayPalId = "Creator1", Id = creator1});
+            creatorService.Setup(x => x.GetCreator(It.Is<Guid>(x => x == creator1))).Returns(new Creator() { PayPalId = "Creator1", Id = creator1 });
             creatorService.Setup(x => x.GetCreator(It.Is<Guid>(x => x == creator2))).Returns(new Creator() { PayPalId = "Creator2", Id = creator2 });
             var partnerService = PartnerServiceBuilder("Partner");
             var sut = CalculatorServiceBuilder(
@@ -521,7 +521,7 @@ namespace Subless.Tests
             var allPayments = new Dictionary<string, double>();
             var mockStripe = new Mock<IStripeService>();
             mockStripe.Setup(x => x.RolloverPaymentForIdleCustomer(It.IsAny<string>()));
-            
+
             var stripeService = StripeServiceBuilder(new List<Payer>
             {
                 new Payer()
@@ -531,7 +531,8 @@ namespace Subless.Tests
                 }
             }, mockStripe);
 
-            var hit = new List<Hit> {
+            var hit = new List<Hit>
+            {
 
             };
             var hitService = HitServiceBuilder(hit);
@@ -554,8 +555,8 @@ namespace Subless.Tests
             sut.CalculatePayments(DateTimeOffset.UtcNow.AddMonths(-1), DateTimeOffset.UtcNow);
 
             //Assert
-            Assert.Empty(allPayments); 
-            mockStripe.Verify(mock=> mock.RolloverPaymentForIdleCustomer(It.IsAny<string>()), Times.Once());
+            Assert.Empty(allPayments);
+            mockStripe.Verify(mock => mock.RolloverPaymentForIdleCustomer(It.IsAny<string>()), Times.Once());
         }
 
         private CalculatorService CalculatorServiceBuilder(
@@ -568,7 +569,8 @@ namespace Subless.Tests
         {
 
             var serviceProvider = new ServiceCollection()
-                .AddLogging(x => {
+                .AddLogging(x =>
+                {
                     x.AddSimpleConsole();
                 })
                 .BuildServiceProvider();
@@ -605,7 +607,7 @@ namespace Subless.Tests
 
         private Mock<IStripeService> StripeServiceBuilder(List<Payer> payers = null, Mock<IStripeService> stripeService = null)
         {
-            var service = stripeService ?? new Mock<IStripeService>() ;
+            var service = stripeService ?? new Mock<IStripeService>();
             service.Setup(x => x.GetInvoicesForRange(It.IsAny<DateTimeOffset>(), It.IsAny<DateTimeOffset>())).Returns(payers ?? new List<Payer>());
             return service;
         }

@@ -1,10 +1,10 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using Subless.Data;
+using Subless.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using Microsoft.Extensions.Logging;
-using Subless.Data;
-using Subless.Models;
 
 namespace Subless.Services
 {
@@ -12,6 +12,7 @@ namespace Subless.Services
     {
         private readonly IUserService _userService;
         private readonly IUserRepository _userRepository;
+        private readonly IHitRepository hitRepository;
         private readonly ICreatorService _creatorService;
         private readonly IPartnerService _partnerService;
         private readonly ILogger _logger;
@@ -19,6 +20,7 @@ namespace Subless.Services
         public HitService(
             IUserService userService,
             IUserRepository userRepository,
+            IHitRepository hitRepository,
             ICreatorService creatorService,
             IPartnerService partnerService,
             ILoggerFactory loggerFactory
@@ -26,6 +28,7 @@ namespace Subless.Services
         {
             _userService = userService ?? throw new ArgumentNullException(nameof(userService));
             _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
+            this.hitRepository = hitRepository ?? throw new ArgumentNullException(nameof(hitRepository));
             _creatorService = creatorService ?? throw new ArgumentNullException(nameof(creatorService));
             _partnerService = partnerService ?? throw new ArgumentNullException(nameof(partnerService));
             _logger = loggerFactory?.CreateLogger<HitService>() ?? throw new ArgumentNullException(nameof(loggerFactory));
@@ -50,7 +53,7 @@ namespace Subless.Services
                 CreatorId = creatorId ?? Guid.Empty
             };
             _logger.LogDebug($"Saving a hit for creator {creatorId} at time {hit.TimeStamp}.");
-            _userRepository.SaveHit(hit);
+            hitRepository.SaveHit(hit);
         }
 
         public Hit TestHit(string userId, Uri uri)
@@ -80,7 +83,7 @@ namespace Subless.Services
         {
             var user = _userService.GetUser(userId);
             _logger.LogDebug($"Getting hits for range {startDate} to {endDate}");
-            var hits = _userRepository.GetValidHitsByDate(startDate, endDate, user.CognitoId);
+            var hits = hitRepository.GetValidHitsByDate(startDate, endDate, user.CognitoId);
             var creators = _creatorService.FilterInactiveCreators( hits.Select(x => x.CreatorId));
             return hits.Where(x => creators.Contains(x.CreatorId));
         }
@@ -89,14 +92,14 @@ namespace Subless.Services
             DateTimeOffset startDate, DateTimeOffset endDate, Guid creatorId)
         {
             _logger.LogDebug($"Getting hits for range {startDate} to {endDate}");
-            return _userRepository.GetCreatorHitsByDate(startDate, endDate, creatorId);
+            return hitRepository.GetCreatorHitsByDate(startDate, endDate, creatorId);
         }
 
         public IEnumerable<Hit> GetPartnerHitsByDate(
     DateTimeOffset startDate, DateTimeOffset endDate, Guid partnerId)
         {
             _logger.LogDebug($"Getting hits for range {startDate} to {endDate}");
-            return _userRepository.GetPartnerHitsByDate(startDate, endDate, partnerId);
+            return hitRepository.GetPartnerHitsByDate(startDate, endDate, partnerId);
         }
 
         public Guid? GetCreatorFromPartnerAndUri(Uri uri, Partner partner)

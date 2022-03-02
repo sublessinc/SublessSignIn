@@ -1,8 +1,4 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using Amazon.Runtime;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -11,6 +7,9 @@ using Subless.Data;
 using Subless.PayoutCalculator;
 using Subless.Services;
 using Subless.Services.Services;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace PayoutCalculator
 {
@@ -25,7 +24,8 @@ namespace PayoutCalculator
                 var logger = scope.ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<Program>();
                 var logging_env_var = System.Environment.GetEnvironmentVariable("Logging__LogLevel__Default");
                 logger.LogInformation($"Logging env var value is {logging_env_var}");
-                try {
+                try
+                {
                     logger.LogDebug("Logging in debug mode.");
                     var healthCheck = scope.ServiceProvider.GetRequiredService<IHealthCheck>();
                     var configuration = scope.ServiceProvider.GetRequiredService<IOptions<CalculatorConfiguration>>();
@@ -44,7 +44,7 @@ namespace PayoutCalculator
                         var logsService = scope.ServiceProvider.GetRequiredService<IPaymentLogsService>();
                         var calculator = scope.ServiceProvider.GetRequiredService<ICalculatorService>();
                         var lastExecution = logsService.GetLastPaymentDate();
-                        
+
                         if (ShouldExecuteScheduledRun(executionsPerYear, lastExecution) || shouldExecuteOnStart)
                         {
                             shouldExecuteOnStart = false;
@@ -54,7 +54,9 @@ namespace PayoutCalculator
                         }
                         Thread.Sleep(1000 * 60);
                     }
-                } catch (Exception e) {
+                }
+                catch (Exception e)
+                {
                     logger.LogCritical(e, "Critical unhandled exception in calculator. Shutting down. Good luck.");
                 }
             }
@@ -69,7 +71,7 @@ namespace PayoutCalculator
                 services.Configure<CalculatorConfiguration>(options =>
                 {
                     options.BucketName = Environment.GetEnvironmentVariable("BucketName") ?? throw new ArgumentNullException("BucketName");
-                    options.ExecutionsPerYear = int.Parse( Environment.GetEnvironmentVariable("ExecutionsPerYear") ?? throw new ArgumentNullException("ExecutionsPerYear"));
+                    options.ExecutionsPerYear = int.Parse(Environment.GetEnvironmentVariable("ExecutionsPerYear") ?? throw new ArgumentNullException("ExecutionsPerYear"));
                     options.RunOnStart = bool.Parse(Environment.GetEnvironmentVariable("RunOnStart") ?? throw new ArgumentNullException("RunOnStart"));
                 });
                 DataDi.RegisterDataDi(services);

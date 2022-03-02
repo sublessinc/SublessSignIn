@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -9,6 +6,9 @@ using Stripe;
 using Subless.Models;
 using Subless.Services;
 using SublessSignIn.Models;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace SublessSignIn.Controllers
 {
@@ -59,7 +59,7 @@ namespace SublessSignIn.Controllers
             {
                 return Unauthorized();
             }
-            
+
             var userBudget = req.PriceId;
             try
             {

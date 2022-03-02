@@ -1,18 +1,14 @@
-﻿using System;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Stripe;
-using Subless.Models;
 using Subless.Services;
 using Subless.Services.Extensions;
 using Subless.Services.Services;
 using SublessSignIn.Models;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 
 namespace SublessSignIn.Controllers
@@ -31,11 +27,11 @@ namespace SublessSignIn.Controllers
         private readonly IPaymentLogsService paymentLogsService;
         private readonly ILogger _logger;
         public UserController(
-            IStripeService stripeService, 
-            ILoggerFactory loggerFactory, 
-            IUserService userService, 
-            ICognitoService cognitoService, 
-            IPartnerService partnerService, 
+            IStripeService stripeService,
+            ILoggerFactory loggerFactory,
+            IUserService userService,
+            ICognitoService cognitoService,
+            IPartnerService partnerService,
             IHitService hitService,
             IPaymentLogsService paymentLogsService)
         {
@@ -105,7 +101,7 @@ namespace SublessSignIn.Controllers
             }
             var cognitoId = userService.GetUserClaim(HttpContext.User);
             var user = userService.GetUserByCognitoId(cognitoId);
-            if (user!=null)
+            if (user != null)
             {
                 return Ok(true);
             }
