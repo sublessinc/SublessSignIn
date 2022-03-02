@@ -6,6 +6,9 @@ import { AuthorizationService } from '../services/authorization.service';
 import { CheckoutService } from '../services/checkout.service';
 import { CreatorService } from '../services/creator.service';
 import { UserService } from '../services/user.service';
+import { MatDialog } from '@angular/material/dialog';
+import { WarnDialogComponent } from '../warn-dialog/warn-dialog.component';
+
 
 @Component({
   selector: 'app-account-settings',
@@ -21,6 +24,7 @@ export class AccountSettingsComponent implements OnInit {
 
     private authService: AuthorizationService,
     private userService: UserService,
+    public dialog: MatDialog
   ) { }
 
   ngOnInit(): void {
@@ -43,8 +47,13 @@ export class AccountSettingsComponent implements OnInit {
     })
   }
 
+  openDialog() {
+    const dialogRef = this.dialog.open(WarnDialogComponent);
 
-
-
-
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.deleteAccount();
+      }
+    });
+  }
 }
