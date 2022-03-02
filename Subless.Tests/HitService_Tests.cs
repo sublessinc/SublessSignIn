@@ -142,6 +142,7 @@ namespace Subless.Tests
             return new HitService(
                 new Mock<IUserService>().Object,
                 new Mock<IUserRepository>().Object,
+                new Mock<IHitRepository>().Object,  
                 creatorService.Object,
                 new Mock<IPartnerService>().Object,
                 mockLoggerFactory.Object);

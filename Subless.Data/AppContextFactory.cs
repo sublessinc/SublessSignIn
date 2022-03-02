@@ -6,14 +6,14 @@ using static Subless.Data.DataDi;
 
 namespace Subless.Data
 {
-    public class AppContextFactory : IDesignTimeDbContextFactory<UserRepository>
+    public class AppContextFactory : IDesignTimeDbContextFactory<Repository>
     {
         public AppContextFactory()
         {
             // A parameter-less constructor is required by the EF Core CLI tools.
         }
 
-        public UserRepository CreateDbContext(string[] args)
+        public Repository CreateDbContext(string[] args)
         {
             var dbCreds = JsonConvert.DeserializeObject<DbCreds>(Environment.GetEnvironmentVariable("dbCreds"));
 
@@ -22,7 +22,7 @@ namespace Subless.Data
             {
                 ConnectionString = dbCreds.GetDatabaseConnection()
             };
-            return new UserRepository(Microsoft.Extensions.Options.Options.Create(options), new LoggerFactory());
+            return new Repository(Microsoft.Extensions.Options.Options.Create(options), new LoggerFactory());
         }
     }
 }

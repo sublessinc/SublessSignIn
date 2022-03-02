@@ -16,9 +16,14 @@ namespace Subless.Data
             {
                 options.ConnectionString = dbCreds.GetDatabaseConnection();
             });
-            services.AddTransient<IUserRepository, UserRepository>();
-            services.AddTransient<UserRepository, UserRepository>();
-            services.AddDbContext<UserRepository>(options => options.UseNpgsql(dbCreds.GetDatabaseConnection()));
+            services.AddTransient<IUserRepository, Repository>();
+            services.AddTransient<Repository, Repository>();
+            services.AddTransient<IPaymentRepository, Repository>();
+            services.AddTransient<ICreatorRepository, Repository>();
+            services.AddTransient<IPartnerRepository, Repository>();
+            services.AddTransient<IHitRepository, Repository>();
+            services.AddDbContext<Repository>(options => options.UseNpgsql(dbCreds.GetDatabaseConnection()));
+
             return services;
         }
 

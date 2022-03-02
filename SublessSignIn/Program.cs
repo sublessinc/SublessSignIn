@@ -26,7 +26,7 @@ namespace SublessSignIn
             using (var scope = host.Services.CreateScope())
             {
                 var services = scope.ServiceProvider;
-                using (var context = services.GetService<UserRepository>())
+                using (var context = services.GetService<Repository>())
                 {
 
                     Log.Logger.Information("Running migrations");

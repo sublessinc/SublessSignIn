@@ -9,7 +9,7 @@ using Subless.Data;
 
 namespace Subless.Data.Migrations
 {
-    [DbContext(typeof(UserRepository))]
+    [DbContext(typeof(Repository))]
     [Migration("20220104233730_UpdateCreatorKeyword")]
     partial class UpdateCreatorKeyword
     {

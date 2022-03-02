@@ -10,23 +10,10 @@ using System.Threading.Tasks;
 
 namespace Subless.Data
 {
-    public class CreatorRepository : DbContext, ICreatorRepository
+    public partial class Repository : DbContext, ICreatorRepository
     {
-        private readonly IOptions<DatabaseSettings> _options;
-        private readonly ILogger logger;
-
         internal DbSet<Creator> Creators { get; set; }
 
-        public CreatorRepository(IOptions<DatabaseSettings> options, ILoggerFactory loggerFactory)
-        {
-            _options = options ?? throw new ArgumentNullException(nameof(options));
-            logger = loggerFactory?.CreateLogger<UserRepository>() ?? throw new ArgumentNullException(nameof(loggerFactory));
-        }
-
-        public void LogDbStats()
-        {
-            logger.LogWarning($"Creators count: {Creators.Count()}");
-        }
         public void DeleteCreator(Creator creator)
         {
             Creators.Remove(creator);

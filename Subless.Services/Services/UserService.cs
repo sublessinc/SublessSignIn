@@ -10,10 +10,18 @@ namespace Subless.Services
     public class UserService : IUserService
     {
         private readonly IUserRepository _userRepo;
+        private readonly ICreatorRepository creatorRepo;
+        private readonly IPartnerRepository partnerRepo;
         private readonly ICreatorService _creatorService;
-        public UserService(IUserRepository userRepo, ICreatorService creatorService)
+        public UserService(
+            IUserRepository userRepo, 
+            ICreatorRepository creatorRepo,
+            IPartnerRepository partnerRepo,
+            ICreatorService creatorService)
         {
             _userRepo = userRepo ?? throw new ArgumentNullException(nameof(userRepo));
+            this.creatorRepo = creatorRepo ?? throw new ArgumentNullException(nameof(creatorRepo));
+            this.partnerRepo = partnerRepo ?? throw new ArgumentNullException(nameof(partnerRepo));
             _creatorService = creatorService ?? throw new ArgumentNullException(nameof(creatorService));
         }
 
@@ -104,7 +112,7 @@ namespace Subless.Services
             {
                 foreach (var partner in user.Partners)
                 {
-                    _userRepo.DeletePartner(partner);
+                    partnerRepo.DeletePartner(partner);
                 }
             }
 
@@ -112,7 +120,7 @@ namespace Subless.Services
             {
                 foreach (var creator in user.Creators)
                 {
-                    _userRepo.DeleteCreator(creator);
+                    creatorRepo.DeleteCreator(creator);
                 }
             }
 

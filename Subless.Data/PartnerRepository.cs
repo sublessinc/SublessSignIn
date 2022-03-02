@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Subless.Models;
 using System;
@@ -9,19 +10,10 @@ using System.Threading.Tasks;
 
 namespace Subless.Data
 {
-    public class PartnerRepository : DbContext
+    public partial class Repository : DbContext, IPartnerRepository
     {
-        private readonly IOptions<DatabaseSettings> _options;
-        internal DbSet<Partner> Partners{ get; set; }
-        public void LogDbStats()
-        {
-            logger.LogWarning($"User count: {Users.Count()}");
-            logger.LogWarning($"Hits count: {Hits.Count()}");
-            logger.LogWarning($"Partners count: {Partners.Count()}");
-            logger.LogWarning($"Creators count: {Creators.Count()}");
-            logger.LogWarning($"Payments count: {Payments.Count()}");
-            logger.LogWarning($"PaymentAuditLogs count: {PaymentAuditLogs.Count()}");
-        }
+        internal DbSet<Partner> Partners { get; set; }
+
         public void DeletePartner(Partner partner)
         {
             Partners.Remove(partner);
@@ -69,6 +61,15 @@ namespace Subless.Data
         public IEnumerable<Uri> GetPartnerUris()
         {
             return Partners.Select(x => x.Site);
+        }
+
+
+        public Creator GetCreatorByPartnerAndUsername(string partnerCognitoId, string username)
+        {
+            var partners = Partners.Include(p => p.Creators).Where(x => x.CognitoAppClientId == partnerCognitoId);
+            var partner = partners.Single();
+            var creator = partner.Creators.FirstOrDefault(y => y.Username == username);
+            return creator;
         }
     }
 }
