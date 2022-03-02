@@ -8,6 +8,12 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
+using Subless.Data;
+using Subless.Models;
+using Subless.Services.Extensions;
+using Subless.Services.Services;
 
 namespace Subless.Services
 {
@@ -16,9 +22,7 @@ namespace Subless.Services
         public static List<char> InvalidUsernameCharacters = new List<char> { ';', '/', '?', ':', '&', '=', '+', ',', '$' };
 
         private readonly IUserRepository _userRepository;
-        private readonly IPartnerRepository partnerRepository;
-        private readonly ICreatorRepository creatorRepository;
-        private readonly IMemoryCache cache;
+        private readonly ICacheService cache;
         private readonly HttpClient httpClient;
         private readonly ILogger<PartnerService> logger;
 
@@ -27,7 +31,7 @@ namespace Subless.Services
             IPartnerRepository partnerRepository,
             ICreatorRepository creatorRepository,
             IHttpClientFactory httpClientFactory,
-            IMemoryCache cache,
+            ICacheService cache,
             ILoggerFactory loggerFactory
             )
         {
@@ -90,7 +94,8 @@ namespace Subless.Services
             var code = Guid.NewGuid();
             creator.ActivationCode = code;
             creator.ActivationExpiration = DateTimeOffset.UtcNow.AddMinutes(10);
-            creatorRepository.UpsertCreator(creator);
+            partnerRepository.UpsertCreator(creator);
+            cache.InvalidateCache();
             return code;
         }
 
@@ -98,6 +103,7 @@ namespace Subless.Services
         {
             partner.Site = new Uri(partner.Site.GetLeftPart(UriPartial.Authority));
             partnerRepository.AddPartner(partner);
+            cache.InvalidateCache();
             return partner.Id;
         }
 
@@ -105,6 +111,7 @@ namespace Subless.Services
         public void UpdatePartner(Partner partner)
         {
             partnerRepository.UpdatePartner(partner);
+            cache.InvalidateCache();
         }
 
         public IEnumerable<Partner> GetPartners()
@@ -114,12 +121,12 @@ namespace Subless.Services
 
         public Partner GetCachedPartnerByUri(Uri uri)
         {
-            if (cache.TryGetValue(uri.ToString(), out Partner partner))
+            if (cache.Cache.TryGetValue(uri.ToString(), out Partner partner))
             {
-                return (Partner)cache.Get(uri.ToString());
+                return (Partner)cache.Cache.Get(uri.ToString());
             }
             partner = partnerRepository.GetPartnerByUri(uri);
-            cache.Set(uri.ToString(), partner, DateTimeOffset.UtcNow.AddHours(1));
+            cache.Cache.Set(uri.ToString(), partner, DateTimeOffset.UtcNow.AddHours(1));
             return partner;
         }
 

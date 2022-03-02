@@ -79,12 +79,13 @@ namespace Subless.Services
             };
         }
 
-
         public IEnumerable<Hit> GetHitsByDate(DateTimeOffset startDate, DateTimeOffset endDate, Guid userId)
         {
             var user = _userService.GetUser(userId);
             _logger.LogDebug($"Getting hits for range {startDate} to {endDate}");
-            return hitRepository.GetValidHitsByDate(startDate, endDate, user.CognitoId);
+            var hits = hitRepository.GetValidHitsByDate(startDate, endDate, user.CognitoId);
+            var creators = _creatorService.FilterInactiveCreators( hits.Select(x => x.CreatorId));
+            return hits.Where(x => creators.Contains(x.CreatorId));
         }
 
         public IEnumerable<Hit> GetCreatorHitsByDate(

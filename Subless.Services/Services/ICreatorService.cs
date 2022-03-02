@@ -8,6 +8,7 @@ namespace Subless.Services
     public interface ICreatorService
     {
         Task ActivateCreator(Guid userId, Guid activationCode, string email);
+        IEnumerable<Guid> FilterInactiveCreators(IEnumerable<Guid> creatorIds);
         Task FireCreatorActivationWebhook(Creator creator, bool wasValid);
         Creator GetCachedCreatorFromPartnerAndUsername(string username, Guid partnerId);
         Creator GetCreator(Guid id);

@@ -14,5 +14,7 @@ namespace Subless.Data
         void SaveCreator(Creator creator);
         void UpdateCreator(Creator creator);
         void UpsertCreator(Creator creator);
+        IEnumerable<Guid> FilterInvalidCreators(IEnumerable<Guid> creatorIds);
+
     }
 }

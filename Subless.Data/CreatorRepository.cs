@@ -21,6 +21,11 @@ namespace Subless.Data
             return Creators.FirstOrDefault(creator => creator.ActivationCode == code);
         }
 
+        public IEnumerable<Guid> FilterInvalidCreators(IEnumerable<Guid> creatorIds)
+        {
+            return Creators.Where(x => creatorIds.Contains(x.Id) && x.Active == true).Select(x => x.Id);
+        }
+
         public Creator GetCreator(Guid id)
         {
             return Creators.Find(id);
