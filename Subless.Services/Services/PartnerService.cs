@@ -22,6 +22,8 @@ namespace Subless.Services
         public static List<char> InvalidUsernameCharacters = new List<char> { ';', '/', '?', ':', '&', '=', '+', ',', '$' };
 
         private readonly IUserRepository _userRepository;
+        private readonly IPartnerRepository partnerRepository;
+        private readonly ICreatorRepository creatorRepository;
         private readonly ICacheService cache;
         private readonly HttpClient httpClient;
         private readonly ILogger<PartnerService> logger;
@@ -94,7 +96,7 @@ namespace Subless.Services
             var code = Guid.NewGuid();
             creator.ActivationCode = code;
             creator.ActivationExpiration = DateTimeOffset.UtcNow.AddMinutes(10);
-            partnerRepository.UpsertCreator(creator);
+            creatorRepository.UpsertCreator(creator);
             cache.InvalidateCache();
             return code;
         }
@@ -166,3 +168,4 @@ namespace Subless.Services
         }
     }
 }
+

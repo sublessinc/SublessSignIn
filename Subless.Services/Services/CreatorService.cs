@@ -4,6 +4,10 @@ using Subless.Data;
 using Subless.Models;
 using Subless.Services.Extensions;
 using Subless.Services.Services;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Subless.Services
 {
@@ -14,11 +18,13 @@ namespace Subless.Services
         private readonly IPartnerService partnerService;
         private readonly ICacheService cache;
         private readonly ILogger<CreatorService> logger;
+        IPaymentRepository paymentRepository;
 
         public CreatorService(
             IUserRepository userRepository,
             ICreatorRepository creatorRepository,
             IPartnerService partnerService,
+            IPaymentRepository paymentRepository,
             ICacheService cache,
             ILoggerFactory loggerFactory)
         {
@@ -141,7 +147,7 @@ namespace Subless.Services
 
         public IEnumerable<Guid> FilterInactiveCreators(IEnumerable<Guid> creatorIds)
         {
-            return _userRepository.FilterInvalidCreators(creatorIds);
+            return creatorRepository.FilterInvalidCreators(creatorIds);
         }
 
         public async Task UnlinkCreator(string cognitoId, Guid id)
