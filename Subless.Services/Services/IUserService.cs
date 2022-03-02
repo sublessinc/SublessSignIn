@@ -1,7 +1,7 @@
-﻿using System;
+﻿using Subless.Models;
+using System;
 using System.Collections.Generic;
 using System.Security.Claims;
-using Subless.Models;
 
 namespace Subless.Services
 {

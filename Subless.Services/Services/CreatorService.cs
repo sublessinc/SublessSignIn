@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Caching.Memory;
+﻿using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Subless.Data;
 using Subless.Models;
 using Subless.Services.Extensions;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Subless.Services
 {
@@ -84,7 +84,7 @@ namespace Subless.Services
         }
 
         public async Task<Creator> UpdateCreator(string cognitoId, Creator creator)
-        {           
+        {
             var creators = _userRepository.GetCreatorsByCognitoId(cognitoId);
             if (creators == null || !creators.Any(x => x.Active))
             {
@@ -110,7 +110,7 @@ namespace Subless.Services
             var paymentStats = new Dictionary<DateTimeOffset, MontlyPaymentStats>();
             foreach (var payment in payments)
             {
-                var paymentMonth =  new DateTimeOffset(new DateTime(payment.DateSent.Year, payment.DateSent.Month, 1));
+                var paymentMonth = new DateTimeOffset(new DateTime(payment.DateSent.Year, payment.DateSent.Month, 1));
                 if (!paymentStats.Keys.Any(x => new DateTimeOffset(new DateTime(x.Year, x.Month, 1)) == paymentMonth))
                 {
                     paymentStats.Add(paymentMonth, new MontlyPaymentStats()
@@ -147,7 +147,7 @@ namespace Subless.Services
         public async Task UnlinkCreator(string cognitoId, Guid id)
         {
             var creators = _userRepository.GetCreatorsByCognitoId(cognitoId);
-            if (!creators.Any(x=>x.Id == id))
+            if (!creators.Any(x => x.Id == id))
             {
                 throw new AccessViolationException("User cannot modify this creator");
             }

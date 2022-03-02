@@ -1,7 +1,7 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Design;
+﻿using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using System;
 using static Subless.Data.DataDi;
 
 namespace Subless.Data
@@ -17,7 +17,7 @@ namespace Subless.Data
         {
             var dbCreds = JsonConvert.DeserializeObject<DbCreds>(Environment.GetEnvironmentVariable("dbCreds"));
 
-                
+
             var options = new DatabaseSettings()
             {
                 ConnectionString = dbCreds.GetDatabaseConnection()

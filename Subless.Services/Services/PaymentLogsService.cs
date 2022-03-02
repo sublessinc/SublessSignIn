@@ -1,8 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Subless.Data;
 using Subless.Models;
+using System;
+using System.Collections.Generic;
 
 namespace Subless.Services
 {
@@ -12,13 +12,13 @@ namespace Subless.Services
         private readonly IPaymentRepository paymentRepository;
         private readonly ILogger _logger;
         public PaymentLogsService(
-            IUserRepository userRepository, 
+            IUserRepository userRepository,
             IPaymentRepository paymentRepository,
             ILoggerFactory loggerFactory)
         {
             _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
             this.paymentRepository = paymentRepository ?? throw new ArgumentNullException(nameof(paymentRepository));
-            _logger = (loggerFactory?? throw new ArgumentNullException(nameof(loggerFactory))).CreateLogger<PaymentLogsService>();
+            _logger = (loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory))).CreateLogger<PaymentLogsService>();
         }
 
         public void SaveLogs(IEnumerable<Payment> paymentLogs)

@@ -167,7 +167,7 @@ namespace Subless.Services
             var options = new CouponCreateOptions
             {
                 Duration = "once",
-                Id = "rollover"+Guid.NewGuid(),
+                Id = "rollover" + Guid.NewGuid(),
                 PercentOff = 100,
                 MaxRedemptions = 1
             };
@@ -182,7 +182,7 @@ namespace Subless.Services
             {
                 Coupon = coupon.Id,
             };
-            var service = new SubscriptionService(_client);           
+            var service = new SubscriptionService(_client);
             return service.Update(sub.Id, updateOptions);
         }
 

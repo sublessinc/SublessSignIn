@@ -1,10 +1,10 @@
-﻿using System;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Subless.Data;
 using Subless.Models;
 using Subless.Services;
+using System;
 using Xunit;
 
 namespace Subless.Tests
@@ -130,7 +130,8 @@ namespace Subless.Tests
                     });
 
             var serviceProvider = new ServiceCollection()
-                .AddLogging(x => {
+                .AddLogging(x =>
+                {
                     x.AddSimpleConsole();
                 })
                 .BuildServiceProvider();
@@ -142,7 +143,7 @@ namespace Subless.Tests
             return new HitService(
                 new Mock<IUserService>().Object,
                 new Mock<IUserRepository>().Object,
-                new Mock<IHitRepository>().Object,  
+                new Mock<IHitRepository>().Object,
                 creatorService.Object,
                 new Mock<IPartnerService>().Object,
                 mockLoggerFactory.Object);

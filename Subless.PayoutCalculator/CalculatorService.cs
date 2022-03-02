@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Subless.Models;
 using Subless.Services;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Subless.PayoutCalculator
 {
@@ -90,7 +90,7 @@ namespace Subless.PayoutCalculator
                 {
                     throw new Exception($"The math did not add up for payer:{payer.UserId}");
                 }
-                
+
                 // record each outgoing payment to master list
                 SavePaymentDetails(payees, payer, endDate);
                 AddPayeesToMasterList(allPayouts, payees);
@@ -109,13 +109,13 @@ namespace Subless.PayoutCalculator
         {
             var creatorIds = hits.Select(x => x.CreatorId).Distinct();
             _logger.LogInformation($"Filter step 1: we have {0} unique creator IDs", creatorIds.Count());
-            var creators = creatorIds.Select(x => _creatorService.GetCreator(x)).Where(x=> x is not null);
+            var creators = creatorIds.Select(x => _creatorService.GetCreator(x)).Where(x => x is not null);
             _logger.LogInformation($"Filter step 2: we have {0} unique creators based on those IDs", creators.Count());
             var missingCreators = creatorIds.Where(x => !creators.Any(y => y.Id == x));
             _logger.LogInformation($"Filter step 2: we have {0} missing creators", missingCreators.Count());
             var invalidCreators = creators.Where(x => x.ActivationCode is not null || string.IsNullOrWhiteSpace(x.PayPalId));
             _logger.LogInformation($"Filter step 3: we have {0} invalid creators", invalidCreators.Count());
-            var validHits = hits.Where(x => !missingCreators.Any(y=> y==x.CreatorId) && !invalidCreators.Any(y => y.Id == x.CreatorId));
+            var validHits = hits.Where(x => !missingCreators.Any(y => y == x.CreatorId) && !invalidCreators.Any(y => y.Id == x.CreatorId));
             _logger.LogInformation($"Filter step 4: we have {0} valid hits", validHits.Count());
             return validHits;
         }

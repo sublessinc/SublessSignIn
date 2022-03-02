@@ -1,18 +1,13 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Duende.Bff;
-using IdentityModel;
+﻿using Duende.Bff;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Subless.Models;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace SublessSignIn
 {
     public class SublessLoginService : ILoginService
-    { 
+    {
         /// <inheritdoc />
         public async Task ProcessRequestAsync(HttpContext context)
         {

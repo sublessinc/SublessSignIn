@@ -1,29 +1,16 @@
-using System;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
-using Duende.Bff;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using Newtonsoft.Json;
 using Subless.Data;
 using Subless.Models;
 using Subless.Services;
 using SublessSignIn.AuthServices;
+using System;
+using System.Linq;
 
 namespace SublessSignIn
 {
@@ -135,13 +122,13 @@ namespace SublessSignIn
                       "Origin, X-Requested-With, Content-Type, Accept");
                 },
             });
-            
+
             app.UseAuthentication();
             app.UseBff();
             app.UseRouting();
             app.UseCors();
             app.UseAuthorization();
-            
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers()
@@ -152,7 +139,7 @@ namespace SublessSignIn
                 endpoints.MapBffManagementEndpoints();
                 endpoints.MapFallbackToFile("/index.html");
             });
-            
+
         }
 
         private void OnStarted()
