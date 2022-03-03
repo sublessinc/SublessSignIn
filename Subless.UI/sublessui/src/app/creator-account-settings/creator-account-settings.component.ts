@@ -40,7 +40,7 @@ export class CreatorAccountSettingsComponent implements OnInit {
   openDialog() {
     const data: IDialogData = {
       title: 'Are you sure?',
-      text: "<h3>Unlinking an account will result in data loss</h3><h3>All views received this month will be discarded</h3>",
+      text: "<h3>Unlinking an account will result in the loss of ALL data related to this creator.</h3><h3>All views received this month will be discarded, you will not receive payments for them.</h3>",
       proceedText: 'Unlink',
       cancelText: 'Nevermind!',
     }

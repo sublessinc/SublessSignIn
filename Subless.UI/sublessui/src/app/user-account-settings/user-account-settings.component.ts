@@ -45,7 +45,7 @@ export class UserAccountSettingsComponent implements OnInit {
   openDialog() {
     const data: IDialogData = {
       title: 'Are you sure?',
-      text: "<h3>Your subscription will be cancelled, and you will not be billed next month</h3><h3>The remainder of this month's balance will be prorated</h3>",
+      text: "<h3>Your subscription will be cancelled, and you will not be billed next month.</h3><h3>A partial refund for this month's remaining balance will be refunded to your payment method.</h3>",
       proceedText: 'Cancel',
       cancelText: 'Nevermind!',
     }

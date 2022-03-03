@@ -50,7 +50,7 @@ export class AccountSettingsComponent implements OnInit {
   openDialog() {
     const data: IDialogData = {
       title: 'Are you sure?',
-      text: "<h3>Deletions are not reversible</h3><h3>Once your account has been deleted, it cannot be recovered</h3>",
+      text: "<h3>Deletions are not reversible.</h3><h3>Once your account has been deleted, it cannot be recovered.</h3>",
       proceedText: 'Delete',
       cancelText: 'Nevermind!',
     }
