@@ -6,8 +6,8 @@ import { AuthorizationService } from '../services/authorization.service';
 import { CheckoutService } from '../services/checkout.service';
 import { CreatorService } from '../services/creator.service';
 import { UserService } from '../services/user.service';
-import { MatDialog } from '@angular/material/dialog';
-import { WarnDialogComponent } from '../warn-dialog/warn-dialog.component';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
+import { IDialogData, WarnDialogComponent } from '../warn-dialog/warn-dialog.component';
 
 
 @Component({
@@ -48,7 +48,15 @@ export class AccountSettingsComponent implements OnInit {
   }
 
   openDialog() {
-    const dialogRef = this.dialog.open(WarnDialogComponent);
+    const data: IDialogData = {
+      title: 'Are you sure?',
+      text: "<h3>Deletions are not reversible</h3><h3>Once your account has been deleted, it cannot be recovered</h3>",
+      proceedText: 'Delete',
+      cancelText: 'Nevermind!',
+    }
+    const config = new MatDialogConfig();
+    config.data = data;
+    const dialogRef = this.dialog.open(WarnDialogComponent, config);
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
