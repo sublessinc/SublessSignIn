@@ -33,6 +33,7 @@ import { MatRadioModule } from '@angular/material/radio';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatDialogModule } from '@angular/material/dialog';
 
 
 const materialModules = [
@@ -44,6 +45,7 @@ const materialModules = [
   MatCheckboxModule,
   MatChipsModule,
   MatDividerModule,
+  MatDialogModule,
   MatExpansionModule,
   MatIconModule,
   MatInputModule,
