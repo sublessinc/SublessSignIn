@@ -5,6 +5,7 @@ using Duende.Bff;
 using IdentityModel.AspNetCore.AccessTokenManagement;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Subless.Models;
 using System;
@@ -34,8 +35,9 @@ namespace SublessSignIn.AuthServices
             IOptions<AuthenticationOptions> authOptions,
             IOptions<AuthSettings> authSettings,
             IUserAccessTokenStore userAccessTokenStore,
-            IHttpClientFactory httpClientFactory) :
-            base(bffOptions, authOptions)
+            IHttpClientFactory httpClientFactory,
+            ILoggerFactory logger) :
+            base(bffOptions, authOptions, logger.CreateLogger<PostConfigureApplicationCookieRevokeRefreshToken>())
         {
             if (authOptions is null)
             {

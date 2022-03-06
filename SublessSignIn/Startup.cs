@@ -5,12 +5,14 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using Newtonsoft.Json;
 using Subless.Data;
 using Subless.Models;
 using Subless.Services;
 using SublessSignIn.AuthServices;
 using System;
 using System.Linq;
+using static Subless.Data.DataDi;
 
 namespace SublessSignIn
 {
@@ -30,6 +32,9 @@ namespace SublessSignIn
             AuthSettings.JwtKeySetUrl = AuthSettings.CognitoUrl + "/.well-known/jwks.json";
             AuthSettings.Domain = Environment.GetEnvironmentVariable("DOMAIN") ?? throw new ArgumentNullException("DOMAIN");
             AuthSettings.IdentityServerLicenseKey = Environment.GetEnvironmentVariable("IdentityServerLicenseKey") ?? "";
+            var json = Environment.GetEnvironmentVariable("dbCreds") ?? throw new ArgumentNullException("dbCreds");
+            var dbCreds = JsonConvert.DeserializeObject<DbCreds>(json);
+            AuthSettings.SessionStoreConnString = dbCreds.GetDatabaseConnection();
             if (!AuthSettings.Domain.EndsWith('/'))
             {
                 AuthSettings.Domain += '/';
