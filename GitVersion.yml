@@ -1,5 +1,15 @@
-mode: ContinuousDeployment
-branches: {}
-ignore:
-  sha: []
+mode: mainline
+commit-message-incrementing: Enabled
+no-bump-message: '\+semver:\s?(none|skip)'
+branches:
+  master:
+    regex: ^main$
+  stage:
+    regex: ^stage$
+    source-branches: ["develop"]
+    increment: Minor
+  develop:
+    regex: ^.*dev.*$
+    source-branches: ["main"]
+    increment: Patch
 merge-message-formats: {}

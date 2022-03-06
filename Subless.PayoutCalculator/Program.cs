@@ -78,7 +78,6 @@ namespace PayoutCalculator
                 services.AddTransient<IFileStorageService, S3Service>();
                 services.AddTransient<AwsCredWrapper, AwsCredWrapper>();
                 services.AddTransient<IHealthCheck, HealthCheck>();
-
             });
         }
 
