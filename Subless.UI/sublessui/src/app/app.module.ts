@@ -25,6 +25,7 @@ import { PayoutsettingsComponent } from './payoutsettings/payoutsettings.compone
 import { CreatorAccountSettingsComponent } from './creator-account-settings/creator-account-settings.component';
 import { UserAccountSettingsComponent } from './user-account-settings/user-account-settings.component';
 import { IntegrationtestComponent } from './integrationtest/integrationtest.component';
+import { WarnDialogComponent } from './warn-dialog/warn-dialog.component';
 
 @NgModule({
   declarations: [
@@ -43,7 +44,8 @@ import { IntegrationtestComponent } from './integrationtest/integrationtest.comp
     PayoutsettingsComponent,
     CreatorAccountSettingsComponent,
     UserAccountSettingsComponent,
-    IntegrationtestComponent
+    IntegrationtestComponent,
+    WarnDialogComponent
   ],
   imports: [
     ThemeModule,
