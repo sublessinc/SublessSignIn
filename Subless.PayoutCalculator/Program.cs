@@ -97,7 +97,8 @@ namespace PayoutCalculator
                 var lastExecution = logsService.GetLastPaymentDate();
                 logger.LogInformation("Running calculation");
                 calculator.CalculatePayments(lastExecution, DateTimeOffset.UtcNow);
-                logger.LogInformation("Calculation complete");
+                logger.LogError("Calculation complete... waiting indefinitly");
+                Console.ReadKey();
             }
         }
 
@@ -110,7 +111,8 @@ namespace PayoutCalculator
                 var lastExecution = logsService.GetLastPaymentDate();
                 logger.LogInformation("Running calculation");
                 calculator.CalculatePayments(start, end);
-                logger.LogInformation("Calculation complete");
+                logger.LogError("Calculation complete... waiting indefinitly");
+                Console.ReadKey();
             }
         }
         private static IHostBuilder CreateHostBuilder(string[] args)
