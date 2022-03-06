@@ -307,7 +307,9 @@ namespace Subless.Services
                     payers.Add(new Payer
                     {
                         UserId = users.Single(x => x.StripeCustomerId == invoice.CustomerId).Id,
-                        Payment = balanceTrans.Net
+                        Payment = balanceTrans.Net,
+                        //Taxes = balanceTrans
+                        Fees = balanceTrans.Fee
                     });
                 }
             }

@@ -4,19 +4,21 @@ using Amazon.CognitoIdentityProvider.Model;
 using Microsoft.Extensions.Options;
 using Subless.Models;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Subless.Services.Services
 {
     public class CognitoService : ICognitoService
     {
-        private readonly IOptions<AuthSettings> options;
+        private readonly IOptions<DomainConfig> options;
 
         private readonly AmazonCognitoIdentityProviderClient _client;
-        public CognitoService(IOptions<AuthSettings> options)
+        private readonly string PoolId;
+        public CognitoService(IOptions<DomainConfig> options)
         {
             this.options = options ?? throw new ArgumentNullException(nameof(options));
-            var poolId = options.Value?.PoolId ?? throw new ArgumentNullException(nameof(options.Value.PoolId));
+            PoolId = options.Value?.UserPool ?? throw new ArgumentNullException(nameof(options.Value.UserPool));
             var region = RegionEndpoint.GetBySystemName(options.Value.Region);
             _client = new AmazonCognitoIdentityProviderClient(region: region);
         }
@@ -26,9 +28,19 @@ namespace Subless.Services.Services
             var deleteRequest = new AdminDeleteUserRequest
             {
                 Username = cognitoUserId,
-                UserPoolId = options.Value.PoolId
+                UserPoolId = PoolId
             };
             await _client.AdminDeleteUserAsync(deleteRequest);
+        }
+
+        public async Task<string> GetCognitoUserEmail(string cognitoUserId)
+        {
+            var user = await _client.AdminGetUserAsync(new AdminGetUserRequest()
+            {
+                Username = cognitoUserId,
+                UserPoolId = PoolId
+            });
+            return user.UserAttributes.Single(x=>x.Name == "email").Value;
         }
     }
 }

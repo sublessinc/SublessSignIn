@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Options;
 using Subless.Models;
 using Subless.Services;
+using Subless.Services.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,6 +24,7 @@ namespace Subless.PayoutCalculator
         private readonly ILoggerFactory _loggerFactory;
         private readonly IFileStorageService _s3Service;
         private readonly IUserService userService;
+        private readonly IEmailService emailService;
         private readonly ILogger _logger;
 
         public CalculatorService(
@@ -34,6 +36,7 @@ namespace Subless.PayoutCalculator
             IFileStorageService s3Service,
             IUserService userService,
             IOptions<StripeConfig> stripeOptions,
+            IEmailService emailService,
             ILoggerFactory loggerFactory)
         {
             _stripeService = stripeService ?? throw new ArgumentNullException(nameof(stripeService));
@@ -44,6 +47,7 @@ namespace Subless.PayoutCalculator
             _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
             _s3Service = s3Service ?? throw new ArgumentNullException(nameof(s3Service));
             this.userService = userService ?? throw new ArgumentNullException(nameof(userService));
+            this.emailService = emailService ?? throw new ArgumentNullException(nameof(emailService));
             _logger = _loggerFactory.CreateLogger<CalculatorService>();
             SublessPayPalId = stripeOptions.Value.SublessPayPalId ?? throw new ArgumentNullException(nameof(stripeOptions.Value.SublessPayPalId));
         }
@@ -59,7 +63,7 @@ namespace Subless.PayoutCalculator
                 return;
             }
             // for each user
-            _logger.LogInformation($"Preparing to process {0} payers' payments.", payers.Count());
+            _logger.LogInformation("Preparing to process {0} payers' payments.", payers.Count());
             foreach (var payer in payers)
             {
                 var payees = new List<Payee>();
@@ -67,9 +71,9 @@ namespace Subless.PayoutCalculator
                 var hits = RetrieveUsersMonthlyHits(payer.UserId, startDate, endDate);
                 // filter out incomplete creators
                 hits = FilterInvalidCreators(hits);
+                var user = userService.GetUser(payer.UserId);
                 if (!hits.Any())
                 {
-                    var user = userService.GetUser(payer.UserId);
                     _stripeService.RolloverPaymentForIdleCustomer(user.StripeCustomerId);
                     break;
                 }
@@ -92,7 +96,8 @@ namespace Subless.PayoutCalculator
                 }
 
                 // record each outgoing payment to master list
-                SavePaymentDetails(payees, payer, endDate);
+                var payments = SavePaymentDetails(payees, payer, endDate);
+                emailService.SendReceiptEmail(payments, user.CognitoId);
                 AddPayeesToMasterList(allPayouts, payees);
             }
             // stripe sends payments in cents, paypal expects payouts in dollars
@@ -108,15 +113,15 @@ namespace Subless.PayoutCalculator
         private IEnumerable<Hit> FilterInvalidCreators(IEnumerable<Hit> hits)
         {
             var creatorIds = hits.Select(x => x.CreatorId).Distinct();
-            _logger.LogInformation($"Filter step 1: we have {0} unique creator IDs", creatorIds.Count());
+            _logger.LogInformation("Filter step 1: we have {0} unique creator IDs", creatorIds.Count());
             var creators = creatorIds.Select(x => _creatorService.GetCreator(x)).Where(x => x is not null);
-            _logger.LogInformation($"Filter step 2: we have {0} unique creators based on those IDs", creators.Count());
+            _logger.LogInformation("Filter step 2: we have {0} unique creators based on those IDs", creators.Count());
             var missingCreators = creatorIds.Where(x => !creators.Any(y => y.Id == x));
-            _logger.LogInformation($"Filter step 2: we have {0} missing creators", missingCreators.Count());
+            _logger.LogInformation("Filter step 2: we have {0} missing creators", missingCreators.Count());
             var invalidCreators = creators.Where(x => x.ActivationCode is not null || string.IsNullOrWhiteSpace(x.PayPalId));
-            _logger.LogInformation($"Filter step 3: we have {0} invalid creators", invalidCreators.Count());
+            _logger.LogInformation("Filter step 3: we have {0} invalid creators", invalidCreators.Count());
             var validHits = hits.Where(x => !missingCreators.Any(y => y == x.CreatorId) && !invalidCreators.Any(y => y.Id == x.CreatorId));
-            _logger.LogInformation($"Filter step 4: we have {0} valid hits", validHits.Count());
+            _logger.LogInformation("Filter step 4: we have {0} valid hits", validHits.Count());
             return validHits;
         }
 
@@ -139,6 +144,7 @@ namespace Subless.PayoutCalculator
         {
             return new Payee
             {
+                Name = "Subless",
                 Payment = Math.Round(Payment * sublessFraction, CurrencyPrecision, MidpointRounding.ToZero),
                 PayPalId = SublessPayPalId
             };
@@ -187,6 +193,7 @@ namespace Subless.PayoutCalculator
                 var creator = _creatorService.GetCreator(creatorVisits.Key);
                 payees.Add(new Payee
                 {
+                    Name = creator.Username,
                     Payment = creatorPayment,
                     PayPalId = creator.PayPalId
                 });
@@ -196,7 +203,7 @@ namespace Subless.PayoutCalculator
             return payees;
         }
 
-        public IEnumerable<Payee> GetPartnerPayees(Double payment, Dictionary<Guid, int> creatorHits, int totalHits, double partnerHitFraction, double sublessHitFraction)
+        public IEnumerable<Payee> GetPartnerPayees(double payment, Dictionary<Guid, int> creatorHits, int totalHits, double partnerHitFraction, double sublessHitFraction)
         {
             var payees = new List<Payee>();
             foreach (var creatorVisits in creatorHits)
@@ -214,6 +221,7 @@ namespace Subless.PayoutCalculator
                 {
                     var payee = new Payee()
                     {
+                        Name = partner.Site.Host,
                         PayPalId = partner.PayPalId,
                         Payment = partnerPayment
                     };
@@ -225,7 +233,7 @@ namespace Subless.PayoutCalculator
             return payees;
         }
 
-        private void SavePaymentDetails(IEnumerable<Payee> payees, Payer payer, DateTimeOffset endDate)
+        private List<Payment> SavePaymentDetails(IEnumerable<Payee> payees, Payer payer, DateTimeOffset endDate)
         {
             _logger.LogInformation($"Saving payment details for one patron and {0} payees", payees.Count());
             var logs = new List<Payment>();
@@ -235,11 +243,12 @@ namespace Subless.PayoutCalculator
                 {
                     Payee = payee,
                     Payer = payer,
-                    DateSent = endDate
+                    DateSent = endDate,
+                    Amount = payee.Payment
                 });
             }
             _paymentLogsService.SaveLogs(logs);
-
+            return logs;
         }
 
         private void AddPayeesToMasterList(Dictionary<string, double> masterPayoutList, IEnumerable<Payee> payees)

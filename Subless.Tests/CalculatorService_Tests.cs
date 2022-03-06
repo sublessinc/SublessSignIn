@@ -5,6 +5,7 @@ using Moq;
 using Subless.Models;
 using Subless.PayoutCalculator;
 using Subless.Services;
+using Subless.Services.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -593,7 +594,8 @@ namespace Subless.Tests
                 s3Service?.Object ?? new Mock<IFileStorageService>().Object,
                 userSerivce.Object,
                 CreateOptions(),
-                mockLoggerFactory.Object
+                new Mock<IEmailService>().Object,
+                mockLoggerFactory.Object                
                 );
         }
 
@@ -645,14 +647,14 @@ namespace Subless.Tests
         private Mock<IPartnerService> PartnerServiceBuilder(string PayPalId = "TestPartner")
         {
             var service = new Mock<IPartnerService>();
-            service.Setup(x => x.GetPartner(It.IsAny<Guid>())).Returns(new Partner() { PayPalId = PayPalId });
+            service.Setup(x => x.GetPartner(It.IsAny<Guid>())).Returns(new Partner() { PayPalId = PayPalId, Site = new Uri("https://google.com") });
             return service;
         }
 
         private Mock<IPartnerService> PartnerServiceCreatorMatcherBuilder(Dictionary<Guid, List<Guid>> partners)
         {
             var service = new Mock<IPartnerService>();
-            service.Setup(x => x.GetPartner(It.IsAny<Guid>())).Returns<Guid>(x => new Partner() { PayPalId = x.ToString() });
+            service.Setup(x => x.GetPartner(It.IsAny<Guid>())).Returns<Guid>(x => new Partner() { PayPalId = x.ToString(), Site = new Uri("https://google.com")});
             return service;
         }
     }

@@ -21,6 +21,12 @@ namespace Subless.Services
                 }
                 options.SublessPayPalId = Environment.GetEnvironmentVariable("PayPalId");
             });
+            services.Configure<DomainConfig>(options =>
+            {
+                options.Domain = Environment.GetEnvironmentVariable("DOMAIN") ?? throw new ArgumentNullException("DOMAIN");
+                options.Region = Environment.GetEnvironmentVariable("region") ?? throw new ArgumentNullException("region");
+                options.UserPool = Environment.GetEnvironmentVariable("userPoolId") ?? throw new ArgumentNullException("userPoolId");
+            });
 
             services.AddTransient<IAdministrationService, AdministrationService>();
             services.AddTransient<IAuthService, AuthService>();
