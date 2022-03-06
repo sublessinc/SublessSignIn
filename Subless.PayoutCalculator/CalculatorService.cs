@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Options;
 using Subless.Models;
 using Subless.Services;
+using Subless.Services.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,6 +24,7 @@ namespace Subless.PayoutCalculator
         private readonly ILoggerFactory _loggerFactory;
         private readonly IFileStorageService _s3Service;
         private readonly IUserService userService;
+        private readonly IEmailService emailService;
         private readonly ILogger _logger;
 
         public CalculatorService(
@@ -34,6 +36,7 @@ namespace Subless.PayoutCalculator
             IFileStorageService s3Service,
             IUserService userService,
             IOptions<StripeConfig> stripeOptions,
+            IEmailService emailService,
             ILoggerFactory loggerFactory)
         {
             _stripeService = stripeService ?? throw new ArgumentNullException(nameof(stripeService));
@@ -44,6 +47,7 @@ namespace Subless.PayoutCalculator
             _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
             _s3Service = s3Service ?? throw new ArgumentNullException(nameof(s3Service));
             this.userService = userService ?? throw new ArgumentNullException(nameof(userService));
+            this.emailService = emailService ?? throw new ArgumentNullException(nameof(emailService));
             _logger = _loggerFactory.CreateLogger<CalculatorService>();
             SublessPayPalId = stripeOptions.Value.SublessPayPalId ?? throw new ArgumentNullException(nameof(stripeOptions.Value.SublessPayPalId));
         }
@@ -92,7 +96,8 @@ namespace Subless.PayoutCalculator
                 }
 
                 // record each outgoing payment to master list
-                SavePaymentDetails(payees, payer, endDate);
+                var payments = SavePaymentDetails(payees, payer, endDate);
+                var email = emailService.GetEmailBody(payments);
                 AddPayeesToMasterList(allPayouts, payees);
             }
             // stripe sends payments in cents, paypal expects payouts in dollars
@@ -139,6 +144,7 @@ namespace Subless.PayoutCalculator
         {
             return new Payee
             {
+                Name = "Subless",
                 Payment = Math.Round(Payment * sublessFraction, CurrencyPrecision, MidpointRounding.ToZero),
                 PayPalId = SublessPayPalId
             };
@@ -187,6 +193,7 @@ namespace Subless.PayoutCalculator
                 var creator = _creatorService.GetCreator(creatorVisits.Key);
                 payees.Add(new Payee
                 {
+                    Name = creator.Username,
                     Payment = creatorPayment,
                     PayPalId = creator.PayPalId
                 });
@@ -196,7 +203,7 @@ namespace Subless.PayoutCalculator
             return payees;
         }
 
-        public IEnumerable<Payee> GetPartnerPayees(Double payment, Dictionary<Guid, int> creatorHits, int totalHits, double partnerHitFraction, double sublessHitFraction)
+        public IEnumerable<Payee> GetPartnerPayees(double payment, Dictionary<Guid, int> creatorHits, int totalHits, double partnerHitFraction, double sublessHitFraction)
         {
             var payees = new List<Payee>();
             foreach (var creatorVisits in creatorHits)
@@ -214,6 +221,7 @@ namespace Subless.PayoutCalculator
                 {
                     var payee = new Payee()
                     {
+                        Name = partner.Site.Host,
                         PayPalId = partner.PayPalId,
                         Payment = partnerPayment
                     };
@@ -225,7 +233,7 @@ namespace Subless.PayoutCalculator
             return payees;
         }
 
-        private void SavePaymentDetails(IEnumerable<Payee> payees, Payer payer, DateTimeOffset endDate)
+        private List<Payment> SavePaymentDetails(IEnumerable<Payee> payees, Payer payer, DateTimeOffset endDate)
         {
             _logger.LogInformation($"Saving payment details for one patron and {0} payees", payees.Count());
             var logs = new List<Payment>();
@@ -239,7 +247,7 @@ namespace Subless.PayoutCalculator
                 });
             }
             _paymentLogsService.SaveLogs(logs);
-
+            return logs;
         }
 
         private void AddPayeesToMasterList(Dictionary<string, double> masterPayoutList, IEnumerable<Payee> payees)

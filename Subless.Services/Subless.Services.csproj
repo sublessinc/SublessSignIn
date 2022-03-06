@@ -5,6 +5,23 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Assets\Receipt.html" />
+    <None Remove="Resources\Receipt.html" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Assets\Receipt.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\Receipt.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Amazon.Extensions.CognitoAuthentication" Version="2.2.2" />
     <PackageReference Include="AWSSDK.CognitoIdentity" Version="3.7.0.81" />
     <PackageReference Include="AWSSDK.CognitoIdentityProvider" Version="3.7.1.53" />

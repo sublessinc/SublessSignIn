@@ -17,10 +17,12 @@
         "PayoneerId": "sublessPayoneer",
         "BucketName": "devpays3bucket",
         "ExecutionsPerYear": "365",
-        "RunOnStart": "true",
+        "RunOnStart": "false",
         "PayPalId": "contact@subless.com",
         "dbCreds": "{  'password': 'zkleRY0BHaU8gI4Jsx3RXOX3',  'engine': 'postgres',  'port': 5432,  'dbInstanceIdentifier': 'sublessusers',  'host': 'localhost',  'username': 'postgres'}",
-        "Logging__LogLevel__Default": "debug"
+        "Logging__LogLevel__Default": "debug",
+        "CalcuationRangeStart": "1999-01-01",
+        "CalcuationRangeEnd": "2023-01-01"
       }
     }
   }
