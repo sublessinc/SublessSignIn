@@ -13,6 +13,7 @@ using Subless.PayoutCalculator;
 using Amazon.SimpleEmail;
 using Amazon;
 using Amazon.SimpleEmail.Model;
+using Microsoft.Extensions.Logging;
 
 namespace Subless.Services.Services
 {
@@ -29,8 +30,9 @@ namespace Subless.Services.Services
         public const string LogoUrl = "{{logourl}}"; //https://pay.subless.com/SublessLogo.svg
         public readonly CalculatorConfiguration authSettings;
         private readonly ICognitoService cognitoService;
+        private readonly ILogger logger;
 
-        public EmailService(IOptions<CalculatorConfiguration> options, ICognitoService cognitoService)
+        public EmailService(IOptions<CalculatorConfiguration> options, ICognitoService cognitoService, ILoggerFactory loggerFactory)
         {
             if (options is null)
             {
@@ -43,6 +45,7 @@ namespace Subless.Services.Services
             }
             authSettings = options.Value;
             this.cognitoService = cognitoService ?? throw new ArgumentNullException(nameof(cognitoService));
+            this.logger = loggerFactory.CreateLogger<EmailService>();
         }
 
         public void SendReceiptEmail(List<Payment> payments, string cognitoId)
@@ -130,14 +133,14 @@ namespace Subless.Services.Services
                 };
                 try
                 {
-                    Console.WriteLine("Sending email using Amazon SES...");
+                    logger.LogInformation("Sending email using Amazon SES...");
                     var response = await client.SendEmailAsync(sendRequest);
-                    Console.WriteLine("The email was sent successfully.");
+                    logger.LogInformation("The email was sent successfully.");
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("The email was not sent.");
-                    Console.WriteLine("Error message: " + ex.Message);
+                    logger.LogCritical("The email was not sent.");
+                    logger.LogCritical("Error message: " + ex.Message);
 
                 }
             }
