@@ -11,5 +11,7 @@
         public int ExecutionsPerYear;
         public string CalcuationRangeStart;
         public string CalcuationRangeEnd;
+        public string Domain;
+        public string PoolId;
     }
 }

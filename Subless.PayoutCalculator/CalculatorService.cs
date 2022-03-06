@@ -71,9 +71,9 @@ namespace Subless.PayoutCalculator
                 var hits = RetrieveUsersMonthlyHits(payer.UserId, startDate, endDate);
                 // filter out incomplete creators
                 hits = FilterInvalidCreators(hits);
+                var user = userService.GetUser(payer.UserId);
                 if (!hits.Any())
                 {
-                    var user = userService.GetUser(payer.UserId);
                     _stripeService.RolloverPaymentForIdleCustomer(user.StripeCustomerId);
                     break;
                 }
@@ -97,7 +97,7 @@ namespace Subless.PayoutCalculator
 
                 // record each outgoing payment to master list
                 var payments = SavePaymentDetails(payees, payer, endDate);
-                var email = emailService.GetEmailBody(payments);
+                emailService.SendReceiptEmail(payments, user.CognitoId);
                 AddPayeesToMasterList(allPayouts, payees);
             }
             // stripe sends payments in cents, paypal expects payouts in dollars
@@ -243,7 +243,8 @@ namespace Subless.PayoutCalculator
                 {
                     Payee = payee,
                     Payer = payer,
-                    DateSent = endDate
+                    DateSent = endDate,
+                    Amount = payee.Payment
                 });
             }
             _paymentLogsService.SaveLogs(logs);

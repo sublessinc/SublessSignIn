@@ -126,12 +126,15 @@ namespace PayoutCalculator
                     options.RunOnStart = bool.Parse(Environment.GetEnvironmentVariable("RunOnStart") ?? throw new ArgumentNullException("RunOnStart"));
                     options.CalcuationRangeEnd = Environment.GetEnvironmentVariable("CalcuationRangeEnd");
                     options.CalcuationRangeStart = Environment.GetEnvironmentVariable("CalcuationRangeStart");
+                    options.Domain = Environment.GetEnvironmentVariable("DOMAIN");
+                    options.PoolId = Environment.GetEnvironmentVariable("DOMAIN");
                 });
                 DataDi.RegisterDataDi(services);
                 ServicesDi.AddServicesDi(services);
                 services.AddTransient<ICalculatorService, CalculatorService>();
                 services.AddTransient<IFileStorageService, S3Service>();
                 services.AddTransient<AwsCredWrapper, AwsCredWrapper>();
+                services.AddTransient<IEmailService, EmailService>();
                 services.AddTransient<IHealthCheck, HealthCheck>();
 
             });
