@@ -28,6 +28,5 @@ namespace SublessSignIn
         {
             return await stripeService.CanAccessStripe();
         }
-
     }
 }

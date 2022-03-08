@@ -138,7 +138,6 @@ namespace PayoutCalculator
                 services.AddTransient<AwsCredWrapper, AwsCredWrapper>();
                 services.AddTransient<IEmailService, EmailService>();
                 services.AddTransient<IHealthCheck, HealthCheck>();
-
             });
         }
 

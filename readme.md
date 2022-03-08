@@ -18,9 +18,10 @@ dotnet tool install --global dotnet-ef
 
 Start postgresql
 ```bash
+# password used can be found or set in the launchsettings.json file
 docker run -e POSTGRES_PASSWORD=[password] -p 5432:5432 postgres
 ```
-Define environment variables
+Define environment variables (this can be done in the CLI as below, or using the `launchsettings.json` file)
 ```bash
 STRIPE_PUBLISHABLE_KEY=
 STRIPE_SECRET_KEY=
