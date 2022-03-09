@@ -51,7 +51,7 @@ export class AccountSettingsComponent implements OnInit {
     const data: IDialogData = {
       title: 'Are you sure?',
       text: "<h3>Deletions are not reversible.</h3><h3>Once your account has been deleted, it cannot be recovered.</h3>",
-      proceedText: 'Delete',
+      proceedText: 'Delete Account',
       cancelText: 'Nevermind!',
     }
     const config = new MatDialogConfig();
