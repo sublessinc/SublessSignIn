@@ -1,6 +1,10 @@
 ﻿using Duende.Bff;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
+using Subless.Data;
 using Subless.Models;
+using static Subless.Data.DataDi;
+using System;
 
 namespace SublessSignIn.AuthServices
 {
@@ -18,6 +22,7 @@ namespace SublessSignIn.AuthServices
                 options.Region = authSettings.Region;
                 options.Domain = authSettings.Domain;
                 options.IdentityServerLicenseKey = authSettings.IdentityServerLicenseKey;
+                options.SessionStoreConnString = authSettings.SessionStoreConnString;
             });
 
             services.AddTransient<ILoginService, SublessLoginService>();
