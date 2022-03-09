@@ -1,3 +1,4 @@
+using Duende.Bff.EntityFramework;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;

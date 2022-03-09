@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Subless.Models;
 using System;
 using System.Linq;
 
@@ -10,7 +11,7 @@ namespace Subless.Data
     {
         ILogger<Repository> logger { get; set; }
         private readonly IOptions<DatabaseSettings> _options;
-
+        public DbSet<SublessUserSession> UserSessions { get; set; }
         public Repository(IOptions<DatabaseSettings> options, ILoggerFactory loggerFactory)
         {
             if (loggerFactory is null)
