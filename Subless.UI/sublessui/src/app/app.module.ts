@@ -1,4 +1,4 @@
-import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { NgModule, CUSTOM_ELEMENTS_SCHEMA, ErrorHandler } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -26,6 +26,9 @@ import { CreatorAccountSettingsComponent } from './creator-account-settings/crea
 import { UserAccountSettingsComponent } from './user-account-settings/user-account-settings.component';
 import { IntegrationtestComponent } from './integrationtest/integrationtest.component';
 import { WarnDialogComponent } from './warn-dialog/warn-dialog.component';
+import { ErrorPageComponent } from './error-page/error-page.component';
+import { ErrorInterceptor } from './error-handling/error-interceptor.interceptor';
+import { GlobalerrorhandlerService } from './error-handling/globalerrorhandler.service';
 
 @NgModule({
   declarations: [
@@ -45,7 +48,8 @@ import { WarnDialogComponent } from './warn-dialog/warn-dialog.component';
     CreatorAccountSettingsComponent,
     UserAccountSettingsComponent,
     IntegrationtestComponent,
-    WarnDialogComponent
+    WarnDialogComponent,
+    ErrorPageComponent
   ],
   imports: [
     ThemeModule,
@@ -57,6 +61,9 @@ import { WarnDialogComponent } from './warn-dialog/warn-dialog.component';
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: UnauthorizedInterceptor, multi: true },
+    { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
+    { provide: ErrorHandler, useClass: GlobalerrorhandlerService },
+
     StopNavGuard
   ],
   bootstrap: [AppComponent],
