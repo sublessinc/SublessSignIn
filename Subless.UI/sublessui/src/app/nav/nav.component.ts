@@ -1,4 +1,5 @@
 import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { MatDrawer, MatSidenav } from '@angular/material/sidenav';
 import { Router } from '@angular/router';
 import { IStripeRedirect } from '../models/IStripeRedirect';
 import { SessionId } from '../models/SessionId';
@@ -12,7 +13,9 @@ import { CheckoutService } from '../services/checkout.service';
 })
 export class NavComponent implements OnInit {
   @ViewChild('content') sublessbackground: ElementRef | null = null;
+  @ViewChild('drawer') drawer: MatDrawer | null = null;
 
+  public hamburgerImage: string = "../../assets/img/hamburgerMenuWhite.svg";
   public user: boolean = false;
   public creator: boolean = false;
   public partner: boolean = false;
@@ -31,6 +34,10 @@ export class NavComponent implements OnInit {
         this.partner = routes.includes(4);
       }
     });
+  }
+
+  hamburgerPress() {
+    this.drawer?.toggle();
   }
 
   showDrawer() {
