@@ -46,7 +46,7 @@ export class UserAccountSettingsComponent implements OnInit {
     const data: IDialogData = {
       title: 'Are you sure?',
       text: "<h3>Your subscription will be cancelled, and you will not be billed next month.</h3><h3>A partial refund for this month's remaining balance will be refunded to your payment method.</h3>",
-      proceedText: 'Cancel',
+      proceedText: 'Cancel Subscription',
       cancelText: 'Nevermind!',
     }
     const config = new MatDialogConfig();
