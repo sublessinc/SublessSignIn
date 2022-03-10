@@ -19,6 +19,7 @@ export class NavComponent implements OnInit {
   public user: boolean = false;
   public creator: boolean = false;
   public partner: boolean = false;
+  public showHamburger: boolean = false;
   constructor(
     private authService: AuthorizationService,
     private checkoutService: CheckoutService,
@@ -34,6 +35,17 @@ export class NavComponent implements OnInit {
         this.partner = routes.includes(4);
       }
     });
+  }
+
+  ngAfterViewInit() {
+    if (window.innerWidth <= 700) {
+      this.drawer?.toggle();
+      if (this.drawer != null) {
+        this.drawer!.mode = "over";
+      }
+    } else {
+      this.showHamburger = true;
+    }
   }
 
   hamburgerPress() {

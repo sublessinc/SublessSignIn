@@ -1,4 +1,4 @@
-<button mat-icon-button (click)="hamburgerPress()" id="hamburger-btn">
+<button *ngIf="!showHamburger" mat-icon-button (click)="hamburgerPress()" id="hamburger-btn">
   <img #btnImage width=42 height=42 class="hamburger-img" src="../../assets/img/hamburgerMenuWhite.svg">
 </button>
 <mat-sidenav-container color='primary' id='root'>
