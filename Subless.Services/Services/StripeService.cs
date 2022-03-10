@@ -302,14 +302,29 @@ namespace Subless.Services
                 }
                 else
                 {
-                    var charge = chargeService.Get(invoice.ChargeId);
-                    var balanceTrans = balanceTransactionService.Get(charge.BalanceTransactionId);
+                    long payment = 0;
+                    long taxes = invoice?.Tax ?? 0; 
+                    long fees = 0;
+                    if (invoice.ChargeId == null)
+                    {
+                        var charge = chargeService.Get(invoice.ChargeId);
+                        var balanceTrans = balanceTransactionService.Get(charge.BalanceTransactionId);
+                        fees = balanceTrans.Fee;
+                        
+                        payment = balanceTrans.Net;
+                    }
+                    // if we have a discount, we need to calculate the payment differently
+                    else
+                    {
+                        payment = invoice.Subtotal;
+                    }
+
                     payers.Add(new Payer
                     {
                         UserId = users.Single(x => x.StripeCustomerId == invoice.CustomerId).Id,
-                        Payment = balanceTrans.Net,
-                        //Taxes = balanceTrans
-                        Fees = balanceTrans.Fee
+                        Payment = payment,
+                        Taxes = taxes,
+                        Fees = fees
                     });
                 }
             }
