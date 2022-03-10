@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AccountSettingsComponent } from './account-settings/account-settings.component';
 import { CreatorprofileComponent } from './creatorprofile/creatorprofile.component';
+import { ErrorPageComponent } from './error-page/error-page.component';
 import { IdComponent } from './id/id.component';
 import { IntegrationtestComponent } from './integrationtest/integrationtest.component';
 import { LoggedOutComponent } from './logged-out/logged-out.component';
@@ -27,6 +28,7 @@ const routes: Routes = [
   { path: 'id', component: IdComponent, canActivate: [AuthGuard] },
   { path: 'login', component: LoginComponent },
   { path: 'logged-out', component: LoggedOutComponent },
+  { path: 'error', component: ErrorPageComponent }
 
 ];
 
