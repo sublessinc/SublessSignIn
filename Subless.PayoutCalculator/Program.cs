@@ -98,7 +98,7 @@ namespace PayoutCalculator
                 logger.LogInformation("Running calculation");
                 calculator.CalculatePayments(lastExecution, DateTimeOffset.UtcNow);
                 logger.LogError("Calculation complete... waiting indefinitly");
-                Console.ReadKey();
+                Console.Read();
             }
         }
 
@@ -112,7 +112,7 @@ namespace PayoutCalculator
                 logger.LogInformation("Running calculation");
                 calculator.CalculatePayments(start, end);
                 logger.LogError("Calculation complete... waiting indefinitly");
-                Console.ReadKey();
+                Console.Read();
             }
         }
         private static IHostBuilder CreateHostBuilder(string[] args)
