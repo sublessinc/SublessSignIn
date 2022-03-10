@@ -15,7 +15,6 @@ export class NavComponent implements OnInit {
   @ViewChild('content') sublessbackground: ElementRef | null = null;
   @ViewChild('drawer') drawer: MatDrawer | null = null;
 
-  public hamburgerImage: string = "../../assets/img/hamburgerMenuWhite.svg";
   public user: boolean = false;
   public creator: boolean = false;
   public partner: boolean = false;
