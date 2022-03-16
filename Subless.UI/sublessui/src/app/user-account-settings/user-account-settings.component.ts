@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
+import { Subscription } from 'rxjs';
 import { IStripeRedirect } from '../models/IStripeRedirect';
 import { SessionId } from '../models/SessionId';
 import { AuthorizationService } from '../services/authorization.service';
@@ -11,7 +12,9 @@ import { IDialogData, WarnDialogComponent } from '../warn-dialog/warn-dialog.com
   templateUrl: './user-account-settings.component.html',
   styleUrls: ['./user-account-settings.component.scss']
 })
-export class UserAccountSettingsComponent implements OnInit {
+export class UserAccountSettingsComponent implements OnInit, OnDestroy {
+
+  private subs: Subscription[] = [];
 
   constructor(
     private checkoutService: CheckoutService,
@@ -21,9 +24,11 @@ export class UserAccountSettingsComponent implements OnInit {
 
   ngOnInit(): void {
   }
-
+  ngOnDestroy(): void {
+    this.subs.forEach((item: Subscription) => { item.unsubscribe(); })
+  }
   returnToStripe() {
-    this.checkoutService.getUserSession().subscribe({
+    this.subs.push(this.checkoutService.getUserSession().subscribe({
       next: (sessionId: SessionId) => {
         this.checkoutService.loadCustomerPortal(sessionId.id).subscribe({
           next: (redirect: IStripeRedirect) => {
@@ -31,15 +36,15 @@ export class UserAccountSettingsComponent implements OnInit {
           }
         });
       }
-    });
+    }));
   }
 
   cancelSubscription() {
-    this.checkoutService.cancelSubscription().subscribe({
+    this.subs.push(this.checkoutService.cancelSubscription().subscribe({
       next: (completed: boolean) => {
         this.authService.redirect();
       }
-    })
+    }));
   }
 
   openDialog() {
@@ -53,10 +58,10 @@ export class UserAccountSettingsComponent implements OnInit {
     config.data = data;
     const dialogRef = this.dialog.open(WarnDialogComponent, config);
 
-    dialogRef.afterClosed().subscribe(result => {
+    this.subs.push(dialogRef.afterClosed().subscribe(result => {
       if (result) {
         this.cancelSubscription();
       }
-    });
+    }));
   }
 }

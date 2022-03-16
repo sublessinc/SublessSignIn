@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import { AuthorizationService } from '../services/authorization.service';
 import { ActivatedRoute } from '@angular/router';
@@ -10,12 +10,15 @@ import { ActivatedRoute } from '@angular/router';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent implements OnInit, OnDestroy {
 
   constructor(@Inject(DOCUMENT) private document: Document,
     private authService: AuthorizationService,
     private route: ActivatedRoute
   ) { }
+  ngOnDestroy(): void {
+    this.authService.OnDestroy();
+  }
 
   ngOnInit(): void {
     this.authService.checkLogin();

@@ -1,6 +1,7 @@
-import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatDrawer, MatSidenav } from '@angular/material/sidenav';
 import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { IStripeRedirect } from '../models/IStripeRedirect';
 import { SessionId } from '../models/SessionId';
 import { AuthorizationService } from '../services/authorization.service';
@@ -11,7 +12,7 @@ import { CheckoutService } from '../services/checkout.service';
   templateUrl: './nav.component.html',
   styleUrls: ['./nav.component.scss']
 })
-export class NavComponent implements OnInit {
+export class NavComponent implements OnInit, OnDestroy {
   @ViewChild('content') sublessbackground: ElementRef | null = null;
   @ViewChild('drawer') drawer: MatDrawer | null = null;
 
@@ -19,6 +20,8 @@ export class NavComponent implements OnInit {
   public creator: boolean = false;
   public partner: boolean = false;
   public showHamburger: boolean = false;
+  private subs: Subscription[] = [];
+
   constructor(
     private authService: AuthorizationService,
     private checkoutService: CheckoutService,
@@ -27,16 +30,13 @@ export class NavComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.authService.getRoutes().subscribe({
+    this.subs.push(this.authService.getRoutes().subscribe({
       next: (routes: number[]) => {
         this.user = routes.includes(2);
         this.creator = routes.includes(3);
         this.partner = routes.includes(4);
       }
-    });
-  }
-
-  ngAfterViewInit() {
+    }));
     if (window.innerWidth <= 700) {
       this.drawer?.toggle();
       if (this.drawer != null) {
@@ -45,6 +45,13 @@ export class NavComponent implements OnInit {
     } else {
       this.showHamburger = true;
     }
+  }
+  ngOnDestroy(): void {
+    this.subs.forEach((item: Subscription) => { item.unsubscribe(); });
+    this.authService.OnDestroy();
+  }
+  ngAfterViewInit() {
+
   }
 
   hamburgerPress() {
@@ -56,15 +63,18 @@ export class NavComponent implements OnInit {
   }
 
   returnToStripe() {
-    this.checkoutService.getUserSession().subscribe({
+    this.subs.push(this.checkoutService.getUserSession().subscribe({
       next: (sessionId: SessionId) => {
         this.checkoutService.loadCustomerPortal(sessionId.id).subscribe({
           next: (redirect: IStripeRedirect) => {
-            window.open(redirect.url, "_blank", 'noreferrer')!.focus();
+            const win = window.open(redirect.url, "_blank", 'noreferrer');
+            if (win) {
+              win.focus();
+            }
           }
         });
       }
-    });
+    }));
   }
 
   logout() {

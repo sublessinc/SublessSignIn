@@ -23,6 +23,8 @@ export class ErrorInterceptor implements HttpInterceptor {
             if (err.status !== 500 && err.status !== 102 && err.status !== 504) {
               return;
             }
+            console.warn("Error: " + err.status);
+            console.warn("Message: " + err.message);
             this.router.navigate(['error']);
           }
         }));
