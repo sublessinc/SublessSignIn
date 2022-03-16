@@ -12,7 +12,6 @@ export class GlobalerrorhandlerService implements ErrorHandler {
   handleError(error: any) {
     if (error["status"] && error["status"] == 401) {
       console.warn("Unauthorized user or expired token..... logging out");
-      //this.router.navigate(['logged-out']);
     }
     else {
       console.warn("Error: " + error.message);
