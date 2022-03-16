@@ -17,6 +17,7 @@ namespace Subless.Services.Services
             var log = new LoggerConfiguration()
             .Enrich.FromLogContext()
             .MinimumLevel.ControlledBy(GetLogLevelSwitch())
+            .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
             .WriteTo.Console();
             return log;
         }

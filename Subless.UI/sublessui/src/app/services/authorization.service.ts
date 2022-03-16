@@ -3,7 +3,7 @@ import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http
 import { ActivatedRoute, Router } from '@angular/router';
 import { ISettings } from '../models/ISettings';
 import { IRedirect } from '../models/IRedirect';
-import { Observable, of, throwError } from 'rxjs';
+import { Observable, of, Subscription, throwError } from 'rxjs';
 
 import { catchError, map } from 'rxjs/operators';
 import { IUser } from '../models/IUser';
@@ -15,12 +15,14 @@ import { IUser } from '../models/IUser';
 export class AuthorizationService {
   private activation: string = '';
   private postActivationRedirect: string = '';
+  private subs: Subscription[] = [];
+
   constructor(
     private httpClient: HttpClient,
     private router: Router,
     private route: ActivatedRoute,
   ) {
-    this.route.queryParams.subscribe(params => {
+    this.subs.push(this.route.queryParams.subscribe(params => {
       this.activation = params['activation'];
       this.postActivationRedirect = params['postActivationRedirect'];
       if (this.activation) {
@@ -29,7 +31,11 @@ export class AuthorizationService {
       if (this.postActivationRedirect) {
         sessionStorage.setItem('postActivationRedirect', this.postActivationRedirect);
       }
-    });
+    }));
+  }
+
+  OnDestroy(): void {
+    this.subs.forEach((item: Subscription) => { item.unsubscribe(); })
   }
 
   getSettings() {
@@ -51,7 +57,7 @@ export class AuthorizationService {
   }
 
   public async checkLogin() {
-    this.getUserData().subscribe({
+    this.subs.push(this.getUserData().subscribe({
       next: async data => {
         if (data == null) {
           await this.getLoginLink()
@@ -60,7 +66,7 @@ export class AuthorizationService {
           this.redirect();
         }
       }
-    });
+    }));
   }
 
   redirect() {
@@ -77,7 +83,7 @@ export class AuthorizationService {
           });
       }
     }
-    this.httpClient.get<IRedirect>('/api/Authorization/redirect', { headers: headers }).subscribe({
+    this.subs.push(this.httpClient.get<IRedirect>('/api/Authorization/redirect', { headers: headers }).subscribe({
       next: (redirectResponse: IRedirect) => {
         switch (redirectResponse.redirectionPath) {
           case 1:
@@ -100,7 +106,7 @@ export class AuthorizationService {
           }
         }
       }
-    });
+    }));
   }
 
   redirectToLogout() {

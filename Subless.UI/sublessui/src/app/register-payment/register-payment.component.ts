@@ -1,6 +1,6 @@
 import { ContentObserver } from '@angular/cdk/observers';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ToggleType } from '@angular/material/button-toggle';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ICheckoutSettings } from '../models/ICheckoutSettings';
@@ -8,6 +8,7 @@ import { ISessionResponse } from '../models/ISessionResponse';
 import { IStripeRedirect } from '../models/IStripeRedirect';
 import { CheckoutService } from '../services/checkout.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { Subscription } from 'rxjs';
 declare var Stripe: any;
 
 @Component({
@@ -15,11 +16,12 @@ declare var Stripe: any;
   templateUrl: './register-payment.component.html',
   styleUrls: ['./register-payment.component.scss']
 })
-export class RegisterPaymentComponent implements OnInit {
+export class RegisterPaymentComponent implements OnInit, OnDestroy {
   private stripe: any;
   private settings!: ICheckoutSettings;
   public backgroundClass: string = "lightBackground";
   public priceChosen: string | null = null;
+  private subs: Subscription[] = [];
 
   constructor(
     private checkoutService: CheckoutService,
@@ -33,23 +35,25 @@ export class RegisterPaymentComponent implements OnInit {
     if (this.router.url.startsWith("/register-payment")) {
       this.backgroundClass = "darkBackground";
     }
-    this.checkoutService.getCurrentPlan().subscribe({
+    this.subs.push(this.checkoutService.getCurrentPlan().subscribe({
       next: (plan: number | null) => {
         if (plan != null) {
           this.priceChosen = plan.toString();
           this.changeDetector.detectChanges();
         }
       }
-    });
+    }));
   }
-
+  ngOnDestroy(): void {
+    this.subs.forEach((item: Subscription) => { item.unsubscribe(); })
+  }
   getCheckoutSettings() {
-    this.checkoutService.getCheckoutSettings().subscribe({
+    this.subs.push(this.checkoutService.getCheckoutSettings().subscribe({
       next: (settings: ICheckoutSettings) => {
         this.stripe = Stripe(settings.publishableKey);
         this.settings = settings;
       }
-    });
+    }));
   }
 
   pickPrice() {
@@ -61,7 +65,7 @@ export class RegisterPaymentComponent implements OnInit {
       return;
     }
     const price = Number.parseInt(this.priceChosen);
-    this.checkoutService.createCheckoutSession(price).subscribe({
+    this.subs.push(this.checkoutService.createCheckoutSession(price).subscribe({
       next: (session: ISessionResponse) => {
         if (session != null) {
           this.stripe.redirectToCheckout({ sessionId: session.sessionId });
@@ -72,7 +76,7 @@ export class RegisterPaymentComponent implements OnInit {
           });
         }
       }
-    });
+    }));
   }
 }
 

@@ -9,8 +9,15 @@ export class GlobalerrorhandlerService implements ErrorHandler {
   constructor(private router: Router) {
   }
 
-  handleError(error: Error) {
-    this.router.navigate(['error']);
+  handleError(error: any) {
+    if (error["status"] && error["status"] == 401) {
+      console.warn("Unauthorized user or expired token..... logging out");
+    }
+    else {
+      console.warn("Error: " + error.message);
+      console.warn("Stack: " + error.stack);
+      this.router.navigate(['error']);
+    }
   }
 
 }

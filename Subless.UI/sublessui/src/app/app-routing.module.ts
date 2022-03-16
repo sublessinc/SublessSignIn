@@ -24,11 +24,12 @@ const routes: Routes = [
   { path: 'payout-settings', component: PayoutsettingsComponent, canActivate: [AuthGuard] },
   { path: 'integration', component: IntegrationtestComponent, canActivate: [AuthGuard] },
   { path: 'partner-profile', component: PartnerprofileComponent, canActivate: [AuthGuard] },
+  { path: 'error', component: ErrorPageComponent },
   { path: 'payout-setup', component: PayoutsettingsComponent, canActivate: [AuthGuard], canDeactivate: [StopNavGuard] },
   { path: 'id', component: IdComponent, canActivate: [AuthGuard] },
   { path: 'login', component: LoginComponent },
-  { path: 'logged-out', component: LoggedOutComponent },
-  { path: 'error', component: ErrorPageComponent }
+  { path: 'logged-out', component: LoggedOutComponent }
+
 
 ];
 
