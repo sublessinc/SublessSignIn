@@ -298,7 +298,7 @@ namespace Subless.Services
                 var user = users.FirstOrDefault(x => x.StripeCustomerId == invoice.CustomerId);
                 if (user == null)
                 {
-                    _logger.LogCritical($"User payment detected without corresponding user in subless system. CustomerId: {invoice.CustomerId} Email: {invoice.CustomerEmail}");
+                    _logger.LogWarning($"User payment detected without corresponding user in subless system. CustomerId: {invoice.CustomerId} Email: {invoice.CustomerEmail}");
                 }
                 else
                 {
