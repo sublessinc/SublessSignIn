@@ -1,7 +1,8 @@
 import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatDrawer, MatSidenav } from '@angular/material/sidenav';
-import { Router } from '@angular/router';
+import { NavigationEnd, NavigationError, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { filter } from 'rxjs/operators';
 import { IStripeRedirect } from '../models/IStripeRedirect';
 import { SessionId } from '../models/SessionId';
 import { AuthorizationService } from '../services/authorization.service';
@@ -20,6 +21,7 @@ export class NavComponent implements OnInit, OnDestroy {
   public creator: boolean = false;
   public partner: boolean = false;
   public showHamburger: boolean = false;
+  private isSmallScreen: boolean = window.innerWidth <= 700
   private subs: Subscription[] = [];
 
   constructor(
@@ -38,6 +40,7 @@ export class NavComponent implements OnInit, OnDestroy {
       }
     }));
     if (window.innerWidth <= 700) {
+      this.isSmallScreen = true;
       this.drawer?.toggle();
       if (this.drawer != null) {
         this.drawer!.mode = "over";
@@ -45,6 +48,19 @@ export class NavComponent implements OnInit, OnDestroy {
     } else {
       this.showHamburger = true;
     }
+    this.subs.push(
+      // grab all the routing activity
+      this.router.events.pipe(
+        filter(
+          (e) =>
+            // we only care about when navigation is complete
+            e instanceof NavigationEnd
+        )).subscribe((e) => {
+          // if it's a small screen, hide the drawer
+          if (this.isSmallScreen) {
+            this.drawer?.toggle();
+          }
+        }));
   }
   ngOnDestroy(): void {
     this.subs.forEach((item: Subscription) => { item.unsubscribe(); });
