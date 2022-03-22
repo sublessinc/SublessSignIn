@@ -6,7 +6,8 @@
             <form (ngSubmit)="onCreatorSubmit()" #paypalForm="ngForm">
                 <mat-card-title class="title">Creator Payout Information</mat-card-title>
                 <mat-card-content class="text">Enter your paypal email or phone number for the creator
-                    {{creatorModel.username}}</mat-card-content>
+                    <b>{{creatorModel.username}}</b>
+                </mat-card-content>
                 <mat-card-content class="text">This will be used to payout monthly funds from views to your content
                 </mat-card-content>
                 <mat-card-content>
