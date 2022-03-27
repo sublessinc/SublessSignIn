@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { IStat } from '../models/IStat';
 import { StatsService } from '../services/stats.service';
 import * as fileSaver from 'file-saver';
@@ -9,14 +9,13 @@ import { Subscription } from 'rxjs';
   templateUrl: './creatorstats.component.html',
   styleUrls: ['./creatorstats.component.css']
 })
-export class CreatorstatsComponent implements OnInit, OnDestroy {
+export class CreatorstatsComponent implements OnDestroy {
   stats: IStat[] = []
   dates: Date[] = [];
   private subs: Subscription[] = [];
 
   constructor(private statsService: StatsService) { }
-  ngOnInit(): void {
-  }
+
   ngOnDestroy(): void {
     this.subs.forEach((item: Subscription) => { item.unsubscribe(); })
   }

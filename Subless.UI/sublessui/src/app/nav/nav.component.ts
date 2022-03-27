@@ -1,6 +1,6 @@
-import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { MatDrawer, MatSidenav } from '@angular/material/sidenav';
-import { NavigationEnd, NavigationError, Router } from '@angular/router';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { MatDrawer } from '@angular/material/sidenav';
+import { NavigationEnd, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { IStripeRedirect } from '../models/IStripeRedirect';
@@ -65,9 +65,6 @@ export class NavComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.subs.forEach((item: Subscription) => { item.unsubscribe(); });
     this.authService.OnDestroy();
-  }
-  ngAfterViewInit() {
-
   }
 
   hamburgerPress() {
