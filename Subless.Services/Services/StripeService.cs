@@ -305,7 +305,7 @@ namespace Subless.Services
                     long payment = 0;
                     long taxes = invoice?.Tax ?? 0; 
                     long fees = 0;
-                    if (invoice.ChargeId == null)
+                    if (invoice.ChargeId != null)
                     {
                         var charge = chargeService.Get(invoice.ChargeId);
                         var balanceTrans = balanceTransactionService.Get(charge.BalanceTransactionId);
