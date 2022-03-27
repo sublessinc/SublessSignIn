@@ -1,7 +1,7 @@
-﻿using System;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Subless.Services;
+using System;
 
 namespace SublessSignIn.Controllers
 {
@@ -54,6 +54,6 @@ namespace SublessSignIn.Controllers
             var user = userService.GetUser(userId);
             user = userService.GetUserByCognitoId(user.CognitoId);
             return Ok(user);
-        }    
+        }
     }
 }

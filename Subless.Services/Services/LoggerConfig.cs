@@ -1,7 +1,4 @@
-﻿
-
-using Microsoft.Extensions.Logging;
-using Serilog;
+﻿using Serilog;
 using Serilog.Core;
 using Serilog.Events;
 using System;
@@ -20,6 +17,7 @@ namespace Subless.Services.Services
             var log = new LoggerConfiguration()
             .Enrich.FromLogContext()
             .MinimumLevel.ControlledBy(GetLogLevelSwitch())
+            .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
             .WriteTo.Console();
             return log;
         }

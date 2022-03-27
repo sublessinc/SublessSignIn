@@ -1,16 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using Amazon.Runtime;
-using Amazon.S3;
+﻿using Amazon.S3;
 using Amazon.S3.Transfer;
 using CsvHelper;
 using CsvHelper.Configuration;
 using Microsoft.Extensions.Options;
 using Subless.PayoutCalculator;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Subless.Services
 {
@@ -33,10 +32,10 @@ namespace Subless.Services
 
         public void WritePaymentsToCloudFileStore(Dictionary<string, double> masterPayoutList)
         {
-            var payoutsInPaypalFormat = masterPayoutList.Select(x=> new PayPalItem()
+            var payoutsInPaypalFormat = masterPayoutList.Select(x => new PayPalItem()
             {
                 Email = x.Key,
-                Amount = x.Value                
+                Amount = x.Value
             }).ToList();
             var csv = GetPathToGeneratedCsv(payoutsInPaypalFormat);
             transferUtility.Upload(csv, BucketName);

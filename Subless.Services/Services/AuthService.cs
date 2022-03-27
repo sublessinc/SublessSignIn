@@ -1,10 +1,10 @@
-﻿using System;
+﻿using Subless.Data;
+using Subless.Models;
+using SublessSignIn.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Subless.Data;
-using Subless.Models;
-using SublessSignIn.Models;
 
 namespace Subless.Services.Services
 {
@@ -70,11 +70,12 @@ namespace Subless.Services.Services
         {
             var paths = new List<RedirectionPath>();
             var user = _userRepo.GetUserByCognitoId(cognitoId);
-            if (user != null && user.StripeSessionId != null)
+            var hasPaid = stripeService.CustomerHasPaid(cognitoId);
+            if (user != null && hasPaid)
             {
                 paths.Add(RedirectionPath.Profile);
             }
-            if (user != null && user.StripeSessionId == null)
+            if (user != null && !hasPaid)
             {
                 paths.Add(RedirectionPath.Payment);
             }

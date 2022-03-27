@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Subless.Data;
+﻿using Subless.Data;
 using Subless.Services;
+using System;
+using System.Threading.Tasks;
 
 namespace Subless.PayoutCalculator
 {

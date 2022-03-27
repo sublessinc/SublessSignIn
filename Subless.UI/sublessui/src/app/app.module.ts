@@ -1,4 +1,4 @@
-import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { NgModule, CUSTOM_ELEMENTS_SCHEMA, ErrorHandler } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -25,6 +25,10 @@ import { PayoutsettingsComponent } from './payoutsettings/payoutsettings.compone
 import { CreatorAccountSettingsComponent } from './creator-account-settings/creator-account-settings.component';
 import { UserAccountSettingsComponent } from './user-account-settings/user-account-settings.component';
 import { IntegrationtestComponent } from './integrationtest/integrationtest.component';
+import { WarnDialogComponent } from './warn-dialog/warn-dialog.component';
+import { ErrorPageComponent } from './error-page/error-page.component';
+import { ErrorInterceptor } from './error-handling/error-interceptor.interceptor';
+import { GlobalerrorhandlerService } from './error-handling/globalerrorhandler.service';
 
 @NgModule({
   declarations: [
@@ -43,7 +47,9 @@ import { IntegrationtestComponent } from './integrationtest/integrationtest.comp
     PayoutsettingsComponent,
     CreatorAccountSettingsComponent,
     UserAccountSettingsComponent,
-    IntegrationtestComponent
+    IntegrationtestComponent,
+    WarnDialogComponent,
+    ErrorPageComponent
   ],
   imports: [
     ThemeModule,
@@ -55,6 +61,9 @@ import { IntegrationtestComponent } from './integrationtest/integrationtest.comp
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: UnauthorizedInterceptor, multi: true },
+    { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
+    { provide: ErrorHandler, useClass: GlobalerrorhandlerService },
+
     StopNavGuard
   ],
   bootstrap: [AppComponent],

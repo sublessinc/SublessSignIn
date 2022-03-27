@@ -43,5 +43,9 @@ export class CheckoutService {
   cancelSubscription(): Observable<boolean> {
     return this.httpClient.delete<boolean>("/api/Checkout/");
   }
+
+  getCurrentPlan(): Observable<number | null> {
+    return this.httpClient.get<number | null>("/api/Checkout/plan");
+  }
 }
 

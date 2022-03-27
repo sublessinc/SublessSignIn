@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
 import {
     HttpRequest,
     HttpHandler,
@@ -12,9 +12,13 @@ import { Router } from '@angular/router';
 import { AuthorizationService } from './authorization.service';
 
 @Injectable()
-export class UnauthorizedInterceptor implements HttpInterceptor {
+export class UnauthorizedInterceptor implements HttpInterceptor, OnDestroy {
 
     constructor(private authService: AuthorizationService) { }
+
+    ngOnDestroy(): void {
+        this.authService.OnDestroy();
+    }
 
     intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
 

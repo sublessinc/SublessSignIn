@@ -1,34 +1,39 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Subless.Data;
 using Subless.Models;
+using System;
+using System.Collections.Generic;
 
 namespace Subless.Services
 {
     public class PaymentLogsService : IPaymentLogsService
     {
         private readonly IUserRepository _userRepository;
+        private readonly IPaymentRepository paymentRepository;
         private readonly ILogger _logger;
-        public PaymentLogsService(IUserRepository userRepository, ILoggerFactory loggerFactory)
+        public PaymentLogsService(
+            IUserRepository userRepository,
+            IPaymentRepository paymentRepository,
+            ILoggerFactory loggerFactory)
         {
             _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
-            _logger = (loggerFactory?? throw new ArgumentNullException(nameof(loggerFactory))).CreateLogger<PaymentLogsService>();
+            this.paymentRepository = paymentRepository ?? throw new ArgumentNullException(nameof(paymentRepository));
+            _logger = (loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory))).CreateLogger<PaymentLogsService>();
         }
 
         public void SaveLogs(IEnumerable<Payment> paymentLogs)
         {
-            _userRepository.SavePaymentLogs(paymentLogs);
+            paymentRepository.SavePaymentLogs(paymentLogs);
         }
 
         public void SaveAuditLogs(IEnumerable<PaymentAuditLog> paymentAuditLogs)
         {
-            _userRepository.SavePaymentAuditLogs(paymentAuditLogs);
+            paymentRepository.SavePaymentAuditLogs(paymentAuditLogs);
         }
 
         public DateTimeOffset GetLastPaymentDate()
         {
-            var date = _userRepository.GetLastPaymentDate();
+            var date = paymentRepository.GetLastPaymentDate();
             _logger.LogInformation($"Last payment date {date}, time now {DateTimeOffset.UtcNow}");
             return date;
         }

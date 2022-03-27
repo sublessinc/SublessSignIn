@@ -1,29 +1,18 @@
-using System;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
-using Duende.Bff;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
 using Subless.Data;
 using Subless.Models;
 using Subless.Services;
 using SublessSignIn.AuthServices;
+using System;
+using System.Linq;
+using static Subless.Data.DataDi;
 
 namespace SublessSignIn
 {
@@ -43,6 +32,9 @@ namespace SublessSignIn
             AuthSettings.JwtKeySetUrl = AuthSettings.CognitoUrl + "/.well-known/jwks.json";
             AuthSettings.Domain = Environment.GetEnvironmentVariable("DOMAIN") ?? throw new ArgumentNullException("DOMAIN");
             AuthSettings.IdentityServerLicenseKey = Environment.GetEnvironmentVariable("IdentityServerLicenseKey") ?? "";
+            var json = Environment.GetEnvironmentVariable("dbCreds") ?? throw new ArgumentNullException("dbCreds");
+            var dbCreds = JsonConvert.DeserializeObject<DbCreds>(json);
+            AuthSettings.SessionStoreConnString = dbCreds.GetDatabaseConnection();
             if (!AuthSettings.Domain.EndsWith('/'))
             {
                 AuthSettings.Domain += '/';
@@ -60,6 +52,7 @@ namespace SublessSignIn
             //The order of these two auth schemes matters. The last one added will be the default, so we add the partner facing bearer token scheme first.
             services = new BearerAuth().AddBearerAuthServices(services, AuthSettings);
             services.AddTransient<IHealthCheck, HealthCheck>();
+            services.AddTransient<IVersion, FileVersion>();
             services.AddBffServices(AuthSettings);
             services.RegisterAuthDi(AuthSettings);
 
@@ -135,13 +128,13 @@ namespace SublessSignIn
                       "Origin, X-Requested-With, Content-Type, Accept");
                 },
             });
-            
+
             app.UseAuthentication();
             app.UseBff();
             app.UseRouting();
             app.UseCors();
             app.UseAuthorization();
-            
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers()
@@ -152,7 +145,7 @@ namespace SublessSignIn
                 endpoints.MapBffManagementEndpoints();
                 endpoints.MapFallbackToFile("/index.html");
             });
-            
+
         }
 
         private void OnStarted()

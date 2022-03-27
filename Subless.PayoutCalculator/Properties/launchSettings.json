@@ -9,18 +9,21 @@
         "STRIPE_SECRET_KEY": "sk_test_51IbDVcLjAfLYGCbHH59aXXR8DBgiAj9CiPIRnNZ0GrNvQM3RyorNnz4mdTrGUvu6ha5NCszmOpt2r6S1kyhJzA5D00Pe10OVxI",
         "ASPNETCORE_ENVIRONMENT": "Development",
         "STRIPE_WEBHOOK_SECRET": "whsec_BKwYJh9HjCYQEgUSYIu9A1RE7ciQ26Ho",
-        "region": "us-east-1",
+        "region": "us-east-2",
         "appClientId": "4a8epi5e1hh6bp8cr761i24um5",
-        "userPoolId": "us-east-1_6U7tGA4YG",
+        "userPoolId": "us-east-2_7wJbjFqDB",
         "AccessKey": "AKIAX7PZWNTP5WPGBOUK",
         "SecretKey": "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",
         "PayoneerId": "sublessPayoneer",
         "BucketName": "devpays3bucket",
         "ExecutionsPerYear": "365",
-        "RunOnStart": "true",
+        "RunOnStart": "false",
         "PayPalId": "contact@subless.com",
         "dbCreds": "{  'password': 'zkleRY0BHaU8gI4Jsx3RXOX3',  'engine': 'postgres',  'port': 5432,  'dbInstanceIdentifier': 'sublessusers',  'host': 'localhost',  'username': 'postgres'}",
-        "Logging__LogLevel__Default": "debug"
+        "Logging__LogLevel__Default": "debug",
+        "CalcuationRangeStart": "1999-01-01",
+        "CalcuationRangeEnd": "2023-01-01",
+        "DOMAIN": "https://localhost:4200/"
       }
     }
   }

@@ -7,6 +7,14 @@
     margin-left: 12.5%;
 }
 
+.hamburger-img{
+    position: relative;
+    border-radius: 50%;
+    width: 42;
+    height: 42;
+    background-color: map-get($md-backgroundpurple, 500);
+}
+
 .drawer{
     background-color: map.get($md-backgroundpurple, 500);
     width: 10%;
@@ -31,6 +39,13 @@
 }
 .avatar {
     padding: .5em;
+}
+
+#hamburger-btn {
+    position: absolute;
+    z-index: 3;
+    margin-top: 15px;
+    margin-left: 5px;
 }
 
 @mixin mix-navlist-theme($subless-app-theme) {

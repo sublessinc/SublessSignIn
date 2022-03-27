@@ -1,8 +1,7 @@
-﻿using System;
-using System.Text.Json;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
+using System;
 
 namespace Subless.Data
 {
@@ -16,14 +15,20 @@ namespace Subless.Data
             {
                 options.ConnectionString = dbCreds.GetDatabaseConnection();
             });
-            services.AddTransient<IUserRepository, UserRepository>();
-            services.AddTransient<UserRepository, UserRepository>();
-            services.AddDbContext<UserRepository>(options => options.UseNpgsql(dbCreds.GetDatabaseConnection()));
+            services.AddTransient<IUserRepository, Repository>();
+            services.AddTransient<Repository, Repository>();
+            services.AddTransient<IPaymentRepository, Repository>();
+            services.AddTransient<ICreatorRepository, Repository>();
+            services.AddTransient<IPartnerRepository, Repository>();
+            services.AddTransient<IHitRepository, Repository>();
+            services.AddDbContext<Repository>(options => options.UseNpgsql(dbCreds.GetDatabaseConnection()));
+
             return services;
         }
 
-        
-        public class DbCreds {
+
+        public class DbCreds
+        {
             public string dbInstanceIdentifier;
             public string engine;
             public string host;

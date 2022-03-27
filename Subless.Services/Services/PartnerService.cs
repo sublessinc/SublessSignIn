@@ -1,4 +1,8 @@
-﻿using System;
+﻿using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
+using Subless.Data;
+using Subless.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -9,6 +13,7 @@ using Microsoft.Extensions.Logging;
 using Subless.Data;
 using Subless.Models;
 using Subless.Services.Extensions;
+using Subless.Services.Services;
 
 namespace Subless.Services
 {
@@ -17,18 +22,24 @@ namespace Subless.Services
         public static List<char> InvalidUsernameCharacters = new List<char> { ';', '/', '?', ':', '&', '=', '+', ',', '$' };
 
         private readonly IUserRepository _userRepository;
-        private readonly IMemoryCache cache;
+        private readonly IPartnerRepository partnerRepository;
+        private readonly ICreatorRepository creatorRepository;
+        private readonly ICacheService cache;
         private readonly HttpClient httpClient;
         private readonly ILogger<PartnerService> logger;
 
         public PartnerService(
             IUserRepository userRepository,
+            IPartnerRepository partnerRepository,
+            ICreatorRepository creatorRepository,
             IHttpClientFactory httpClientFactory,
-            IMemoryCache cache,
+            ICacheService cache,
             ILoggerFactory loggerFactory
             )
         {
             _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
+            this.partnerRepository = partnerRepository ?? throw new ArgumentNullException(nameof(partnerRepository));
+            this.creatorRepository = creatorRepository ?? throw new ArgumentNullException(nameof(creatorRepository));
             this.cache = cache ?? throw new ArgumentNullException(nameof(cache));
             this.httpClient = httpClientFactory?.CreateClient() ?? throw new ArgumentNullException(nameof(httpClientFactory));
             this.logger = loggerFactory.CreateLogger<PartnerService>();
@@ -36,26 +47,26 @@ namespace Subless.Services
 
         public Partner GetPartner(Guid id)
         {
-            return _userRepository.GetPartner(id);
+            return partnerRepository.GetPartner(id);
         }
 
         public Partner GetPartnerByAdminId(Guid adminId)
         {
-            return _userRepository.GetPartnerByAdminId(adminId);
+            return partnerRepository.GetPartnerByAdminId(adminId);
         }
 
         public Partner UpdatePartnerWritableFields(PartnerWriteModel partnerModel)
         {
-            var partner = _userRepository.GetPartner(partnerModel.Id);
+            var partner = partnerRepository.GetPartner(partnerModel.Id);
             partner.PayPalId = partnerModel.PayPalId;
             partner.CreatorWebhook = partnerModel.CreatorWebhook;
-            _userRepository.UpdatePartner(partner);
+            partnerRepository.UpdatePartner(partner);
             return partner;
         }
 
         public Partner GetPartnerByCognitoClientId(string cognitoId)
         {
-            var partner = _userRepository.GetPartnerByCognitoId(cognitoId);
+            var partner = partnerRepository.GetPartnerByCognitoId(cognitoId);
             return partner;
         }
 
@@ -68,7 +79,7 @@ namespace Subless.Services
                 throw new UnauthorizedAccessException("Partner not found. Partner may not have been activated yet.");
             }
             var partnerId = partner.Id;
-            var creator = _userRepository.GetCreatorByPartnerAndUsername(cognitoClientId, creatorUsername);
+            var creator = partnerRepository.GetCreatorByPartnerAndUsername(cognitoClientId, creatorUsername);
             if (creator == null)
             {
                 creator = new Creator()
@@ -85,36 +96,39 @@ namespace Subless.Services
             var code = Guid.NewGuid();
             creator.ActivationCode = code;
             creator.ActivationExpiration = DateTimeOffset.UtcNow.AddMinutes(10);
-            _userRepository.UpsertCreator(creator);
+            creatorRepository.UpsertCreator(creator);
+            cache.InvalidateCache();
             return code;
         }
 
         public Guid CreatePartner(Partner partner)
         {
             partner.Site = new Uri(partner.Site.GetLeftPart(UriPartial.Authority));
-            _userRepository.AddPartner(partner);
+            partnerRepository.AddPartner(partner);
+            cache.InvalidateCache();
             return partner.Id;
         }
 
 
         public void UpdatePartner(Partner partner)
         {
-            _userRepository.UpdatePartner(partner);
+            partnerRepository.UpdatePartner(partner);
+            cache.InvalidateCache();
         }
 
         public IEnumerable<Partner> GetPartners()
         {
-            return _userRepository.GetPartners();
+            return partnerRepository.GetPartners();
         }
 
         public Partner GetCachedPartnerByUri(Uri uri)
         {
-            if (cache.TryGetValue(uri.ToString(), out Partner partner))
+            if (cache.Cache.TryGetValue(uri.ToString(), out Partner partner))
             {
-                return (Partner)cache.Get(uri.ToString());
+                return (Partner)cache.Cache.Get(uri.ToString());
             }
-            partner = _userRepository.GetPartnerByUri(uri);
-            cache.Set(uri.ToString(), partner, DateTimeOffset.UtcNow.AddHours(1));
+            partner = partnerRepository.GetPartnerByUri(uri);
+            cache.Cache.Set(uri.ToString(), partner, DateTimeOffset.UtcNow.AddHours(1));
             return partner;
         }
 
@@ -150,7 +164,8 @@ namespace Subless.Services
 
         public IEnumerable<string> GetParterUris()
         {
-            return _userRepository.GetPartnerUris().Select(x => x.ToString());
+            return partnerRepository.GetPartnerUris().Select(x => x.ToString());
         }
     }
 }
+

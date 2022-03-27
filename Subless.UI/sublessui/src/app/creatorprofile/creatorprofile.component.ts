@@ -1,11 +1,6 @@
-import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
-import { NgForm } from '@angular/forms';
-import { Observable } from 'rxjs';
-import { Creator } from '../models/Creator';
-import { ICreator } from '../models/ICreator';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { ICreatorAnalytics } from '../models/ICreatorAnalytics';
-import { ICreatorStats } from '../models/ICreatorStats';
-import { AuthorizationService } from '../services/authorization.service';
 import { CreatorService } from '../services/creator.service';
 
 @Component({
@@ -13,12 +8,14 @@ import { CreatorService } from '../services/creator.service';
   templateUrl: './creatorprofile.component.html',
   styleUrls: ['./creatorprofile.component.scss']
 })
-export class CreatorprofileComponent implements OnInit {
+export class CreatorprofileComponent implements OnInit, OnDestroy {
 
   public analytics: ICreatorAnalytics = {
     thisMonth: { views: 0, visitors: 0, piecesOfContent: 0 },
     lastMonth: { views: 0, visitors: 0, piecesOfContent: 0 }
   };
+  private subs: Subscription[] = [];
+
   constructor(
     private creatorService: CreatorService,
     private changeDetector: ChangeDetectorRef
@@ -28,12 +25,16 @@ export class CreatorprofileComponent implements OnInit {
     this.getAnalytics();
   }
 
+  ngOnDestroy(): void {
+    this.subs.forEach((item: Subscription) => { item.unsubscribe(); })
+  }
+
   getAnalytics() {
-    this.creatorService.getAnalytics().subscribe({
+    this.subs.push(this.creatorService.getAnalytics().subscribe({
       next: (analytics: ICreatorAnalytics) => {
         this.analytics = analytics;
         this.changeDetector.detectChanges();
       }
-    });
+    }));
   }
 }
