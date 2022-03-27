@@ -1,16 +1,15 @@
 ﻿using Duende.Bff;
+using Duende.Bff.EntityFramework;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using Subless.Models;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace SublessSignIn.AuthServices
 {
@@ -25,7 +24,14 @@ namespace SublessSignIn.AuthServices
         public static IServiceCollection AddBffServices(this IServiceCollection services, AuthSettings AuthSettings)
         {
             var cookieServices = services.Where<ServiceDescriptor>(x => x.ServiceType == typeof(IPostConfigureOptions<CookieAuthenticationOptions>));
-            services.AddBff(a=> a.LicenseKey = AuthSettings.IdentityServerLicenseKey).AddServerSideSessions();
+            services.AddBff(a => a.LicenseKey = AuthSettings.IdentityServerLicenseKey).AddEntityFrameworkServerSideSessions(options =>
+            {
+                options.UseNpgsql(AuthSettings.SessionStoreConnString, sqlOpts=>
+                {
+                    sqlOpts.MigrationsAssembly(typeof(Duende.Bff.EntityFramework.SessionDbContext).Assembly.FullName);
+                });
+                
+            });
 
             var descriptor =
                 new ServiceDescriptor(
@@ -58,7 +64,7 @@ namespace SublessSignIn.AuthServices
                 })
                 .AddOpenIdConnect("oidc", options =>
                 {
-                   
+
 
                 });
             services.AddSingleton<IConfigureOptions<OpenIdConnectOptions>, OpenIdConnectOptionsHandler>();

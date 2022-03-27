@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using Subless.Models;
+﻿using Subless.Models;
 using SublessSignIn.Models;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Subless.Services.Services
 {

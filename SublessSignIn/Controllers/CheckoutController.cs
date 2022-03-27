@@ -1,6 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -8,6 +6,9 @@ using Stripe;
 using Subless.Models;
 using Subless.Services;
 using SublessSignIn.Models;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace SublessSignIn.Controllers
 {
@@ -58,7 +59,7 @@ namespace SublessSignIn.Controllers
             {
                 return Unauthorized();
             }
-            
+
             var userBudget = req.PriceId;
             try
             {
@@ -114,6 +115,25 @@ namespace SublessSignIn.Controllers
             {
                 Id = _userService.GetStripeIdFromCognitoId(cognitoId)
             });
+        }
+
+        /// <summary>
+        /// Retreives the session information from stripe after the user completed the payment
+        /// </summary>
+        [HttpGet("plan")]
+        public IActionResult GetPlan()
+        {
+            var cognitoId = _userService.GetUserClaim(HttpContext.User);
+            if (cognitoId == null)
+            {
+                return Unauthorized();
+            }
+            var plan = _stripeService.GetActiveSubscriptionPrice(cognitoId);
+            if (plan == null || !plan.Any())
+            {
+                return Ok(null);
+            }
+            return Ok(plan.Single().UnitAmount / 100);
         }
 
         [HttpDelete]

@@ -4,7 +4,6 @@ using Microsoft.Extensions.Options;
 using Subless.Models;
 using Subless.Services;
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace SublessSignIn.AuthServices

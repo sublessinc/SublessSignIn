@@ -5,6 +5,7 @@ using Duende.Bff;
 using IdentityModel.AspNetCore.AccessTokenManagement;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Subless.Models;
 using System;
@@ -30,12 +31,13 @@ namespace SublessSignIn.AuthServices
         /// <param name="bffOptions"></param>
         /// <param name="authOptions"></param>
         public RefreshTokenRevocation(
-            BffOptions bffOptions, 
-            IOptions<AuthenticationOptions> authOptions, 
-            IOptions<AuthSettings> authSettings, 
-            IUserAccessTokenStore userAccessTokenStore, 
-            IHttpClientFactory httpClientFactory):
-            base(bffOptions, authOptions)
+            BffOptions bffOptions,
+            IOptions<AuthenticationOptions> authOptions,
+            IOptions<AuthSettings> authSettings,
+            IUserAccessTokenStore userAccessTokenStore,
+            IHttpClientFactory httpClientFactory,
+            ILoggerFactory logger) :
+            base(bffOptions, authOptions, logger.CreateLogger<PostConfigureApplicationCookieRevokeRefreshToken>())
         {
             if (authOptions is null)
             {
@@ -73,7 +75,7 @@ namespace SublessSignIn.AuthServices
                     var response = await httpClientFactory.CreateClient().PostAsync(authSettings.IssuerUrl + $"/oauth2/revoke?token={tokens.RefreshToken}&client_id={authSettings.AppClientId}", null);
                     await inner?.Invoke(ctx);
                 }
-                    // await ctx.HttpContext.RevokeUserRefreshTokenAsync();
+                // await ctx.HttpContext.RevokeUserRefreshTokenAsync();
             };
 
             return Callback;

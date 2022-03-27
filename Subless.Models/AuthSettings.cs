@@ -10,5 +10,6 @@
         public string CognitoUrl { get; set; }
         public string Domain { get; set; }
         public string IdentityServerLicenseKey { get; set; }
+        public string SessionStoreConnString { get; set; }
     }
 }

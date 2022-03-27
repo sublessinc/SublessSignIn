@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AccountSettingsComponent } from './account-settings/account-settings.component';
 import { CreatorprofileComponent } from './creatorprofile/creatorprofile.component';
+import { ErrorPageComponent } from './error-page/error-page.component';
 import { IdComponent } from './id/id.component';
 import { IntegrationtestComponent } from './integrationtest/integrationtest.component';
 import { LoggedOutComponent } from './logged-out/logged-out.component';
@@ -23,10 +24,12 @@ const routes: Routes = [
   { path: 'payout-settings', component: PayoutsettingsComponent, canActivate: [AuthGuard] },
   { path: 'integration', component: IntegrationtestComponent, canActivate: [AuthGuard] },
   { path: 'partner-profile', component: PartnerprofileComponent, canActivate: [AuthGuard] },
+  { path: 'error', component: ErrorPageComponent },
   { path: 'payout-setup', component: PayoutsettingsComponent, canActivate: [AuthGuard], canDeactivate: [StopNavGuard] },
   { path: 'id', component: IdComponent, canActivate: [AuthGuard] },
   { path: 'login', component: LoginComponent },
-  { path: 'logged-out', component: LoggedOutComponent },
+  { path: 'logged-out', component: LoggedOutComponent }
+
 
 ];
 

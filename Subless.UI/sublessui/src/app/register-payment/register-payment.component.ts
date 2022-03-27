@@ -1,12 +1,14 @@
 import { ContentObserver } from '@angular/cdk/observers';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ToggleType } from '@angular/material/button-toggle';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ICheckoutSettings } from '../models/ICheckoutSettings';
 import { ISessionResponse } from '../models/ISessionResponse';
 import { IStripeRedirect } from '../models/IStripeRedirect';
 import { CheckoutService } from '../services/checkout.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { Subscription } from 'rxjs';
 declare var Stripe: any;
 
 @Component({
@@ -14,32 +16,44 @@ declare var Stripe: any;
   templateUrl: './register-payment.component.html',
   styleUrls: ['./register-payment.component.scss']
 })
-export class RegisterPaymentComponent implements OnInit {
+export class RegisterPaymentComponent implements OnInit, OnDestroy {
   private stripe: any;
   private settings!: ICheckoutSettings;
   public backgroundClass: string = "lightBackground";
-  public priceChosen: number | null = null;
+  public priceChosen: string | null = null;
+  private subs: Subscription[] = [];
 
   constructor(
     private checkoutService: CheckoutService,
     private elementRef: ElementRef,
     private changeDetector: ChangeDetectorRef,
-    private router: Router
+    private router: Router,
+    private _snackBar: MatSnackBar
   ) { }
   ngOnInit(): void {
     this.getCheckoutSettings();
     if (this.router.url.startsWith("/register-payment")) {
       this.backgroundClass = "darkBackground";
     }
+    this.subs.push(this.checkoutService.getCurrentPlan().subscribe({
+      next: (plan: number | null) => {
+        if (plan != null) {
+          this.priceChosen = plan.toString();
+          this.changeDetector.detectChanges();
+        }
+      }
+    }));
   }
-
+  ngOnDestroy(): void {
+    this.subs.forEach((item: Subscription) => { item.unsubscribe(); })
+  }
   getCheckoutSettings() {
-    this.checkoutService.getCheckoutSettings().subscribe({
+    this.subs.push(this.checkoutService.getCheckoutSettings().subscribe({
       next: (settings: ICheckoutSettings) => {
         this.stripe = Stripe(settings.publishableKey);
         this.settings = settings;
       }
-    });
+    }));
   }
 
   pickPrice() {
@@ -47,12 +61,22 @@ export class RegisterPaymentComponent implements OnInit {
     console.warn(this.priceChosen);
   }
   redirectToCheckout() {
-    this.checkoutService.createCheckoutSession(this.priceChosen).subscribe({
+    if (!this.priceChosen) {
+      return;
+    }
+    const price = Number.parseInt(this.priceChosen);
+    this.subs.push(this.checkoutService.createCheckoutSession(price).subscribe({
       next: (session: ISessionResponse) => {
-        this.stripe.redirectToCheckout({ sessionId: session.sessionId });
+        if (session != null) {
+          this.stripe.redirectToCheckout({ sessionId: session.sessionId });
+        }
+        else {
+          this._snackBar.open("Saved", "Ok", {
+            duration: 2000,
+          });
+        }
       }
-    });
+    }));
   }
-
 }
 

@@ -167,7 +167,7 @@ namespace Subless.Services
             var options = new CouponCreateOptions
             {
                 Duration = "once",
-                Id = "rollover"+Guid.NewGuid(),
+                Id = "rollover" + Guid.NewGuid(),
                 PercentOff = 100,
                 MaxRedemptions = 1
             };
@@ -182,21 +182,25 @@ namespace Subless.Services
             {
                 Coupon = coupon.Id,
             };
-            var service = new SubscriptionService(_client);           
+            var service = new SubscriptionService(_client);
             return service.Update(sub.Id, updateOptions);
         }
 
         public bool CustomerHasPaid(string cognitoId)
         {
 
-            var activePrices = GetActiveSubscriptionPrice(cognitoId);
+            var activePrices = GetActiveSubscriptionPriceId(cognitoId);
             var allPrices = GetPrices();
             return allPrices.Any(x => activePrices.Contains(x.Id));
         }
-
-        public List<string> GetActiveSubscriptionPrice(string cognitoId)
+        private List<string> GetActiveSubscriptionPriceId(string cognitoId)
         {
-            var prices = new List<string>();
+            return GetActiveSubscriptionPrice(cognitoId).Select(x => x.Id).ToList();
+        }
+
+        public List<Price> GetActiveSubscriptionPrice(string cognitoId)
+        {
+            var prices = new List<Price>();
             var user = _userService.GetUserByCognitoId(cognitoId);
             if (user?.StripeCustomerId == null)
             {
@@ -211,7 +215,7 @@ namespace Subless.Services
                 {
                     foreach (var item in sub.Items)
                     {
-                        prices.Add(item.Price.Id);
+                        prices.Add(item.Price);
                     }
                 }
             }
@@ -294,16 +298,33 @@ namespace Subless.Services
                 var user = users.FirstOrDefault(x => x.StripeCustomerId == invoice.CustomerId);
                 if (user == null)
                 {
-                    _logger.LogCritical($"User payment detected without corresponding user in subless system. CustomerId: {invoice.CustomerId} Email: {invoice.CustomerEmail}");
+                    _logger.LogWarning($"User payment detected without corresponding user in subless system. CustomerId: {invoice.CustomerId} Email: {invoice.CustomerEmail}");
                 }
                 else
                 {
-                    var charge = chargeService.Get(invoice.ChargeId);
-                    var balanceTrans = balanceTransactionService.Get(charge.BalanceTransactionId);
+                    long payment = 0;
+                    long taxes = invoice?.Tax ?? 0; 
+                    long fees = 0;
+                    if (invoice.ChargeId == null)
+                    {
+                        var charge = chargeService.Get(invoice.ChargeId);
+                        var balanceTrans = balanceTransactionService.Get(charge.BalanceTransactionId);
+                        fees = balanceTrans.Fee;
+                        
+                        payment = balanceTrans.Net;
+                    }
+                    // if we have a discount, we need to calculate the payment differently
+                    else
+                    {
+                        payment = invoice.Subtotal;
+                    }
+
                     payers.Add(new Payer
                     {
                         UserId = users.Single(x => x.StripeCustomerId == invoice.CustomerId).Id,
-                        Payment = balanceTrans.Net
+                        Payment = payment,
+                        Taxes = taxes,
+                        Fees = fees
                     });
                 }
             }
