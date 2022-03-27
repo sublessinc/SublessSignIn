@@ -4,8 +4,8 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve --ssl true --proxy-config proxy.conf.json",
-    "build": "ng build --configuration dev",
-    "build-dev": "ng build --prod --configuration dev",
+    "build": "ng lint && ng build --configuration dev",
+    "build-dev": "ng lint && ng build --prod --configuration dev",
     "build-test": "ng build --prod --configuration test",
     "build-stage": "ng build --prod --configuration stage",
     "build-prod": "ng build --prod --configuration prod",
