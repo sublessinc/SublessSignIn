@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Web;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -12,6 +7,11 @@ using Subless.Services;
 using Subless.Services.Extensions;
 using SublessSignIn.AuthServices;
 using SublessSignIn.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Web;
 
 namespace SublessSignIn.Controllers
 {
@@ -29,13 +29,13 @@ namespace SublessSignIn.Controllers
         //this is a weird place to get this from, but it'll work. Probs split it out later
         private readonly StripeConfig _settings;
         public PartnerController(
-            IPartnerService partnerService, 
-            IUserService userService, 
-            ICreatorService creatorService, 
+            IPartnerService partnerService,
+            IUserService userService,
+            ICreatorService creatorService,
             IHitService hitService,
             IPaymentLogsService paymentLogsService,
-            IOptions<StripeConfig> authSettings, 
-            ICorsPolicyAccessor corsPolicyAccessor, 
+            IOptions<StripeConfig> authSettings,
+            ICorsPolicyAccessor corsPolicyAccessor,
             ILoggerFactory loggerFactory)
         {
             if (authSettings is null)
@@ -111,8 +111,8 @@ namespace SublessSignIn.Controllers
             if (username != null)
             {
                 var creator = creatorService.GetCachedCreatorFromPartnerAndUsername(username, partner.Id);
-                
-                if (creator is null) 
+
+                if (creator is null)
                 {
                     return NotFound("No creators found for the given username");
                 }
@@ -199,7 +199,7 @@ namespace SublessSignIn.Controllers
         {
             var userClaim = _userService.GetUserClaim(this.User);
             var user = _userService.GetUserByCognitoId(userClaim);
-            if (user == null || !user.Partners.Any() || !user.Partners.Any(x=> partner.Id == x.Id))
+            if (user == null || !user.Partners.Any() || !user.Partners.Any(x => partner.Id == x.Id))
             {
                 return Unauthorized("Attemped to access forbidden zone");
             }
@@ -231,19 +231,23 @@ namespace SublessSignIn.Controllers
             return Ok(await _partnerService.CreatorChangeWebhook(dummyCreator));
         }
 
-        [HttpPost("Analytics")]
+        [HttpGet("Analytics")]
         [Authorize]
         public ActionResult<HistoricalStats<UserStats>> GetPartnerAnalytics()
         {
             var cognitoId = _userService.GetUserClaim(HttpContext.User);
+            var user = _userService.GetUserByCognitoId(cognitoId);
             if (cognitoId == null)
             {
                 return Unauthorized();
             }
+            var partner = _partnerService.GetPartnerByAdminId(user.Id);
+            if (partner == null)
+            {
+                return Unauthorized("Attemped to access forbidden zone");
+            }
             try
             {
-                var user = _userService.GetUserByCognitoId(cognitoId);
-                var partner = _partnerService.GetPartnerByAdminId(user.Id);
                 var paymentDate = paymentLogsService.GetLastPaymentDate();
                 if (paymentDate == DateTimeOffset.MinValue)
                 {

@@ -1,16 +1,15 @@
 ﻿using Duende.Bff;
+using Duende.Bff.EntityFramework;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using Subless.Models;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace SublessSignIn.AuthServices
 {
@@ -25,7 +24,14 @@ namespace SublessSignIn.AuthServices
         public static IServiceCollection AddBffServices(this IServiceCollection services, AuthSettings AuthSettings)
         {
             var cookieServices = services.Where<ServiceDescriptor>(x => x.ServiceType == typeof(IPostConfigureOptions<CookieAuthenticationOptions>));
-            services.AddBff(a=> a.LicenseKey = AuthSettings.IdentityServerLicenseKey).AddServerSideSessions();
+            services.AddBff(a => a.LicenseKey = AuthSettings.IdentityServerLicenseKey).AddEntityFrameworkServerSideSessions(options =>
+            {
+                options.UseNpgsql(AuthSettings.SessionStoreConnString, sqlOpts=>
+                {
+                    sqlOpts.MigrationsAssembly(typeof(Duende.Bff.EntityFramework.SessionDbContext).Assembly.FullName);
+                });
+                
+            });
 
             var descriptor =
                 new ServiceDescriptor(
@@ -58,54 +64,10 @@ namespace SublessSignIn.AuthServices
                 })
                 .AddOpenIdConnect("oidc", options =>
                 {
-                    options.Authority = AuthSettings.CognitoUrl;
 
-                    // confidential client using code flow + PKCE + query response mode
-                    options.ClientId = AuthSettings.AppClientId;
-                    options.ResponseType = "code";
-                    options.ResponseMode = "query";
-                    options.UsePkce = true;
-                    options.MapInboundClaims = false;
-
-                    //These need to be lax in order to handle both remote logins and the first-hop SSL configuration on the ECS cluster
-                    options.CorrelationCookie.SameSite = SameSiteMode.Lax;
-                    //MS Said this only expires to stop build up of dead cookies
-                    options.CorrelationCookie.Expiration = TimeSpan.FromDays(7);
-                    options.NonceCookie.SameSite = SameSiteMode.Lax;
-                    //MS Said this only expires to stop build up of dead cookies
-                    options.NonceCookie.Expiration = TimeSpan.FromDays(7);
-                    options.GetClaimsFromUserInfoEndpoint = true;
-                    options.RequireHttpsMetadata = true;
-                    options.Events = new OpenIdConnectEvents()
-                    {
-                        //handle the logout redirection
-                        OnRedirectToIdentityProviderForSignOut = context =>
-                        {
-                            var logouturi = AuthSettings.IssuerUrl + $"/logout?client_id={AuthSettings.AppClientId}&logout_uri={context.ProtocolMessage.RedirectUri??AuthSettings.Domain}";
-                            context.Response.Redirect(logouturi);
-                            context.HandleResponse();
-
-                            return Task.CompletedTask;
-                        },
-                    };
-                    var redirectToIdpHandler = options.Events.OnRedirectToIdentityProvider;
-                    options.Events.OnRedirectToIdentityProvider = async context =>
-                    {
-                        // Call what Microsoft.Identity.Web is doing
-                        await redirectToIdpHandler(context);
-                        // Override the redirect URI to be what you want
-                        context.ProtocolMessage.RedirectUri = $"{AuthSettings.Domain}signin-oidc";
-                    };
-
-                    // save access and refresh token to enable automatic lifetime management
-                    options.SaveTokens = true;
-
-                    // request scopes
-                    options.Scope.Clear();
-                    options.Scope.Add("openid");
-                    options.Scope.Add("profile");
 
                 });
+            services.AddSingleton<IConfigureOptions<OpenIdConnectOptions>, OpenIdConnectOptionsHandler>();
 
             return services;
         }

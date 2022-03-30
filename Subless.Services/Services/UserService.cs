@@ -1,19 +1,27 @@
-﻿using System;
+﻿using Subless.Data;
+using Subless.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using Subless.Data;
-using Subless.Models;
 
 namespace Subless.Services
 {
     public class UserService : IUserService
     {
         private readonly IUserRepository _userRepo;
+        private readonly ICreatorRepository creatorRepo;
+        private readonly IPartnerRepository partnerRepo;
         private readonly ICreatorService _creatorService;
-        public UserService(IUserRepository userRepo, ICreatorService creatorService)
+        public UserService(
+            IUserRepository userRepo,
+            ICreatorRepository creatorRepo,
+            IPartnerRepository partnerRepo,
+            ICreatorService creatorService)
         {
             _userRepo = userRepo ?? throw new ArgumentNullException(nameof(userRepo));
+            this.creatorRepo = creatorRepo ?? throw new ArgumentNullException(nameof(creatorRepo));
+            this.partnerRepo = partnerRepo ?? throw new ArgumentNullException(nameof(partnerRepo));
             _creatorService = creatorService ?? throw new ArgumentNullException(nameof(creatorService));
         }
 
@@ -91,13 +99,6 @@ namespace Subless.Services
             return user.FindFirst("username")?.Value ?? user.FindFirst("cognito:username")?.Value;
         }
 
-        public void ClearStripePayment(Guid id)
-        {
-            var user = _userRepo.GetUserById(id);
-            user.StripeSessionId = null;
-            _userRepo.UpdateUser(user);
-        }
-
         public User GetUserWithRelationships(Guid id)
         {
             return _userRepo.GetUserWithRelationships(id);
@@ -111,7 +112,7 @@ namespace Subless.Services
             {
                 foreach (var partner in user.Partners)
                 {
-                    _userRepo.DeletePartner(partner);
+                    partnerRepo.DeletePartner(partner);
                 }
             }
 
@@ -119,7 +120,7 @@ namespace Subless.Services
             {
                 foreach (var creator in user.Creators)
                 {
-                    _userRepo.DeleteCreator(creator);
+                    creatorRepo.DeleteCreator(creator);
                 }
             }
 

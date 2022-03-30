@@ -1,11 +1,9 @@
+using Duende.Bff.EntityFramework;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Serilog;
-using Serilog.Core;
-using Serilog.Events;
 using Subless.Data;
 using Subless.Services;
 using Subless.Services.Services;
@@ -26,8 +24,9 @@ namespace SublessSignIn
             using (var scope = host.Services.CreateScope())
             {
                 var services = scope.ServiceProvider;
-                using (var context = services.GetService<UserRepository>())
+                using (var context = services.GetService<Repository>())
                 {
+
                     Log.Logger.Information("Running migrations");
                     context.Database.Migrate();
                     context.SaveChanges();

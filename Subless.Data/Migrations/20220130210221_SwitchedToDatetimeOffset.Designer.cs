@@ -9,7 +9,7 @@ using Subless.Data;
 
 namespace Subless.Data.Migrations
 {
-    [DbContext(typeof(UserRepository))]
+    [DbContext(typeof(Repository))]
     [Migration("20220130210221_SwitchedToDatetimeOffset")]
     partial class SwitchedToDatetimeOffset
     {

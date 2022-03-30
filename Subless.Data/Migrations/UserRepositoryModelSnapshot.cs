@@ -8,7 +8,7 @@ using Subless.Data;
 
 namespace Subless.Data.Migrations
 {
-    [DbContext(typeof(UserRepository))]
+    [DbContext(typeof(Repository))]
     partial class UserRepositoryModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
@@ -138,6 +138,9 @@ namespace Subless.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
+
                     b.Property<string>("PayPalId")
                         .HasColumnType("text");
 
@@ -155,7 +158,13 @@ namespace Subless.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<double>("Fees")
+                        .HasColumnType("double precision");
+
                     b.Property<double>("Payment")
+                        .HasColumnType("double precision");
+
+                    b.Property<double>("Taxes")
                         .HasColumnType("double precision");
 
                     b.Property<Guid>("UserId")
@@ -225,6 +234,42 @@ namespace Subless.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Configurations");
+                });
+
+            modelBuilder.Entity("Subless.Models.SublessUserSession", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<string>("ApplicationName")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime?>("Expires")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Key")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("Renewed")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("SessionId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("SubjectId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Ticket")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("UserSessions");
                 });
 
             modelBuilder.Entity("Subless.Models.User", b =>

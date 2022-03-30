@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Subless.PayoutCalculator
+﻿namespace Subless.PayoutCalculator
 {
     public class CalculatorConfiguration
     {
@@ -11,5 +9,9 @@ namespace Subless.PayoutCalculator
         public bool RunOnStart;
         // Did this instead of timespan due to months being a wonky division, and not available for some calculations
         public int ExecutionsPerYear;
+        public string CalcuationRangeStart;
+        public string CalcuationRangeEnd;
+        public string Domain;
+        public string PoolId;
     }
 }

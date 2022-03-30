@@ -2,12 +2,10 @@
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using Subless.Models;
-using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Net;
-using System.Threading.Tasks;
 
 namespace SublessSignIn.AuthServices
 {
@@ -21,7 +19,7 @@ namespace SublessSignIn.AuthServices
             AuthSettings = authSettings;
             services.AddAuthentication(PartnerSchemeName)
                  .AddJwtBearer(options =>
-                 {                     
+                 {
                      options.TokenValidationParameters = GetCognitoTokenValidationParams(AuthSettings);
                  });
             services.AddAuthorization(options => options.AddPolicy(PartnerSchemeName, policy =>

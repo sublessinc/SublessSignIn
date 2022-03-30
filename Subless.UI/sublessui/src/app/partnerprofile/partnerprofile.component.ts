@@ -1,6 +1,6 @@
-import { ChangeDetectorRef, Component, HostListener, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { IPartner } from '../models/IPartner';
 import { IPartnerAnalytics } from '../models/IPartnerAnalytics';
 import { IPartnerWrite } from '../models/IPartnerWrite';
@@ -12,23 +12,27 @@ import { ComponentCanDeactivate } from '../stop-nav.guard';
   templateUrl: './partnerprofile.component.html',
   styleUrls: ['./partnerprofile.component.scss']
 })
-export class PartnerprofileComponent implements OnInit {
+export class PartnerprofileComponent implements OnInit, OnDestroy {
   public analytics: IPartnerAnalytics = {
     thisMonth: { views: 0, creators: 0, visitors: 0 },
     lastMonth: { views: 0, creators: 0, visitors: 0 }
   };
+  private subs: Subscription[] = [];
 
   constructor(private partnerService: PartnerService,
     private changeDetector: ChangeDetectorRef) { }
 
   ngOnInit(): void {
-    this.partnerService.getAnalytics().subscribe
+    this.subs.push(this.partnerService.getAnalytics().subscribe
       ({
         next: (analytics: IPartnerAnalytics) => {
           this.analytics = analytics;
           this.changeDetector.detectChanges();
         }
-      })
+      }));
+  }
+  ngOnDestroy(): void {
+    this.subs.forEach((item: Subscription) => { item.unsubscribe(); })
   }
 }
 

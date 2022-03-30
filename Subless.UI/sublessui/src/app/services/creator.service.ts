@@ -23,7 +23,7 @@ export class CreatorService {
     return this.httpClient.delete<boolean>('/api/Creator/' + creator.id + "/unlink");
   }
   getAnalytics(): Observable<ICreatorAnalytics> {
-    return this.httpClient.get<ICreatorAnalytics>("/api/Creator/analytics");
+    return this.httpClient.get<ICreatorAnalytics>("/api/Creator/Analytics");
   }
   finalizeViaRedirect(uri: string, email: string, username: string) {
     sessionStorage.removeItem('postActivationRedirect');

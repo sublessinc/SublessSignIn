@@ -24,6 +24,6 @@ export class PartnerService {
     return this.httpClient.post<Boolean>('/api/Partner/WebhookTest', null);
   }
   getAnalytics(): Observable<IPartnerAnalytics> {
-    return this.httpClient.get<IPartnerAnalytics>("/api/Partner/analytics");
+    return this.httpClient.get<IPartnerAnalytics>("/api/Partner/Analytics");
   }
 }

@@ -51,9 +51,9 @@ namespace Subless.Services
             var user = _userService.GetUserByCognitoId(cognitoId);
             var customer = user.StripeCustomerId;
 
-            if (string.IsNullOrEmpty(user.StripeCustomerId) || !CustomerHasPaid(cognitoId))
+            if (!CustomerHasPaid(cognitoId))
             {
-                return await NewCustomer(cognitoId, priceId);
+                return await NewSubscription(user, priceId);
             }
             UpgradeCustomer(customer, cognitoId, priceId);
             return null;
@@ -62,11 +62,9 @@ namespace Subless.Services
 
         private void UpgradeCustomer(string customer, string cognitoId, string priceId)
         {
-
             var subs = GetSubscriptions(customer);
             var service = new SubscriptionService(_client);
             var subscription = subs.Single();
-
 
             var items = new List<SubscriptionItemOptions> {
                 new SubscriptionItemOptions {
@@ -84,12 +82,15 @@ namespace Subless.Services
             service.Update(subscription.Id, options);
         }
 
-        private async Task<CreateCheckoutSessionResponse> NewCustomer(string cognitoId, string priceId)
+        private async Task<CreateCheckoutSessionResponse> NewSubscription(User user, string priceId)
         {
-            var customer = CreateCustomer(cognitoId).Id;
+            if (user.StripeCustomerId == null)
+            {
+                user.StripeCustomerId = CreateCustomer(user.CognitoId).Id;
+            }
             var options = new SessionCreateOptions
             {
-                Customer = customer,
+                Customer = user.StripeCustomerId,
                 SuccessUrl = $"{_stripeConfig.Value.Domain}/user-profile",
                 CancelUrl = $"{_stripeConfig.Value.Domain}/register-payment",
                 PaymentMethodTypes = new List<string>
@@ -109,7 +110,7 @@ namespace Subless.Services
 
             var service = new SessionService(_client);
             var session = await service.CreateAsync(options);
-            _userService.AddStripeSessionId(cognitoId, session.Id);
+            _userService.AddStripeSessionId(user.CognitoId, session.Id);
             return new CreateCheckoutSessionResponse
             {
                 SessionId = session.Id,
@@ -150,8 +151,15 @@ namespace Subless.Services
         public void RolloverPaymentForIdleCustomer(string customerId)
         {
             _logger.LogInformation($"Rolling over payment for idle customer {customerId}");
+            var activeSubs = GetSubscriptions(customerId);
+            if (!activeSubs.Any())
+            {
+                _logger.LogInformation("Customer {custId} cancelled their sub before we could rollover their payment", customerId);
+                return;
+            }
+            var sub = activeSubs.First(); //TODO figure out which sub to choose
             var coupon = CreateOneTimeCoupon();
-            ApplyCouponToSubscription(coupon, customerId);
+            ApplyCouponToSubscription(coupon, sub);
         }
 
         private Coupon CreateOneTimeCoupon()
@@ -159,7 +167,7 @@ namespace Subless.Services
             var options = new CouponCreateOptions
             {
                 Duration = "once",
-                Id = "rollover",
+                Id = "rollover" + Guid.NewGuid(),
                 PercentOff = 100,
                 MaxRedemptions = 1
             };
@@ -168,31 +176,33 @@ namespace Subless.Services
 
         }
 
-        private Subscription ApplyCouponToSubscription(Coupon coupon, string customerId)
+        private Subscription ApplyCouponToSubscription(Coupon coupon, Subscription sub)
         {
-
-            var sub = GetSubscriptions(customerId).First(); //TODO figure out which sub to choose
             var updateOptions = new SubscriptionUpdateOptions()
             {
                 Coupon = coupon.Id,
             };
-            var service = new SubscriptionService(_client);           
+            var service = new SubscriptionService(_client);
             return service.Update(sub.Id, updateOptions);
         }
 
         public bool CustomerHasPaid(string cognitoId)
         {
 
-            var activePrices = GetActiveSubscriptionPrice(cognitoId);
+            var activePrices = GetActiveSubscriptionPriceId(cognitoId);
             var allPrices = GetPrices();
             return allPrices.Any(x => activePrices.Contains(x.Id));
         }
-
-        public List<string> GetActiveSubscriptionPrice(string cognitoId)
+        private List<string> GetActiveSubscriptionPriceId(string cognitoId)
         {
-            var prices = new List<string>();
+            return GetActiveSubscriptionPrice(cognitoId).Select(x => x.Id).ToList();
+        }
+
+        public List<Price> GetActiveSubscriptionPrice(string cognitoId)
+        {
+            var prices = new List<Price>();
             var user = _userService.GetUserByCognitoId(cognitoId);
-            if (user.StripeCustomerId == null)
+            if (user?.StripeCustomerId == null)
             {
                 return prices;
             }
@@ -205,7 +215,7 @@ namespace Subless.Services
                 {
                     foreach (var item in sub.Items)
                     {
-                        prices.Add(item.Price.Id);
+                        prices.Add(item.Price);
                     }
                 }
             }
@@ -288,16 +298,33 @@ namespace Subless.Services
                 var user = users.FirstOrDefault(x => x.StripeCustomerId == invoice.CustomerId);
                 if (user == null)
                 {
-                    _logger.LogCritical($"User payment detected without corresponding user in subless system. CustomerId: {invoice.CustomerId} Email: {invoice.CustomerEmail}");
+                    _logger.LogWarning($"User payment detected without corresponding user in subless system. CustomerId: {invoice.CustomerId} Email: {invoice.CustomerEmail}");
                 }
                 else
                 {
-                    var charge = chargeService.Get(invoice.ChargeId);
-                    var balanceTrans = balanceTransactionService.Get(charge.BalanceTransactionId);
+                    long payment = 0;
+                    long taxes = invoice?.Tax ?? 0; 
+                    long fees = 0;
+                    if (invoice.ChargeId != null)
+                    {
+                        var charge = chargeService.Get(invoice.ChargeId);
+                        var balanceTrans = balanceTransactionService.Get(charge.BalanceTransactionId);
+                        fees = balanceTrans.Fee;
+                        
+                        payment = balanceTrans.Net;
+                    }
+                    // if we have a discount, we need to calculate the payment differently
+                    else
+                    {
+                        payment = invoice.Subtotal;
+                    }
+
                     payers.Add(new Payer
                     {
                         UserId = users.Single(x => x.StripeCustomerId == invoice.CustomerId).Id,
-                        Payment = balanceTrans.Net
+                        Payment = payment,
+                        Taxes = taxes,
+                        Fees = fees
                     });
                 }
             }
@@ -320,8 +347,6 @@ namespace Subless.Services
                 };
                 Subscription subscription = service.Cancel(sub.Id, cancelOptions);
             }
-
-            _userService.ClearStripePayment(user.Id);
             return true;
         }
     }

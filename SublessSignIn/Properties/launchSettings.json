@@ -29,8 +29,8 @@
         "ASPNETCORE_ENVIRONMENT": "Development",
         "STRIPE_WEBHOOK_SECRET": "whsec_BKwYJh9HjCYQEgUSYIu9A1RE7ciQ26Ho",
         "region": "us-east-2",
-        "appClientId": "3bp497rc3vgtaknl4t0c91fkef",
-        "userPoolId": "us-east-2_HfL2wDx4q",
+        "appClientId": "3pfcge04qtbqj11h32tr09ndu2",
+        "userPoolId": "us-east-2_7wJbjFqDB",
         "issuerUrl": "https://devpayidp.auth.us-east-2.amazoncognito.com",
         "Logging__LogLevel__Default": "Debug",
         "IdentityServerLicenseKey": ""

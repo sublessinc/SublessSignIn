@@ -3,36 +3,16 @@ orbs:
   aws-ecr: circleci/aws-ecr@7.3.0
   aws-ecs: circleci/aws-ecs@2.2.1
 workflows:
-  build_only_site:
-    when:
-      and:
-        - not:
-          equal: [ main, << pipeline.git.branch >> ]
-        - not:
-          equal: [ dev, << pipeline.git.branch >> ]
-        - not:
-          equal: [ stage, << pipeline.git.branch >> ]
-        - not:
-          equal: [ prod, << pipeline.git.branch >> ]
-    jobs:
-      - aws-ecr/build-and-push-image:
-          account-url: AWS_ACCOUNT_URL
-          aws-access-key-id: AWS_ACCESS_KEY_ID
-          aws-secret-access-key: AWS_SECRET_ACCESS_KEY
-          path: ./
-          region: AWS_DEFAULT_REGION
-          repo: subless-pay
-          skip-when-tags-exist: false
-          tag: 'dev'
   build_and_push_site:
-    when:
-      or:
-        - equal: [ main, << pipeline.git.branch >> ]
-        - equal: [ dev, << pipeline.git.branch >> ]
-        - equal: [ stage, << pipeline.git.branch >> ]
-        - equal: [ prod, << pipeline.git.branch >> ]
     jobs:
       - aws-ecr/build-and-push-image:
+          name: build-push-site-commit-tag
+          filters:
+            branches:
+              ignore:
+                - dev
+                - stage
+                - prod
           account-url: AWS_ACCOUNT_URL
           aws-access-key-id: AWS_ACCESS_KEY_ID
           aws-secret-access-key: AWS_SECRET_ACCESS_KEY
@@ -40,45 +20,73 @@ workflows:
           region: AWS_DEFAULT_REGION
           repo: subless-pay
           skip-when-tags-exist: false
-          tag: 'dev'
-      - aws-ecs/deploy-service-update:
-          cluster-name: 'dev_pay_ecs_Payments'
-          family: 'devStackdevpayecspaySitepaymentSiteServiceTaskDef8814A6F9'
-          service-name: 'devStack-devpayecspaySitepaymentSiteService735C5EA0-b9ZeluJTims3'
-          force-new-deployment: true
-          requires:
-            - aws-ecr/build-and-push-image
-  build_only_calculator:
-    when:
-      and:
-        - not:
-          equal: [ main, << pipeline.git.branch >> ]
-        - not:
-          equal: [ dev, << pipeline.git.branch >> ]
-        - not:
-          equal: [ stage, << pipeline.git.branch >> ]
-        - not:
-          equal: [ prod, << pipeline.git.branch >> ]
-    jobs:
+          tag: $CIRCLE_SHA1
       - aws-ecr/build-and-push-image:
+          name: build-push-site-env-tag
+          filters:
+            branches:
+              only:
+                - dev
+                - stage
+                - prod
           account-url: AWS_ACCOUNT_URL
+          extra-build-args: --build-arg build_environment=$CIRCLE_BRANCH
           aws-access-key-id: AWS_ACCESS_KEY_ID
           aws-secret-access-key: AWS_SECRET_ACCESS_KEY
-          dockerfile: CalculatorDockerfile
           path: ./
           region: AWS_DEFAULT_REGION
-          repo: subless-calculator
+          repo: subless-pay
           skip-when-tags-exist: false
-          tag: 'dev'
+          tag: $CIRCLE_BRANCH
+      - aws-ecs/deploy-service-update:
+          name: deploy-site-to-dev
+          filters:
+            branches:
+              only:
+                - dev
+          cluster-name: $DEV_CLUSTER_NAME
+          family: $DEV_SITE_TASK
+          service-name: $DEV_SITE_SERVICE
+          force-new-deployment: true       
+          container-image-name-updates: "container=web,tag=dev"   
+          requires:
+            - build-push-site-env-tag
+      - aws-ecs/deploy-service-update:
+          name: deploy-site-to-stage
+          filters:
+            branches:
+              only:
+                - stage
+          cluster-name: $STAGE_CLUSTER_NAME
+          family: $STAGE_SITE_TASK
+          service-name: $STAGE_SITE_SERVICE
+          container-image-name-updates: "container=web,tag=stage"
+          force-new-deployment: true
+          requires:
+            - build-push-site-env-tag
+      - aws-ecs/deploy-service-update:
+          name: deploy-site-to-prod
+          filters:
+            branches:
+              only:
+                - prod
+          cluster-name: $PROD_CLUSTER_NAME
+          family: $PROD_SITE_TASK
+          service-name: $PROD_SITE_SERVICE
+          container-image-name-updates: "container=web,tag=prod"
+          force-new-deployment: true
+          requires:
+            - build-push-site-env-tag
   build_and_push_calculator:
-    when:
-      or:
-        - equal: [ main, << pipeline.git.branch >> ]
-        - equal: [ dev, << pipeline.git.branch >> ]
-        - equal: [ stage, << pipeline.git.branch >> ]
-        - equal: [ prod, << pipeline.git.branch >> ]
     jobs:
       - aws-ecr/build-and-push-image:
+          name: build-push-calc-commit-tag
+          filters:
+            branches:
+              ignore:
+                - dev
+                - stage
+                - prod
           account-url: AWS_ACCOUNT_URL
           aws-access-key-id: AWS_ACCESS_KEY_ID
           aws-secret-access-key: AWS_SECRET_ACCESS_KEY
@@ -87,11 +95,60 @@ workflows:
           region: AWS_DEFAULT_REGION
           repo: subless-calculator
           skip-when-tags-exist: false
-          tag: 'dev'
+          tag: $CIRCLE_SHA1
+      - aws-ecr/build-and-push-image:
+          name: build-push-calc-env-tag
+          filters:
+            branches:
+              only:
+                - dev
+                - stage
+                - prod
+          account-url: AWS_ACCOUNT_URL
+          aws-access-key-id: AWS_ACCESS_KEY_ID
+          aws-secret-access-key: AWS_SECRET_ACCESS_KEY
+          dockerfile: CalculatorDockerfile
+          path: ./
+          region: AWS_DEFAULT_REGION
+          repo: subless-calculator
+          skip-when-tags-exist: false
+          tag: $CIRCLE_BRANCH
       - aws-ecs/deploy-service-update:
-          cluster-name: 'dev_pay_ecs_Payments'
-          family: 'devStackdevpayecscalculatorcalculatorTask1ED54CB3'
-          service-name: 'devStack-devpayecscalculatorcalculatorService340918A9-h8ejb8OfoZ7R'
+          name: deploy-calc-to-dev
+          filters:
+            branches:
+              only:
+                - dev
+          cluster-name: $DEV_CLUSTER_NAME
+          family: $DEV_CALC_TASK
+          service-name: $DEV_CALC_SERVICE
+          force-new-deployment: true
+          container-image-name-updates: "container=dev_pay2_ecs_calculator_calculatorContainer,tag=dev"
+          requires:
+            - build-push-calc-env-tag
+      - aws-ecs/deploy-service-update:
+          name: deploy-calc-to-stage
+          filters:
+            branches:
+              only:
+                - stage
+          cluster-name: $STAGE_CLUSTER_NAME
+          family: $STAGE_CALC_TASK
+          service-name: $STAGE_CALC_SERVICE
+          force-new-deployment: true
+          container-image-name-updates: "container=stage_pay2_ecs_calculator_calculatorContainer,tag=stage"
+          requires:
+            - build-push-calc-env-tag
+      - aws-ecs/deploy-service-update:
+          name: deploy-calc-to-prod
+          filters:
+            branches:
+              only:
+                - prod
+          cluster-name: $PROD_CLUSTER_NAME
+          family: $PROD_CALC_TASK
+          service-name: $PROD_CALC_SERVICE
+          container-image-name-updates: "container=prod_pay2_ecs_calculator_calculatorContainer,tag=prod"
           force-new-deployment: true
           requires:
-            - aws-ecr/build-and-push-image
+            - build-push-calc-env-tag
