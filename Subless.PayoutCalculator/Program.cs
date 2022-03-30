@@ -23,6 +23,16 @@ namespace PayoutCalculator
             {
                 // initialize configuration
                 logger = scope.ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<Program>();
+                try
+                {
+                    string version = System.IO.File.ReadAllText(@"version.txt");
+                    logger.LogInformation("Version: " + version);
+                }
+                catch (Exception e)
+                {
+                    logger.LogCritical(e, "Unable to find the version.txt file for printing our version.");
+                }
+
                 var logging_env_var = System.Environment.GetEnvironmentVariable("Logging__LogLevel__Default");
                 logger.LogInformation($"Logging env var value is {logging_env_var}");
                 try
