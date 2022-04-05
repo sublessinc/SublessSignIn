@@ -7,6 +7,7 @@
         Profile = 2,
         ActivatedCreator = 3,
         Partner = 4,
-        CreatorWithoutPayment = 5
+        CreatorWithoutPayment = 5,
+        Terms = 6
     }
 }

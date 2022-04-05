@@ -101,6 +101,9 @@ export class AuthorizationService {
           case 5:
             this.router.navigate(['payout-setup']);
             break;
+          case 6:
+            this.router.navigate(['terms']);
+            break;
           default: {
             break;
           }

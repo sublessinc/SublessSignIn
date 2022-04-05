@@ -50,7 +50,13 @@ namespace Subless.Services.Services
                     RedirectionPath = RedirectionPath.ActivatedCreator
                 };
             }
-
+            if (!user.AcceptedTerms)
+            {
+                return new Redirection()
+                {
+                    RedirectionPath = RedirectionPath.Terms
+                };
+            }
             if (!stripeService.CustomerHasPaid(cognitoId))
             {
                 return new Redirection()

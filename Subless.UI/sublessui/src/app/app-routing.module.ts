@@ -12,6 +12,7 @@ import { PayoutsettingsComponent } from './payoutsettings/payoutsettings.compone
 import { RegisterPaymentComponent } from './register-payment/register-payment.component';
 import { AuthGuard } from './services/auth.guard';
 import { StopNavGuard } from './stop-nav.guard';
+import { TermsComponent } from './terms/terms.component';
 import { UserprofileComponent } from './userprofile/userprofile.component';
 
 const routes: Routes = [
@@ -28,7 +29,8 @@ const routes: Routes = [
   { path: 'payout-setup', component: PayoutsettingsComponent, canActivate: [AuthGuard], canDeactivate: [StopNavGuard] },
   { path: 'id', component: IdComponent, canActivate: [AuthGuard] },
   { path: 'login', component: LoginComponent },
-  { path: 'logged-out', component: LoggedOutComponent }
+  { path: 'logged-out', component: LoggedOutComponent },
+  { path: 'terms', component: TermsComponent }
 
 
 ];
