@@ -30,6 +30,8 @@ import { ErrorPageComponent } from './error-page/error-page.component';
 import { ErrorInterceptor } from './error-handling/error-interceptor.interceptor';
 import { GlobalerrorhandlerService } from './error-handling/globalerrorhandler.service';
 import { TermsComponent } from './terms/terms.component';
+import { CreatorTermsComponent } from './creator-terms/creator-terms.component';
+import { PartnerTermsComponent } from './partner-terms/partner-terms.component';
 
 @NgModule({
   declarations: [
@@ -51,7 +53,9 @@ import { TermsComponent } from './terms/terms.component';
     IntegrationtestComponent,
     WarnDialogComponent,
     ErrorPageComponent,
-    TermsComponent
+    TermsComponent,
+    CreatorTermsComponent,
+    PartnerTermsComponent
   ],
   imports: [
     ThemeModule,

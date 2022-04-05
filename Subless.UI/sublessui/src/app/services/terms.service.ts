@@ -12,5 +12,11 @@ export class TermsService {
   acceptTerms(): Observable<void> {
     return this.httpClient.put<void>('/api/user/terms', null);
   }
+  acceptCreatorTerms(): Observable<void> {
+    return this.httpClient.put<void>('/api/creator/terms', null);
+  }
 
+  acceptPartnerTerms(): Observable<void> {
+    return this.httpClient.put<void>('/api/partner/terms', null);
+  }
 }

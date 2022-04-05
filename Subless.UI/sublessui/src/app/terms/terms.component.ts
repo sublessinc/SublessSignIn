@@ -10,8 +10,10 @@ import { TermsService } from '../services/terms.service';
 })
 export class TermsComponent implements OnInit, OnDestroy {
   private subs: Subscription[] = [];
+  public url: string = "https://www.subless.com/terms";
+  protected acceptMethod = this.termsService.acceptTerms;
   constructor(
-    private termsService: TermsService,
+    protected termsService: TermsService,
     private authService: AuthorizationService) { }
 
   ngOnInit(): void {
@@ -20,7 +22,7 @@ export class TermsComponent implements OnInit, OnDestroy {
     this.subs.forEach((item: Subscription) => { item.unsubscribe(); })
   }
   public accept(): void {
-    this.subs.push(this.termsService.acceptTerms().subscribe({
+    this.subs.push(this.acceptMethod().subscribe({
       next: () => {
         this.authService.redirect();
       }

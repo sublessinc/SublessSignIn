@@ -104,6 +104,12 @@ export class AuthorizationService {
           case 6:
             this.router.navigate(['terms']);
             break;
+          case 7:
+            this.router.navigate(['creator-terms']);
+            break;
+          case 8:
+            this.router.navigate(['partner-terms']);
+            break;
           default: {
             break;
           }

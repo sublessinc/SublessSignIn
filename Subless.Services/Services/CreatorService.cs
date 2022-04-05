@@ -162,5 +162,13 @@ namespace Subless.Services
             cache.InvalidateCache();
             await partnerService.CreatorChangeWebhook(creator.ToPartnerView(true));
         }
+
+        public void AcceptTerms(string cognitoId)
+        {
+            var creators = _userRepository.GetCreatorsByCognitoId(cognitoId);
+            var creator = creators.Single(); 
+            creator.AcceptedTerms = true;
+            creatorRepository.UpdateCreator(creator);
+        }
     }
 }
