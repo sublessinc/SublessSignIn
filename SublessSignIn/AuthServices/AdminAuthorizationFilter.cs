@@ -8,12 +8,19 @@ namespace Subless.Services
 {
     public class AdminAuthorizationFilter : AuthorizeAttribute, IAuthorizationFilter
     {
-        private readonly IUserService userService;
+        private readonly IUserService _userService;
         private readonly ILogger logger;
 
+        public IUserService userService {
+            get {
+                return _userService;
+            }
+        }
+
+        #pragma warning disable CA1019 // The loggerfactory is not stored, so we do not need to expose it.
         public AdminAuthorizationFilter(IUserService userService, ILoggerFactory loggerFactory)
         {
-            this.userService = userService ?? throw new ArgumentNullException(nameof(userService));
+            this._userService = userService ?? throw new ArgumentNullException(nameof(userService));
             this.logger = loggerFactory?.CreateLogger<AdminAuthorizationFilter>() ?? throw new ArgumentNullException(nameof(loggerFactory));
         }
 
