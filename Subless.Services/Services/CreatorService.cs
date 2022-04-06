@@ -58,7 +58,7 @@ namespace Subless.Services
             {
                 throw new UnauthorizedAccessException();
             }
-            // TODO: One creator for now. 
+            // TODO: One creator for now.
             return creators.First();
         }
 
@@ -155,7 +155,7 @@ namespace Subless.Services
             var creators = _userRepository.GetCreatorsByCognitoId(cognitoId);
             if (!creators.Any(x => x.Id == id))
             {
-                throw new AccessViolationException("User cannot modify this creator");
+                throw new UnauthorizedAccessException("User cannot modify this creator");
             }
             var creator = creators.Single(x => x.Id == id);
             creatorRepository.DeleteCreator(creator);
@@ -166,7 +166,7 @@ namespace Subless.Services
         public void AcceptTerms(string cognitoId)
         {
             var creators = _userRepository.GetCreatorsByCognitoId(cognitoId);
-            var creator = creators.Single(); 
+            var creator = creators.Single();
             creator.AcceptedTerms = true;
             creatorRepository.UpdateCreator(creator);
         }
