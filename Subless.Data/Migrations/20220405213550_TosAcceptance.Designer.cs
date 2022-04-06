@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Subless.Data;
@@ -11,9 +12,10 @@ using Subless.Data;
 namespace Subless.Data.Migrations
 {
     [DbContext(typeof(Repository))]
-    partial class UserRepositoryModelSnapshot : ModelSnapshot
+    [Migration("20220405213550_TosAcceptance")]
+    partial class TosAcceptance
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -27,9 +29,6 @@ namespace Subless.Data.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
-
-                    b.Property<bool>("AcceptedTerms")
-                        .HasColumnType("boolean");
 
                     b.Property<Guid?>("ActivationCode")
                         .HasColumnType("uuid");
@@ -109,9 +108,6 @@ namespace Subless.Data.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
-
-                    b.Property<bool>("AcceptedTerms")
-                        .HasColumnType("boolean");
 
                     b.Property<Guid>("Admin")
                         .HasColumnType("uuid");

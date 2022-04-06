@@ -72,7 +72,11 @@ export class NavComponent implements OnInit, OnDestroy {
   }
 
   showDrawer() {
-    return !this.router.url.startsWith("/register-payment") && !this.router.url.startsWith("/payout-setup");
+    return !this.router.url.startsWith("/register-payment")
+      && !this.router.url.startsWith("/payout-setup")
+      && !this.router.url.startsWith("/terms")
+      && !this.router.url.startsWith("/creator-terms")
+      && !this.router.url.startsWith("/partner-terms");
   }
 
   returnToStripe() {
