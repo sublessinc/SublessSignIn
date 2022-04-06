@@ -6,7 +6,7 @@ using System;
 
 namespace Subless.Services
 {
-    public class AdminAuthorizationFilter : AuthorizeAttribute, IAuthorizationFilter
+    public sealed class AdminAuthorizationFilter : AuthorizeAttribute, IAuthorizationFilter
     {
         private readonly IUserService _userService;
         private readonly ILogger logger;
