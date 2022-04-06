@@ -7,7 +7,7 @@ import { MAT_DIALOG_DATA } from '@angular/material/dialog';
   templateUrl: './warn-dialog.component.html',
   styleUrls: ['./warn-dialog.component.css']
 })
-export class WarnDialogComponent implements OnInit {
+export class WarnDialogComponent {
   public data: IDialogData = {
     title: '',
     text: '',
@@ -20,10 +20,6 @@ export class WarnDialogComponent implements OnInit {
       this.data = injectedData;
     }
   }
-
-  ngOnInit(): void {
-  }
-
 }
 
 export interface IDialogData {

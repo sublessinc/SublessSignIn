@@ -263,5 +263,13 @@ namespace SublessSignIn.Controllers
                 return Unauthorized();
             }
         }
+
+        [HttpPut("terms")]
+        public ActionResult AcceptTerms()
+        {
+            var cognitoId = _userService.GetUserClaim(HttpContext.User);
+            _partnerService.AcceptTerms(cognitoId);
+            return Ok();
+        }
     }
 }
