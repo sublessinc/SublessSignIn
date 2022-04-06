@@ -8,6 +8,11 @@ import { TermsComponent } from '../terms/terms.component';
 })
 export class PartnerTermsComponent extends TermsComponent {
   public url = "https://www.subless.com/partner-terms";
-  acceptMethod = this.termsService.acceptPartnerTerms;
-
+  public accept(): void {
+    this.subs.push(this.termsService.acceptPartnerTerms().subscribe({
+      next: () => {
+        this.authService.redirect();
+      }
+    }));
+  }
 }

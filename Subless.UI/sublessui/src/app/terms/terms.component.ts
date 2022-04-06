@@ -9,12 +9,11 @@ import { TermsService } from '../services/terms.service';
   styleUrls: ['./terms.component.css']
 })
 export class TermsComponent implements OnInit, OnDestroy {
-  private subs: Subscription[] = [];
+  protected subs: Subscription[] = [];
   public url: string = "https://www.subless.com/terms";
-  protected acceptMethod = this.termsService.acceptTerms;
   constructor(
     protected termsService: TermsService,
-    private authService: AuthorizationService) { }
+    protected authService: AuthorizationService) { }
 
   ngOnInit(): void {
   }
@@ -22,7 +21,7 @@ export class TermsComponent implements OnInit, OnDestroy {
     this.subs.forEach((item: Subscription) => { item.unsubscribe(); })
   }
   public accept(): void {
-    this.subs.push(this.acceptMethod().subscribe({
+    this.subs.push(this.termsService.acceptTerms().subscribe({
       next: () => {
         this.authService.redirect();
       }
