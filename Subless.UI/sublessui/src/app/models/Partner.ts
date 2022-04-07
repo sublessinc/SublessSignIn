@@ -5,7 +5,7 @@ export class Partner implements IPartner {
         public username: string,
         public payPalId: string,
         public id: string,
-        public site: string,
+        public sites: string[],
         public userPattern: string,
         public creatorWebhook: string
     ) { }

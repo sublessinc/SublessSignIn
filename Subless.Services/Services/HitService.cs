@@ -112,7 +112,7 @@ namespace Subless.Services
             ///www.partner.com/creator/pictures; www.partner.com/profile/creator; www.partner.com/stories/creator/
             ///www.partner.com\/profile\/?.*\.php
             var patterns = partner.UserPattern.Split(";");
-            _logger.LogDebug($"Parter {partner.Site} has {patterns.Count()} patterns to try.");
+            _logger.LogDebug($"Parter {partner.Sites} has {patterns.Count()} patterns to try.");
 
             // iterate through the possible patterns
             foreach (var pattern in patterns)
