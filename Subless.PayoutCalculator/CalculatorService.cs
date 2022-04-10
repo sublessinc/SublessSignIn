@@ -83,7 +83,7 @@ namespace Subless.PayoutCalculator
                 var partnerVisits = GetVisitsPerPartner(hits);
                 // fraction each creator by the percentage of total visits
                 // multiply payment by that fraction
-                _logger.LogInformation($"Found {0} creators visited and {1} partners visited for a payer.", creatorVisits.Count(), partnerVisits.Count());
+                _logger.LogInformation($"Found {0} creators visited and {1} partners visited for a payer.", creatorVisits.Count, partnerVisits.Count);
                 payees.AddRange(GetCreatorPayees(payer.Payment, creatorVisits, hits.Count(), PartnerFraction, SublessFraction));
                 payees.AddRange(GetPartnerPayees(payer.Payment, creatorVisits, hits.Count(), PartnerFraction, SublessFraction));
                 // set aside 2% for us
@@ -92,7 +92,7 @@ namespace Subless.PayoutCalculator
                 var totalPayments = Math.Round(payees.Sum(payee => payee.Payment), CurrencyPrecision, MidpointRounding.ToZero);
                 if (totalPayments > payer.Payment)
                 {
-                    throw new Exception($"The math did not add up for payer:{payer.UserId}");
+                    throw new ArithmeticException($"The math did not add up for payer:{payer.UserId}");
                 }
 
                 // record each outgoing payment to master list
@@ -199,7 +199,7 @@ namespace Subless.PayoutCalculator
                 });
             }
 
-            _logger.LogInformation($"For a patron who visited {0} creators, we've found {1} creator payees.", creatorHits.Count(), payees.Count());
+            _logger.LogInformation($"For a patron who visited {0} creators, we've found {1} creator payees.", creatorHits.Count, payees.Count);
             return payees;
         }
 
@@ -229,7 +229,7 @@ namespace Subless.PayoutCalculator
                 }
             }
 
-            _logger.LogInformation($"For a patron who visited {0} partners, we've found {1} partner payees.", creatorHits.Count(), payees.Count());
+            _logger.LogInformation($"For a patron who visited {0} partners, we've found {1} partner payees.", creatorHits.Count, payees.Count);
             return payees;
         }
 
