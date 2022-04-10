@@ -11,7 +11,7 @@ namespace Subless.Data
         Creator GetCreatorByPartnerAndUsername(string partnerCognitoId, string username);
         Partner GetPartner(Guid id);
         Partner GetPartnerByAdminId(Guid id);
-        Partner GetPartnerByCognitoId(string partnerClientId);
+        Partner GetPartnerByAppClientId(string partnerClientId);
         Partner GetPartnerByUri(Uri uri);
         IEnumerable<Partner> GetPartners();
         IEnumerable<Uri> GetPartnerUris();
