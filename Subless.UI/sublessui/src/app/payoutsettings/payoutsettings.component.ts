@@ -22,7 +22,7 @@ export class PayoutsettingsComponent implements OnInit, ComponentCanDeactivate, 
   private creatorModel$: Observable<ICreator> | undefined;
   public creatorModel: ICreator = new Creator("", "", "");
   private partnerModel$: Observable<IPartner> | undefined;
-  public partnerModel: IPartner = new Partner("", "", "", "", "", "");
+  public partnerModel: IPartner = new Partner("", "", "", [""], "", "");
   public backgroundClass: string = "lightBackground";
   public isModal: boolean = false;
   public creator: boolean = false;

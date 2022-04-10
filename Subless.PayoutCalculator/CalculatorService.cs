@@ -221,7 +221,7 @@ namespace Subless.PayoutCalculator
                 {
                     var payee = new Payee()
                     {
-                        Name = partner.Site.Host,
+                        Name = partner.Sites.First().Host,
                         PayPalId = partner.PayPalId,
                         Payment = partnerPayment
                     };

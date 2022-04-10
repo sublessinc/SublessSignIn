@@ -103,7 +103,7 @@ namespace Subless.Services
 
         public Guid CreatePartner(Partner partner)
         {
-            partner.Site = new Uri(partner.Site.GetLeftPart(UriPartial.Authority));
+            partner.Sites = partner.Sites.Select(x=> new Uri(x.GetLeftPart(UriPartial.Authority))).ToArray();
             partnerRepository.AddPartner(partner);
             cache.InvalidateCache();
             return partner.Id;
