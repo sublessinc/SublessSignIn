@@ -17,5 +17,7 @@ namespace Subless.Models
         public Guid Admin { get; set; }
 #nullable enable
         public Uri? CreatorWebhook { get; set; }
+        public bool AcceptedTerms { get; set; }
+
     }
 }
