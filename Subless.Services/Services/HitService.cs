@@ -112,17 +112,17 @@ namespace Subless.Services
             ///www.partner.com/creator/pictures; www.partner.com/profile/creator; www.partner.com/stories/creator/
             ///www.partner.com\/profile\/?.*\.php
             var patterns = partner.UserPattern.Split(";");
-            _logger.LogDebug($"Parter {partner.Site} has {patterns.Count()} patterns to try.");
+            _logger.LogDebug($"Parter {partner.Site} has {patterns.Length} patterns to try.");
 
             // iterate through the possible patterns
             foreach (var pattern in patterns)
             {
                 var patternUri = new Uri(pattern);
-                if (uri.Segments.Count() < patternUri.Segments.Count())
+                if (uri.Segments.Length < patternUri.Segments.Length)
                 {
                     continue;
                 }
-                var regexPattern = "(?:" + pattern.Replace(creatorPlaceholder, ")([^/]*)(?:") + ")";
+                var regexPattern = "(?:" + pattern.Replace(creatorPlaceholder, ")([^/]*)(?:", System.StringComparison.Ordinal) + ")";
                 var matches = Regex.Matches(uri.ToString(), regexPattern);
                 if (!matches.Any())
                 {
@@ -133,7 +133,9 @@ namespace Subless.Services
                     _logger.LogDebug($"Matched the uri {uri} using the pattern {pattern}");
                     foreach (Group group in match.Groups)
                     {
-                        if (group.Value != uri.ToString() && !string.IsNullOrWhiteSpace(group.Value) && !PartnerService.InvalidUsernameCharacters.Any(x => group.Value.Contains(x)))
+                        if (group.Value != uri.ToString()
+                            && !string.IsNullOrWhiteSpace(group.Value)
+                            && !PartnerService.InvalidUsernameCharacters.Any(x => group.Value.Contains(x, StringComparison.Ordinal)))
                         {
                             return _creatorService.GetCachedCreatorFromPartnerAndUsername(group.Value, partner.Id)?.Id;
                         }
