@@ -13,6 +13,7 @@ namespace Subless.Models
         public string CognitoId { get; set; }
         public string StripeSessionId { get; set; }
         public string StripeCustomerId { get; set; }
+        public bool AcceptedTerms { get; set; }
         public ICollection<Creator> Creators { get; set; }
         [ForeignKey("Admin")]
         public ICollection<Partner> Partners { get; set; }

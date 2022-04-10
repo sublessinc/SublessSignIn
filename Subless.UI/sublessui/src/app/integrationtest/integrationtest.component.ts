@@ -11,7 +11,7 @@ import { PartnerService } from '../services/partner.service';
 })
 export class IntegrationtestComponent implements OnInit, OnDestroy {
   private model$: Observable<IPartner> | undefined;
-  public model: IPartner = { payPalId: "", site: "", userPattern: "", creatorWebhook: "", id: "" };
+  public model: IPartner = { payPalId: "", sites: [""], userPattern: "", creatorWebhook: "", id: "" };
   private subs: Subscription[] = [];
 
   constructor(private partnerService: PartnerService) { }
