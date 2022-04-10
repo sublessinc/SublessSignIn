@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace Subless.Services
 {
-    public class S3Service : IFileStorageService
+    public class S3Service : IFileStorageService, IDisposable
     {
         private readonly TransferUtility transferUtility;
         private readonly string BucketName;
@@ -57,7 +57,7 @@ namespace Subless.Services
 
         private string GetPathToGeneratedCsv(List<PayPalItem> masterPayoutList)
         {
-            var filePath = Path.Join(Path.GetTempPath(), DateTimeOffset.UtcNow.ToString("yyyy-MM-dd-HH-mm-ss") + ".csv");
+            var filePath = Path.Join(Path.GetTempPath(), DateTimeOffset.UtcNow.ToString("yyyy-MM-dd-HH-mm-ss", CultureInfo.InvariantCulture) + ".csv");
             using (var writer = new StreamWriter(filePath))
             using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
             {
@@ -93,6 +93,11 @@ namespace Subless.Services
             public string Social { get; set; }
             public string Holler { get; set; }
             public string Logo => "https://pay.subless.com/assets/img/SublessLogoOnly.png";
+        }
+
+        public void Dispose()
+        {
+            transferUtility.Dispose();
         }
     }
 }

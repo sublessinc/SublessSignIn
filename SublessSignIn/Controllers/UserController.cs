@@ -108,5 +108,12 @@ namespace SublessSignIn.Controllers
             return Ok(false);
         }
 
+        [HttpPut("terms")]
+        public ActionResult AcceptTerms()
+        {
+            var cognitoId = userService.GetUserClaim(HttpContext.User);
+            userService.AcceptTerms(cognitoId);
+            return Ok();
+        }
     }
 }
