@@ -39,7 +39,7 @@ namespace SublessSignIn
                     // prevent unauthenticated logout requests (similar to OIDC front channel)
                     if (_options.RequireLogoutSessionId && userSessionId != passedSessionId)
                     {
-                        throw new Exception("Invalid Session Id");
+                        throw new UnauthorizedAccessException("Invalid Session Id");
                     }
                 }
             }

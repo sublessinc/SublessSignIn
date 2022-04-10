@@ -11,6 +11,7 @@ namespace Subless.Services
         void AddStripeSessionId(string cognitoId, string stripeId);
         string GetStripeIdFromCognitoId(string cognitoId);
         User GetUserByCognitoId(string cognitoId);
+        void AcceptTerms(string cognitoId);
         IEnumerable<User> GetAdmins();
         void SetUserAdmin(Guid userId);
         bool IsUserAdmin(string cognitoId);

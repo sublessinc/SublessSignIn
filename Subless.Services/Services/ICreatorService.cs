@@ -17,5 +17,6 @@ namespace Subless.Services
         IEnumerable<MontlyPaymentStats> GetStatsForCreator(Creator creator);
         Task UnlinkCreator(string cognitoId, Guid id);
         Task<Creator> UpdateCreator(string cognitoId, Creator creator);
+        void AcceptTerms(string cognitoId);
     }
 }

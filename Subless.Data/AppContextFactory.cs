@@ -18,7 +18,7 @@ namespace Subless.Data
             var credsJson = Environment.GetEnvironmentVariable("dbCreds");
             if (string.IsNullOrWhiteSpace(credsJson))
             {
-                throw new Exception("dbCreds must be provided to generate migrations");
+                throw new ArgumentNullException("dbCreds must be provided to generate migrations");
             }
             var dbCreds = JsonConvert.DeserializeObject<DbCreds>(credsJson);
 

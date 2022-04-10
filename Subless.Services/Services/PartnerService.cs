@@ -166,6 +166,12 @@ namespace Subless.Services
         {
             return partnerRepository.GetPartnerUris().Select(x => x.ToString());
         }
+        public void AcceptTerms(string cognitoId)
+        {
+            var partner = partnerRepository.GetPartnerByCognitoId(cognitoId);
+            partner.AcceptedTerms = true;
+            partnerRepository.UpdatePartner(partner);
+        }
     }
 }
 
