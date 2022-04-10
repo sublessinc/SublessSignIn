@@ -44,19 +44,30 @@ namespace Subless.Data
             return Partners.FirstOrDefault(x => x.Admin == id);
         }
 
-        public Partner GetPartnerByCognitoId(string partnerClientId)
+        public Partner GetPartnerByAppClientId(string partnerClientId)
         {
             return Partners.FirstOrDefault(x => x.CognitoAppClientId == partnerClientId);
         }
 
         public Partner GetPartnerByUri(Uri uri)
         {
-            return Partners.FirstOrDefault(partner => partner.Site == uri);
+            return Partners.FirstOrDefault(partner => partner.Sites.Any(x=> x == uri));
         }
 
         public IEnumerable<Uri> GetPartnerUris()
         {
-            return Partners.Select(x => x.Site);
+            List<Uri> uris = new List<Uri>();
+            foreach (var partner in Partners)
+            {
+                if (partner.Sites != null)
+                {
+                    foreach (var uri in partner.Sites)
+                    {
+                        uris.Add(uri);
+                    }
+                }
+            }
+            return uris;
         }
 
 

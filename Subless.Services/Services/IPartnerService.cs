@@ -18,5 +18,6 @@ namespace Subless.Services
         IEnumerable<Partner> GetPartners();
         void UpdatePartner(Partner partner);
         Partner UpdatePartnerWritableFields(PartnerWriteModel partnerModel);
+        void AcceptTerms(string cognitoId);
     }
 }

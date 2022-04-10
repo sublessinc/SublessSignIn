@@ -20,7 +20,7 @@ namespace Subless.Data
         /// <returns></returns>
         public async Task<bool> CanAccessDatabase()
         {
-            var user = await Users.FirstOrDefaultAsync();
+            await Users.FirstOrDefaultAsync();
             return true;
         }
 
@@ -58,16 +58,14 @@ namespace Subless.Data
             SaveChanges();
         }
 
-
-
-
-
-
-
-
         public IEnumerable<Creator> GetCreatorsByCognitoId(string cognitoId)
         {
             return Users.Include(x => x.Creators).FirstOrDefault(x => x.CognitoId == cognitoId)?.Creators?.ToList();
+        }
+
+        public IEnumerable<Partner> GetPartnersByCognitoId(string cognitoId)
+        {
+            return Users.Include(x => x.Partners).FirstOrDefault(x => x.CognitoId == cognitoId)?.Partners?.ToList();
         }
 
         public void SetAdminKey(Guid? key)
