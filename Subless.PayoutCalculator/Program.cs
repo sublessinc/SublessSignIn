@@ -8,6 +8,7 @@ using Subless.PayoutCalculator;
 using Subless.Services;
 using Subless.Services.Services;
 using System;
+using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -23,6 +24,16 @@ namespace PayoutCalculator
             {
                 // initialize configuration
                 logger = scope.ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<Program>();
+                try
+                {
+                    string version = System.IO.File.ReadAllText(@"version.txt");
+                    logger.LogInformation("Version: " + version);
+                }
+                catch (Exception e)
+                {
+                    logger.LogCritical(e, "Unable to find the version.txt file for printing our version.");
+                }
+
                 var logging_env_var = System.Environment.GetEnvironmentVariable("Logging__LogLevel__Default");
                 logger.LogInformation($"Logging env var value is {logging_env_var}");
                 try
@@ -34,7 +45,7 @@ namespace PayoutCalculator
 
                     if (!(await healthCheck.IsHealthy()))
                     {
-                        throw new Exception("Could not start due to health check failure");
+                        throw new HealthCheckFailureException("Could not start due to health check failure");
                     }
                     logger.LogInformation("All dependencies responding, starting services");
                     RunCalculator(configuration.Value, host);
@@ -124,7 +135,7 @@ namespace PayoutCalculator
                 services.Configure<CalculatorConfiguration>(options =>
                 {
                     options.BucketName = Environment.GetEnvironmentVariable("BucketName") ?? throw new ArgumentNullException("BucketName");
-                    options.ExecutionsPerYear = int.Parse(Environment.GetEnvironmentVariable("ExecutionsPerYear") ?? throw new ArgumentNullException("ExecutionsPerYear"));
+                    options.ExecutionsPerYear = int.Parse(Environment.GetEnvironmentVariable("ExecutionsPerYear") ?? throw new ArgumentNullException("ExecutionsPerYear"), CultureInfo.InvariantCulture);
                     options.RunOnStart = bool.Parse(Environment.GetEnvironmentVariable("RunOnStart") ?? throw new ArgumentNullException("RunOnStart"));
                     options.CalcuationRangeEnd = Environment.GetEnvironmentVariable("CalcuationRangeEnd");
                     options.CalcuationRangeStart = Environment.GetEnvironmentVariable("CalcuationRangeStart");

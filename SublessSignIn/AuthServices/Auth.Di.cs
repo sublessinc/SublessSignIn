@@ -8,7 +8,7 @@ using System;
 
 namespace SublessSignIn.AuthServices
 {
-    public static class Auth
+    public static class AuthDi
     {
         public static IServiceCollection RegisterAuthDi(this IServiceCollection services, AuthSettings authSettings)
         {
