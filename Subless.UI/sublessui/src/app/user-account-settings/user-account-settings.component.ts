@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { Subscription } from 'rxjs';
 import { IStripeRedirect } from '../models/IStripeRedirect';
@@ -12,7 +12,7 @@ import { IDialogData, WarnDialogComponent } from '../warn-dialog/warn-dialog.com
   templateUrl: './user-account-settings.component.html',
   styleUrls: ['./user-account-settings.component.scss']
 })
-export class UserAccountSettingsComponent implements OnInit, OnDestroy {
+export class UserAccountSettingsComponent implements OnDestroy {
 
   private subs: Subscription[] = [];
 
@@ -22,8 +22,6 @@ export class UserAccountSettingsComponent implements OnInit, OnDestroy {
     public dialog: MatDialog
   ) { }
 
-  ngOnInit(): void {
-  }
   ngOnDestroy(): void {
     this.subs.forEach((item: Subscription) => { item.unsubscribe(); })
   }

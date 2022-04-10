@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Subless.Services.Services
 {
-    public class CognitoService : ICognitoService
+    public class CognitoService : ICognitoService, IDisposable
     {
         private readonly IOptions<DomainConfig> options;
 
@@ -41,6 +41,22 @@ namespace Subless.Services.Services
                 UserPoolId = PoolId
             });
             return user.UserAttributes.Single(x=>x.Name == "email").Value;
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                // Dispose managed resources.
+                _client.Dispose();
+            }
+            // Free native resources.
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
     }
 }
