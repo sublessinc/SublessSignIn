@@ -59,9 +59,12 @@ namespace Subless.Data
             List<Uri> uris = new List<Uri>();
             foreach (var partner in Partners)
             {
-                foreach (var uri in partner.Sites)
+                if (partner.Sites != null)
                 {
-                    uris.Add(uri);
+                    foreach (var uri in partner.Sites)
+                    {
+                        uris.Add(uri);
+                    }
                 }
             }
             return uris;
