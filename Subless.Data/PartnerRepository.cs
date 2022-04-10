@@ -44,7 +44,7 @@ namespace Subless.Data
             return Partners.FirstOrDefault(x => x.Admin == id);
         }
 
-        public Partner GetPartnerByCognitoId(string partnerClientId)
+        public Partner GetPartnerByAppClientId(string partnerClientId)
         {
             return Partners.FirstOrDefault(x => x.CognitoAppClientId == partnerClientId);
         }

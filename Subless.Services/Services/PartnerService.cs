@@ -66,7 +66,7 @@ namespace Subless.Services
 
         public Partner GetPartnerByCognitoClientId(string cognitoId)
         {
-            var partner = partnerRepository.GetPartnerByCognitoId(cognitoId);
+            var partner = partnerRepository.GetPartnerByAppClientId(cognitoId);
             return partner;
         }
 
@@ -168,9 +168,13 @@ namespace Subless.Services
         }
         public void AcceptTerms(string cognitoId)
         {
-            var partner = partnerRepository.GetPartnerByCognitoId(cognitoId);
-            partner.AcceptedTerms = true;
-            partnerRepository.UpdatePartner(partner);
+            var partners = _userRepository.GetPartnersByCognitoId(cognitoId);
+            if (partners != null && partners.Any())
+            {
+                var partner = partners.First();
+                partner.AcceptedTerms = true;
+                partnerRepository.UpdatePartner(partner);
+            }
         }
     }
 }
