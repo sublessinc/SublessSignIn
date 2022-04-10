@@ -130,5 +130,12 @@ namespace Subless.Services
                 _userRepo.UpdateUser(user);
             }
         }
+
+        public void AcceptTerms(string cognitoId)
+        {
+            var user = _userRepo.GetUserByCognitoId(cognitoId);
+            user.AcceptedTerms = true;
+            _userRepo.UpdateUser(user);
+        }
     }
 }

@@ -11,11 +11,13 @@ namespace Subless.Models
         public Guid Id { get; set; }
         public string CognitoAppClientId { get; set; }
         public string PayPalId { get; set; }
-        public Uri Site { get; set; }
+        public Uri[] Sites { get; set; }
         public string UserPattern { get; set; }
         public ICollection<Creator> Creators { get; set; }
         public Guid Admin { get; set; }
 #nullable enable
         public Uri? CreatorWebhook { get; set; }
+        public bool AcceptedTerms { get; set; }
+
     }
 }

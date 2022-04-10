@@ -37,7 +37,7 @@ workflows:
           region: AWS_DEFAULT_REGION
           repo: subless-pay
           skip-when-tags-exist: false
-          tag: $CIRCLE_BRANCH
+          tag: '${CIRCLE_BRANCH},${CIRCLE_SHA1}'
       - aws-ecs/deploy-service-update:
           name: deploy-site-to-dev
           filters:
@@ -48,7 +48,7 @@ workflows:
           family: $DEV_SITE_TASK
           service-name: $DEV_SITE_SERVICE
           force-new-deployment: true       
-          container-image-name-updates: "container=web,tag=dev"   
+          container-image-name-updates: "container=web,tag=${CIRCLE_SHA1}"   
           requires:
             - build-push-site-env-tag
       - aws-ecs/deploy-service-update:
@@ -60,7 +60,7 @@ workflows:
           cluster-name: $STAGE_CLUSTER_NAME
           family: $STAGE_SITE_TASK
           service-name: $STAGE_SITE_SERVICE
-          container-image-name-updates: "container=web,tag=stage"
+          container-image-name-updates: "container=web,tag=${CIRCLE_SHA1}"
           force-new-deployment: true
           requires:
             - build-push-site-env-tag
@@ -73,7 +73,7 @@ workflows:
           cluster-name: $PROD_CLUSTER_NAME
           family: $PROD_SITE_TASK
           service-name: $PROD_SITE_SERVICE
-          container-image-name-updates: "container=web,tag=prod"
+          container-image-name-updates: "container=web,tag=${CIRCLE_SHA1}"
           force-new-deployment: true
           requires:
             - build-push-site-env-tag
@@ -132,7 +132,6 @@ workflows:
             branches:
               only:
                 - stage
-                - /release-.*/
           cluster-name: $STAGE_CLUSTER_NAME
           family: $STAGE_CALC_TASK
           service-name: $STAGE_CALC_SERVICE
@@ -145,11 +144,11 @@ workflows:
           filters:
             branches:
               only:
-                - main
+                - prod
           cluster-name: $PROD_CLUSTER_NAME
           family: $PROD_CALC_TASK
           service-name: $PROD_CALC_SERVICE
-          container-image-name-updates: "container=prod_pay_ecs_calculator_calculatorContainer,tag=prod"
+          container-image-name-updates: "container=prod_pay2_ecs_calculator_calculatorContainer,tag=prod"
           force-new-deployment: true
           requires:
             - build-push-calc-env-tag

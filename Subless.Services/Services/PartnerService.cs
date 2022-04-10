@@ -66,7 +66,7 @@ namespace Subless.Services
 
         public Partner GetPartnerByCognitoClientId(string cognitoId)
         {
-            var partner = partnerRepository.GetPartnerByCognitoId(cognitoId);
+            var partner = partnerRepository.GetPartnerByAppClientId(cognitoId);
             return partner;
         }
 
@@ -103,7 +103,7 @@ namespace Subless.Services
 
         public Guid CreatePartner(Partner partner)
         {
-            partner.Site = new Uri(partner.Site.GetLeftPart(UriPartial.Authority));
+            partner.Sites = partner.Sites.Select(x=> new Uri(x.GetLeftPart(UriPartial.Authority))).ToArray();
             partnerRepository.AddPartner(partner);
             cache.InvalidateCache();
             return partner.Id;
@@ -165,6 +165,16 @@ namespace Subless.Services
         public IEnumerable<string> GetParterUris()
         {
             return partnerRepository.GetPartnerUris().Select(x => x.ToString());
+        }
+        public void AcceptTerms(string cognitoId)
+        {
+            var partners = _userRepository.GetPartnersByCognitoId(cognitoId);
+            if (partners != null && partners.Any())
+            {
+                var partner = partners.First();
+                partner.AcceptedTerms = true;
+                partnerRepository.UpdatePartner(partner);
+            }
         }
     }
 }

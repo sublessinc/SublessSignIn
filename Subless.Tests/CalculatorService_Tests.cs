@@ -647,14 +647,14 @@ namespace Subless.Tests
         private Mock<IPartnerService> PartnerServiceBuilder(string PayPalId = "TestPartner")
         {
             var service = new Mock<IPartnerService>();
-            service.Setup(x => x.GetPartner(It.IsAny<Guid>())).Returns(new Partner() { PayPalId = PayPalId, Site = new Uri("https://google.com") });
+            service.Setup(x => x.GetPartner(It.IsAny<Guid>())).Returns(new Partner() { PayPalId = PayPalId, Sites = new List<Uri> { new Uri("https://google.com") }.ToArray() });
             return service;
         }
 
         private Mock<IPartnerService> PartnerServiceCreatorMatcherBuilder(Dictionary<Guid, List<Guid>> partners)
         {
             var service = new Mock<IPartnerService>();
-            service.Setup(x => x.GetPartner(It.IsAny<Guid>())).Returns<Guid>(x => new Partner() { PayPalId = x.ToString(), Site = new Uri("https://google.com")});
+            service.Setup(x => x.GetPartner(It.IsAny<Guid>())).Returns<Guid>(x => new Partner() { PayPalId = x.ToString(), Sites = new List<Uri> { new Uri("https://google.com") }.ToArray() });
             return service;
         }
     }

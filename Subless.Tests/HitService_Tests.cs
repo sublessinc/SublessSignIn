@@ -5,6 +5,7 @@ using Subless.Data;
 using Subless.Models;
 using Subless.Services;
 using System;
+using System.Collections.Generic;
 using Xunit;
 
 namespace Subless.Tests
@@ -155,7 +156,7 @@ namespace Subless.Tests
             {
                 CognitoAppClientId = "CognitoClient",
                 PayPalId = "PayPalId",
-                Site = new Uri("http://www.partner.com"),
+                Sites = new List<Uri> { new Uri("https://partner.com") }.ToArray(),
                 UserPattern = "http://www.partner.com/profile/{creator};http://www.partner.com/pictures/{creator};http://www.partner.com/{creator}/stories"
             };
         }

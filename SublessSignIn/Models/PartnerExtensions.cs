@@ -9,7 +9,7 @@ namespace SublessSignIn.Models
             return new PartnerResponse
             {
                 PayPalId = partner.PayPalId,
-                Site = partner.Site,
+                Sites = partner.Sites,
                 UserPattern = partner.UserPattern,
                 CreatorWebhook = partner.CreatorWebhook?.ToString(),
                 Id = partner.Id
