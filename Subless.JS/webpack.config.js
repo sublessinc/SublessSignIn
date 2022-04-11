@@ -1,8 +1,14 @@
 // Generated using webpack-cli https://github.com/webpack/webpack-cli
 const Dotenv = require('dotenv-webpack');
-const path = require("path");
+const ESLintPlugin = require('eslint-webpack-plugin');
 
+const path = require("path");
 const isProduction = process.env.NODE_ENV != "local";
+
+const myEslintOptions = {
+  extensions: [`js`, `jsx`, `ts`],
+  exclude: [`node_modules`],
+};
 
 const config = {
   entry: "./src/subless.ts",
@@ -48,5 +54,7 @@ module.exports = () => {
   } else {
     config.mode = "development";
   }
+  config.plugins = [ new ESLintPlugin(myEslintOptions)]
+
   return config;
 };
