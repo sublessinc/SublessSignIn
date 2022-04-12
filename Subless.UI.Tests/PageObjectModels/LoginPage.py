@@ -41,7 +41,7 @@ class LoginPage(BasePage):
 
     def open(self):
         self.driver.get(f'https://{os.environ["environment"]}.subless.com')
-        time.sleep(1)
+        time.sleep(5)
         return self
 
     def click_sign_up(self):
@@ -67,6 +67,11 @@ class LoginPage(BasePage):
         self.password_textbox.send_keys(password)
         self.sign_in_button.click()
 
+        if 'The username or password you entered is invalid' in self.driver.find_element_by_tag_name('body').text:
+            raise Exception('Invalid user, could not login')
+        if 'User is not confirmed.' in self.driver.find_element_by_tag_name('body').text:
+            raise Exception('User is not confirmed, could not login')
+
         # wait for redirect
         WebDriverWait(self.driver, 10).until(lambda driver: 'login' not in self.driver.current_url)
 
@@ -89,4 +94,4 @@ class LoginLocators:
     sign_in_button_name = 'signInSubmitButton'
     forgot_pass_xpath = '/html/body/div[1]/div/div[1]/div[2]/div[2]/div[3]/div[2]/div/form/div[3]/a'
     signup_link_xpath = '/html/body/div[1]/div/div[2]/div[2]/div[2]/div[2]/div[2]/div/form/div[3]/p/a'
-    # signup_link_xpath = '/html/body/div[1]/div/div[1]/div[2]/div[2]/div[3]/div[2]/div/form/div[3]/p/a'
+    # signup_link_xpath = '/html/body/div[1]/div/div[2]/div[2]/div[2]/div[2]/div/div/form/div[3]/p/a'
