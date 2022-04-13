@@ -1,4 +1,5 @@
 import json
+import os
 
 import mailslurp_client
 import re

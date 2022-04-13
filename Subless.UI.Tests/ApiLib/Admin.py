@@ -9,7 +9,7 @@ def set_admin(user_id, cookie):
 
     payload = {}
     headers = {
-        'subless': f'{auth_token}'
+        'subless': f'{cookie}'
     }
 
     response = requests.request("POST", url, headers=headers, data=payload)
@@ -22,7 +22,7 @@ def get_user_capabilities(user_id, cookie):
 
     payload = {}
     headers = {
-        'subless': f'{auth_token}'
+        'subless': f'{cookie}'
     }
 
     response = requests.request("GET", url, headers=headers, data=payload)

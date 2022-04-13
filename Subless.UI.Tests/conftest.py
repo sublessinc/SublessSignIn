@@ -10,6 +10,7 @@ from EmailLib.MailSlurp import get_inbox_from_name
 from PageObjectModels.LoginPage import LoginPage
 from UsersLib.Users import get_user_id_and_cookie
 
+print(os.getcwd())
 
 def pytest_addoption(parser):
     parser.addoption("--password", action="store", help="override login password for all tests")
@@ -61,18 +62,31 @@ def user_data():
 #   but we're working with what we've got available
 #   returns new user, with browser at plan selection screen
 @pytest.fixture
-def subless_account(mailslurp_inbox, firefox_driver):
-    from ApiLib import User
+def subless_account(mailslurp_inbox, firefox_driver, ):
     from UsersLib.Users import create_user
 
     mailbox = get_inbox_from_name('BasicUser')
+    attempt_to_delete_user(firefox_driver, mailbox)
+
     # create
-    id, token = create_user(firefox_driver, mailbox)
+    id, cookie = create_user(firefox_driver, mailbox)
+    yield id, cookie
+
     # LoginPage(firefox_driver).logout()  # do we need to logout here??
-    yield id, token
 
-    User.delete(token)
+    # HACK: delete user
+    # I hate this.
+    attempt_to_delete_user(firefox_driver, mailbox)
 
+
+def attempt_to_delete_user(firefox_driver, mailbox):
+    from ApiLib import User
+    try:
+        LoginPage(firefox_driver).open().sign_in(mailbox.email_address, "SublessTestUser")
+        id, cookie = get_user_id_and_cookie(firefox_driver)
+        User.delete(cookie)
+    except:  # awful.
+        return
 
 # this is technically also a fixture!
 # in the cases where we need two distinct users

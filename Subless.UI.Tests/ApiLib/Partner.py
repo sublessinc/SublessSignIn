@@ -5,7 +5,7 @@ import json
 from Keys.Keys import Keys
 
 
-def register_partner(user_id, auth_token,
+def register_partner(user_id, cookie,
                      paypal_id='testPayoneer',
                      site='https://pythonclientdev.subless.com',
                      user_pattern='https://pythonclientdev.subless.com/profile/creator'):
@@ -20,7 +20,7 @@ def register_partner(user_id, auth_token,
     })
     headers = {
         'Content-Type': 'application/json',
-        'Authorization': f'Bearer {auth_token}'
+        'Cookie': f'subless={cookie}'
     }
 
     response = requests.request("POST", url, headers=headers, data=payload)

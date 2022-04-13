@@ -1,3 +1,5 @@
+import os
+
 from EmailLib import MailSlurp
 from PageObjectModels.LoginPage import LoginPage
 from EmailLib.MailSlurp import get_inbox_from_name
@@ -5,6 +7,7 @@ from PageObjectModels.PlanSelectionPage import PlanSelectionPage
 
 
 def test_first_time_flow(firefox_driver, subless_account, params):
+    print(os.getcwd())
     # GIVEN: I am on the Subless login page, as a completely new user
 
     # create
