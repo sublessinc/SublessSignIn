@@ -3,13 +3,16 @@ import os
 import requests
 
 
-def delete(auth_token):
+def delete(cookie):
     url = f'https://{os.environ["environment"]}.subless.com/api/User'
 
     payload = {}
     headers = {
-        'subless': f'{auth_token}'
+        'Cookie': f'subless={cookie}'
     }
+    print(url)
+    print(payload)
+    print(headers)
 
     response = requests.request("DELETE", url, headers=headers, data=payload)
 
