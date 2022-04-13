@@ -3,7 +3,7 @@ import time
 import os
 
 from EmailLib import MailSlurp
-from Fixtures.drivers import *
+#from Fixtures.drivers import *
 from PageObjectModels.LoginPage import LoginPage
 import logging
 
@@ -16,7 +16,8 @@ def test_new_un_pass_login(web_driver, params):
     login_page = LoginPage(web_driver).open()
 
     # WHEN: I enter my username and password and click 'sign in'
-    plan_selection_page = login_page.sign_in('sublesstestuser+unselected@gmail.com', params['password'])
+    plan_selection_page = login_page.sign_in(
+        'sublesstestuser+unselected@gmail.com', params['password'])
 
     # THEN: I should be taken to the plan selection page
     assert "Sublessui" in web_driver.title
@@ -62,7 +63,8 @@ def test_user_creation(web_driver, mailslurp_inbox, params):
 
     otp_page = sign_up_page.sign_up(mailslurp_inbox.email_address,
                                     'SublessTestUser')
-    plan_selection_page = otp_page.confirm_otp(MailSlurp.get_newest_otp(inbox_id=mailslurp_inbox.id))
+    plan_selection_page = otp_page.confirm_otp(
+        MailSlurp.get_newest_otp(inbox_id=mailslurp_inbox.id))
 
     # THEN: I should be taken to the plan selection page
     assert "Sublessui" in web_driver.title
