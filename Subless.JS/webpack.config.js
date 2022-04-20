@@ -5,11 +5,6 @@ const ESLintPlugin = require('eslint-webpack-plugin');
 const path = require("path");
 const isProduction = process.env.NODE_ENV != "local";
 
-const myEslintOptions = {
-  extensions: [`js`, `jsx`, `ts`],
-  exclude: [`node_modules`],
-};
-
 const config = {
   entry: "./src/subless.ts",
   experiments: {
@@ -25,6 +20,10 @@ const config = {
     new Dotenv({
       path: './environment/' + process.env.NODE_ENV + '.env',
       safe: true
+    }),
+    new ESLintPlugin({
+      extensions: [`js`, `jsx`, `ts`],
+      exclude: [`node_modules`],
     })
   ],
   module: {
@@ -54,7 +53,5 @@ module.exports = () => {
   } else {
     config.mode = "development";
   }
-  config.plugins = [ new ESLintPlugin(myEslintOptions)]
-
   return config;
 };

@@ -1,4 +1,3 @@
-
 const sublessHeaders = new Headers();
 sublessHeaders.set("Cache-Control", "no-store");
 const sublessUri = process.env.SUBLESS_URL;
@@ -61,8 +60,7 @@ export class Subless implements SublessInterface {
 
     /** Check whether a user who had loaded this page is logged into a Subless account. */
     async subless_LoggedIn(): Promise<boolean> { // eslint-disable-line camelcase
-        return await
-        fetch(sublessUri + "/api/user/loggedin", {
+        return await fetch(sublessUri + "/api/user/loggedin", {
             method: "Get",
             headers: {
                 "Content-Type": "application/json",
