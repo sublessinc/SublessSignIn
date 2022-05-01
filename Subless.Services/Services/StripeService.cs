@@ -107,7 +107,7 @@ namespace Subless.Services
                     },
                 },
             };
-
+            options.AddExtraParam("allow_promotion_codes", "true");
             var service = new SessionService(_client);
             var session = await service.CreateAsync(options);
             _userService.AddStripeSessionId(user.CognitoId, session.Id);

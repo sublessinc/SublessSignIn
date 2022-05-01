@@ -41,7 +41,7 @@ namespace Subless.Data
 
         public Guid AddUser(User user)
         {
-            user.CreateDate = DateTime.Now;
+            user.CreateDate = DateTime.UtcNow;
             Users.Add(user);
             SaveChanges();
             return user.Id;
