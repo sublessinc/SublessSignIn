@@ -345,7 +345,7 @@ namespace Subless.Services
                     InvoiceNow = false,
                     Prorate = false,
                 };
-                Subscription subscription = service.Cancel(sub.Id, cancelOptions);
+                Subscription _ = service.Cancel(sub.Id, cancelOptions);
             }
             return true;
         }
