@@ -123,11 +123,11 @@ namespace Subless.Services
 
         public Partner GetCachedPartnerByUri(Uri uri)
         {
-            if (cache.Cache.TryGetValue(uri.ToString(), out Partner partner))
+            if (cache.Cache.TryGetValue(uri.ToString(), out Partner _))
             {
                 return (Partner)cache.Cache.Get(uri.ToString());
             }
-            partner = partnerRepository.GetPartnerByUri(uri);
+            var partner = partnerRepository.GetPartnerByUri(uri);
             cache.Cache.Set(uri.ToString(), partner, DateTimeOffset.UtcNow.AddHours(1));
             return partner;
         }
