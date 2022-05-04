@@ -109,11 +109,11 @@ namespace Subless.Services.Services
             {
                 var sendRequest = new SendEmailRequest
                 {
-                    Source = to,
+                    Source = from,
                     Destination = new Destination
                     {
                         ToAddresses =
-                        new List<string> { from }
+                        new List<string> { to }
                     },
                     Message = new Message
                     {
