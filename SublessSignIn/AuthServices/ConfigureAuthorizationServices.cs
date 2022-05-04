@@ -3,13 +3,18 @@ using Duende.Bff.EntityFramework;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
+using Subless.Data;
 using Subless.Models;
+using System;
 using System.Linq;
+using static Subless.Data.DataDi;
 
 namespace SublessSignIn.AuthServices
 {
@@ -68,6 +73,20 @@ namespace SublessSignIn.AuthServices
 
                 });
             services.AddSingleton<IConfigureOptions<OpenIdConnectOptions>, OpenIdConnectOptionsHandler>();
+
+            //Add data protection to ensure both services can unencrypt response messages
+
+            var json = Environment.GetEnvironmentVariable("dbCreds");
+            var dbCreds = JsonConvert.DeserializeObject<DbCreds>(json);
+                        
+            // Add a DbContext to store your Database Keys
+            services.AddDbContext<KeyStorageContext>(options =>
+                options.UseNpgsql(
+                    dbCreds.GetDatabaseConnection()));
+
+            // using Microsoft.AspNetCore.DataProtection;
+            services.AddDataProtection()
+                .PersistKeysToDbContext<KeyStorageContext>();
 
             return services;
         }

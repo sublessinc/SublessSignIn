@@ -19,6 +19,7 @@ namespace Subless.Data
 
         public void AddPartner(Partner partner)
         {
+            partner.CreateDate = DateTime.UtcNow;
             Partners.Add(partner);
             SaveChanges();
         }
