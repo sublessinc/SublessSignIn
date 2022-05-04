@@ -18,6 +18,7 @@ namespace Subless.Models
 #nullable enable
         public Uri? CreatorWebhook { get; set; }
         public bool AcceptedTerms { get; set; }
+        public DateTimeOffset CreateDate { get; set; }
 
     }
 }

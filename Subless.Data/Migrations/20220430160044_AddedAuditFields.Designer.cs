@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Subless.Data;
@@ -11,9 +12,10 @@ using Subless.Data;
 namespace Subless.Data.Migrations
 {
     [DbContext(typeof(Repository))]
-    partial class UserRepositoryModelSnapshot : ModelSnapshot
+    [Migration("20220430160044_AddedAuditFields")]
+    partial class AddedAuditFields
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -286,26 +288,6 @@ namespace Subless.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("UserSessions");
-                });
-
-            modelBuilder.Entity("Subless.Models.UsageStat", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTimeOffset>("Date")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("UsageType")
-                        .HasColumnType("integer");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("UsageStats");
                 });
 
             modelBuilder.Entity("Subless.Models.User", b =>

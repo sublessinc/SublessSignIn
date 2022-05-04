@@ -107,7 +107,7 @@ namespace Subless.Services
                     },
                 },
             };
-
+            options.AddExtraParam("allow_promotion_codes", "true");
             var service = new SessionService(_client);
             var session = await service.CreateAsync(options);
             _userService.AddStripeSessionId(user.CognitoId, session.Id);
@@ -345,7 +345,7 @@ namespace Subless.Services
                     InvoiceNow = false,
                     Prorate = false,
                 };
-                Subscription subscription = service.Cancel(sub.Id, cancelOptions);
+                service.Cancel(sub.Id, cancelOptions);
             }
             return true;
         }
