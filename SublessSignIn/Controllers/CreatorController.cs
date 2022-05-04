@@ -22,13 +22,21 @@ namespace SublessSignIn.Controllers
         private readonly IUserService userService;
         private readonly IHitService hitService;
         private readonly IPaymentLogsService paymentLogsService;
+        private readonly IUsageService _usageService;
         private readonly ILogger _logger;
-        public CreatorController(ICreatorService creatorService, ILoggerFactory loggerFactory, IUserService userService, IHitService hitService, IPaymentLogsService paymentLogsService)
+        public CreatorController(
+            ICreatorService creatorService,
+            ILoggerFactory loggerFactory,
+            IUserService userService,
+            IHitService hitService,
+            IPaymentLogsService paymentLogsService,
+            IUsageService usageService)
         {
             _creatorService = creatorService ?? throw new ArgumentNullException(nameof(creatorService));
             this.userService = userService ?? throw new ArgumentNullException(nameof(userService));
             this.hitService = hitService ?? throw new ArgumentNullException(nameof(hitService));
             this.paymentLogsService = paymentLogsService ?? throw new ArgumentNullException(nameof(paymentLogsService));
+            _usageService = usageService ?? throw new ArgumentNullException(nameof(usageService));
             _logger = loggerFactory?.CreateLogger<PartnerController>() ?? throw new ArgumentNullException(nameof(loggerFactory));
         }
 
@@ -129,6 +137,10 @@ namespace SublessSignIn.Controllers
                 }
                 var hitsThisMonth = hitService.GetCreatorHitsByDate(paymentDate, DateTimeOffset.UtcNow, creator.Id);
                 var hitsLastMonth = hitService.GetCreatorHitsByDate(paymentDate.AddMonths(-1), paymentDate, creator.Id);
+                if (creator.UserId != null)
+                {
+                    _usageService.SaveUsage(UsageType.UserStats, (Guid)creator.UserId);
+                }
                 return Ok(CreatorStatsExtensions.GetHistoricalCreatorStats(hitsThisMonth, hitsLastMonth));
             }
             catch (UnauthorizedAccessException e)
