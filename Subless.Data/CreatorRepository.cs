@@ -49,6 +49,7 @@ namespace Subless.Data
 
         public void SaveCreator(Creator creator)
         {
+            creator.CreateDate = DateTime.UtcNow;
             Creators.Add(creator);
             SaveChanges();
         }
