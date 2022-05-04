@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Subless.Models;
 using Subless.Services;
 using Subless.Services.Extensions;
 using Subless.Services.Services;
@@ -25,6 +26,7 @@ namespace SublessSignIn.Controllers
         private readonly IPartnerService partnerService;
         private readonly IHitService hitService;
         private readonly IPaymentLogsService paymentLogsService;
+        private readonly IUsageService _usageService;
         private readonly ILogger _logger;
         public UserController(
             IStripeService stripeService,
@@ -33,7 +35,8 @@ namespace SublessSignIn.Controllers
             ICognitoService cognitoService,
             IPartnerService partnerService,
             IHitService hitService,
-            IPaymentLogsService paymentLogsService)
+            IPaymentLogsService paymentLogsService,
+            IUsageService usageService)
         {
             if (loggerFactory is null)
             {
@@ -46,6 +49,7 @@ namespace SublessSignIn.Controllers
             this.partnerService = partnerService ?? throw new ArgumentNullException(nameof(partnerService));
             this.hitService = hitService ?? throw new ArgumentNullException(nameof(hitService));
             this.paymentLogsService = paymentLogsService ?? throw new ArgumentNullException(nameof(paymentLogsService));
+            _usageService = usageService ?? throw new ArgumentNullException(nameof(usageService));
             _logger = loggerFactory?.CreateLogger<PartnerController>() ?? throw new ArgumentNullException(nameof(loggerFactory));
         }
 
@@ -87,6 +91,7 @@ namespace SublessSignIn.Controllers
             }
             var hitsThisMonth = hitService.GetHitsByDate(paymentDate, DateTimeOffset.UtcNow, user.Id);
             var hitsLastMonth = hitService.GetHitsByDate(paymentDate.AddMonths(-1), paymentDate, user.Id);
+            _usageService.SaveUsage(UsageType.UserStats, user.Id);
             return Ok(UserStatsExtensions.GetHistoricalUserStats(hitsThisMonth, hitsLastMonth));
         }
 

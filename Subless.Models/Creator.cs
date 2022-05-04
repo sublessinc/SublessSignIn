@@ -17,6 +17,7 @@ namespace Subless.Models
         public string PayPalId { get; set; }
         public string Email { get; set; }
         public bool AcceptedTerms { get; set; }
+        public DateTimeOffset CreateDate { get; set; }
 
     }
 }

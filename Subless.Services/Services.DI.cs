@@ -38,6 +38,7 @@ namespace Subless.Services
             services.AddTransient<IPaymentLogsService, PaymentLogsService>();
             services.AddTransient<ICognitoService, CognitoService>();
             services.AddTransient<ICacheService, CacheService>();
+            services.AddTransient<IUsageService, UsageService>();
             services.AddMemoryCache();
             services.AddHttpClient();
             return services;
