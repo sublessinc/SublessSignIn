@@ -94,6 +94,7 @@ namespace PayoutCalculator
                         calculator.CalculatePayments(lastExecution, DateTimeOffset.UtcNow);
                         logger.LogInformation("Calculation complete");
                     }
+                    lastExecution = logsService.GetLastPaymentDate();
                     if (lastExecution == DateTimeOffset.MinValue)
                     {
                         calculator.SaveFirstPayment();
