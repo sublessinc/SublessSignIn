@@ -115,7 +115,7 @@ namespace SublessSignIn
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "SublessSignIn v1"));
             }
-
+            app.UseMiddleware<ExceptionHandlingMiddleware>();
             app.UseForwardedHeaders();
             app.UseStaticFiles(new StaticFileOptions
             {
