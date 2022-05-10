@@ -233,6 +233,17 @@ namespace Subless.PayoutCalculator
             return payees;
         }
 
+        public void SaveFirstPayment()
+        {
+            _paymentLogsService.SaveLogs(new List<Payment> { new Payment
+            {
+                Payee = null,
+                Payer = null,
+                DateSent = DateTime.UtcNow,
+                Amount = 0
+            }});
+        }
+
         private List<Payment> SavePaymentDetails(IEnumerable<Payee> payees, Payer payer, DateTimeOffset endDate)
         {
             _logger.LogInformation($"Saving payment details for one patron and {0} payees", payees.Count());

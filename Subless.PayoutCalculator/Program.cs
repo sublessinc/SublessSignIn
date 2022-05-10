@@ -94,6 +94,10 @@ namespace PayoutCalculator
                         calculator.CalculatePayments(lastExecution, DateTimeOffset.UtcNow);
                         logger.LogInformation("Calculation complete");
                     }
+                    if (lastExecution == DateTimeOffset.MinValue)
+                    {
+                        calculator.SaveFirstPayment();
+                    }
                     Thread.Sleep(1000 * 60);
                 }
             }
@@ -136,7 +140,7 @@ namespace PayoutCalculator
                 {
                     options.BucketName = Environment.GetEnvironmentVariable("BucketName") ?? throw new ArgumentNullException("BucketName");
                     options.ExecutionsPerYear = int.Parse(Environment.GetEnvironmentVariable("ExecutionsPerYear") ?? throw new ArgumentNullException("ExecutionsPerYear"), CultureInfo.InvariantCulture);
-                    options.RunOnStart = bool.Parse(Environment.GetEnvironmentVariable("RunOnStart") ?? throw new ArgumentNullException("RunOnStart"));
+                    options.RunOnStart = bool.Parse(Environment.GetEnvironmentVariable("RunOnStart") ?? "false");
                     options.CalcuationRangeEnd = Environment.GetEnvironmentVariable("CalcuationRangeEnd");
                     options.CalcuationRangeStart = Environment.GetEnvironmentVariable("CalcuationRangeStart");
                     options.Domain = Environment.GetEnvironmentVariable("DOMAIN");

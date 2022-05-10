@@ -90,7 +90,7 @@ namespace SublessSignIn.Controllers
             }
             catch (CreatorAlreadyActiveException e)
             {
-                _logger.LogError(e, $"Creator attempted to activate twice {username}");
+                _logger.LogWarning(e, $"Creator attempted to activate twice {username}");
                 return BadRequest("This creator is already activated on subless");
             }
         }
