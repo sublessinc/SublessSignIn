@@ -120,7 +120,7 @@ namespace SublessSignIn.Controllers
         }
 
         [HttpGet("Analytics")]
-        public ActionResult<HistoricalStats<UserStats>> GetUserAnalytics()
+        public ActionResult<HistoricalStats<CreatorStats>> GetUserAnalytics()
         {
             var cognitoId = userService.GetUserClaim(HttpContext.User);
             if (cognitoId == null)
@@ -135,13 +135,17 @@ namespace SublessSignIn.Controllers
                 {
                     paymentDate = DateTimeOffset.UtcNow.AddMonths(-1);
                 }
-                var hitsThisMonth = hitService.GetCreatorHitsByDate(paymentDate, DateTimeOffset.UtcNow, creator.Id);
-                var hitsLastMonth = hitService.GetCreatorHitsByDate(paymentDate.AddMonths(-1), paymentDate, creator.Id);
+                var hitsThisMonth = hitService.GetCreatorStats(paymentDate, DateTimeOffset.UtcNow, creator.Id);
+                var hitsLastMonth = hitService.GetCreatorStats(paymentDate.AddMonths(-1), paymentDate, creator.Id);
                 if (creator.UserId != null)
                 {
                     _usageService.SaveUsage(UsageType.UserStats, (Guid)creator.UserId);
                 }
-                return Ok(CreatorStatsExtensions.GetHistoricalCreatorStats(hitsThisMonth, hitsLastMonth));
+                return Ok(new HistoricalStats<CreatorStats>
+                {
+                    LastMonth = hitsLastMonth,
+                    thisMonth = hitsThisMonth
+                });
             }
             catch (UnauthorizedAccessException e)
             {

@@ -256,10 +256,15 @@ namespace SublessSignIn.Controllers
                 {
                     paymentDate = DateTimeOffset.UtcNow.AddMonths(-1);
                 }
-                var hitsThisMonth = hitService.GetPartnerHitsByDate(paymentDate, DateTimeOffset.UtcNow, partner.Id);
-                var hitsLastMonth = hitService.GetPartnerHitsByDate(paymentDate.AddMonths(-1), paymentDate, partner.Id);
+                var hitsThisMonth = hitService.GetPartnerStats(paymentDate, DateTimeOffset.UtcNow, partner.Id);
+                var hitsLastMonth = hitService.GetPartnerStats(paymentDate.AddMonths(-1), paymentDate, partner.Id);
                 _usageService.SaveUsage(UsageType.PartnerStats, user.Id);
-                return Ok(PartnerStatsExtensions.GetHistoricalPartnerStats(hitsThisMonth, hitsLastMonth));
+                return Ok(new HistoricalStats<PartnerStats>()
+                {
+                    thisMonth = hitsThisMonth,
+                    LastMonth = hitsLastMonth
+                });
+                
             }
             catch (UnauthorizedAccessException e)
             {

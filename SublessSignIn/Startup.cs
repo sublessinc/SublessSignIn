@@ -55,6 +55,7 @@ namespace SublessSignIn
             services.AddTransient<IVersion, FileVersion>();
             services.AddBffServices(AuthSettings);
             services.RegisterAuthDi(AuthSettings);
+            services.AddMiniProfiler().AddEntityFramework();
 
             DataDi.RegisterDataDi(services);
 
