@@ -11,5 +11,8 @@ namespace Subless.Services
         IEnumerable<Hit> GetHitsByDate(DateTimeOffset startDate, DateTimeOffset endDate, Guid userId);
         void SaveHit(string userId, Uri uri);
         Hit TestHit(string userId, Uri uri);
+        UserStats GetUserStats(DateTimeOffset startDate, DateTimeOffset endDate, Guid userId);
+        CreatorStats GetCreatorStats(DateTimeOffset startDate, DateTimeOffset endDate, Guid creatorId);
+        PartnerStats GetPartnerStats(DateTimeOffset startDate, DateTimeOffset endDate, Guid partnerId);
     }
 }

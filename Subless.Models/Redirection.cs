@@ -1,6 +1,4 @@
-﻿using Subless.Models;
-
-namespace SublessSignIn.Models
+﻿namespace Subless.Models
 {
     public class Redirection
     {
