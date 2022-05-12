@@ -1,4 +1,4 @@
-﻿namespace SublessSignIn.Controllers
+﻿namespace Subless.Models
 {
     public class PartnerStats
     {

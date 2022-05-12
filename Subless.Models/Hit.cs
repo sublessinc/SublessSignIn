@@ -5,6 +5,9 @@ namespace Subless.Models
 {
     [Index(nameof(CognitoId), IsUnique = false)]
     [Index(nameof(TimeStamp))]
+    [Index(nameof(TimeStamp), nameof(CognitoId))]
+    [Index(nameof(TimeStamp), nameof(CreatorId))]
+    [Index(nameof(TimeStamp), nameof(PartnerId))]
     public class Hit
     {
         public Guid Id { get; set; }
