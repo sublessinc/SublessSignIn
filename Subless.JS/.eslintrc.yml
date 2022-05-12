@@ -12,5 +12,6 @@ plugins:
 rules: {
   max-len: ["error", { "code": 126 }],
   indent: ["error", 4],
-  quotes: ["error", "double"]
+  quotes: ["error", "double"],
+  space-before-function-paren: ["error", {"anonymous": "always", "named": "never", "asyncArrow": "always"}],
 }

@@ -27,6 +27,10 @@ namespace Subless.Services
                 options.Region = Environment.GetEnvironmentVariable("region") ?? throw new ArgumentNullException("region");
                 options.UserPool = Environment.GetEnvironmentVariable("userPoolId") ?? throw new ArgumentNullException("userPoolId");
             });
+            services.Configure<FeatureConfig>(options =>
+            {
+                options.HitPopupEnabled = bool.TryParse(Environment.GetEnvironmentVariable("HitPopupEnabled"), out bool popupEnabled) ? popupEnabled : false;
+            });
 
             services.AddTransient<IAdministrationService, AdministrationService>();
             services.AddTransient<IAuthService, AuthService>();
