@@ -65,7 +65,7 @@ namespace PayoutCalculator
                 logger.LogError("EXECUTING CALUCLATOR ON START! THIS IS A TESTING FEATURE AND SHOULD NOT EXECUTE IN PRODUCTION.");
                 CalculateAllPaymentsSinceLastRunAndStop(host);
             }
-            else if (DateTime.TryParse(configuration.CalcuationRangeEnd, out DateTime end) && DateTime.TryParse(configuration.CalcuationRangeStart, out DateTime start))
+            else if (DateTimeOffset.TryParse(configuration.CalcuationRangeEnd, out DateTimeOffset end) && DateTimeOffset.TryParse(configuration.CalcuationRangeStart, out DateTimeOffset start))
             {
                 logger.LogError("EXECUTING CALUCLATOR OVER PRE-SET-RANGE! THIS IS A TESTING FEATURE AND SHOULD NOT EXECUTE IN PRODUCTION");
                 RunOverSpecifedRange(host, start, end);
@@ -118,7 +118,7 @@ namespace PayoutCalculator
             }
         }
 
-        private static void RunOverSpecifedRange(IHost host, DateTime start, DateTime end)
+        private static void RunOverSpecifedRange(IHost host, DateTimeOffset start, DateTimeOffset end)
         {
             using (var scope = host.Services.CreateScope())
             {
