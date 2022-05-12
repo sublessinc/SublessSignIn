@@ -89,10 +89,12 @@ namespace SublessSignIn.Controllers
             {
                 paymentDate = DateTimeOffset.UtcNow.AddMonths(-1);
             }
-            var hitsThisMonth = hitService.GetHitsByDate(paymentDate, DateTimeOffset.UtcNow, user.Id);
-            var hitsLastMonth = hitService.GetHitsByDate(paymentDate.AddMonths(-1), paymentDate, user.Id);
             _usageService.SaveUsage(UsageType.UserStats, user.Id);
-            return Ok(UserStatsExtensions.GetHistoricalUserStats(hitsThisMonth, hitsLastMonth));
+            return Ok(new HistoricalStats<UserStats>
+            {
+                LastMonth = hitService.GetUserStats(paymentDate.AddMonths(-1), paymentDate, user.Id),
+                thisMonth = hitService.GetUserStats(paymentDate, DateTimeOffset.UtcNow, user.Id)
+            });
         }
 
         [HttpGet("loggedIn")]

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using StackExchange.Profiling;
 using Subless.Data;
 using Subless.Models;
 using System;
@@ -83,9 +84,16 @@ namespace Subless.Services
         {
             var user = _userService.GetUser(userId);
             _logger.LogDebug($"Getting hits for range {startDate} to {endDate}");
-            var hits = hitRepository.GetValidHitsByDate(startDate, endDate, user.CognitoId);
+            var hits = hitRepository.GetValidHitsByDate(startDate, endDate, user.CognitoId).ToList();
             var creators = _creatorService.FilterInactiveCreators( hits.Select(x => x.CreatorId));
             return hits.Where(x => creators.Contains(x.CreatorId));
+        }
+
+        public UserStats GetUserStats(DateTimeOffset startDate, DateTimeOffset endDate, Guid userId)
+        {
+            var user = _userService.GetUser(userId);
+            _logger.LogDebug($"Getting hits for range {startDate} to {endDate}");
+            return hitRepository.GetUserStats(startDate, endDate, user.CognitoId);
         }
 
         public IEnumerable<Hit> GetCreatorHitsByDate(
@@ -93,6 +101,19 @@ namespace Subless.Services
         {
             _logger.LogDebug($"Getting hits for range {startDate} to {endDate}");
             return hitRepository.GetCreatorHitsByDate(startDate, endDate, creatorId);
+        }
+
+        public CreatorStats GetCreatorStats(DateTimeOffset startDate, DateTimeOffset endDate, Guid creatorId)
+        {
+            _logger.LogDebug($"Getting hits for range {startDate} to {endDate}");
+            return hitRepository.GetCreatorStats(startDate, endDate, creatorId);
+        }
+
+        public PartnerStats GetPartnerStats(
+    DateTimeOffset startDate, DateTimeOffset endDate, Guid partnerId)
+        {
+            _logger.LogDebug($"Getting hits for range {startDate} to {endDate}");
+            return hitRepository.GetPartnerStats(startDate, endDate, partnerId);
         }
 
         public IEnumerable<Hit> GetPartnerHitsByDate(

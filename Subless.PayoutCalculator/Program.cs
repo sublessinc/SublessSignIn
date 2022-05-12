@@ -65,7 +65,7 @@ namespace PayoutCalculator
                 logger.LogError("EXECUTING CALUCLATOR ON START! THIS IS A TESTING FEATURE AND SHOULD NOT EXECUTE IN PRODUCTION.");
                 CalculateAllPaymentsSinceLastRunAndStop(host);
             }
-            else if (DateTime.TryParse(configuration.CalcuationRangeEnd, out DateTime end) && DateTime.TryParse(configuration.CalcuationRangeStart, out DateTime start))
+            else if (DateTimeOffset.TryParse(configuration.CalcuationRangeEnd, out DateTimeOffset end) && DateTimeOffset.TryParse(configuration.CalcuationRangeStart, out DateTimeOffset start))
             {
                 logger.LogError("EXECUTING CALUCLATOR OVER PRE-SET-RANGE! THIS IS A TESTING FEATURE AND SHOULD NOT EXECUTE IN PRODUCTION");
                 RunOverSpecifedRange(host, start, end);
@@ -94,6 +94,11 @@ namespace PayoutCalculator
                         calculator.CalculatePayments(lastExecution, DateTimeOffset.UtcNow);
                         logger.LogInformation("Calculation complete");
                     }
+                    lastExecution = logsService.GetLastPaymentDate();
+                    if (lastExecution == DateTimeOffset.MinValue)
+                    {
+                        calculator.SaveFirstPayment();
+                    }
                     Thread.Sleep(1000 * 60);
                 }
             }
@@ -113,7 +118,7 @@ namespace PayoutCalculator
             }
         }
 
-        private static void RunOverSpecifedRange(IHost host, DateTime start, DateTime end)
+        private static void RunOverSpecifedRange(IHost host, DateTimeOffset start, DateTimeOffset end)
         {
             using (var scope = host.Services.CreateScope())
             {
@@ -136,7 +141,7 @@ namespace PayoutCalculator
                 {
                     options.BucketName = Environment.GetEnvironmentVariable("BucketName") ?? throw new ArgumentNullException("BucketName");
                     options.ExecutionsPerYear = int.Parse(Environment.GetEnvironmentVariable("ExecutionsPerYear") ?? throw new ArgumentNullException("ExecutionsPerYear"), CultureInfo.InvariantCulture);
-                    options.RunOnStart = bool.Parse(Environment.GetEnvironmentVariable("RunOnStart") ?? throw new ArgumentNullException("RunOnStart"));
+                    options.RunOnStart = bool.Parse(Environment.GetEnvironmentVariable("RunOnStart") ?? "false");
                     options.CalcuationRangeEnd = Environment.GetEnvironmentVariable("CalcuationRangeEnd");
                     options.CalcuationRangeStart = Environment.GetEnvironmentVariable("CalcuationRangeStart");
                     options.Domain = Environment.GetEnvironmentVariable("DOMAIN");

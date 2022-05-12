@@ -21,6 +21,7 @@ export class RegisterPaymentComponent implements OnInit, OnDestroy {
   private settings!: ICheckoutSettings;
   public backgroundClass: string = "lightBackground";
   public priceChosen: string | null = null;
+  public currentPlan: string | null = null;
   private subs: Subscription[] = [];
 
   constructor(
@@ -39,6 +40,7 @@ export class RegisterPaymentComponent implements OnInit, OnDestroy {
       next: (plan: number | null) => {
         if (plan != null) {
           this.priceChosen = plan.toString();
+          this.currentPlan = plan.toString();
           this.changeDetector.detectChanges();
         }
       }

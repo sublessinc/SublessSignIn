@@ -119,7 +119,7 @@ namespace Subless.Services
                         MonthStartDay = paymentMonth,
                     });
                 }
-                paymentStats[paymentMonth].DollarsPaid += (int)payment.Amount;
+                paymentStats[paymentMonth].DollarsPaid += (int)(payment.Amount/100);
                 paymentStats[paymentMonth].Payers += 1;
             }
             return paymentStats.Values.OrderBy(x => x.MonthStartDay);
