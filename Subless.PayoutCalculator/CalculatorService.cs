@@ -70,6 +70,7 @@ namespace Subless.PayoutCalculator
                 // get who they visited
                 var hits = RetrieveUsersMonthlyHits(payer.UserId, startDate, endDate);
                 // filter out incomplete creators
+                _logger.LogInformation("We have {0} total hits of any kind from this user", hits.Count());
                 hits = FilterInvalidCreators(hits);
                 var user = userService.GetUser(payer.UserId);
                 if (!hits.Any())
@@ -152,7 +153,7 @@ namespace Subless.PayoutCalculator
 
         private IEnumerable<Hit> RetrieveUsersMonthlyHits(Guid userId, DateTimeOffset startDate, DateTimeOffset endDate)
         {
-            return _hitService.GetHitsByDate(startDate, endDate, userId);
+            return _hitService.GetHitsByDate(startDate, endDate, userId).ToList();
         }
 
         private Dictionary<Guid, int> GetVisitsPerCreator(IEnumerable<Hit> hits)
