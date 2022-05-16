@@ -6,6 +6,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Subless.Data;
 
+#nullable disable
+
 namespace Subless.Data.Migrations
 {
     [DbContext(typeof(Repository))]
@@ -15,15 +17,19 @@ namespace Subless.Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("Relational:MaxIdentifierLength", 63)
-                .HasAnnotation("ProductVersion", "5.0.11")
-                .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+                .HasAnnotation("ProductVersion", "6.0.3")
+                .HasAnnotation("Relational:MaxIdentifierLength", 63);
+
+            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("Subless.Models.Creator", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
+
+                    b.Property<bool>("AcceptedTerms")
+                        .HasColumnType("boolean");
 
                     b.Property<Guid?>("ActivationCode")
                         .HasColumnType("uuid");
@@ -33,6 +39,9 @@ namespace Subless.Data.Migrations
 
                     b.Property<bool>("Active")
                         .HasColumnType("boolean");
+
+                    b.Property<DateTimeOffset>("CreateDate")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Email")
                         .HasColumnType("text");
@@ -95,6 +104,12 @@ namespace Subless.Data.Migrations
 
                     b.HasIndex("UserId");
 
+                    b.HasIndex("TimeStamp", "CognitoId");
+
+                    b.HasIndex("TimeStamp", "CreatorId");
+
+                    b.HasIndex("TimeStamp", "PartnerId");
+
                     b.ToTable("Hits");
                 });
 
@@ -104,11 +119,17 @@ namespace Subless.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<bool>("AcceptedTerms")
+                        .HasColumnType("boolean");
+
                     b.Property<Guid>("Admin")
                         .HasColumnType("uuid");
 
                     b.Property<string>("CognitoAppClientId")
                         .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("CreateDate")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("CreatorWebhook")
                         .HasColumnType("text");
@@ -116,8 +137,8 @@ namespace Subless.Data.Migrations
                     b.Property<string>("PayPalId")
                         .HasColumnType("text");
 
-                    b.Property<string>("Site")
-                        .HasColumnType("text");
+                    b.Property<string[]>("Sites")
+                        .HasColumnType("text[]");
 
                     b.Property<string>("UserPattern")
                         .HasColumnType("text");
@@ -240,23 +261,24 @@ namespace Subless.Data.Migrations
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<string>("ApplicationName")
                         .HasColumnType("text");
 
                     b.Property<DateTime>("Created")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime?>("Expires")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Key")
                         .HasColumnType("text");
 
                     b.Property<DateTime>("Renewed")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("SessionId")
                         .HasColumnType("text");
@@ -272,14 +294,40 @@ namespace Subless.Data.Migrations
                     b.ToTable("UserSessions");
                 });
 
+            modelBuilder.Entity("Subless.Models.UsageStat", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("Date")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("UsageType")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("UsageStats");
+                });
+
             modelBuilder.Entity("Subless.Models.User", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<bool>("AcceptedTerms")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("CognitoId")
                         .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("CreateDate")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<bool>("IsAdmin")
                         .HasColumnType("boolean");

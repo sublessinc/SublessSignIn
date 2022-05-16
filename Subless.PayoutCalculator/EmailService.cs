@@ -74,18 +74,18 @@ namespace Subless.Services.Services
 
         private string GenerateEmailBodyForUser(string template, List<Payment> payments)
         {
-            var month = $"{payments.First().DateSent.ToString("MMMM")}, {payments.First().DateSent.ToString("yyyy")}";
+            var month = $"{payments.First().DateSent.ToString("MMMM", CultureInfo.InvariantCulture)}, {payments.First().DateSent.ToString("yyyy", CultureInfo.InvariantCulture)}";
             var fees = payments.First().Payer.Fees/100;
-            var userEmail = template.Replace(MonthKey, month);
-            userEmail = userEmail.Replace(SiteLinkKey, authSettings.Domain);
-            userEmail = userEmail.Replace(LogoUrl, authSettings.Domain+ "/dist/assets/SublessLogo.png");
-            userEmail = userEmail.Replace(PaymentsKey, String.Join("\n", GetPaymentItems(payments)));
+            var userEmail = template.Replace(MonthKey, month, StringComparison.Ordinal);
+            userEmail = userEmail.Replace(SiteLinkKey, authSettings.Domain, StringComparison.Ordinal);
+            userEmail = userEmail.Replace(LogoUrl, authSettings.Domain+ "/dist/assets/SublessLogo.png", StringComparison.Ordinal);
+            userEmail = userEmail.Replace(PaymentsKey, String.Join("\n", GetPaymentItems(payments)), StringComparison.Ordinal);
             var specifier = "C";
             var culture = CultureInfo.CreateSpecificCulture("en-US");
             var total = payments.Sum(x => x.Amount / 100);
             total = total + fees;
-            userEmail = userEmail.Replace(TotalPaymentKey, total.ToString(specifier, culture));
-            userEmail = userEmail.Replace(StripeFeeKey, fees.ToString(specifier, culture));
+            userEmail = userEmail.Replace(TotalPaymentKey, total.ToString(specifier, culture), StringComparison.Ordinal);
+            userEmail = userEmail.Replace(StripeFeeKey, fees.ToString(specifier, culture), StringComparison.Ordinal);
             return userEmail;
         }
 
@@ -94,10 +94,10 @@ namespace Subless.Services.Services
             List<string> formattedPayments = new List<string>();
             foreach (Payment payment in payments)
             {
-                var individualPayment = IndividualPaymentTemplate.Replace(CreatorNameKey, payment.Payee.Name);
+                var individualPayment = IndividualPaymentTemplate.Replace(CreatorNameKey, payment.Payee.Name, StringComparison.Ordinal);
                 var specifier = "C";
                 var culture = CultureInfo.CreateSpecificCulture("en-US");
-                individualPayment = individualPayment.Replace(CreatorPaymentKey, (payment.Amount/100).ToString(specifier, culture));
+                individualPayment = individualPayment.Replace(CreatorPaymentKey, (payment.Amount/100).ToString(specifier, culture), StringComparison.Ordinal);
                 formattedPayments.Add(individualPayment);
             }
             return formattedPayments;
@@ -109,11 +109,11 @@ namespace Subless.Services.Services
             {
                 var sendRequest = new SendEmailRequest
                 {
-                    Source = to,
+                    Source = from,
                     Destination = new Destination
                     {
                         ToAddresses =
-                        new List<string> { from }
+                        new List<string> { to }
                     },
                     Message = new Message
                     {

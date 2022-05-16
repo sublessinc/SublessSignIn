@@ -1,4 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using StackExchange.Profiling;
 using Subless.Data;
 using Subless.Models;
 using System;
@@ -15,6 +17,7 @@ namespace Subless.Services
         private readonly IHitRepository hitRepository;
         private readonly ICreatorService _creatorService;
         private readonly IPartnerService _partnerService;
+        private readonly FeatureConfig _featureConfig;
         private readonly ILogger _logger;
 
         public HitService(
@@ -23,6 +26,7 @@ namespace Subless.Services
             IHitRepository hitRepository,
             ICreatorService creatorService,
             IPartnerService partnerService,
+            IOptions<FeatureConfig> featureConfig,
             ILoggerFactory loggerFactory
             )
         {
@@ -31,17 +35,18 @@ namespace Subless.Services
             this.hitRepository = hitRepository ?? throw new ArgumentNullException(nameof(hitRepository));
             _creatorService = creatorService ?? throw new ArgumentNullException(nameof(creatorService));
             _partnerService = partnerService ?? throw new ArgumentNullException(nameof(partnerService));
+            _featureConfig = featureConfig?.Value ?? throw new ArgumentNullException(nameof(featureConfig));
             _logger = loggerFactory?.CreateLogger<HitService>() ?? throw new ArgumentNullException(nameof(loggerFactory));
         }
 
-        public void SaveHit(string userId, Uri uri)
+        public bool SaveHit(string userId, Uri uri)
         {
             _logger.LogDebug("SaveHit hit.");
             var partner = _partnerService.GetCachedPartnerByUri(new Uri(uri.GetLeftPart(UriPartial.Authority)));
             if (partner == null)
             {
                 _logger.LogError($"Unknown partner recieved hit from URL {uri}");
-                return;
+                return false;
             }
             var creatorId = GetCreatorFromPartnerAndUri(uri, partner);
             var hit = new Hit()
@@ -54,6 +59,11 @@ namespace Subless.Services
             };
             _logger.LogDebug($"Saving a hit for creator {creatorId} at time {hit.TimeStamp}.");
             hitRepository.SaveHit(hit);
+            if (_featureConfig.HitPopupEnabled)
+            {
+                return creatorId != null;
+            }
+            return false;
         }
 
         public Hit TestHit(string userId, Uri uri)
@@ -83,9 +93,16 @@ namespace Subless.Services
         {
             var user = _userService.GetUser(userId);
             _logger.LogDebug($"Getting hits for range {startDate} to {endDate}");
-            var hits = hitRepository.GetValidHitsByDate(startDate, endDate, user.CognitoId);
+            var hits = hitRepository.GetValidHitsByDate(startDate, endDate, user.CognitoId).ToList();
             var creators = _creatorService.FilterInactiveCreators( hits.Select(x => x.CreatorId));
             return hits.Where(x => creators.Contains(x.CreatorId));
+        }
+
+        public UserStats GetUserStats(DateTimeOffset startDate, DateTimeOffset endDate, Guid userId)
+        {
+            var user = _userService.GetUser(userId);
+            _logger.LogDebug($"Getting hits for range {startDate} to {endDate}");
+            return hitRepository.GetUserStats(startDate, endDate, user.CognitoId);
         }
 
         public IEnumerable<Hit> GetCreatorHitsByDate(
@@ -93,6 +110,19 @@ namespace Subless.Services
         {
             _logger.LogDebug($"Getting hits for range {startDate} to {endDate}");
             return hitRepository.GetCreatorHitsByDate(startDate, endDate, creatorId);
+        }
+
+        public CreatorStats GetCreatorStats(DateTimeOffset startDate, DateTimeOffset endDate, Guid creatorId)
+        {
+            _logger.LogDebug($"Getting hits for range {startDate} to {endDate}");
+            return hitRepository.GetCreatorStats(startDate, endDate, creatorId);
+        }
+
+        public PartnerStats GetPartnerStats(
+    DateTimeOffset startDate, DateTimeOffset endDate, Guid partnerId)
+        {
+            _logger.LogDebug($"Getting hits for range {startDate} to {endDate}");
+            return hitRepository.GetPartnerStats(startDate, endDate, partnerId);
         }
 
         public IEnumerable<Hit> GetPartnerHitsByDate(
@@ -112,17 +142,17 @@ namespace Subless.Services
             ///www.partner.com/creator/pictures; www.partner.com/profile/creator; www.partner.com/stories/creator/
             ///www.partner.com\/profile\/?.*\.php
             var patterns = partner.UserPattern.Split(";");
-            _logger.LogDebug($"Parter {partner.Site} has {patterns.Count()} patterns to try.");
+            _logger.LogDebug($"Parter {partner.Sites} has {patterns.Length} patterns to try.");
 
             // iterate through the possible patterns
             foreach (var pattern in patterns)
             {
                 var patternUri = new Uri(pattern);
-                if (uri.Segments.Count() < patternUri.Segments.Count())
+                if (uri.Segments.Length < patternUri.Segments.Length)
                 {
                     continue;
                 }
-                var regexPattern = "(?:" + pattern.Replace(creatorPlaceholder, ")([^/]*)(?:") + ")";
+                var regexPattern = "(?:" + pattern.Replace(creatorPlaceholder, ")([^/]*)(?:", System.StringComparison.Ordinal) + ")";
                 var matches = Regex.Matches(uri.ToString(), regexPattern);
                 if (!matches.Any())
                 {
@@ -133,7 +163,9 @@ namespace Subless.Services
                     _logger.LogDebug($"Matched the uri {uri} using the pattern {pattern}");
                     foreach (Group group in match.Groups)
                     {
-                        if (group.Value != uri.ToString() && !string.IsNullOrWhiteSpace(group.Value) && !PartnerService.InvalidUsernameCharacters.Any(x => group.Value.Contains(x)))
+                        if (group.Value != uri.ToString()
+                            && !string.IsNullOrWhiteSpace(group.Value)
+                            && !PartnerService.InvalidUsernameCharacters.Any(x => group.Value.Contains(x, StringComparison.Ordinal)))
                         {
                             return _creatorService.GetCachedCreatorFromPartnerAndUsername(group.Value, partner.Id)?.Id;
                         }

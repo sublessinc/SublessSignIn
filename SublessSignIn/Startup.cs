@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
@@ -55,6 +55,7 @@ namespace SublessSignIn
             services.AddTransient<IVersion, FileVersion>();
             services.AddBffServices(AuthSettings);
             services.RegisterAuthDi(AuthSettings);
+            services.AddMiniProfiler().AddEntityFramework();
 
             DataDi.RegisterDataDi(services);
 
@@ -89,7 +90,7 @@ namespace SublessSignIn
                          Id = "Bearer"
                        }
                       },
-                      new string[] { }
+                      Array.Empty<string>()
                     }
                   });
             });
@@ -115,7 +116,7 @@ namespace SublessSignIn
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "SublessSignIn v1"));
             }
-
+            app.UseMiddleware<ExceptionHandlingMiddleware>();
             app.UseForwardedHeaders();
             app.UseStaticFiles(new StaticFileOptions
             {

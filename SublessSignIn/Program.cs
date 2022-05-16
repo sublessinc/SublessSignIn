@@ -1,4 +1,4 @@
-using Duende.Bff.EntityFramework;
+﻿using Duende.Bff.EntityFramework;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -31,6 +31,12 @@ namespace SublessSignIn
                     context.Database.Migrate();
                     context.SaveChanges();
                     context.LogDbStats();
+                }
+                using (var context = services.GetService<KeyStorageContext>())
+                {
+                    Log.Logger.Information("Running data protection migrations");
+                    context.Database.Migrate();
+                    context.SaveChanges();
                 }
                 var adminService = services.GetService<IAdministrationService>();
                 adminService.OutputAdminKeyIfNoAdmins();

@@ -1,6 +1,5 @@
 ﻿using Subless.Data;
 using Subless.Models;
-using SublessSignIn.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,10 +29,19 @@ namespace Subless.Services.Services
             {
                 user = userService.CreateUserByCognitoId(cognitoId);
             }
+
             if (activationCode != null && Guid.TryParse(activationCode, out Guid code) && (user.Creators == null || !user.Creators.Any() || user.Creators.Any(x => !x.Active)))
             {
                 await creatorService.ActivateCreator(user.Id, code, email);
                 user = userService.GetUserWithRelationships(user.Id);
+            }
+
+            if (user.Creators != null && user.Creators.Any(x => x.AcceptedTerms == false))
+            {
+                return new Redirection()
+                {
+                    RedirectionPath = RedirectionPath.CreatorTerms
+                };
             }
 
             if ((user.Creators != null && user.Creators.Any(x => string.IsNullOrWhiteSpace(x.PayPalId))))
@@ -43,6 +51,7 @@ namespace Subless.Services.Services
                     RedirectionPath = RedirectionPath.CreatorWithoutPayment
                 };
             }
+
             if (user.Creators != null && user.Creators.Any())
             {
                 return new Redirection()
@@ -50,7 +59,20 @@ namespace Subless.Services.Services
                     RedirectionPath = RedirectionPath.ActivatedCreator
                 };
             }
-
+            if (user.Partners != null && user.Partners.Any(x => x.AcceptedTerms == false))
+            {
+                return new Redirection()
+                {
+                    RedirectionPath = RedirectionPath.PartnerTerms
+                };
+            }
+            if (!user.AcceptedTerms)
+            {
+                return new Redirection()
+                {
+                    RedirectionPath = RedirectionPath.Terms
+                };
+            }
             if (!stripeService.CustomerHasPaid(cognitoId))
             {
                 return new Redirection()

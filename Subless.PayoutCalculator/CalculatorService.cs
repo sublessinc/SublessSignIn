@@ -70,6 +70,7 @@ namespace Subless.PayoutCalculator
                 // get who they visited
                 var hits = RetrieveUsersMonthlyHits(payer.UserId, startDate, endDate);
                 // filter out incomplete creators
+                _logger.LogInformation("We have {0} total hits of any kind from this user", hits.Count());
                 hits = FilterInvalidCreators(hits);
                 var user = userService.GetUser(payer.UserId);
                 if (!hits.Any())
@@ -83,7 +84,7 @@ namespace Subless.PayoutCalculator
                 var partnerVisits = GetVisitsPerPartner(hits);
                 // fraction each creator by the percentage of total visits
                 // multiply payment by that fraction
-                _logger.LogInformation($"Found {0} creators visited and {1} partners visited for a payer.", creatorVisits.Count(), partnerVisits.Count());
+                _logger.LogInformation($"Found {0} creators visited and {1} partners visited for a payer.", creatorVisits.Count, partnerVisits.Count);
                 payees.AddRange(GetCreatorPayees(payer.Payment, creatorVisits, hits.Count(), PartnerFraction, SublessFraction));
                 payees.AddRange(GetPartnerPayees(payer.Payment, creatorVisits, hits.Count(), PartnerFraction, SublessFraction));
                 // set aside 2% for us
@@ -92,7 +93,7 @@ namespace Subless.PayoutCalculator
                 var totalPayments = Math.Round(payees.Sum(payee => payee.Payment), CurrencyPrecision, MidpointRounding.ToZero);
                 if (totalPayments > payer.Payment)
                 {
-                    throw new Exception($"The math did not add up for payer:{payer.UserId}");
+                    throw new ArithmeticException($"The math did not add up for payer:{payer.UserId}");
                 }
 
                 // record each outgoing payment to master list
@@ -152,7 +153,7 @@ namespace Subless.PayoutCalculator
 
         private IEnumerable<Hit> RetrieveUsersMonthlyHits(Guid userId, DateTimeOffset startDate, DateTimeOffset endDate)
         {
-            return _hitService.GetHitsByDate(startDate, endDate, userId);
+            return _hitService.GetHitsByDate(startDate, endDate, userId).ToList();
         }
 
         private Dictionary<Guid, int> GetVisitsPerCreator(IEnumerable<Hit> hits)
@@ -199,7 +200,7 @@ namespace Subless.PayoutCalculator
                 });
             }
 
-            _logger.LogInformation($"For a patron who visited {0} creators, we've found {1} creator payees.", creatorHits.Count(), payees.Count());
+            _logger.LogInformation($"For a patron who visited {0} creators, we've found {1} creator payees.", creatorHits.Count, payees.Count);
             return payees;
         }
 
@@ -221,7 +222,7 @@ namespace Subless.PayoutCalculator
                 {
                     var payee = new Payee()
                     {
-                        Name = partner.Site.Host,
+                        Name = partner.Sites.First().Host,
                         PayPalId = partner.PayPalId,
                         Payment = partnerPayment
                     };
@@ -229,8 +230,19 @@ namespace Subless.PayoutCalculator
                 }
             }
 
-            _logger.LogInformation($"For a patron who visited {0} partners, we've found {1} partner payees.", creatorHits.Count(), payees.Count());
+            _logger.LogInformation($"For a patron who visited {0} partners, we've found {1} partner payees.", creatorHits.Count, payees.Count);
             return payees;
+        }
+
+        public void SaveFirstPayment()
+        {
+            _paymentLogsService.SaveLogs(new List<Payment> { new Payment
+            {
+                Payee = null,
+                Payer = null,
+                DateSent = DateTime.UtcNow,
+                Amount = 0
+            }});
         }
 
         private List<Payment> SavePaymentDetails(IEnumerable<Payee> payees, Payer payer, DateTimeOffset endDate)

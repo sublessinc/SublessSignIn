@@ -22,13 +22,21 @@ namespace SublessSignIn.Controllers
         private readonly IUserService userService;
         private readonly IHitService hitService;
         private readonly IPaymentLogsService paymentLogsService;
+        private readonly IUsageService _usageService;
         private readonly ILogger _logger;
-        public CreatorController(ICreatorService creatorService, ILoggerFactory loggerFactory, IUserService userService, IHitService hitService, IPaymentLogsService paymentLogsService)
+        public CreatorController(
+            ICreatorService creatorService,
+            ILoggerFactory loggerFactory,
+            IUserService userService,
+            IHitService hitService,
+            IPaymentLogsService paymentLogsService,
+            IUsageService usageService)
         {
             _creatorService = creatorService ?? throw new ArgumentNullException(nameof(creatorService));
             this.userService = userService ?? throw new ArgumentNullException(nameof(userService));
             this.hitService = hitService ?? throw new ArgumentNullException(nameof(hitService));
             this.paymentLogsService = paymentLogsService ?? throw new ArgumentNullException(nameof(paymentLogsService));
+            _usageService = usageService ?? throw new ArgumentNullException(nameof(usageService));
             _logger = loggerFactory?.CreateLogger<PartnerController>() ?? throw new ArgumentNullException(nameof(loggerFactory));
         }
 
@@ -112,7 +120,7 @@ namespace SublessSignIn.Controllers
         }
 
         [HttpGet("Analytics")]
-        public ActionResult<HistoricalStats<UserStats>> GetUserAnalytics()
+        public ActionResult<HistoricalStats<CreatorStats>> GetUserAnalytics()
         {
             var cognitoId = userService.GetUserClaim(HttpContext.User);
             if (cognitoId == null)
@@ -127,9 +135,17 @@ namespace SublessSignIn.Controllers
                 {
                     paymentDate = DateTimeOffset.UtcNow.AddMonths(-1);
                 }
-                var hitsThisMonth = hitService.GetCreatorHitsByDate(paymentDate, DateTimeOffset.UtcNow, creator.Id);
-                var hitsLastMonth = hitService.GetCreatorHitsByDate(paymentDate.AddMonths(-1), paymentDate, creator.Id);
-                return Ok(CreatorStatsExtensions.GetHistoricalCreatorStats(hitsThisMonth, hitsLastMonth));
+                var hitsThisMonth = hitService.GetCreatorStats(paymentDate, DateTimeOffset.UtcNow, creator.Id);
+                var hitsLastMonth = hitService.GetCreatorStats(paymentDate.AddMonths(-1), paymentDate, creator.Id);
+                if (creator.UserId != null)
+                {
+                    _usageService.SaveUsage(UsageType.UserStats, (Guid)creator.UserId);
+                }
+                return Ok(new HistoricalStats<CreatorStats>
+                {
+                    LastMonth = hitsLastMonth,
+                    thisMonth = hitsThisMonth
+                });
             }
             catch (UnauthorizedAccessException e)
             {
@@ -172,6 +188,14 @@ namespace SublessSignIn.Controllers
 
                 return Unauthorized();
             }
+        }
+
+        [HttpPut("terms")]
+        public ActionResult AcceptTerms()
+        {
+            var cognitoId = userService.GetUserClaim(HttpContext.User);
+            _creatorService.AcceptTerms(cognitoId);
+            return Ok();
         }
     }
 }

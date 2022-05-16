@@ -1,7 +1,8 @@
 // Generated using webpack-cli https://github.com/webpack/webpack-cli
 const Dotenv = require('dotenv-webpack');
-const path = require("path");
+const ESLintPlugin = require('eslint-webpack-plugin');
 
+const path = require("path");
 const isProduction = process.env.NODE_ENV != "local";
 
 const config = {
@@ -19,6 +20,10 @@ const config = {
     new Dotenv({
       path: './environment/' + process.env.NODE_ENV + '.env',
       safe: true
+    }),
+    new ESLintPlugin({
+      extensions: [`js`, `jsx`, `ts`],
+      exclude: [`node_modules`],
     })
   ],
   module: {

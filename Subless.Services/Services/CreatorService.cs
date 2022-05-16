@@ -58,7 +58,7 @@ namespace Subless.Services
             {
                 throw new UnauthorizedAccessException();
             }
-            // TODO: One creator for now. 
+            // TODO: One creator for now.
             return creators.First();
         }
 
@@ -119,7 +119,7 @@ namespace Subless.Services
                         MonthStartDay = paymentMonth,
                     });
                 }
-                paymentStats[paymentMonth].DollarsPaid += (int)payment.Amount;
+                paymentStats[paymentMonth].DollarsPaid += (int)(payment.Amount/100);
                 paymentStats[paymentMonth].Payers += 1;
             }
             return paymentStats.Values.OrderBy(x => x.MonthStartDay);
@@ -155,12 +155,20 @@ namespace Subless.Services
             var creators = _userRepository.GetCreatorsByCognitoId(cognitoId);
             if (!creators.Any(x => x.Id == id))
             {
-                throw new AccessViolationException("User cannot modify this creator");
+                throw new UnauthorizedAccessException("User cannot modify this creator");
             }
             var creator = creators.Single(x => x.Id == id);
             creatorRepository.DeleteCreator(creator);
             cache.InvalidateCache();
             await partnerService.CreatorChangeWebhook(creator.ToPartnerView(true));
+        }
+
+        public void AcceptTerms(string cognitoId)
+        {
+            var creators = _userRepository.GetCreatorsByCognitoId(cognitoId);
+            var creator = creators.Single();
+            creator.AcceptedTerms = true;
+            creatorRepository.UpdateCreator(creator);
         }
     }
 }

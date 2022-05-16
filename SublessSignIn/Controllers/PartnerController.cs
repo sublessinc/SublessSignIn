@@ -25,6 +25,7 @@ namespace SublessSignIn.Controllers
         private readonly IHitService hitService;
         private readonly IPaymentLogsService paymentLogsService;
         private readonly ICorsPolicyAccessor corsPolicyAccessor;
+        private readonly IUsageService _usageService;
         private readonly ILogger _logger;
         //this is a weird place to get this from, but it'll work. Probs split it out later
         private readonly StripeConfig _settings;
@@ -36,6 +37,7 @@ namespace SublessSignIn.Controllers
             IPaymentLogsService paymentLogsService,
             IOptions<StripeConfig> authSettings,
             ICorsPolicyAccessor corsPolicyAccessor,
+            IUsageService usageService,
             ILoggerFactory loggerFactory)
         {
             if (authSettings is null)
@@ -54,6 +56,7 @@ namespace SublessSignIn.Controllers
             this.hitService = hitService ?? throw new ArgumentNullException(nameof(hitService));
             this.paymentLogsService = paymentLogsService ?? throw new ArgumentNullException(nameof(paymentLogsService));
             this.corsPolicyAccessor = corsPolicyAccessor;
+            _usageService = usageService ?? throw new ArgumentNullException(nameof(usageService));
             _logger = loggerFactory?.CreateLogger<PartnerController>() ?? throw new ArgumentNullException(nameof(loggerFactory));
             _settings = authSettings.Value ?? throw new ArgumentNullException(nameof(authSettings));
 
@@ -64,14 +67,14 @@ namespace SublessSignIn.Controllers
         [Authorize(BearerAuth.PartnerSchemeName)]
         public ActionResult<string> GetCreatorActivationLink([FromQuery] string username)
         {
-            if (PartnerService.InvalidUsernameCharacters.Any(chr => username.Contains(chr)))
+            if (PartnerService.InvalidUsernameCharacters.Any(chr => username.Contains(chr, StringComparison.Ordinal)))
             {
                 return BadRequest("Username contains one of the following invalid characters" + PartnerService.InvalidUsernameCharacters.Concat(" "));
             }
             var scope = User.Claims.FirstOrDefault(x => x.Type == "scope")?.Value;
             var cognitoClientId = User.Claims.FirstOrDefault(x => x.Type == "client_id")?.Value;
             _logger.LogInformation($"Partner {cognitoClientId} registering creator {HttpUtility.UrlEncode(username)}");
-            if (scope == null || !scope.Contains("creator.register") || !scope.Contains(_settings.Domain) || cognitoClientId == null)
+            if (scope == null || !scope.Contains("creator.register", StringComparison.Ordinal) || !scope.Contains(_settings.Domain, StringComparison.Ordinal) || cognitoClientId == null)
             {
                 _logger.LogError($"Unauthorized user registration Scope{scope}, username:{HttpUtility.UrlEncode(username)}, clientId: {cognitoClientId}");
                 return Unauthorized();
@@ -87,7 +90,7 @@ namespace SublessSignIn.Controllers
             }
             catch (CreatorAlreadyActiveException e)
             {
-                _logger.LogError(e, $"Creator attempted to activate twice {username}");
+                _logger.LogWarning(e, $"Creator attempted to activate twice {username}");
                 return BadRequest("This creator is already activated on subless");
             }
         }
@@ -253,15 +256,29 @@ namespace SublessSignIn.Controllers
                 {
                     paymentDate = DateTimeOffset.UtcNow.AddMonths(-1);
                 }
-                var hitsThisMonth = hitService.GetPartnerHitsByDate(paymentDate, DateTimeOffset.UtcNow, partner.Id);
-                var hitsLastMonth = hitService.GetPartnerHitsByDate(paymentDate.AddMonths(-1), paymentDate, partner.Id);
-                return Ok(PartnerStatsExtensions.GetHistoricalPartnerStats(hitsThisMonth, hitsLastMonth));
+                var hitsThisMonth = hitService.GetPartnerStats(paymentDate, DateTimeOffset.UtcNow, partner.Id);
+                var hitsLastMonth = hitService.GetPartnerStats(paymentDate.AddMonths(-1), paymentDate, partner.Id);
+                _usageService.SaveUsage(UsageType.PartnerStats, user.Id);
+                return Ok(new HistoricalStats<PartnerStats>()
+                {
+                    thisMonth = hitsThisMonth,
+                    LastMonth = hitsLastMonth
+                });
+                
             }
             catch (UnauthorizedAccessException e)
             {
                 _logger.LogWarning(e, "Unauthorized user attempted to get creator stats");
                 return Unauthorized();
             }
+        }
+
+        [HttpPut("terms")]
+        public ActionResult AcceptTerms()
+        {
+            var cognitoId = _userService.GetUserClaim(HttpContext.User);
+            _partnerService.AcceptTerms(cognitoId);
+            return Ok();
         }
     }
 }

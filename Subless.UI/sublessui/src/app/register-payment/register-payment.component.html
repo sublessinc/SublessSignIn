@@ -1,9 +1,10 @@
 <div #sublessbackground class="{{backgroundClass}}">
-    <div class='{{backgroundClass}}title'>
-        <h1>Choose your own price</h1>
-    </div>
     <div class='{{backgroundClass}}subtitle'>
-        <h1>Proceeds to the creators you love</h1>
+        <h1>Support the creators you love</h1>
+    </div>
+    <div class="{{backgroundClass}}details">
+        <div>This budget will be split between all the subless creators you visit.</div>
+        <div>Find out more <a href="https://www.subless.com/faq">at our FAQ</a>.</div>
     </div>
     <mat-card class="price-card">
         <mat-card-content class="price-picker">
@@ -17,6 +18,8 @@
                 <mat-button-toggle value="15">$15</mat-button-toggle>
             </mat-button-toggle-group>
         </mat-card-content>
+        <mat-card-content *ngIf="currentPlan">Your current plan is ${{currentPlan}} per month</mat-card-content>
+
         <mat-card-content class="plan-details">&#10004; Split among the creators you
             view</mat-card-content>
         <mat-card-content class="plan-details">&#10004; Billed once at the beginning of the month</mat-card-content>
@@ -24,7 +27,7 @@
         <mat-card-content class="plan-details">&#10004; Cancel anytime</mat-card-content>
         <mat-card-content class="plan-details">&#10004; Browse till the end of the month after cancelling
         </mat-card-content>
-        <button id="selectPlan" mat-button [disabled]="priceChosen == null" class="select-plan"
+        <button id="selectPlan" mat-button [disabled]="priceChosen === null" class="select-plan"
             (click)='redirectToCheckout()'>Select
             This Budget</button>
     </mat-card>
