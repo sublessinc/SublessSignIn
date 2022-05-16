@@ -81,7 +81,7 @@ export class Subless implements SublessInterface {
                     headers: {
                         "Content-Type": "application/json",
                     },
-                    body: window.location.href,
+                    body: window.location.origin + window.location.pathname,
                     credentials: "include",
                 });
             await body;
