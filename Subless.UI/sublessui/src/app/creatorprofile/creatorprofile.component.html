@@ -3,8 +3,8 @@
         <div class="iconWrapper">
             <img class="icon" src="../../assets/img/views.svg">
         </div>
-        <div class="statText">
-            <mat-card-content class="statHeader">Total Views</mat-card-content>
+        <div class="statText" title="This is the total number of times a subless patron has opened a link on a partner website containing something you've made. Only subless patron hits are counted, because only they have budgets from which you'll receive funds.">
+            <mat-card-content class="statHeader">Total Views From Subless Patrons</mat-card-content>
             <mat-card-content class="numberText">{{analytics.thisMonth.views}}</mat-card-content>
             <mat-card-content><b>{{analytics.lastMonth.views}}</b> Views last month</mat-card-content>
         </div>
@@ -13,8 +13,8 @@
         <div class="iconWrapper">
             <img class="icon" src="../../assets/img/creators.svg">
         </div>
-        <div class="statText">
-            <mat-card-content class="statHeader">Unique Visitors</mat-card-content>
+        <div class="statText" title="This is the total number of individual subless patrons who've visited your content. You'll receive a cut of each of these patrons' monthly budgets.">
+            <mat-card-content class="statHeader" >Number of Unique Patrons Who Visited</mat-card-content>
             <mat-card-content class="numberText">{{analytics.thisMonth.visitors}}</mat-card-content>
             <mat-card-content><b>{{analytics.lastMonth.visitors}}</b> Visitors last month
             </mat-card-content>
@@ -24,7 +24,7 @@
         <div class="iconWrapper">
             <img class="icon" src="../../assets/img/picture.svg">
         </div>
-        <div class="statText">
+        <div class="statText" title="These are the total number of different pieces of content you've created that patrons have viewed.">
             <mat-card-content class="statHeader">Unqiue content viewed</mat-card-content>
             <mat-card-content class="numberText">{{analytics.thisMonth.piecesOfContent}}</mat-card-content>
             <mat-card-content><b>{{analytics.lastMonth.piecesOfContent}}</b> Unqiue content viewed last month
