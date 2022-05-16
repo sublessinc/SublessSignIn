@@ -84,8 +84,8 @@ export class Subless implements SublessInterface {
                     body: window.location.origin + window.location.pathname,
                     credentials: "include",
                 });
-            await body;
-            if (body) {
+            const result = await body.then((response) => response.json());
+            if (result === true) {
                 this.sublessShowLogo();
             }
         }
@@ -97,8 +97,8 @@ export class Subless implements SublessInterface {
         img.style.position = "absolute";
         img.style.bottom = "0";
         img.style.right = "0";
-        img.style.width = "10%";
-        img.src = "https://app.subless.com/dist/assets/SublessIcon.svg";
+        img.style.width = "5%";
+        img.src = sublessUri + "/dist/assets/SublessIcon.svg";
         img.id = "sublessHitIndicator";
         document.body.appendChild(img);
         this.fadeInAndOut(img);
