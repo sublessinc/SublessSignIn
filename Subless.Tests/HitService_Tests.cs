@@ -99,7 +99,7 @@ namespace Subless.Tests
             var creator = sut.GetCreatorFromPartnerAndUri(uri, ValidPartner());
 
             //assert
-            Assert.Equal(creatorId, creator.Value);
+            Assert.Equal(creatorId, creator?.Id);
         }
 
         [Fact]
@@ -114,7 +114,7 @@ namespace Subless.Tests
             var creator = sut.GetCreatorFromPartnerAndUri(uri, ValidPartner());
 
             //assert
-            Assert.Equal(creatorId, creator.Value);
+            Assert.Equal(creatorId, creator?.Id);
         }
 
         public HitService HitServiceBuilder(Guid guid = new Guid())

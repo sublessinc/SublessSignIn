@@ -10,7 +10,6 @@ interface SublessInterface {
     subless_LoggedIn(): Promise<boolean>; // eslint-disable-line camelcase
     subless_hit(): Promise<void>; // eslint-disable-line camelcase
     sublessLogout(): Promise<void>;
-    sublessShowLogo(): Promise<void>;
 }
 
 interface SublessSettings {
@@ -85,45 +84,85 @@ export class Subless implements SublessInterface {
                     credentials: "include",
                 });
             const result = await body.then((response) => response.json());
-            if (result === true) {
-                this.sublessShowLogo();
+            if (result !== null) {
+                this.sublessShowLogo(result);
             }
         }
     }
 
-    /** Shows logo at bottom right corner */
-    async sublessShowLogo() {
-        const img = document.createElement("img");
-        img.style.position = "absolute";
-        img.style.bottom = "0";
-        img.style.right = "0";
-        img.style.width = "5%";
-        img.src = sublessUri + "/dist/assets/SublessIcon.svg";
-        img.id = "sublessHitIndicator";
-        document.body.appendChild(img);
-        this.fadeInAndOut(img);
+    /** Shows logo at bottom right corner 
+     * @param {string} creatorAvatar a uri linking to the avatar
+    */
+    async sublessShowLogo(creatorAvatar: string) {
+        const div = document.createElement("div");
+        div.style.display = "flex";
+        div.style.flexDirection = "column";
+        div.style.alignItems = "center";
+        div.style.opacity = "0";
+        div.style.position = "absolute";
+        div.style.bottom = "0";
+        div.style.right = "0%";
+        div.style.width = "6%";
+
+        const sublessImg = document.createElement("img");
+        sublessImg.style.maxWidth = "100%";
+        sublessImg.src = sublessUri + "/assets/redist/SupportedDark.svg";
+
+        const creatorImg = document.createElement("img");
+        creatorImg.style.maxWidth = "100%";
+        creatorImg.src = creatorAvatar;
+
+        div.appendChild(creatorImg);
+        div.appendChild(sublessImg);
+        document.body.appendChild(div);
+        this.waitForLoadBeforeFade(creatorImg, sublessImg, div, this.fadeInAndOut);
+    }
+
+    /**
+     * Waits for image loading to finish
+     * @param {HTMLImageElement} image1 wait for image
+     * @param {HTMLImageElement} image2 wait for image
+     * @param {HTMLElement} fadeElement the element to fade
+     * @param {Function} callback to fire after loading is complete
+     */
+    waitForLoadBeforeFade(image1: HTMLImageElement, image2: HTMLImageElement, fadeElement: HTMLElement, callback: Function) {
+        const wait = function () {
+            if (!image1 || !image2 || !image1.complete || !image2.complete) {
+                setTimeout(wait, 16);
+            } else {
+                callback(fadeElement);
+            }
+        };
+        wait();
     }
 
     /** Fades in an element
      * @param {HTMLElement} el element to fade
+     * @param {number} delay ticks to delay the fade start
+     * @param {number} increment speed to run
     */
-    fadeInAndOut(el: HTMLElement) {
+    fadeInAndOut(el: HTMLElement, delay: number = 0, increment: number = 0.02) {
         el.style.opacity = "0";
         let fadeout = false;
         const tick = function () {
-            if (!fadeout) {
-                el.style.opacity = +el.style.opacity + 0.02 + "";
+            if (delay == 0) {
+                if (!fadeout) {
+                    el.style.opacity = +el.style.opacity + increment + "";
+                } else {
+                    el.style.opacity = +el.style.opacity - increment + "";
+                }
+                if (fadeout && +el.style.opacity == 0) {
+                    document.body.removeChild(el);
+                    return;
+                }
+                if (!fadeout && +el.style.opacity >= 1) {
+                    fadeout = true;
+                }
+                if (fadeout || +el.style.opacity < 1) {
+                    (window.requestAnimationFrame && requestAnimationFrame(tick)) || setTimeout(tick, 16);
+                }
             } else {
-                el.style.opacity = +el.style.opacity - 0.02 + "";
-            }
-            if (fadeout && +el.style.opacity == 0) {
-                document.body.removeChild(el);
-                return;
-            }
-            if (!fadeout && +el.style.opacity >= 1) {
-                fadeout = true;
-            }
-            if (fadeout || +el.style.opacity < 1) {
+                delay--;
                 (window.requestAnimationFrame && requestAnimationFrame(tick)) || setTimeout(tick, 16);
             }
         };

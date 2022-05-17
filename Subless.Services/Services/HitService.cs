@@ -39,14 +39,14 @@ namespace Subless.Services
             _logger = loggerFactory?.CreateLogger<HitService>() ?? throw new ArgumentNullException(nameof(loggerFactory));
         }
 
-        public bool SaveHit(string userId, Uri uri)
+        public Creator? SaveHit(string userId, Uri uri)
         {
             _logger.LogDebug("SaveHit hit.");
             var partner = _partnerService.GetCachedPartnerByUri(new Uri(uri.GetLeftPart(UriPartial.Authority)));
             if (partner == null)
             {
                 _logger.LogError($"Unknown partner recieved hit from URL {uri}");
-                return false;
+                return null;
             }
             var creatorId = GetCreatorFromPartnerAndUri(uri, partner);
             var hit = new Hit()
@@ -61,9 +61,9 @@ namespace Subless.Services
             hitRepository.SaveHit(hit);
             if (_featureConfig.HitPopupEnabled)
             {
-                return creatorId != null;
+                return creatorId;
             }
-            return false;
+            return null;
         }
 
         public Hit TestHit(string userId, Uri uri)
@@ -132,7 +132,7 @@ namespace Subless.Services
             return hitRepository.GetPartnerHitsByDate(startDate, endDate, partnerId);
         }
 
-        public Guid? GetCreatorFromPartnerAndUri(Uri uri, Partner partner)
+        public Creator? GetCreatorFromPartnerAndUri(Uri uri, Partner partner)
         {
             const string creatorPlaceholder = "{creator}";
 
@@ -167,7 +167,7 @@ namespace Subless.Services
                             && !string.IsNullOrWhiteSpace(group.Value)
                             && !PartnerService.InvalidUsernameCharacters.Any(x => group.Value.Contains(x, StringComparison.Ordinal)))
                         {
-                            return _creatorService.GetCachedCreatorFromPartnerAndUsername(group.Value, partner.Id)?.Id;
+                            return _creatorService.GetCachedCreatorFromPartnerAndUsername(group.Value, partner.Id);
                         }
                     }
                 }

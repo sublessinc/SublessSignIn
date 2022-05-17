@@ -29,7 +29,7 @@ namespace SublessSignIn.Controllers
         [HttpPost]
         [EnableCors("Unrestricted")]
         [Authorize]
-        public async Task<ActionResult<bool>> Hit()
+        public async Task<ActionResult<string>> Hit()
         {
             bool validHit = false;
             using (var reader = new StreamReader(Request.Body))
