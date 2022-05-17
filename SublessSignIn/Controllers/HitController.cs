@@ -31,7 +31,6 @@ namespace SublessSignIn.Controllers
         [Authorize]
         public async Task<ActionResult<string>> Hit()
         {
-            bool validHit = false;
             using (var reader = new StreamReader(Request.Body))
             {
                 var body = await reader.ReadToEndAsync();
@@ -53,9 +52,9 @@ namespace SublessSignIn.Controllers
                 {
                     return Unauthorized("User claim could not be found");
                 }
-                validHit = _hitService.SaveHit(userService.GetUserClaim(HttpContext.User), hitSource);
+                var creator = _hitService.SaveHit(userService.GetUserClaim(HttpContext.User), hitSource);
+                return Ok(creator?.AvatarUri?.ToString()); 
             }
-            return Ok(validHit);
         }
 
         [HttpPost("Test")]

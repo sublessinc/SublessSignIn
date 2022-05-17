@@ -48,20 +48,20 @@ namespace Subless.Services
                 _logger.LogError($"Unknown partner recieved hit from URL {uri}");
                 return null;
             }
-            var creatorId = GetCreatorFromPartnerAndUri(uri, partner);
+            var creator = GetCreatorFromPartnerAndUri(uri, partner);
             var hit = new Hit()
             {
                 CognitoId = userId,
                 Uri = uri,
                 TimeStamp = DateTimeOffset.UtcNow,
                 PartnerId = partner.Id,
-                CreatorId = creatorId ?? Guid.Empty
+                CreatorId = creator?.Id ?? Guid.Empty
             };
-            _logger.LogDebug($"Saving a hit for creator {creatorId} at time {hit.TimeStamp}.");
+            _logger.LogDebug($"Saving a hit for creator {creator?.Id} at time {hit.TimeStamp}.");
             hitRepository.SaveHit(hit);
             if (_featureConfig.HitPopupEnabled)
             {
-                return creatorId;
+                return creator;
             }
             return null;
         }
@@ -76,8 +76,8 @@ namespace Subless.Services
                 _logger.LogError($"Unknown partner recieved hit from URL {uri}");
                 return null;
             }
-            var creatorId = GetCreatorFromPartnerAndUri(uri, partner);
-            _logger.LogDebug($"Resolved {creatorId} for the uri {uri} and partner {partner}");
+            var creator = GetCreatorFromPartnerAndUri(uri, partner);
+            _logger.LogDebug($"Resolved {creator?.Id} for the uri {uri} and partner {partner}");
 
             return new Hit()
             {
@@ -85,7 +85,7 @@ namespace Subless.Services
                 Uri = uri,
                 TimeStamp = DateTimeOffset.UtcNow,
                 PartnerId = partner.Id,
-                CreatorId = creatorId ?? Guid.Empty
+                CreatorId = creator?.Id ?? Guid.Empty
             };
         }
 

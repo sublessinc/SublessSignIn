@@ -9,7 +9,7 @@ namespace Subless.Services
         IEnumerable<Hit> GetPartnerHitsByDate(DateTimeOffset startDate, DateTimeOffset endDate, Guid partnerId);
         IEnumerable<Hit> GetCreatorHitsByDate(DateTimeOffset startDate, DateTimeOffset endDate, Guid creatorId);
         IEnumerable<Hit> GetHitsByDate(DateTimeOffset startDate, DateTimeOffset endDate, Guid userId);
-        Guid? SaveHit(string userId, Uri uri);
+        Creator? SaveHit(string userId, Uri uri);
         Hit TestHit(string userId, Uri uri);
         UserStats GetUserStats(DateTimeOffset startDate, DateTimeOffset endDate, Guid userId);
         CreatorStats GetCreatorStats(DateTimeOffset startDate, DateTimeOffset endDate, Guid creatorId);

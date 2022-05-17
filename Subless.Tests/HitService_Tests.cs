@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Moq;
 using Subless.Data;
 using Subless.Models;
@@ -39,7 +40,7 @@ namespace Subless.Tests
             var creator = sut.GetCreatorFromPartnerAndUri(uri, ValidPartner());
 
             //assert
-            Assert.Equal(creatorId, creator.Value);
+            Assert.Equal(creatorId, creator?.Id);
         }
 
         [Fact]
@@ -54,7 +55,7 @@ namespace Subless.Tests
             var creator = sut.GetCreatorFromPartnerAndUri(uri, ValidPartner());
 
             //assert
-            Assert.Equal(creatorId, creator.Value);
+            Assert.Equal(creatorId, creator?.Id);
         }
 
         [Fact]
@@ -69,7 +70,7 @@ namespace Subless.Tests
             var creator = sut.GetCreatorFromPartnerAndUri(uri, ValidPartner());
 
             //assert
-            Assert.Equal(creatorId, creator.Value);
+            Assert.Equal(creatorId, creator?.Id);
         }
 
         [Fact]
@@ -147,6 +148,7 @@ namespace Subless.Tests
                 new Mock<IHitRepository>().Object,
                 creatorService.Object,
                 new Mock<IPartnerService>().Object,
+                Options.Create<FeatureConfig>(new FeatureConfig()),
                 mockLoggerFactory.Object);
         }
 

@@ -95,6 +95,7 @@ namespace Subless.Services
             var currentCreator = creators.First();
             var wasValid = CreatorValid(currentCreator);
             currentCreator.PayPalId = creator.PayPalId;
+            currentCreator.AvatarUri = creator.AvatarUri;
             creatorRepository.UpdateCreator(currentCreator);
             await FireCreatorActivationWebhook(creator, wasValid);
             return currentCreator;

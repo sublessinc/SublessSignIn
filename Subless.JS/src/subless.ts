@@ -83,14 +83,14 @@ export class Subless implements SublessInterface {
                     body: window.location.origin + window.location.pathname,
                     credentials: "include",
                 });
-            const result = await body.then((response) => response.json());
+            const result = await body.then((response) => response.text());
             if (result !== null) {
                 this.sublessShowLogo(result);
             }
         }
     }
 
-    /** Shows logo at bottom right corner 
+    /** Shows logo at bottom right corner
      * @param {string} creatorAvatar a uri linking to the avatar
     */
     async sublessShowLogo(creatorAvatar: string) {
