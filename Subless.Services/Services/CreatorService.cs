@@ -1,11 +1,14 @@
-﻿using Microsoft.Extensions.Caching.Memory;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Subless.Data;
 using Subless.Models;
 using Subless.Services.Extensions;
 using Subless.Services.Services;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -13,18 +16,23 @@ namespace Subless.Services
 {
     public class CreatorService : ICreatorService
     {
+        public static string[] AllowedAvatarFileTypes = new[] { "png", "jpg", "jpeg", "svg" };
         private readonly IUserRepository _userRepository;
         private readonly ICreatorRepository creatorRepository;
         private readonly IPartnerService partnerService;
         private readonly ICacheService cache;
         private readonly ILogger<CreatorService> logger;
         IPaymentRepository paymentRepository;
+        private readonly IS3Service _s3Service;
+        private readonly DomainConfig _domainConfig;
 
         public CreatorService(
             IUserRepository userRepository,
             ICreatorRepository creatorRepository,
             IPartnerService partnerService,
             IPaymentRepository paymentRepository,
+            IS3Service s3Service,
+            IOptions<DomainConfig> domainOptions,
             ICacheService cache,
             ILoggerFactory loggerFactory)
         {
@@ -32,6 +40,8 @@ namespace Subless.Services
             this.creatorRepository = creatorRepository ?? throw new ArgumentNullException(nameof(creatorRepository));
             this.partnerService = partnerService ?? throw new ArgumentNullException(nameof(partnerService));
             this.paymentRepository = paymentRepository;
+            _s3Service = s3Service ?? throw new ArgumentNullException(nameof(s3Service));
+            _domainConfig = domainOptions?.Value ?? throw new ArgumentNullException(nameof(domainOptions));
             this.cache = cache ?? throw new ArgumentNullException(nameof(cache));
             this.logger = loggerFactory?.CreateLogger<CreatorService>() ?? throw new ArgumentNullException(nameof(loggerFactory));
         }
@@ -101,6 +111,28 @@ namespace Subless.Services
             return currentCreator;
         }
 
+        public async Task TaskUpdateCreatorAvatar(string cognitoId, Guid creatorId, IFormFile formFile)
+        {
+            var extension = Path.GetExtension(formFile.FileName);
+            if (!AllowedAvatarFileTypes.Contains(extension))
+            {
+                return new InvalidDataException("Disallowed file type for avatar");
+            }
+            var creators = _userRepository.GetCreatorsByCognitoId(cognitoId);
+            var creator = creatorRepository.GetCreator(creatorId);
+            if (!creators.Any(x=> x.Id == creatorId))
+            {
+                throw new UnauthorizedAccessException();
+            }
+            var avatarUri = await _s3Service.UploadFormFileToBucket(formFile, _domainConfig.AvatarBucketName);
+            if (creator.AvatarUri != null)
+            {
+                await _s3Service.DeleteFromBucket(creator.AvatarUri.AbsolutePath, _domainConfig.AvatarBucketName);
+            }
+            creator.AvatarUri = avatarUri;
+            creatorRepository.UpdateCreator(creator);
+            
+        }
 
         public IEnumerable<MontlyPaymentStats> GetStatsForCreator(Creator creator)
         {

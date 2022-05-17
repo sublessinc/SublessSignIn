@@ -32,6 +32,7 @@ import { GlobalerrorhandlerService } from './error-handling/globalerrorhandler.s
 import { TermsComponent } from './terms/terms.component';
 import { CreatorTermsComponent } from './creator-terms/creator-terms.component';
 import { PartnerTermsComponent } from './partner-terms/partner-terms.component';
+import { AvatarUploadComponent } from './avatar-upload/avatar-upload.component';
 
 @NgModule({
   declarations: [
@@ -55,7 +56,8 @@ import { PartnerTermsComponent } from './partner-terms/partner-terms.component';
     ErrorPageComponent,
     TermsComponent,
     CreatorTermsComponent,
-    PartnerTermsComponent
+    PartnerTermsComponent,
+    AvatarUploadComponent
   ],
   imports: [
     ThemeModule,

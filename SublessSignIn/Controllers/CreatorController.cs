@@ -1,14 +1,17 @@
 ﻿using CsvHelper;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Subless.Models;
 using Subless.Services;
+using Subless.Services.Services;
 using SublessSignIn.Models;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
 namespace SublessSignIn.Controllers
@@ -23,6 +26,7 @@ namespace SublessSignIn.Controllers
         private readonly IHitService hitService;
         private readonly IPaymentLogsService paymentLogsService;
         private readonly IUsageService _usageService;
+        private readonly IS3Service _s3Service;
         private readonly ILogger _logger;
         public CreatorController(
             ICreatorService creatorService,
@@ -30,13 +34,15 @@ namespace SublessSignIn.Controllers
             IUserService userService,
             IHitService hitService,
             IPaymentLogsService paymentLogsService,
-            IUsageService usageService)
+            IUsageService usageService,
+            IS3Service s3Service)
         {
             _creatorService = creatorService ?? throw new ArgumentNullException(nameof(creatorService));
             this.userService = userService ?? throw new ArgumentNullException(nameof(userService));
             this.hitService = hitService ?? throw new ArgumentNullException(nameof(hitService));
             this.paymentLogsService = paymentLogsService ?? throw new ArgumentNullException(nameof(paymentLogsService));
             _usageService = usageService ?? throw new ArgumentNullException(nameof(usageService));
+            _s3Service = s3Service ?? throw new ArgumentNullException(nameof(s3Service));
             _logger = loggerFactory?.CreateLogger<PartnerController>() ?? throw new ArgumentNullException(nameof(loggerFactory));
         }
 
@@ -117,6 +123,13 @@ namespace SublessSignIn.Controllers
                 _logger.LogWarning(e, "Unauthorized user attempted to unlink creator account");
                 return Unauthorized();
             }
+        }
+
+
+        [HttpDelete("avatar")]
+        public async Task<string> UploadFile(IFormFile formFile)
+        {
+            
         }
 
         [HttpGet("Analytics")]

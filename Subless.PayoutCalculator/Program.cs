@@ -150,7 +150,7 @@ namespace PayoutCalculator
                 DataDi.RegisterDataDi(services);
                 ServicesDi.AddServicesDi(services);
                 services.AddTransient<ICalculatorService, CalculatorService>();
-                services.AddTransient<IFileStorageService, S3Service>();
+                services.AddTransient<IFileStorageService, PayoutFileStorageService>();
                 services.AddTransient<AwsCredWrapper, AwsCredWrapper>();
                 services.AddTransient<IEmailService, EmailService>();
                 services.AddTransient<IHealthCheck, HealthCheck>();
