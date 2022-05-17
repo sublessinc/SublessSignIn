@@ -24,7 +24,7 @@ namespace Subless.PayoutCalculator
         private readonly ILoggerFactory _loggerFactory;
         private readonly IFileStorageService _s3Service;
         private readonly IUserService userService;
-        private readonly IEmailService emailService;
+        private readonly IPaymentEmailService emailService;
         private readonly ILogger _logger;
 
         public CalculatorService(
@@ -36,7 +36,7 @@ namespace Subless.PayoutCalculator
             IFileStorageService s3Service,
             IUserService userService,
             IOptions<StripeConfig> stripeOptions,
-            IEmailService emailService,
+            IPaymentEmailService emailService,
             ILoggerFactory loggerFactory)
         {
             _stripeService = stripeService ?? throw new ArgumentNullException(nameof(stripeService));
@@ -49,7 +49,7 @@ namespace Subless.PayoutCalculator
             this.userService = userService ?? throw new ArgumentNullException(nameof(userService));
             this.emailService = emailService ?? throw new ArgumentNullException(nameof(emailService));
             _logger = _loggerFactory.CreateLogger<CalculatorService>();
-            SublessPayPalId = stripeOptions.Value.SublessPayPalId ?? throw new ArgumentNullException(nameof(stripeOptions.Value.SublessPayPalId));
+            SublessPayPalId = stripeOptions.Value.SublessPayPalId ?? throw new ArgumentNullException(nameof(stripeOptions));
         }
 
         public void CalculatePayments(DateTimeOffset startDate, DateTimeOffset endDate)

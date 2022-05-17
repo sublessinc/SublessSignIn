@@ -594,7 +594,7 @@ namespace Subless.Tests
                 s3Service?.Object ?? new Mock<IFileStorageService>().Object,
                 userSerivce.Object,
                 CreateOptions(),
-                new Mock<IEmailService>().Object,
+                new Mock<IPaymentEmailService>().Object,
                 mockLoggerFactory.Object                
                 );
         }
