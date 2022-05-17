@@ -102,7 +102,7 @@ namespace Subless.Services
             // Set user modifiable properties
             var currentCreator = creators.First();
             var wasValid = CreatorValid(currentCreator);
-            if (creator.PayPalId != null)
+            if (currentCreator.PayPalId != null && creator.PayPalId!=creator.PayPalId)
             {
                 await _emailService.SendEmail(GetPaymentChangedEmail(creator.Username), creator.PayPalId, "Subless payout no longer associated with this email");
             }
