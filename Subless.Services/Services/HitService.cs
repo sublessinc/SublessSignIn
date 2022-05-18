@@ -132,6 +132,16 @@ namespace Subless.Services
             return hitRepository.GetPartnerHitsByDate(startDate, endDate, partnerId);
         }
 
+        public IEnumerable<Uri> GetRecentCrecatorContent(Guid creatorId)
+        {
+            return hitRepository.GetRecentCreatorContent(creatorId);
+        }
+
+        public IEnumerable<ContentHit> GetTopCreatorContent(Guid creatorId)
+        {
+            return hitRepository.GetTopCreatorContent(creatorId);
+        }
+
         public Guid? GetCreatorFromPartnerAndUri(Uri uri, Partner partner)
         {
             const string creatorPlaceholder = "{creator}";

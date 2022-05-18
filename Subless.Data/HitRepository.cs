@@ -49,7 +49,7 @@ namespace Subless.Data
                 Creators = Creators.Where(creator => distinctCreators.Contains(creator.Id) && creator.Active).Count(),
                 Partners = hits.Select(x => x.PartnerId).Distinct().Count(),
             };
-            
+
         }
 
         public CreatorStats GetCreatorStats(DateTimeOffset startDate, DateTimeOffset endDate, Guid creatorId)
@@ -75,6 +75,25 @@ namespace Subless.Data
                 Views = hits.Count(),
                 Visitors = hits.Select(x => x.CognitoId).Distinct().Count()
             };
+        }
+
+        public List<Uri> GetRecentCreatorContent(Guid creatorId)
+        {
+            return Hits.Where(x => x.CreatorId == creatorId)
+                .OrderByDescending(x => x.TimeStamp)
+                .Select(x => x.Uri)
+                .Take(5)
+                .ToList();
+        }
+
+        public List<ContentHit> GetTopCreatorContent(Guid creatorId)
+        {
+            return Hits.Where(x => x.CreatorId == creatorId)
+                .GroupBy(x => x.Uri)
+                .Select(g => new ContentHit { Content= g.Key, Hits= g.Count() })
+                .OrderBy(x=>x.Hits)
+                .Take(5)
+                .ToList();
         }
     }
 }
