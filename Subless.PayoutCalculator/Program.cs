@@ -152,7 +152,7 @@ namespace PayoutCalculator
                 services.AddTransient<ICalculatorService, CalculatorService>();
                 services.AddTransient<IFileStorageService, S3Service>();
                 services.AddTransient<AwsCredWrapper, AwsCredWrapper>();
-                services.AddTransient<IEmailService, EmailService>();
+                services.AddTransient<IPaymentEmailService, PaymentEmailService>();
                 services.AddTransient<IHealthCheck, HealthCheck>();
             });
         }

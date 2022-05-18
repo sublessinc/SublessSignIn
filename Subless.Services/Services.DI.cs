@@ -43,6 +43,7 @@ namespace Subless.Services
             services.AddTransient<ICognitoService, CognitoService>();
             services.AddTransient<ICacheService, CacheService>();
             services.AddTransient<IUsageService, UsageService>();
+            services.AddTransient<IEmailService, EmailService>();
             services.AddMemoryCache();
             services.AddHttpClient();
             return services;
