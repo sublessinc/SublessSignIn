@@ -132,12 +132,12 @@ namespace Subless.Services
             return hitRepository.GetPartnerHitsByDate(startDate, endDate, partnerId);
         }
 
-        public IEnumerable<Uri> GetRecentCrecatorContent(Guid creatorId)
+        public IEnumerable<HitView> GetRecentCrecatorContent(Guid creatorId)
         {
             return hitRepository.GetRecentCreatorContent(creatorId);
         }
 
-        public IEnumerable<ContentHit> GetTopCreatorContent(Guid creatorId)
+        public IEnumerable<ContentHitCount> GetTopCreatorContent(Guid creatorId)
         {
             return hitRepository.GetTopCreatorContent(creatorId);
         }

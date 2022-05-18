@@ -2,7 +2,7 @@
 
 namespace Subless.Models
 {
-    public class ContentHit
+    public class ContentHitCount
     {
         public Uri Content { get; set; }
         public int Hits { get; set; }

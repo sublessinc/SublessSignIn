@@ -77,20 +77,20 @@ namespace Subless.Data
             };
         }
 
-        public List<Uri> GetRecentCreatorContent(Guid creatorId)
+        public List<HitView> GetRecentCreatorContent(Guid creatorId)
         {
             return Hits.Where(x => x.CreatorId == creatorId)
                 .OrderByDescending(x => x.TimeStamp)
-                .Select(x => x.Uri)
+                .Select(x => new HitView { Content = x.Uri, Timestamp = x.TimeStamp.DateTime })
                 .Take(5)
                 .ToList();
         }
 
-        public List<ContentHit> GetTopCreatorContent(Guid creatorId)
+        public List<ContentHitCount> GetTopCreatorContent(Guid creatorId)
         {
             return Hits.Where(x => x.CreatorId == creatorId)
                 .GroupBy(x => x.Uri)
-                .Select(g => new ContentHit { Content= g.Key, Hits= g.Count() })
+                .Select(g => new ContentHitCount { Content= g.Key, Hits= g.Count() })
                 .OrderBy(x=>x.Hits)
                 .Take(5)
                 .ToList();

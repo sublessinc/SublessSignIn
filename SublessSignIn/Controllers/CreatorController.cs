@@ -198,7 +198,7 @@ namespace SublessSignIn.Controllers
         }
 
         [HttpGet("RecentFeed")]
-        public ActionResult<IEnumerable<Uri>> RecentFeed()
+        public ActionResult<IEnumerable<HitView>> RecentFeed()
         {
             var cognitoId = userService.GetUserClaim(HttpContext.User);
             if (cognitoId == null)
@@ -219,7 +219,7 @@ namespace SublessSignIn.Controllers
         }
 
         [HttpGet("TopFeed")]
-        public ActionResult<IEnumerable<ContentHit>> TopFeed()
+        public ActionResult<IEnumerable<ContentHitCount>> TopFeed()
         {
             var cognitoId = userService.GetUserClaim(HttpContext.User);
             if (cognitoId == null)

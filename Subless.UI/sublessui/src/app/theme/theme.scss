@@ -21,8 +21,7 @@ $md-backgroundpurple: (
     A200 : #6038ff,
     A400 : #3705ff,
     A700 : #2f00eb,
-    contrast: (
-        50 : #000000,
+    contrast: (50 : #000000,
         100 : #000000,
         200 : #000000,
         300 : #ffffff,
@@ -54,8 +53,7 @@ $md-secondarypurple: (
     A200 : #8472ff,
     A400 : #573fff,
     A700 : #4125ff,
-    contrast: (
-        50 : #000000,
+    contrast: (50 : #000000,
         100 : #000000,
         200 : #000000,
         300 : #ffffff,
@@ -87,8 +85,7 @@ $md-secondaryblue: (
     A200 : #fefeff,
     A400 : #cbdeff,
     A700 : #b2ceff,
-    contrast: (
-        50 : #000000,
+    contrast: (50 : #000000,
         100 : #000000,
         200 : #000000,
         300 : #000000,
@@ -120,8 +117,7 @@ $md-pinkhighlight: (
     A200 : #ffe4eb,
     A400 : #ffb1c5,
     A700 : #ff97b3,
-    contrast: (
-        50 : #000000,
+    contrast: (50 : #000000,
         100 : #000000,
         200 : #000000,
         300 : #000000,
@@ -153,8 +149,7 @@ $md-backgroundwhite: (
     A200 : #ffffff,
     A400 : #ffffff,
     A700 : #ffffff,
-    contrast: (
-        50 : #000000,
+    contrast: (50 : #000000,
         100 : #000000,
         200 : #000000,
         300 : #000000,
@@ -186,8 +181,7 @@ $md-subtitlegrey: (
     A200 : #ffffff,
     A400 : #ffeaf3,
     A700 : #ffd0e4,
-    contrast: (
-        50 : #000000,
+    contrast: (50 : #000000,
         100 : #000000,
         200 : #000000,
         300 : #000000,
@@ -219,8 +213,7 @@ $md-hoverpink: (
     A200 : #ffffff,
     A400 : #ffffff,
     A700 : #ffffff,
-    contrast: (
-        50 : #000000,
+    contrast: (50 : #000000,
         100 : #000000,
         200 : #000000,
         300 : #000000,
@@ -252,8 +245,7 @@ $md-pressedpink: (
     A200 : #ffffff,
     A400 : #ffffff,
     A700 : #ffffff,
-    contrast: (
-        50 : #000000,
+    contrast: (50 : #000000,
         100 : #000000,
         200 : #000000,
         300 : #000000,
@@ -285,8 +277,7 @@ $md-selectedpurple: (
     A200 : #ff69ba,
     A400 : #ff36a3,
     A700 : #ff1c97,
-    contrast: (
-        50 : #000000,
+    contrast: (50 : #000000,
         100 : #000000,
         200 : #000000,
         300 : #000000,
@@ -318,8 +309,7 @@ $md-hoverpurple: (
     A200 : #d541ff,
     A400 : #c90eff,
     A700 : #bd00f3,
-    contrast: (
-        50 : #000000,
+    contrast: (50 : #000000,
         100 : #000000,
         200 : #000000,
         300 : #ffffff,
@@ -336,7 +326,7 @@ $md-hoverpurple: (
     )
 );
 
-.analysicsCard-font{
+.analysicsCard-font {
     font-family: DM Sans;
     font-size: 64px;
     font-style: normal;
@@ -367,6 +357,7 @@ h3-font {
     text-align: center;
 
 }
+
 body-font {
     font-family: DM Sans;
     font-size: 16px;
@@ -390,13 +381,10 @@ $subless-app-warn: mat.define-palette($md-secondaryblue);
 
 // Create the theme object. A theme consists of configurations for individual
 // theming systems such as "color" or "typography".
-$subless-app-theme: mat.define-light-theme((
-  color: (
-    primary: $subless-app-primary,
-    accent: $subless-app-accent,
-    warn: $subless-app-warn,
-  )
-));
+$subless-app-theme: mat.define-light-theme((color: (primary: $subless-app-primary,
+                accent: $subless-app-accent,
+                warn: $subless-app-warn,
+            )));
 
 
 
@@ -405,6 +393,7 @@ $subless-app-theme: mat.define-light-theme((
 // Alternatively, you can import and @include the theme mixins for each component
 // that you are using.
 @include mat.all-component-themes($subless-app-theme);
+
 @mixin mix-button-theme($subless-app-theme) {
     .mat-button {
         background-color: map-get($md-pinkhighlight, 500);
@@ -418,27 +407,33 @@ $subless-app-theme: mat.define-light-theme((
         height: 58px;
         padding: 16px, 117px, 16px, 117px;
     }
+
     .mat-button-disabled {
         background-color: map-get($md-subtitlegrey, 500);
     }
-  }
+}
+
 @include mix-button-theme($subless-app-theme);
+
 @mixin mix-card-theme($subless-app-theme) {
     .mat-card {
         margin: 5vh;
         font-family: DM Sans;
     }
+
     .mat-card-title {
         @extend h3-font;
     }
+
     .mat-card-content {
         @extend body-font;
     }
-  }
+}
+
 @include mix-card-theme($subless-app-theme);
 
 .subless-background {
-    
+
     display: flex;
     flex-direction: column;
     justify-content: space-evenly;
@@ -468,8 +463,25 @@ purple-background {
     display: flex;
 }
 
-html, body {
+html,
+body {
     //min-height: 100vh;
     //height: auto;
     margin: 0;
-  }
+}
+
+
+.iconWrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100px;
+    border-radius: 10px;
+
+    background-color: map.get($md-secondarypurple, 500);
+}
+
+.icon {
+    width: 100px;
+}

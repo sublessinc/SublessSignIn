@@ -32,6 +32,8 @@ import { GlobalerrorhandlerService } from './error-handling/globalerrorhandler.s
 import { TermsComponent } from './terms/terms.component';
 import { CreatorTermsComponent } from './creator-terms/creator-terms.component';
 import { PartnerTermsComponent } from './partner-terms/partner-terms.component';
+import { RecentActivityComponent } from './recent-activity/recent-activity.component';
+import { TopContentComponent } from './top-content/top-content.component';
 
 @NgModule({
   declarations: [
@@ -55,7 +57,9 @@ import { PartnerTermsComponent } from './partner-terms/partner-terms.component';
     ErrorPageComponent,
     TermsComponent,
     CreatorTermsComponent,
-    PartnerTermsComponent
+    PartnerTermsComponent,
+    RecentActivityComponent,
+    TopContentComponent
   ],
   imports: [
     ThemeModule,

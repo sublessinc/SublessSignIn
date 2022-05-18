@@ -14,7 +14,7 @@ namespace Subless.Services
         UserStats GetUserStats(DateTimeOffset startDate, DateTimeOffset endDate, Guid userId);
         CreatorStats GetCreatorStats(DateTimeOffset startDate, DateTimeOffset endDate, Guid creatorId);
         PartnerStats GetPartnerStats(DateTimeOffset startDate, DateTimeOffset endDate, Guid partnerId);
-        IEnumerable<ContentHit> GetTopCreatorContent(Guid creatorId);
-        IEnumerable<Uri> GetRecentCrecatorContent(Guid creatorId);
+        IEnumerable<ContentHitCount> GetTopCreatorContent(Guid creatorId);
+        IEnumerable<HitView> GetRecentCrecatorContent(Guid creatorId);
     }
 }
