@@ -1,15 +1,14 @@
-﻿using CsvHelper;
+﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Threading.Tasks;
+using CsvHelper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Subless.Models;
 using Subless.Services;
-using SublessSignIn.Models;
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
-using System.Threading.Tasks;
 
 namespace SublessSignIn.Controllers
 {
@@ -196,6 +195,48 @@ namespace SublessSignIn.Controllers
             var cognitoId = userService.GetUserClaim(HttpContext.User);
             _creatorService.AcceptTerms(cognitoId);
             return Ok();
+        }
+
+        [HttpGet("RecentFeed")]
+        public ActionResult<IEnumerable<HitView>> RecentFeed()
+        {
+            var cognitoId = userService.GetUserClaim(HttpContext.User);
+            if (cognitoId == null)
+            {
+                return Unauthorized();
+            }
+            try
+            {
+                var creator = _creatorService.GetCreatorByCognitoid(cognitoId);
+                return Ok(hitService.GetRecentCrecatorContent(creator.Id));
+            }
+            catch (UnauthorizedAccessException e)
+            {
+                _logger.LogWarning(e, "Unauthorized user attempted to get creator stats");
+
+                return Unauthorized();
+            }
+        }
+
+        [HttpGet("TopFeed")]
+        public ActionResult<IEnumerable<ContentHitCount>> TopFeed()
+        {
+            var cognitoId = userService.GetUserClaim(HttpContext.User);
+            if (cognitoId == null)
+            {
+                return Unauthorized();
+            }
+            try
+            {
+                var creator = _creatorService.GetCreatorByCognitoid(cognitoId);
+                return Ok(hitService.GetTopCreatorContent(creator.Id));
+            }
+            catch (UnauthorizedAccessException e)
+            {
+                _logger.LogWarning(e, "Unauthorized user attempted to get creator stats");
+
+                return Unauthorized();
+            }
         }
     }
 }

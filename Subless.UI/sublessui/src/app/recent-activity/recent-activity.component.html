@@ -1,0 +1,19 @@
+<div class="recentFeed">
+    <div class="header">Recent Activity</div>
+    <mat-card class="card">
+        <div>
+            <mat-card-content class="hitList">
+                <div *ngFor="let hit of recentHits" class="hit">
+                    <div class="content bold">
+                        <img class="icon" src="https://img.hentai-foundry.com/themes/Dark/favicon.ico">
+                        <div>{{hit.content}}</div>
+                    </div>
+                    <div class="timestamp">
+                        <div class="bold">{{this.formatDatestamp(hit.timestamp)}}</div>
+                        <div class="faint">{{this.formatTimestamp(hit.timestamp)}}</div>
+                    </div>
+                </div>
+            </mat-card-content>
+        </div>
+    </mat-card>
+</div>
