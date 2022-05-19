@@ -1,13 +1,14 @@
 @use 'sass:map';
 @use '@angular/material' as mat;
 @import "../theme/theme";
+
 .logo {
     content: url("../../assets/img/SublessLogo.svg");
     max-width: 180px;
     margin-left: 12.5%;
 }
 
-.hamburger-img{
+.hamburger-img {
     position: relative;
     border-radius: 50%;
     width: 42;
@@ -15,28 +16,33 @@
     background-color: map-get($md-backgroundpurple, 500);
 }
 
-.drawer{
+.drawer {
     background-color: map.get($md-backgroundpurple, 500);
     width: 10%;
     min-width: 240px;
     display: flex;
     flex-direction: column;
 }
+
 .is-active {
     background-color: map.get($md-selectedpurple, 500) !important;
 }
+
 #bottom-nav {
     position: absolute;
     bottom: 0;
 }
+
 .root {
     height: 100vh;
     width: 100vw;
     display: flex;
 }
+
 .content {
     height: 100vh;
 }
+
 .avatar {
     padding: .5em;
 }
@@ -50,9 +56,9 @@
 
 @mixin mix-navlist-theme($subless-app-theme) {
     .mat-list-item {
-      background-color: map-get($md-backgroundpurple, 500);
-      color: map-get($md-backgroundwhite, 500) !important; 
-      font-family: DM Sans;
+        background-color: map-get($md-backgroundpurple, 500);
+        color: map-get($md-backgroundwhite, 500) !important;
+        font-family: DM Sans;
         font-size: 16px;
         font-style: normal;
         font-weight: 500;
@@ -62,22 +68,26 @@
         padding: 16px, 117px, 16px, 117px;
 
     }
-  }
+}
+
 @include mix-navlist-theme($subless-app-theme);
 
 @mixin mix-select-theme($subless-app-theme) {
     .mat-form-field-wrapper {
         padding-bottom: 0% !important;
     }
-    .mat-form-field{
+
+    .mat-form-field {
         background-color: map-get($md-backgroundwhite, 500);
         padding-bottom: 0% !important;
 
     }
-    .mat-form-field-underline{
+
+    .mat-form-field-underline {
         visibility: hidden;
     }
-  }
+}
+
 @include mix-select-theme($subless-app-theme);
 
 .logout2 {
@@ -95,5 +105,5 @@
     letter-spacing: 0em;
     height: 58px;
     padding: 16px, 117px, 16px, 117px;
-    color: map-get($md-backgroundwhite, 500); 
+    color: map-get($md-backgroundwhite, 500);
 }
