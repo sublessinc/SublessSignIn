@@ -59,6 +59,15 @@ namespace Subless.Services.Services
             emailTask.Wait();
         }
 
+        public void SendAdminNotification()
+        {
+            var emailTask = Task.Run(() => _emailSerivce.SendEmail(
+                $"Receipts have been sent to patrons for {SiteLinkKey}",
+                "contact@subless.com",
+                $"Receipts have been sent to patrons for {SiteLinkKey}"));
+            emailTask.Wait();
+        }
+
         public string GetEmailBody(List<Payment> payments)
         {
             var template = GetEmailTemplate();
