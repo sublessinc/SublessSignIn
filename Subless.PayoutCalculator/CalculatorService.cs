@@ -24,7 +24,7 @@ namespace Subless.PayoutCalculator
         private readonly ILoggerFactory _loggerFactory;
         private readonly IFileStorageService _s3Service;
         private readonly IUserService userService;
-        private readonly IEmailService emailService;
+        private readonly IPaymentEmailService emailService;
         private readonly ILogger _logger;
 
         public CalculatorService(
@@ -36,7 +36,7 @@ namespace Subless.PayoutCalculator
             IFileStorageService s3Service,
             IUserService userService,
             IOptions<StripeConfig> stripeOptions,
-            IEmailService emailService,
+            IPaymentEmailService emailService,
             ILoggerFactory loggerFactory)
         {
             _stripeService = stripeService ?? throw new ArgumentNullException(nameof(stripeService));
@@ -49,11 +49,12 @@ namespace Subless.PayoutCalculator
             this.userService = userService ?? throw new ArgumentNullException(nameof(userService));
             this.emailService = emailService ?? throw new ArgumentNullException(nameof(emailService));
             _logger = _loggerFactory.CreateLogger<CalculatorService>();
-            SublessPayPalId = stripeOptions.Value.SublessPayPalId ?? throw new ArgumentNullException(nameof(stripeOptions.Value.SublessPayPalId));
+            SublessPayPalId = stripeOptions.Value.SublessPayPalId ?? throw new ArgumentNullException(nameof(stripeOptions));
         }
 
         public void CalculatePayments(DateTimeOffset startDate, DateTimeOffset endDate)
         {
+            var emailSent = false;
             Dictionary<string, double> allPayouts = new Dictionary<string, double>();
             // get what we were paid (after fees), and by who
             var payers = GetPayments(startDate, endDate);
@@ -99,6 +100,7 @@ namespace Subless.PayoutCalculator
                 // record each outgoing payment to master list
                 var payments = SavePaymentDetails(payees, payer, endDate);
                 emailService.SendReceiptEmail(payments, user.CognitoId);
+                emailSent = true;
                 AddPayeesToMasterList(allPayouts, payees);
             }
             // stripe sends payments in cents, paypal expects payouts in dollars
@@ -109,6 +111,10 @@ namespace Subless.PayoutCalculator
             SaveMasterList(allPayouts, endDate);
             // record to s3 bucket
             SavePayoutsToS3(allPayouts);
+            if (emailSent)
+            {
+                emailService.SendAdminNotification();
+            }
         }
 
         private IEnumerable<Hit> FilterInvalidCreators(IEnumerable<Hit> hits)

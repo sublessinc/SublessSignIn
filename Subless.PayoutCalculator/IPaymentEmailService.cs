@@ -4,10 +4,10 @@ using System.Threading.Tasks;
 
 namespace Subless.Services.Services
 {
-    public interface IEmailService
+    public interface IPaymentEmailService
     {
         string GetEmailBody(List<Payment> payments);
-        Task SendEmail(string body, string to, string from, string subject);
+        void SendAdminNotification();
         void SendReceiptEmail(List<Payment> payments, string cognitoId);
     }
 }
