@@ -31,6 +31,15 @@ namespace SublessSignIn
 
         private Task HandleException(HttpContext context, Exception ex)
         {
+            if (ex is TaskCanceledException)
+            {
+                _logger.LogError("Task cancelled error occurred");
+                _logger.LogError($"Path {context.Request.Path}");
+                _logger.LogError($"Method {context.Request.Method}");
+                _logger.LogError($"Query {context.Request.Query}");
+                _logger.LogError($"Claims {string.Join("\n", context.User.Claims)}");
+            }
+
             // Redirect to login if login session has timed out
             if (ex.Message == "An error was encountered while handling the remote login.")
             {
@@ -39,6 +48,7 @@ namespace SublessSignIn
                 context.Response.Headers.Add("Location", "/");
                 return context.Response.WriteAsync("Timeout encountered during login");
             }
+
             else
             {
                 _logger.LogError(ex, "Unhandled exception encountered");
