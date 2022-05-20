@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Moq;
 using Subless.Data;
 using Subless.Models;
@@ -147,6 +148,7 @@ namespace Subless.Tests
                 new Mock<IHitRepository>().Object,
                 creatorService.Object,
                 new Mock<IPartnerService>().Object,
+                Options.Create(new FeatureConfig()),
                 mockLoggerFactory.Object);
         }
 

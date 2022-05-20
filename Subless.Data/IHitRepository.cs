@@ -15,5 +15,7 @@ namespace Subless.Data
         UserStats GetUserStats(DateTimeOffset startDate, DateTimeOffset endDate, string cognitoId);
         void LogDbStats();
         void SaveHit(Hit hit);
+        List<ContentHitCount> GetTopCreatorContent(Guid creatorId);
+        List<HitView> GetRecentCreatorContent(Guid creatorId);
     }
 }

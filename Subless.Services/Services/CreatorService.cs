@@ -19,19 +19,27 @@ namespace Subless.Services
         private readonly ICacheService cache;
         private readonly ILogger<CreatorService> logger;
         IPaymentRepository paymentRepository;
+        private readonly IEmailService _emailService;
 
         public CreatorService(
             IUserRepository userRepository,
             ICreatorRepository creatorRepository,
             IPartnerService partnerService,
             IPaymentRepository paymentRepository,
+            IEmailService emailService,
             ICacheService cache,
             ILoggerFactory loggerFactory)
         {
+            if (loggerFactory is null)
+            {
+                throw new ArgumentNullException(nameof(loggerFactory));
+            }
+
             _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
             this.creatorRepository = creatorRepository ?? throw new ArgumentNullException(nameof(creatorRepository));
             this.partnerService = partnerService ?? throw new ArgumentNullException(nameof(partnerService));
-            this.paymentRepository = paymentRepository;
+            this.paymentRepository = paymentRepository ?? throw new ArgumentNullException(nameof(paymentRepository));
+            _emailService = emailService ?? throw new ArgumentNullException(nameof(emailService));
             this.cache = cache ?? throw new ArgumentNullException(nameof(cache));
             this.logger = loggerFactory?.CreateLogger<CreatorService>() ?? throw new ArgumentNullException(nameof(loggerFactory));
         }
@@ -94,8 +102,13 @@ namespace Subless.Services
             // Set user modifiable properties
             var currentCreator = creators.First();
             var wasValid = CreatorValid(currentCreator);
+            if (currentCreator.PayPalId != null && currentCreator.PayPalId!=creator.PayPalId)
+            {
+                await _emailService.SendEmail(GetPaymentChangedEmail(creator.Username), currentCreator.PayPalId, "Subless payout no longer associated with this email");
+            }
             currentCreator.PayPalId = creator.PayPalId;
             creatorRepository.UpdateCreator(currentCreator);
+            await _emailService.SendEmail(GetPaymentSetEmail(creator.Username), creator.PayPalId, "Subless payout email set");
             await FireCreatorActivationWebhook(creator, wasValid);
             return currentCreator;
         }
@@ -169,6 +182,18 @@ namespace Subless.Services
             var creator = creators.Single();
             creator.AcceptedTerms = true;
             creatorRepository.UpdateCreator(creator);
+        }
+
+        private string GetPaymentSetEmail(string creatorName)
+        {
+            return $"The subless creator {creatorName} has set their payout to be sent to this address. If this was a mistake, please visit your profile to change it. " +
+                $"If you do not have a subless account, please reach out to contact@subless.com for help.";
+        }
+
+        private string GetPaymentChangedEmail(string creatorName)
+        {
+            return $"The subless creator {creatorName} has changed their payout to no longer be this address. If this was a mistake, please visit your profile to change it. " +
+                $"If you did not perform this action, please reach out to contact@subless.com for help.";
         }
     }
 }

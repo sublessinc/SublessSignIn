@@ -1,37 +1,46 @@
-<div class="stats">
-    <mat-card class="card">
-        <div class="iconWrapper">
-            <img class="icon" src="../../assets/img/views.svg">
+<div class="profile">
+    <div class="stats">
+        <mat-card class="card">
+            <div class="iconWrapper">
+                <img class="icon" src="../../assets/img/views.svg">
+            </div>
+            <div class="statText"
+                title="This is the total number of times a subless patron has opened a link on a partner website containing something you've made. Only subless patron hits are counted, because only they have budgets from which you'll receive funds.">
+                <mat-card-content class="statHeader">Views From Patrons</mat-card-content>
+                <mat-card-content class="numberText">{{analytics.thisMonth.views}}</mat-card-content>
+                <mat-card-content><b>{{analytics.lastMonth.views}}</b> Views last month</mat-card-content>
+            </div>
+        </mat-card>
+        <mat-card class="card">
+            <div class="iconWrapper">
+                <img class="icon" src="../../assets/img/creators.svg">
+            </div>
+            <div class="statText"
+                title="This is the total number of individual subless patrons who've visited your content. You'll receive a cut of each of these patrons' monthly budgets.">
+                <mat-card-content class="statHeader">Unique Patrons Who Visited</mat-card-content>
+                <mat-card-content class="numberText">{{analytics.thisMonth.visitors}}</mat-card-content>
+                <mat-card-content><b>{{analytics.lastMonth.visitors}}</b> Visitors last month
+                </mat-card-content>
+            </div>
+        </mat-card>
+        <mat-card class="card">
+            <div class="iconWrapper">
+                <img class="icon" src="../../assets/img/picture.svg">
+            </div>
+            <div class="statText"
+                title="These are the total number of different pieces of content you've created that patrons have viewed.">
+                <mat-card-content class="statHeader">Unqiue content viewed</mat-card-content>
+                <mat-card-content class="numberText">{{analytics.thisMonth.piecesOfContent}}</mat-card-content>
+                <mat-card-content><b>{{analytics.lastMonth.piecesOfContent}}</b> Unqiue content viewed last month
+                </mat-card-content>
+            </div>
+        </mat-card>
+        <div class="card downloadWrapper">
+            <app-creatorstats></app-creatorstats>
         </div>
-        <div class="statText">
-            <mat-card-content class="statHeader">Total Views</mat-card-content>
-            <mat-card-content class="numberText">{{analytics.thisMonth.views}}</mat-card-content>
-            <mat-card-content><b>{{analytics.lastMonth.views}}</b> Views last month</mat-card-content>
-        </div>
-    </mat-card>
-    <mat-card class="card">
-        <div class="iconWrapper">
-            <img class="icon" src="../../assets/img/creators.svg">
-        </div>
-        <div class="statText">
-            <mat-card-content class="statHeader">Unique Visitors</mat-card-content>
-            <mat-card-content class="numberText">{{analytics.thisMonth.visitors}}</mat-card-content>
-            <mat-card-content><b>{{analytics.lastMonth.visitors}}</b> Visitors last month
-            </mat-card-content>
-        </div>
-    </mat-card>
-    <mat-card class="card">
-        <div class="iconWrapper">
-            <img class="icon" src="../../assets/img/picture.svg">
-        </div>
-        <div class="statText">
-            <mat-card-content class="statHeader">Unqiue content viewed</mat-card-content>
-            <mat-card-content class="numberText">{{analytics.thisMonth.piecesOfContent}}</mat-card-content>
-            <mat-card-content><b>{{analytics.lastMonth.piecesOfContent}}</b> Unqiue content viewed last month
-            </mat-card-content>
-        </div>
-    </mat-card>
-    <div class="card downloadWrapper">
-        <app-creatorstats></app-creatorstats>
+    </div>
+    <div class="feeds">
+        <app-recent-activity></app-recent-activity>
+        <app-top-content></app-top-content>
     </div>
 </div>

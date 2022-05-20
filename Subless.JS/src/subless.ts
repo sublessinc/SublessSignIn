@@ -10,6 +10,7 @@ interface SublessInterface {
     subless_LoggedIn(): Promise<boolean>; // eslint-disable-line camelcase
     subless_hit(): Promise<void>; // eslint-disable-line camelcase
     sublessLogout(): Promise<void>;
+    sublessShowLogo(): Promise<void>;
 }
 
 interface SublessSettings {
@@ -69,7 +70,6 @@ export class Subless implements SublessInterface {
         }).then((response) => response.json());
     }
 
-
     /** If a user is logged in, report the user's view of this creator/site to the subless server. */
     async subless_hit() { // eslint-disable-line camelcase
         const loggedIn = await this.subless_LoggedIn();
@@ -81,10 +81,53 @@ export class Subless implements SublessInterface {
                     headers: {
                         "Content-Type": "application/json",
                     },
-                    body: window.location.href,
+                    body: window.location.origin + window.location.pathname,
                     credentials: "include",
                 });
+            const result = await body.then((response) => response.json());
+            if (result === true) {
+                this.sublessShowLogo();
+            }
         }
+    }
+
+    /** Shows logo at bottom right corner */
+    async sublessShowLogo() {
+        const img = document.createElement("img");
+        img.style.position = "absolute";
+        img.style.bottom = "0";
+        img.style.right = "0";
+        img.style.width = "5%";
+        img.src = sublessUri + "/dist/assets/SublessIcon.svg";
+        img.id = "sublessHitIndicator";
+        document.body.appendChild(img);
+        this.fadeInAndOut(img);
+    }
+
+    /** Fades in an element
+     * @param {HTMLElement} el element to fade
+    */
+    fadeInAndOut(el: HTMLElement) {
+        el.style.opacity = "0";
+        let fadeout = false;
+        const tick = function () {
+            if (!fadeout) {
+                el.style.opacity = +el.style.opacity + 0.02 + "";
+            } else {
+                el.style.opacity = +el.style.opacity - 0.02 + "";
+            }
+            if (fadeout && +el.style.opacity == 0) {
+                document.body.removeChild(el);
+                return;
+            }
+            if (!fadeout && +el.style.opacity >= 1) {
+                fadeout = true;
+            }
+            if (fadeout || +el.style.opacity < 1) {
+                (window.requestAnimationFrame && requestAnimationFrame(tick)) || setTimeout(tick, 16);
+            }
+        };
+        tick();
     }
 
     /** A method that can be used to log a user out from Subless */

@@ -17,7 +17,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Subless.Services.Services
 {
-    public class EmailService : IEmailService
+    public class PaymentEmailService : IPaymentEmailService
     {
         public const string MonthKey = "{{month}}"; // March, 2022
         public const string IndividualPaymentTemplate = "            <tr style='padding: 10px;padding-bottom: 20px;'><td>{{creatorname}}</td><td style='text-align: right;'>{{creatorpayment}}</td></tr>";
@@ -31,8 +31,9 @@ namespace Subless.Services.Services
         public readonly CalculatorConfiguration authSettings;
         private readonly ICognitoService cognitoService;
         private readonly ILogger logger;
+        private readonly IEmailService _emailSerivce;
 
-        public EmailService(IOptions<CalculatorConfiguration> options, ICognitoService cognitoService, ILoggerFactory loggerFactory)
+        public PaymentEmailService(IOptions<CalculatorConfiguration> options, IEmailService emailService, ICognitoService cognitoService, ILoggerFactory loggerFactory)
         {
             if (options is null)
             {
@@ -45,7 +46,8 @@ namespace Subless.Services.Services
             }
             authSettings = options.Value;
             this.cognitoService = cognitoService ?? throw new ArgumentNullException(nameof(cognitoService));
-            this.logger = loggerFactory.CreateLogger<EmailService>();
+            _emailSerivce= emailService?? throw new ArgumentNullException(nameof(emailService));
+            logger = loggerFactory.CreateLogger<PaymentEmailService>();
         }
 
         public void SendReceiptEmail(List<Payment> payments, string cognitoId)
@@ -53,7 +55,16 @@ namespace Subless.Services.Services
             var usertask = Task.Run(() => cognitoService.GetCognitoUserEmail(cognitoId));
             usertask.Wait();
             var body = GetEmailBody(payments);
-            var emailTask = Task.Run(() => SendEmail(body, usertask.Result, "contact@subless.com", "Your subless receipt"));
+            var emailTask = Task.Run(() => _emailSerivce.SendEmail(body, usertask.Result, "Your subless receipt"));
+            emailTask.Wait();
+        }
+
+        public void SendAdminNotification()
+        {
+            var emailTask = Task.Run(() => _emailSerivce.SendEmail(
+                $"Receipts have been sent to patrons for { authSettings.Domain }",
+                "contact@subless.com",
+                $"Receipts have been sent to patrons for { authSettings.Domain }"));
             emailTask.Wait();
         }
 
@@ -101,49 +112,6 @@ namespace Subless.Services.Services
                 formattedPayments.Add(individualPayment);
             }
             return formattedPayments;
-        }
-
-        public async Task SendEmail(string body, string to, string from, string subject)
-        {
-            using (var client = new AmazonSimpleEmailServiceClient())
-            {
-                var sendRequest = new SendEmailRequest
-                {
-                    Source = from,
-                    Destination = new Destination
-                    {
-                        ToAddresses =
-                        new List<string> { to }
-                    },
-                    Message = new Message
-                    {
-                        Subject = new Content(subject),
-                        Body = new Body
-                        {
-                            Html = new Content
-                            {
-                                Charset = "UTF-8",
-                                Data = body
-                            },
-                        }
-                    },
-                    // If you are not using a configuration set, comment
-                    // or remove the following line 
-                    //ConfigurationSetName = configSet
-                };
-                try
-                {
-                    logger.LogInformation("Sending email using Amazon SES...");
-                    var response = await client.SendEmailAsync(sendRequest);
-                    logger.LogInformation("The email was sent successfully.");
-                }
-                catch (Exception ex)
-                {
-                    logger.LogCritical("The email was not sent.");
-                    logger.LogCritical("Error message: " + ex.Message);
-
-                }
-            }
         }
     }
 }
