@@ -81,7 +81,11 @@ namespace Subless.Data
         {
             return Hits.Where(x => x.CreatorId == creatorId)
                 .OrderByDescending(x => x.TimeStamp)
-                .Select(x => new HitView { Content = x.Uri, Timestamp = x.TimeStamp.DateTime })
+                .Select(x =>
+                new HitView {
+                    Content = x.Uri,
+                    Title = x.Uri.Segments.Length > 1 ? x.Uri.Segments.Last(): x.Uri.Host,
+                    Timestamp = x.TimeStamp.DateTime })
                 .Take(5)
                 .ToList();
         }
@@ -90,8 +94,12 @@ namespace Subless.Data
         {
             return Hits.Where(x => x.CreatorId == creatorId)
                 .GroupBy(x => x.Uri)
-                .Select(g => new ContentHitCount { Content= g.Key, Hits= g.Count() })
-                .OrderBy(x=>x.Hits)
+                .Select(g =>
+                new ContentHitCount {
+                    Content= g.Key,
+                    Title = g.Key.Segments.Length > 1 ? g.Key.Segments.Last() : g.Key.Host,
+                    Hits = g.Count() })
+                .OrderByDescending(x=>x.Hits)
                 .Take(5)
                 .ToList();
         }
