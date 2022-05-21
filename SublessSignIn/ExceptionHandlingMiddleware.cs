@@ -33,12 +33,13 @@ namespace SublessSignIn
         {
             if (ex is TaskCanceledException)
             {
-                _logger.LogError("Task cancelled error occurred. This is occurring on logout in some cases.");
-                _logger.LogError($"Path {context.Request.Path}");
-                _logger.LogError($"Method {context.Request.Method}");
-                _logger.LogError($"Query {context.Request.Query}");
-                _logger.LogError($"Subject ID: {context.User.FindFirst("sub")}");
-                _logger.LogError($"If the subject ID has been removed from the sessionDB, we can probably ignore this error");
+                _logger.LogWarning("Task cancelled error occurred. This is occurring on logout in some cases.");
+                _logger.LogWarning($"Path {context.Request.Path}");
+                _logger.LogWarning($"Method {context.Request.Method}");
+                _logger.LogWarning($"Query {context.Request.Query}");
+                _logger.LogWarning($"Subject ID: {context.User.FindFirst("sub")}");
+                _logger.LogWarning($"If the subject ID has been removed from the sessionDB, we can probably ignore this error");
+                return context.Response.WriteAsync("Timeout encountered during login");
             }
 
             // Redirect to login if login session has timed out
