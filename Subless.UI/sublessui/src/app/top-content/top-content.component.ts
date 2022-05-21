@@ -20,7 +20,8 @@ export class TopContentComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.subs.push(this.creatorService.getTopFeed().subscribe({
       next: (hits: IHitCount[]) => {
-        this.topHits = hits;
+        hits = hits.sort((a, b) => a.hits - b.hits)
+        this.topHits = hits.reverse();
         this.changeDetector.detectChanges();
       }
     }));
