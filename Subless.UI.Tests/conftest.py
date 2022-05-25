@@ -21,7 +21,7 @@ def pytest_addoption(parser):
 def params(request):
     params = {'password': request.config.getoption('--password') \
         if request.config.getoption('--password') is not None \
-        else 'SublessTestUser'}
+        else 'SublessGodUser'}
     if params['password'] is None:
         pytest.skip('No valid password available for tests')
 
@@ -36,16 +36,16 @@ def params(request):
 # so ....
 @pytest.fixture
 def mailslurp_inbox():
-    yield 'null' # todo:  temporarily disabling in the laziest way possible
-    # from EmailLib import MailSlurp
-    #
-    # # create
-    # inbox = MailSlurp.create_inbox()
-    #
-    # yield inbox
-    #
-    # # delete
-    # MailSlurp.delete_inbox_by_id(inbox.id)
+    # yield 'null' # todo:  temporarily disabling in the laziest way possible
+    from EmailLib import MailSlurp
+
+    # create
+    inbox = MailSlurp.create_inbox()
+
+    yield inbox
+
+    # delete
+    MailSlurp.delete_inbox_by_id(inbox.id)
 
 
 @pytest.fixture(scope='session')

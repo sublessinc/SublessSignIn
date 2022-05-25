@@ -4,10 +4,11 @@ import os
 
 import time
 from selenium.webdriver.support.wait import WebDriverWait
-
+from selenium.webdriver.support import expected_conditions as EC
 from PageObjectModels.BasePage import BasePage
 from PageObjectModels.DashboardPage import DashboardPage
 from PageObjectModels.PlanSelectionPage import PlanSelectionPage
+from selenium.webdriver.common.by import By
 
 
 logging.basicConfig(level=logging.INFO)
@@ -37,7 +38,10 @@ class LoginPage(BasePage):
 
     @property
     def signup_link(self):
-        return self.driver.find_elements_by_xpath(LoginLocators.signup_link_xpath)[0]
+        WebDriverWait(self.driver, 10).until(
+            EC.element_to_be_clickable((By.CSS_SELECTOR, LoginLocators.signup_link_selector)))
+        link = self.driver.find_element_by_css_selector(LoginLocators.signup_link_selector)
+        return link
 
     def open(self):
         self.driver.get(f'https://{os.environ["environment"]}.subless.com')
@@ -93,5 +97,9 @@ class LoginLocators:
     pass_textbox_id = 'signInFormPassword'
     sign_in_button_name = 'signInSubmitButton'
     forgot_pass_xpath = '/html/body/div[1]/div/div[1]/div[2]/div[2]/div[3]/div[2]/div/form/div[3]/a'
-    signup_link_xpath = '/html/body/div[1]/div/div[2]/div[2]/div[2]/div[2]/div[2]/div/form/div[3]/p/a'
+    signup_link_selector = 'body > div.container > div > div.modal-content.background-customizable.modal-content' \
+                           '-desktop.visible-md.visible-lg > div.modal-body > div:nth-child(2) > ' \
+                           'div.panel.panel-left-border.col-md-6.col-lg-6 > div:nth-child(2) > div > form > ' \
+                           'div:nth-child(10) > p > a '
+    # signup_link_xpath = '/html/body/div[1]/div/div[2]/div[2]/div[2]/div[2]/div[2]/div/form/div[3]/p/a'
     # signup_link_xpath = '/html/body/div[1]/div/div[2]/div[2]/div[2]/div[2]/div/div/form/div[3]/p/a'

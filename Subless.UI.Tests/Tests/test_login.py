@@ -17,10 +17,10 @@ def test_new_un_pass_login(web_driver, params):
 
     # WHEN: I enter my username and password and click 'sign in'
     plan_selection_page = login_page.sign_in(
-        'sublesstestuser+unselected@gmail.com', params['password'])
+        '2d4550ca-4173-423c-851a-52cfd7d01ddb@mailslurp.com', params['password'])
 
     # THEN: I should be taken to the plan selection page
-    assert "Sublessui" in web_driver.title
+    assert "subless" in web_driver.title
     assert 'register-payment' in web_driver.current_url
 
     # AND: I should be able to successfully log out
@@ -63,11 +63,14 @@ def test_user_creation(web_driver, mailslurp_inbox, params):
 
     otp_page = sign_up_page.sign_up(mailslurp_inbox.email_address,
                                     'SublessTestUser')
-    plan_selection_page = otp_page.confirm_otp(
+    terms_page = otp_page.confirm_otp(
         MailSlurp.get_newest_otp(inbox_id=mailslurp_inbox.id))
 
+    plan_selection_page = terms_page.accept_terms()
+
+
     # THEN: I should be taken to the plan selection page
-    assert "Sublessui" in web_driver.title
+    assert "subless" in web_driver.title
     assert 'register-payment' in web_driver.current_url
 
     # AND: I should be able to successfully log out
