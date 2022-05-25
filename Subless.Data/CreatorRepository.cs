@@ -38,7 +38,7 @@ namespace Subless.Data
 
         public Creator GetCreatorByUsernameAndPartnerId(string username, Guid partnerId)
         {
-            return Creators.FirstOrDefault(creator => creator.Username == username && creator.PartnerId == partnerId);
+            return Creators.FirstOrDefault(creator => creator.Username == username && creator.PartnerId == partnerId && creator.Active);
         }
 
         public void UpdateCreator(Creator creator)
@@ -49,6 +49,7 @@ namespace Subless.Data
 
         public void SaveCreator(Creator creator)
         {
+            creator.CreateDate = DateTime.UtcNow;
             Creators.Add(creator);
             SaveChanges();
         }

@@ -1,15 +1,14 @@
-﻿using CsvHelper;
+﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Threading.Tasks;
+using CsvHelper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Subless.Models;
 using Subless.Services;
-using SublessSignIn.Models;
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
-using System.Threading.Tasks;
 
 namespace SublessSignIn.Controllers
 {
@@ -22,13 +21,21 @@ namespace SublessSignIn.Controllers
         private readonly IUserService userService;
         private readonly IHitService hitService;
         private readonly IPaymentLogsService paymentLogsService;
+        private readonly IUsageService _usageService;
         private readonly ILogger _logger;
-        public CreatorController(ICreatorService creatorService, ILoggerFactory loggerFactory, IUserService userService, IHitService hitService, IPaymentLogsService paymentLogsService)
+        public CreatorController(
+            ICreatorService creatorService,
+            ILoggerFactory loggerFactory,
+            IUserService userService,
+            IHitService hitService,
+            IPaymentLogsService paymentLogsService,
+            IUsageService usageService)
         {
             _creatorService = creatorService ?? throw new ArgumentNullException(nameof(creatorService));
             this.userService = userService ?? throw new ArgumentNullException(nameof(userService));
             this.hitService = hitService ?? throw new ArgumentNullException(nameof(hitService));
             this.paymentLogsService = paymentLogsService ?? throw new ArgumentNullException(nameof(paymentLogsService));
+            _usageService = usageService ?? throw new ArgumentNullException(nameof(usageService));
             _logger = loggerFactory?.CreateLogger<PartnerController>() ?? throw new ArgumentNullException(nameof(loggerFactory));
         }
 
@@ -112,7 +119,7 @@ namespace SublessSignIn.Controllers
         }
 
         [HttpGet("Analytics")]
-        public ActionResult<HistoricalStats<UserStats>> GetUserAnalytics()
+        public ActionResult<HistoricalStats<CreatorStats>> GetUserAnalytics()
         {
             var cognitoId = userService.GetUserClaim(HttpContext.User);
             if (cognitoId == null)
@@ -127,9 +134,17 @@ namespace SublessSignIn.Controllers
                 {
                     paymentDate = DateTimeOffset.UtcNow.AddMonths(-1);
                 }
-                var hitsThisMonth = hitService.GetCreatorHitsByDate(paymentDate, DateTimeOffset.UtcNow, creator.Id);
-                var hitsLastMonth = hitService.GetCreatorHitsByDate(paymentDate.AddMonths(-1), paymentDate, creator.Id);
-                return Ok(CreatorStatsExtensions.GetHistoricalCreatorStats(hitsThisMonth, hitsLastMonth));
+                var hitsThisMonth = hitService.GetCreatorStats(paymentDate, DateTimeOffset.UtcNow, creator.Id);
+                var hitsLastMonth = hitService.GetCreatorStats(paymentDate.AddMonths(-1), paymentDate, creator.Id);
+                if (creator.UserId != null)
+                {
+                    _usageService.SaveUsage(UsageType.UserStats, (Guid)creator.UserId);
+                }
+                return Ok(new HistoricalStats<CreatorStats>
+                {
+                    LastMonth = hitsLastMonth,
+                    thisMonth = hitsThisMonth
+                });
             }
             catch (UnauthorizedAccessException e)
             {
@@ -180,6 +195,48 @@ namespace SublessSignIn.Controllers
             var cognitoId = userService.GetUserClaim(HttpContext.User);
             _creatorService.AcceptTerms(cognitoId);
             return Ok();
+        }
+
+        [HttpGet("RecentFeed")]
+        public ActionResult<IEnumerable<HitView>> RecentFeed()
+        {
+            var cognitoId = userService.GetUserClaim(HttpContext.User);
+            if (cognitoId == null)
+            {
+                return Unauthorized();
+            }
+            try
+            {
+                var creator = _creatorService.GetCreatorByCognitoid(cognitoId);
+                return Ok(hitService.GetRecentCrecatorContent(creator.Id));
+            }
+            catch (UnauthorizedAccessException e)
+            {
+                _logger.LogWarning(e, "Unauthorized user attempted to get creator stats");
+
+                return Unauthorized();
+            }
+        }
+
+        [HttpGet("TopFeed")]
+        public ActionResult<IEnumerable<ContentHitCount>> TopFeed()
+        {
+            var cognitoId = userService.GetUserClaim(HttpContext.User);
+            if (cognitoId == null)
+            {
+                return Unauthorized();
+            }
+            try
+            {
+                var creator = _creatorService.GetCreatorByCognitoid(cognitoId);
+                return Ok(hitService.GetTopCreatorContent(creator.Id));
+            }
+            catch (UnauthorizedAccessException e)
+            {
+                _logger.LogWarning(e, "Unauthorized user attempted to get creator stats");
+
+                return Unauthorized();
+            }
         }
     }
 }

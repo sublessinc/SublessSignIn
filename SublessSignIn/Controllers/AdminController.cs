@@ -49,10 +49,17 @@ namespace SublessSignIn.Controllers
 
         [TypeFilter(typeof(AdminAuthorizationFilter))]
         [HttpGet("userCapabilties")]
-        public IActionResult GetUserCapabilities([FromQuery] Guid userId)
+        public IActionResult GetUserCapabilities([FromQuery] Guid? userId = null, string? cognitoId = null)
         {
-            var user = userService.GetUser(userId);
-            user = userService.GetUserByCognitoId(user.CognitoId);
+            if (userId != null)
+            {
+                cognitoId = userService.GetUser(userId.Value)?.CognitoId;
+            }
+           if (cognitoId == null)
+            {
+                return NotFound();
+            }
+            var user = userService.GetUserByCognitoId(cognitoId);
             return Ok(user);
         }
     }

@@ -21,6 +21,7 @@ namespace Subless.Data
             services.AddTransient<ICreatorRepository, Repository>();
             services.AddTransient<IPartnerRepository, Repository>();
             services.AddTransient<IHitRepository, Repository>();
+            services.AddTransient<IUsageRepository, Repository>();
             services.AddDbContext<Repository>(options => options.UseNpgsql(dbCreds.GetDatabaseConnection()));
 
             return services;

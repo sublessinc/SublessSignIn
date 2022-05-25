@@ -40,6 +40,9 @@ namespace Subless.Data.Migrations
                     b.Property<bool>("Active")
                         .HasColumnType("boolean");
 
+                    b.Property<DateTimeOffset>("CreateDate")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("Email")
                         .HasColumnType("text");
 
@@ -101,6 +104,12 @@ namespace Subless.Data.Migrations
 
                     b.HasIndex("UserId");
 
+                    b.HasIndex("TimeStamp", "CognitoId");
+
+                    b.HasIndex("TimeStamp", "CreatorId");
+
+                    b.HasIndex("TimeStamp", "PartnerId");
+
                     b.ToTable("Hits");
                 });
 
@@ -118,6 +127,9 @@ namespace Subless.Data.Migrations
 
                     b.Property<string>("CognitoAppClientId")
                         .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("CreateDate")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("CreatorWebhook")
                         .HasColumnType("text");
@@ -282,6 +294,26 @@ namespace Subless.Data.Migrations
                     b.ToTable("UserSessions");
                 });
 
+            modelBuilder.Entity("Subless.Models.UsageStat", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("Date")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("UsageType")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("UsageStats");
+                });
+
             modelBuilder.Entity("Subless.Models.User", b =>
                 {
                     b.Property<Guid>("Id")
@@ -293,6 +325,9 @@ namespace Subless.Data.Migrations
 
                     b.Property<string>("CognitoId")
                         .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("CreateDate")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<bool>("IsAdmin")
                         .HasColumnType("boolean");

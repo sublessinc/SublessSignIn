@@ -29,8 +29,9 @@ namespace SublessSignIn.Controllers
         [HttpPost]
         [EnableCors("Unrestricted")]
         [Authorize]
-        public async Task<ActionResult> Hit()
+        public async Task<ActionResult<bool>> Hit()
         {
+            bool validHit = false;
             using (var reader = new StreamReader(Request.Body))
             {
                 var body = await reader.ReadToEndAsync();
@@ -52,9 +53,9 @@ namespace SublessSignIn.Controllers
                 {
                     return Unauthorized("User claim could not be found");
                 }
-                _hitService.SaveHit(userService.GetUserClaim(HttpContext.User), hitSource);
+                validHit = _hitService.SaveHit(userService.GetUserClaim(HttpContext.User), hitSource);
             }
-            return Ok();
+            return Ok(validHit);
         }
 
         [HttpPost("Test")]

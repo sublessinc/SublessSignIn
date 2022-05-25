@@ -25,6 +25,7 @@ namespace SublessSignIn.Controllers
         private readonly IHitService hitService;
         private readonly IPaymentLogsService paymentLogsService;
         private readonly ICorsPolicyAccessor corsPolicyAccessor;
+        private readonly IUsageService _usageService;
         private readonly ILogger _logger;
         //this is a weird place to get this from, but it'll work. Probs split it out later
         private readonly StripeConfig _settings;
@@ -36,6 +37,7 @@ namespace SublessSignIn.Controllers
             IPaymentLogsService paymentLogsService,
             IOptions<StripeConfig> authSettings,
             ICorsPolicyAccessor corsPolicyAccessor,
+            IUsageService usageService,
             ILoggerFactory loggerFactory)
         {
             if (authSettings is null)
@@ -54,6 +56,7 @@ namespace SublessSignIn.Controllers
             this.hitService = hitService ?? throw new ArgumentNullException(nameof(hitService));
             this.paymentLogsService = paymentLogsService ?? throw new ArgumentNullException(nameof(paymentLogsService));
             this.corsPolicyAccessor = corsPolicyAccessor;
+            _usageService = usageService ?? throw new ArgumentNullException(nameof(usageService));
             _logger = loggerFactory?.CreateLogger<PartnerController>() ?? throw new ArgumentNullException(nameof(loggerFactory));
             _settings = authSettings.Value ?? throw new ArgumentNullException(nameof(authSettings));
 
@@ -87,7 +90,7 @@ namespace SublessSignIn.Controllers
             }
             catch (CreatorAlreadyActiveException e)
             {
-                _logger.LogError(e, $"Creator attempted to activate twice {username}");
+                _logger.LogWarning(e, $"Creator attempted to activate twice {username}");
                 return BadRequest("This creator is already activated on subless");
             }
         }
@@ -253,9 +256,15 @@ namespace SublessSignIn.Controllers
                 {
                     paymentDate = DateTimeOffset.UtcNow.AddMonths(-1);
                 }
-                var hitsThisMonth = hitService.GetPartnerHitsByDate(paymentDate, DateTimeOffset.UtcNow, partner.Id);
-                var hitsLastMonth = hitService.GetPartnerHitsByDate(paymentDate.AddMonths(-1), paymentDate, partner.Id);
-                return Ok(PartnerStatsExtensions.GetHistoricalPartnerStats(hitsThisMonth, hitsLastMonth));
+                var hitsThisMonth = hitService.GetPartnerStats(paymentDate, DateTimeOffset.UtcNow, partner.Id);
+                var hitsLastMonth = hitService.GetPartnerStats(paymentDate.AddMonths(-1), paymentDate, partner.Id);
+                _usageService.SaveUsage(UsageType.PartnerStats, user.Id);
+                return Ok(new HistoricalStats<PartnerStats>()
+                {
+                    thisMonth = hitsThisMonth,
+                    LastMonth = hitsLastMonth
+                });
+                
             }
             catch (UnauthorizedAccessException e)
             {

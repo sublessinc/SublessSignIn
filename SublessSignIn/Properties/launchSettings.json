@@ -33,7 +33,8 @@
         "userPoolId": "us-east-2_7wJbjFqDB",
         "issuerUrl": "https://devpayidp.auth.us-east-2.amazoncognito.com",
         "Logging__LogLevel__Default": "Debug",
-        "IdentityServerLicenseKey": ""
+        "IdentityServerLicenseKey": "",
+        "HitPopupEnabled": "true"
 
       },
       "dotnetRunMessages": "true",
