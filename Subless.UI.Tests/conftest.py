@@ -82,7 +82,9 @@ def subless_account(mailslurp_inbox, firefox_driver, ):
 def attempt_to_delete_user(firefox_driver, mailbox):
     from ApiLib import User
     try:
-        LoginPage(firefox_driver).open().sign_in(mailbox.email_address, "SublessTestUser")
+        resultpage = LoginPage(firefox_driver).open().sign_in(mailbox.email_address, "SublessTestUser")
+        if ('terms' in firefox_driver.current_url):
+            plan_selection_page = resultpage.accept_terms()
         id, cookie = get_user_id_and_cookie(firefox_driver)
         User.delete(cookie)
     except:  # awful.

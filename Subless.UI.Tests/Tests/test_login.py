@@ -7,6 +7,8 @@ from EmailLib import MailSlurp
 from PageObjectModels.LoginPage import LoginPage
 import logging
 
+from PageObjectModels.PlanSelectionPage import PlanSelectionPage
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger()
 
@@ -53,26 +55,11 @@ def test_incomplete_payment_processing(web_driver, params):
     pass
 
 
-def test_user_creation(web_driver, mailslurp_inbox, params):
-    # GIVEN: I am on the Subless login page, as a completely new user
-    login_page = LoginPage(web_driver).open()
-
-    # WHEN: I create a new account
-    sign_up_page = login_page.click_sign_up()
-    assert "signup" in web_driver.current_url
-
-    otp_page = sign_up_page.sign_up(mailslurp_inbox.email_address,
-                                    'SublessTestUser')
-    terms_page = otp_page.confirm_otp(
-        MailSlurp.get_newest_otp(inbox_id=mailslurp_inbox.id))
-
-    plan_selection_page = terms_page.accept_terms()
-
-
-    # THEN: I should be taken to the plan selection page
-    assert "subless" in web_driver.title
+def test_user_creation(web_driver, subless_account, params):
+    # WHEN a new user is created
+    # THEN the plan selection page should be shown
+    plan_selection_page = PlanSelectionPage(web_driver)
     assert 'register-payment' in web_driver.current_url
-
     # AND: I should be able to successfully log out
     plan_selection_page.logout()
     assert 'login' in web_driver.current_url

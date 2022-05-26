@@ -10,6 +10,7 @@ from PageObjectModels.DashboardPage import DashboardPage
 from PageObjectModels.PlanSelectionPage import PlanSelectionPage
 from selenium.webdriver.common.by import By
 
+from PageObjectModels.TermsPage import TermsPage
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger()
@@ -86,6 +87,9 @@ class LoginPage(BasePage):
         # returning user
         elif 'user-profile' in self.driver.current_url:
             return DashboardPage(self.driver)
+
+        elif 'terms' in self.driver.current_url:
+            return TermsPage(self.driver)
 
         else:
             raise Exception('Unable to detect redirect page post-login')

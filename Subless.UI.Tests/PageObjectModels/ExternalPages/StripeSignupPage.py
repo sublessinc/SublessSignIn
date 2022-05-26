@@ -46,6 +46,7 @@ class StripeSignupPage(BasePage):
         self.name_textbox.send_keys('Foo Bar')
         self.zip_textbox.send_keys('42424')
         self.subscribe_button.click()
+        WebDriverWait(self.driver, 10).until(lambda driver: 'stripe' not in self.driver.current_url)
         return DashboardPage(self.driver)
 
 

@@ -12,13 +12,15 @@ def create_user(driver, inbox):
     from PageObjectModels.LoginPage import LoginPage
     login_page = LoginPage(driver).open()
     sign_up_page = login_page.click_sign_up()
+    assert "signup" in driver.current_url
+
     otp_page = sign_up_page.sign_up(inbox.email_address,
                                     'SublessTestUser')
+    terms_page = otp_page.confirm_otp(
+        MailSlurp.get_newest_otp(inbox_id=inbox.id))
 
-    if 'An account with the given email already exists.' in driver.page_source:
-        pytest.skip('user account already exists!')
+    plan_selection_page = terms_page.accept_terms()
 
-    otp_page.confirm_otp(MailSlurp.get_newest_otp(inbox_id=inbox.id))
 
     id, cookie = get_user_id_and_cookie(driver)
 
