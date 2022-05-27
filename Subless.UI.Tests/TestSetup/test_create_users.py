@@ -14,7 +14,7 @@ usertypes = [
 
 @pytest.mark.parametrize('usertype', usertypes)
 def test_create_test_users(usertype, firefox_driver, user_data):
-    inbox = MailSlurp.get_inbox_from_name(usertype)
+    inbox = MailSlurp.get_or_create_inbox(usertype)
 
     id, token = create_user(firefox_driver, inbox)
 
@@ -37,7 +37,7 @@ def test_delete_all_users(usertype):
 def test_delete_users_smart(usertype, firefox_driver):
     login_page = LoginPage(firefox_driver).open()
 
-    login_page.sign_in(MailSlurp.get_inbox_from_name(usertype).email_address, 'SublessTestUser')
+    login_page.sign_in(MailSlurp.get_or_create_inbox(usertype).email_address, 'SublessTestUser')
 
     id, token = get_user_id_and_cookie(firefox_driver)
 

@@ -12,7 +12,7 @@ logger = logging.getLogger()
 class BasePage(object):
     @property
     def logout_button(self):
-        return self.driver.find_element_by_css_selector(BasePageLocators.logout_button_id)
+        return self.driver.find_element_by_id(BasePageLocators.logout_button_id)
 
     def __init__(self, driver):
         self.driver = driver

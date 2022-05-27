@@ -1,7 +1,9 @@
+import pytest
+
 from ApiLib import Admin
 from ApiLib.Admin import get_user_capabilities
 
-
+@pytest.mark.skip("not yet implemented")
 def test_make_user_admin(subless_account, subless_god_account):
     # GIVEN: I have a subless account
     #          (handled by fixture)

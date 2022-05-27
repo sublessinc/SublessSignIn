@@ -13,7 +13,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger()
 
 
-def test_new_un_pass_login(web_driver, params):
+def test_admin_un_pass_login(web_driver, params):
     # GIVEN: I am on the Subless login page, as a new user
     login_page = LoginPage(web_driver).open()
 

@@ -6,8 +6,9 @@ from webdriver_manager.chrome import ChromeDriverManager
 from webdriver_manager.firefox import GeckoDriverManager
 
 from ApiLib import Admin
-from EmailLib.MailSlurp import get_inbox_from_name
+from EmailLib.MailSlurp import get_or_create_inbox
 from PageObjectModels.LoginPage import LoginPage
+from PageObjectModels.PlanSelectionPage import PlanSelectionPage
 from UsersLib.Users import get_user_id_and_cookie
 
 print(os.getcwd())
@@ -40,13 +41,9 @@ def mailslurp_inbox():
     from EmailLib import MailSlurp
 
     # create
-    inbox = MailSlurp.create_inbox()
+    inbox = MailSlurp.get_or_create_inbox("DisposableInbox")
 
     yield inbox
-
-    # delete
-    MailSlurp.delete_inbox_by_id(inbox.id)
-
 
 @pytest.fixture(scope='session')
 def user_data():
@@ -65,7 +62,7 @@ def user_data():
 def subless_account(mailslurp_inbox, firefox_driver, ):
     from UsersLib.Users import create_user
 
-    mailbox = get_inbox_from_name('BasicUser')
+    mailbox = get_or_create_inbox('DisposableInbox')
     attempt_to_delete_user(firefox_driver, mailbox)
 
     # create
@@ -79,11 +76,22 @@ def subless_account(mailslurp_inbox, firefox_driver, ):
     attempt_to_delete_user(firefox_driver, mailbox)
 
 
+@pytest.fixture
+def paying_user(firefox_driver, subless_account):
+    plan_selection_page = PlanSelectionPage(firefox_driver)
+
+    # WHEN: I select a plan
+    stripe_signup_page = plan_selection_page.select_plan()
+
+    # THEN: I should be taken to the stripe page
+    dashboard = stripe_signup_page.SignUpForStripe()
+
+
 def attempt_to_delete_user(firefox_driver, mailbox):
     from ApiLib import User
     try:
         resultpage = LoginPage(firefox_driver).open().sign_in(mailbox.email_address, "SublessTestUser")
-        if ('terms' in firefox_driver.current_url):
+        if 'terms' in firefox_driver.current_url:
             plan_selection_page = resultpage.accept_terms()
         id, cookie = get_user_id_and_cookie(firefox_driver)
         User.delete(cookie)
@@ -102,7 +110,7 @@ def subless_admin_account(subless_god_account):
     from UsersLib.Users import create_user
     god_id, god_cookie = subless_god_account
 
-    mailbox = get_inbox_from_name('AdminUser')
+    mailbox = get_or_create_inbox('AdminUser')
     # create
     id, cookie = create_user(firefox_driver, mailbox)
     Admin.set_admin(id, god_cookie)
@@ -118,7 +126,7 @@ def subless_partner_account():
     from ApiLib import User
     from UsersLib.Users import create_user
 
-    mailbox = get_inbox_from_name('PartnerUser')
+    mailbox = get_or_create_inbox('PartnerUser')
     # create
     id, cookie = create_user(firefox_driver, mailbox)
     # LoginPage(firefox_driver).logout()  # do we need to logout here??
@@ -134,7 +142,7 @@ def subless_creator_user():
     from ApiLib import User
     from UsersLib.Users import create_user
 
-    mailbox = get_inbox_from_name('CreatorUser')
+    mailbox = get_or_create_inbox('CreatorUser')
     # create
     id, cookie = create_user(firefox_driver, mailbox)
     # TODO: set creator perms

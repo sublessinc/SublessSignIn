@@ -1,7 +1,9 @@
+import pytest
+
 from ApiLib.Admin import get_user_capabilities
 from ApiLib.Partner import register_partner
 
-
+@pytest.mark.skip("not yet implemented")
 def test_register_partner_as_admin(subless_god_account, subless_account):
     # GIVEN: A Subless Admin Account
     god_id, god_token = subless_god_account
