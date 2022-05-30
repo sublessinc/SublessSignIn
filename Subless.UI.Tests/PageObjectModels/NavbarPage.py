@@ -19,6 +19,10 @@ class NavbarPage(BasePage):
     def billing_button(self):
         return self.driver.find_element_by_id(NavbarPageLocators.billing_id)
 
+    @property
+    def account_settings_button(self):
+        return self.driver.find_element_by_id(NavbarPageLocators.account_settings_id)
+
     def __init__(self, driver):
         self.driver = driver
 
@@ -43,10 +47,20 @@ class NavbarPage(BasePage):
         self.billing_button.click()
 
         # wait for redirect
-        WebDriverWait(self.driver, 10).until(lambda driver: 'plan' in driver.current_url)
-        # Loop through until we find a new window handle
+        WebDriverWait(self.driver, 10).until(lambda driver: 'plan' in self.driver.current_url)
         return StripeManagementPage(self.driver)
 
+    def navigate_to_account_settings(self):
+        from .AccountSettingsPage import AccountSettingsPage
+        logger.info(f'Navigating to change plan')
+        WebDriverWait(self.driver, 10).until(lambda driver: 'subless' in driver.current_url)
+        WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.ID, NavbarPageLocators.account_settings_id)))
+        logger.info(self.__class__.__name__)
+        self.account_settings_button.click()
+
+        # wait for redirect
+        WebDriverWait(self.driver, 10).until(lambda driver: 'account-settings' in driver.current_url)
+        return AccountSettingsPage(self.driver)
 
 class NavbarPageLocators:
     partner_profile_id = "partner"
@@ -55,3 +69,4 @@ class NavbarPageLocators:
     payout_id = "payout"
     change_plan_id = "plan"
     integration_settings_id = "integration"
+    account_settings_id = "account"
