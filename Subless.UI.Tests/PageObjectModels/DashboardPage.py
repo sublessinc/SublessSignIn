@@ -1,17 +1,11 @@
 import logging
-
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.ui import WebDriverWait
-from .BasePage import BasePage
-from .PlanSelectionPage import PlanSelectionPage
-import time
+from .NavbarPage import NavbarPage
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger()
 
 
-class DashboardPage(BasePage):
+class DashboardPage(NavbarPage):
     @property
     def manage_billing_button(self):
         return self.driver.find_element_by_xpath(DashboardLocators.manage_billing_button_xpath)

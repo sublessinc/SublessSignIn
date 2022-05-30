@@ -8,23 +8,46 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 
+from .NavbarPage import NavbarPage
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger()
 
 
-class PlanSelectionPage(BasePage):
+class PlanSelectionPage(NavbarPage):
 
     @property
-    def plan_selection_button(self):
-        return self.driver.find_element_by_id(PlanSelectionLocators.plan_select_id)
+    def plan_5_selection_button(self):
+        return self.driver.find_element_by_id(PlanSelectionLocators.plan_5_button_id)
+
+    @property
+    def plan_10_selection_button(self):
+        return self.driver.find_element_by_id(PlanSelectionLocators.plan_10_button_id)
+
+    @property
+    def is_5_plan_selected(self):
+        plan_button = self.driver.find_element_by_id(PlanSelectionLocators.plan_5_button_id)
+        return plan_button.get_attribute("aria-pressed")
+
+    @property
+    def is_10_plan_selected(self):
+        plan_button = self.driver.find_element_by_id(PlanSelectionLocators.plan_10_button_id)
+        return plan_button.get_attribute("aria-pressed")
 
     @property
     def plan_confirm_button(self):
         return self.driver.find_element_by_xpath(PlanSelectionLocators.plan_confirm_xpath)
 
-    def select_plan(self):  # there's only one tier now, will need to overhaul this a lot in the future
+    def select_plan_5(self):  # there's only one tier now, will need to overhaul this a lot in the future
         logger.info(f'Selecting plan')
-        self.plan_selection_button.click()
+        self.plan_5_selection_button.click()
+        self.plan_confirm_button.click()
+        time.sleep(3)
+        return StripeSignupPage(self.driver)
+
+    def change_plan_10(self):  # there's only one tier now, will need to overhaul this a lot in the future
+        logger.info(f'Changing Plan')
+        self.plan_10_selection_button.click()
         self.plan_confirm_button.click()
         time.sleep(3)
         return StripeSignupPage(self.driver)
@@ -43,6 +66,8 @@ class PlanSelectionPage(BasePage):
         WebDriverWait(self.driver, 10).until(lambda driver: 'login' in driver.current_url)
 
 class PlanSelectionLocators:
-    plan_select_id = 'mat-button-toggle-1-button'
     plan_confirm_xpath = '/html/body/app-root/app-nav/mat-sidenav-container/mat-sidenav-content/app-register-payment/div/mat-card/button'
     logout_button_id = 'logout2'
+    plan_5_button_id = 'mat-button-toggle-1-button'
+    plan_10_button_id = 'mat-button-toggle-2-button'
+    plan_15_button_id = 'mat-button-toggle-3-button'

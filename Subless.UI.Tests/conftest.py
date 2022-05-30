@@ -81,7 +81,7 @@ def paying_user(firefox_driver, subless_account):
     plan_selection_page = PlanSelectionPage(firefox_driver)
 
     # WHEN: I select a plan
-    stripe_signup_page = plan_selection_page.select_plan()
+    stripe_signup_page = plan_selection_page.select_plan_5()
 
     # THEN: I should be taken to the stripe page
     dashboard = stripe_signup_page.SignUpForStripe()
