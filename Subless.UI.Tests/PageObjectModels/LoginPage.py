@@ -4,11 +4,13 @@ import os
 
 import time
 from selenium.webdriver.support.wait import WebDriverWait
-
+from selenium.webdriver.support import expected_conditions as EC
 from PageObjectModels.BasePage import BasePage
 from PageObjectModels.DashboardPage import DashboardPage
 from PageObjectModels.PlanSelectionPage import PlanSelectionPage
+from selenium.webdriver.common.by import By
 
+from PageObjectModels.TermsPage import TermsPage
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger()
@@ -37,11 +39,14 @@ class LoginPage(BasePage):
 
     @property
     def signup_link(self):
-        return self.driver.find_elements_by_xpath(LoginLocators.signup_link_xpath)[0]
+        WebDriverWait(self.driver, 10).until(
+            EC.element_to_be_clickable((By.CSS_SELECTOR, LoginLocators.signup_link_selector)))
+        link = self.driver.find_element_by_css_selector(LoginLocators.signup_link_selector)
+        return link
 
     def open(self):
         self.driver.get(f'https://{os.environ["environment"]}.subless.com')
-        time.sleep(1)
+        time.sleep(5)
         return self
 
     def click_sign_up(self):
@@ -67,6 +72,11 @@ class LoginPage(BasePage):
         self.password_textbox.send_keys(password)
         self.sign_in_button.click()
 
+        if 'The username or password you entered is invalid' in self.driver.find_element_by_tag_name('body').text:
+            raise Exception('Invalid user, could not login')
+        if 'User is not confirmed.' in self.driver.find_element_by_tag_name('body').text:
+            raise Exception('User is not confirmed, could not login')
+
         # wait for redirect
         WebDriverWait(self.driver, 10).until(lambda driver: 'login' not in self.driver.current_url)
 
@@ -78,6 +88,9 @@ class LoginPage(BasePage):
         elif 'user-profile' in self.driver.current_url:
             return DashboardPage(self.driver)
 
+        elif 'terms' in self.driver.current_url:
+            return TermsPage(self.driver)
+
         else:
             raise Exception('Unable to detect redirect page post-login')
 
@@ -88,5 +101,9 @@ class LoginLocators:
     pass_textbox_id = 'signInFormPassword'
     sign_in_button_name = 'signInSubmitButton'
     forgot_pass_xpath = '/html/body/div[1]/div/div[1]/div[2]/div[2]/div[3]/div[2]/div/form/div[3]/a'
-    signup_link_xpath = '/html/body/div[1]/div/div[2]/div[2]/div[2]/div[2]/div[2]/div/form/div[3]/p/a'
-    # signup_link_xpath = '/html/body/div[1]/div/div[1]/div[2]/div[2]/div[3]/div[2]/div/form/div[3]/p/a'
+    signup_link_selector = 'body > div.container > div > div.modal-content.background-customizable.modal-content' \
+                           '-desktop.visible-md.visible-lg > div.modal-body > div:nth-child(2) > ' \
+                           'div.panel.panel-left-border.col-md-6.col-lg-6 > div:nth-child(2) > div > form > ' \
+                           'div:nth-child(10) > p > a '
+    # signup_link_xpath = '/html/body/div[1]/div/div[2]/div[2]/div[2]/div[2]/div[2]/div/form/div[3]/p/a'
+    # signup_link_xpath = '/html/body/div[1]/div/div[2]/div[2]/div[2]/div[2]/div/div/form/div[3]/p/a'
