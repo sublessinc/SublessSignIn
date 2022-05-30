@@ -1,4 +1,4 @@
-<div class="recentFeed">
+<div *ngIf="recentHits.length>0" class="recentFeed">
     <div class="header">Recent Activity</div>
     <mat-card class="card">
         <div>
@@ -6,7 +6,7 @@
                 <div *ngFor="let hit of recentHits" class="hit">
                     <div class="content bold">
                         <img class="icon" src="https://img.hentai-foundry.com/themes/Dark/favicon.ico">
-                        <div>{{hit.content}}</div>
+                        <div><a href="{{hit.content}}">{{hit.title}}</a></div>
                     </div>
                     <div class="timestamp">
                         <div class="bold">{{this.formatDatestamp(hit.timestamp)}}</div>

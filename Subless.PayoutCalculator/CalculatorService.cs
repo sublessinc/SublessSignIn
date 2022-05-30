@@ -54,6 +54,7 @@ namespace Subless.PayoutCalculator
 
         public void CalculatePayments(DateTimeOffset startDate, DateTimeOffset endDate)
         {
+            var emailSent = false;
             Dictionary<string, double> allPayouts = new Dictionary<string, double>();
             // get what we were paid (after fees), and by who
             var payers = GetPayments(startDate, endDate);
@@ -99,6 +100,7 @@ namespace Subless.PayoutCalculator
                 // record each outgoing payment to master list
                 var payments = SavePaymentDetails(payees, payer, endDate);
                 emailService.SendReceiptEmail(payments, user.CognitoId);
+                emailSent = true;
                 AddPayeesToMasterList(allPayouts, payees);
             }
             // stripe sends payments in cents, paypal expects payouts in dollars
@@ -109,6 +111,10 @@ namespace Subless.PayoutCalculator
             SaveMasterList(allPayouts, endDate);
             // record to s3 bucket
             SavePayoutsToS3(allPayouts);
+            if (emailSent)
+            {
+                emailService.SendAdminNotification();
+            }
         }
 
         private IEnumerable<Hit> FilterInvalidCreators(IEnumerable<Hit> hits)
