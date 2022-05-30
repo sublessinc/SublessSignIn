@@ -9,11 +9,11 @@ def test_set_admin_privs(subless_account):
     print(subless_account)
     assert 1 == 2
 
-
+@pytest.mark.skip("not yet implemented")
 def test_set_creator_privs():
     pass
 
-
+@pytest.mark.skip("not yet implemented")
 def test_set_partner_privs():
     pass
 
