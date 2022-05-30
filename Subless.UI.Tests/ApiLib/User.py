@@ -3,7 +3,7 @@ import os
 import requests
 
 
-def delete(cookie):
+def delete_user(cookie):
     url = f'https://{os.environ["environment"]}.subless.com/api/User'
 
     payload = {}

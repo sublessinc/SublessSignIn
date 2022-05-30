@@ -30,7 +30,7 @@ def test_retrieve_god_user_token(firefox_driver, user_data):
 @pytest.mark.parametrize('usertype', usertypes)
 def test_delete_all_users(usertype):
     data = get_all_test_user_data()
-    ApiLib.User.delete(data[usertype]['token'])
+    ApiLib.User.delete_user(data[usertype]['token'])
 
 
 @pytest.mark.parametrize('usertype', usertypes)
@@ -43,4 +43,4 @@ def test_delete_users_smart(usertype, firefox_driver):
 
     login_page.logout()
 
-    ApiLib.User.delete(token)
+    ApiLib.User.delete_user(token)

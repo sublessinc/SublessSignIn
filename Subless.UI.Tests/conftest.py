@@ -94,7 +94,7 @@ def attempt_to_delete_user(firefox_driver, mailbox):
         if 'terms' in firefox_driver.current_url:
             plan_selection_page = resultpage.accept_terms()
         id, cookie = get_user_id_and_cookie(firefox_driver)
-        User.delete(cookie)
+        User.delete_user(cookie)
     except:  # awful.
         return
 
@@ -118,7 +118,7 @@ def subless_admin_account(subless_god_account):
 
     yield id, cookie
 
-    User.delete(cookie)
+    User.delete_user(cookie)
 
 
 @pytest.fixture
@@ -134,7 +134,7 @@ def subless_partner_account():
 
     yield id, cookie
 
-    User.delete(cookie)
+    User.delete_user(cookie)
 
 
 @pytest.fixture
@@ -151,7 +151,7 @@ def subless_creator_user():
 
     yield id, cookie
 
-    User.delete(cookie)
+    User.delete_user(cookie)
 
 
 @pytest.fixture
