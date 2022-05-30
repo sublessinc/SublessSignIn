@@ -20,16 +20,21 @@ def test_register_partner_as_admin(subless_god_account, subless_account):
     assert user['partners'][0]['admin'] == user_id
 
 
+@pytest.mark.skip("not yet implemented")
 def test_register_partner_as_non_admin(subless_account):
     pass
 
 
+@pytest.mark.skip("not yet implemented")
 def test_register_self_as_partner(subless_admin_account):
     pass
 
 
+@pytest.mark.skip("not yet implemented")
 def test_register_self_as_partner_as_non_admin(subless_account):
     pass
 
+
+@pytest.mark.skip("not yet implemented")
 def test_register_multiple_partners():
     pass
