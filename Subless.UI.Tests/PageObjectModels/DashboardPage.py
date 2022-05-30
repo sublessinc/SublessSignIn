@@ -1,4 +1,9 @@
 import logging
+import os
+import time
+
+from selenium.webdriver.support.wait import WebDriverWait
+
 from .NavbarPage import NavbarPage
 
 logging.basicConfig(level=logging.INFO)
@@ -22,9 +27,18 @@ class DashboardPage(NavbarPage):
         self.user_profile_button.click()
         # todo:  I don't know what's supposed to happen here-- might not make sense to be part of this POM
 
+    def get_hit_count(self):
+        time.sleep(3)
+        hit_count = self.driver.find_element_by_css_selector(DashboardLocators.hit_count_selector)
+        return hit_count.text
+
+    def open(self):
+        self.driver.get(f'https://{os.environ["environment"]}.subless.com/user-profile')
+        WebDriverWait(self.driver, 10).until(lambda driver: 'subless' in driver.title)
+        return self
 
 class DashboardLocators:
     manage_billing_button_xpath = '//*[@id="bodyWrapper"]/div[2]/div/div[2]/button'
     user_profile_button_id = 'user'
-
+    hit_count_selector = '#root > mat-sidenav-content > app-userprofile > div > mat-card:nth-child(1) > div.statText > mat-card-content.mat-card-content.numberText'
 
