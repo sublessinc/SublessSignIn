@@ -22,7 +22,7 @@ def test_create_test_users(usertype, firefox_driver, user_data):
                            'email': inbox.email_address,
                            'token': token}
 
-
+@pytest.mark.skip("not yet implemented")
 def test_retrieve_god_user_token(firefox_driver, user_data):
     pass
 

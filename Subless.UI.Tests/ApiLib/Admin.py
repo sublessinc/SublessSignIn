@@ -30,3 +30,4 @@ def get_user_capabilities(user_id, cookie):
     print(f'GetUserCapabilities returned code: {response.status_code} - {response.reason} - {response.text}')
 
     return json.loads(response.content)
+
