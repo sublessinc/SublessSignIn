@@ -18,13 +18,9 @@ def test_creator_activate(web_driver, subless_unactivated_creator_user, params):
 
 
 
-def test_creator_activation_email(web_driver, subless_activated_creator_user, params):
+def test_creator_hit(web_driver, subless_activated_creator_user, params):
     # WHEN: I sign up for a creator account
     # THEN: I am prompted to provide payout details
-    assert "payout" in web_driver.current_url
-    payout_page = PayoutSetupPage(web_driver)
-    payout_page.enter_creator_paypal("creator@subless.com")
-    payout_page.submit_creator_paypal()
     assert "subless" not in web_driver.current_url
 
 
