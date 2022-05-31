@@ -35,7 +35,7 @@ class TestSite_HomePage(object):
         WebDriverWait(self.driver, 10).until(lambda driver: 'pythonclient' in driver.current_url)
         WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.ID, TestSite_HomePage_Locators.logout_id)))
         logger.info(self.__class__.__name__)
-        self.login_button.click()
+        self.logout_button.click()
         return LoginPage(self.driver)
 
     def click_profile(self):

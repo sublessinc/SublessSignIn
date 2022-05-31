@@ -32,6 +32,7 @@ def test_paying_user_can_logout_of_test_site(web_driver, paying_user, params):
     web_driver.get(f'https://pythonclient{os.environ["environment"]}.subless.com')
     test_site = TestSite_HomePage(web_driver)
     test_site.click_logout()
+    time.sleep(3)
 
     # THEN: I should see a login page
     assert "login" in web_driver.current_url
