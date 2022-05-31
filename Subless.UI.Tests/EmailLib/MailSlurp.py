@@ -48,7 +48,7 @@ def get_inboxes_from_name(inbox_name):
         # create an inbox using the inbox controller
         inbox_controller = mailslurp_client.InboxControllerApi(api_client)
         inboxes = inbox_controller.get_all_inboxes(page=0)
-        # mailslurp_client.EmailControllerApi(api_client).delete_all_emails() # todo: should I be doing this?
+        mailslurp_client.EmailControllerApi(api_client).delete_all_emails() # todo: should I be doing this?
 
         inboxes = list((x for x in inboxes.content if x.name == inbox_name))
 

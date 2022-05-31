@@ -11,19 +11,20 @@ from EmailLib import MailSlurp
 def create_user(driver, inbox):
     from PageObjectModels.LoginPage import LoginPage
     login_page = LoginPage(driver).open()
+    create_from_login_page(driver, inbox)
+
+
+def create_from_login_page(driver, inbox):
+    from PageObjectModels.LoginPage import LoginPage
+    login_page = LoginPage(driver)
     sign_up_page = login_page.click_sign_up()
     assert "signup" in driver.current_url
-
     otp_page = sign_up_page.sign_up(inbox.email_address,
                                     'SublessTestUser')
     terms_page = otp_page.confirm_otp(
         MailSlurp.get_newest_otp(inbox_id=inbox.id))
-
     plan_selection_page = terms_page.accept_terms()
-
-
     id, cookie = get_user_id_and_cookie(driver)
-
     return id, cookie
 
 
@@ -47,6 +48,7 @@ def get_all_test_user_data():
     except ValueError as err:
         data = {}  # if we can't parse valid json, just nuke the file? I guess?
     return data
+
 
 def save_user_test_data(data):
     with open('../userdata.json', 'w') as outfile:

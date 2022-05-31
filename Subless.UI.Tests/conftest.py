@@ -37,7 +37,6 @@ def params(request):
 # so ....
 @pytest.fixture
 def mailslurp_inbox():
-    # yield 'null' # todo:  temporarily disabling in the laziest way possible
     from EmailLib import MailSlurp
 
     # create
@@ -95,7 +94,7 @@ def attempt_to_delete_user(firefox_driver, mailbox):
             plan_selection_page = resultpage.accept_terms()
         id, cookie = get_user_id_and_cookie(firefox_driver)
         User.delete_user(cookie)
-    except:  # awful.
+    except BaseException as err:  # awful.
         return
 
 # this is technically also a fixture!
@@ -138,20 +137,34 @@ def subless_partner_account():
 
 
 @pytest.fixture
-def subless_creator_user():
+def subless_unactivated_creator_user(firefox_driver):
     from ApiLib import User
-    from UsersLib.Users import create_user
-
+    from UsersLib.Users import create_from_login_page
+    from PageObjectModels.TestSite.TestSite_HomePage import TestSite_HomePage
     mailbox = get_or_create_inbox('CreatorUser')
+    # cleanup
+    attempt_to_delete_user(firefox_driver, mailbox)
+
     # create
-    id, cookie = create_user(firefox_driver, mailbox)
-    # TODO: set creator perms
-    # Admin.set_admin(id, test_data['GodUser']['token'])
-    # LoginPage(firefox_driver).logout() # # do we need to logout here??
+    test_site = TestSite_HomePage(firefox_driver)
+    test_site.open()
+    profile_page = test_site.click_profile()
+    profile_page.click_activate()
+
+    id, cookie = create_from_login_page(firefox_driver, mailbox)
 
     yield id, cookie
 
     User.delete_user(cookie)
+
+@pytest.fixture
+def subless_activated_creator_user(firefox_driver, subless_unactivated_creator_user):
+    from PageObjectModels.PayoutSetupPage import PayoutSetupPage
+    mailbox = get_or_create_inbox('CreatorUser')
+
+    payout_page = PayoutSetupPage(web_driver)
+    payout_page.enter_creator_paypal(mailbox.email_address)
+    payout_page.submit_creator_paypal()
 
 
 @pytest.fixture

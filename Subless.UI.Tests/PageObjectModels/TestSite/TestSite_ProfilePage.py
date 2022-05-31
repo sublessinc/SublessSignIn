@@ -9,13 +9,14 @@ from PageObjectModels.LoginPage import LoginPage
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger()
 
+
 class TestSite_ProfilePage(object):
 
     @property
     def activate_link(self):
-        return self.driver.find_element_by_css_selector(TestSite_ProfilePage_Locators.profile_selector)
+        return self.driver.find_element_by_css_selector(TestSite_ProfilePage_Locators.activate_selector)
 
-    def click_profile(self):
+    def click_activate(self):
         logger.info(f'Navigating to profile page')
         WebDriverWait(self.driver, 10).until(lambda driver: 'pythonclient' in driver.current_url)
         WebDriverWait(self.driver, 10).until(

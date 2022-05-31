@@ -88,6 +88,9 @@ class LoginPage(BasePage):
         elif 'user-profile' in self.driver.current_url:
             return DashboardPage(self.driver)
 
+        elif 'creator-profile' in self.driver.current_url:
+            return DashboardPage(self.driver)
+
         elif 'terms' in self.driver.current_url:
             return TermsPage(self.driver)
 
