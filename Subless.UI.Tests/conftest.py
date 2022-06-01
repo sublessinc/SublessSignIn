@@ -6,10 +6,10 @@ from webdriver_manager.chrome import ChromeDriverManager
 from webdriver_manager.firefox import GeckoDriverManager
 
 from ApiLib import Admin
-from EmailLib.MailSlurp import get_or_create_inbox
-from PageObjectModels.LoginPage import LoginPage
+from EmailLib.MailSlurp import get_or_create_inbox, CreatorInbox, PatronInbox
 from PageObjectModels.PlanSelectionPage import PlanSelectionPage
-from UsersLib.Users import get_user_id_and_cookie
+from UsersLib.Users import get_user_id_and_cookie, create_subless_account, attempt_to_delete_user, \
+    create_paid_subless_account, create_unactivated_creator_User, create_activated_creator_user
 
 print(os.getcwd())
 
@@ -37,11 +37,10 @@ def params(request):
 # so ....
 @pytest.fixture
 def mailslurp_inbox():
-    # yield 'null' # todo:  temporarily disabling in the laziest way possible
     from EmailLib import MailSlurp
 
     # create
-    inbox = MailSlurp.get_or_create_inbox("DisposableInbox")
+    inbox = MailSlurp.get_or_create_inbox(PatronInbox)
 
     yield inbox
 
@@ -60,43 +59,21 @@ def user_data():
 #   returns new user, with browser at plan selection screen
 @pytest.fixture
 def subless_account(mailslurp_inbox, firefox_driver, ):
-    from UsersLib.Users import create_user
 
-    mailbox = get_or_create_inbox('DisposableInbox')
-    attempt_to_delete_user(firefox_driver, mailbox)
-
-    # create
-    id, cookie = create_user(firefox_driver, mailbox)
+    id, cookie = create_subless_account(firefox_driver)
     yield id, cookie
-
-    # LoginPage(firefox_driver).logout()  # do we need to logout here??
 
     # HACK: delete user
     # I hate this.
-    attempt_to_delete_user(firefox_driver, mailbox)
+    attempt_to_delete_user(firefox_driver, mailslurp_inbox)
 
 
 @pytest.fixture
-def paying_user(firefox_driver, subless_account):
-    plan_selection_page = PlanSelectionPage(firefox_driver)
+def paying_user(firefox_driver):
+    id, cookie = create_paid_subless_account(firefox_driver)
+    yield id, cookie
+    attempt_to_delete_user(firefox_driver, mailslurp_inbox)
 
-    # WHEN: I select a plan
-    stripe_signup_page = plan_selection_page.select_plan_5()
-
-    # THEN: I should be taken to the stripe page
-    dashboard = stripe_signup_page.SignUpForStripe()
-
-
-def attempt_to_delete_user(firefox_driver, mailbox):
-    from ApiLib import User
-    try:
-        resultpage = LoginPage(firefox_driver).open().sign_in(mailbox.email_address, "SublessTestUser")
-        if 'terms' in firefox_driver.current_url:
-            plan_selection_page = resultpage.accept_terms()
-        id, cookie = get_user_id_and_cookie(firefox_driver)
-        User.delete_user(cookie)
-    except:  # awful.
-        return
 
 # this is technically also a fixture!
 # in the cases where we need two distinct users
@@ -138,25 +115,25 @@ def subless_partner_account():
 
 
 @pytest.fixture
-def subless_creator_user():
-    from ApiLib import User
-    from UsersLib.Users import create_user
-
-    mailbox = get_or_create_inbox('CreatorUser')
-    # create
-    id, cookie = create_user(firefox_driver, mailbox)
-    # TODO: set creator perms
-    # Admin.set_admin(id, test_data['GodUser']['token'])
-    # LoginPage(firefox_driver).logout() # # do we need to logout here??
-
+def subless_unactivated_creator_user(firefox_driver):
+    mailbox = get_or_create_inbox(CreatorInbox)
+    id, cookie = create_unactivated_creator_User(firefox_driver, mailbox)
     yield id, cookie
+    attempt_to_delete_user(firefox_driver, mailbox)
 
-    User.delete_user(cookie)
+@pytest.fixture
+def subless_activated_creator_user(firefox_driver):
+    mailbox = get_or_create_inbox(CreatorInbox)
+    id, cookie = create_activated_creator_user(firefox_driver, mailbox)
+    yield id, cookie
+    attempt_to_delete_user(firefox_driver, mailbox)
+
 
 
 @pytest.fixture
 def subless_god_account(user_data, firefox_driver):
     from Keys.Keys import Keys
+    from PageObjectModels.LoginPage import LoginPage
 
     login_page = LoginPage(firefox_driver).open()
     login_page.sign_in(Keys.god_email, Keys.god_password)

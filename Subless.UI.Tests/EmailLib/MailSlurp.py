@@ -17,6 +17,9 @@ configuration.api_key['x-api-key'] = Keys.mailslurp_api_key
 # CreatorUser
 # BasicUser
 
+CreatorInbox = "CreatorUser"
+PatronInbox = "DisposableInbox"
+
 def get_or_create_inbox(inbox_name):
     inboxes = get_inboxes_from_name(inbox_name)
     if any(inboxes):
@@ -48,7 +51,8 @@ def get_inboxes_from_name(inbox_name):
         # create an inbox using the inbox controller
         inbox_controller = mailslurp_client.InboxControllerApi(api_client)
         inboxes = inbox_controller.get_all_inboxes(page=0)
-        # mailslurp_client.EmailControllerApi(api_client).delete_all_emails() # todo: should I be doing this?
+        # Many flows rely on a "get latest email" call, which gets hosed if there are a ton of emails
+        mailslurp_client.EmailControllerApi(api_client).delete_all_emails()
 
         inboxes = list((x for x in inboxes.content if x.name == inbox_name))
 

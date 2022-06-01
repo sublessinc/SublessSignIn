@@ -10,14 +10,14 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger()
 
 
-class DashboardPage(NavbarPage):
+class PatronDashboardPage(NavbarPage):
     @property
     def manage_billing_button(self):
-        return self.driver.find_element_by_xpath(DashboardLocators.manage_billing_button_xpath)
+        return self.driver.find_element_by_xpath(PatronDashboardLocators.manage_billing_button_xpath)
 
     @property
     def user_profile_button(self):
-        return self.driver.find_element_by_id(DashboardLocators.user_profile_button_id)
+        return self.driver.find_element_by_id(PatronDashboardLocators.user_profile_button_id)
 
     def go_to_manage_billing(self):
         self.manage_billing_button.click()
@@ -29,7 +29,7 @@ class DashboardPage(NavbarPage):
 
     def get_hit_count(self):
         time.sleep(3)
-        hit_count = self.driver.find_element_by_css_selector(DashboardLocators.hit_count_selector)
+        hit_count = self.driver.find_element_by_css_selector(PatronDashboardLocators.hit_count_selector)
         return hit_count.text
 
     def open(self):
@@ -37,7 +37,7 @@ class DashboardPage(NavbarPage):
         WebDriverWait(self.driver, 10).until(lambda driver: 'subless' in driver.title)
         return self
 
-class DashboardLocators:
+class PatronDashboardLocators:
     manage_billing_button_xpath = '//*[@id="bodyWrapper"]/div[2]/div/div[2]/button'
     user_profile_button_id = 'user'
     hit_count_selector = '#root > mat-sidenav-content > app-userprofile > div > mat-card:nth-child(1) > div.statText > mat-card-content.mat-card-content.numberText'
