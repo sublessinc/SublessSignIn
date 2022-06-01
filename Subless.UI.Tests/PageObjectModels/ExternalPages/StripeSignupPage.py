@@ -37,7 +37,7 @@ class StripeSignupPage(BasePage):
         return self.driver.find_element_by_xpath(StripeSignupLocators.subscribe_button_xpath)
 
     def SignUpForStripe(self):
-        from PageObjectModels.DashboardPage import DashboardPage
+        from PageObjectModels.PatronDashboardPage import PatronDashboardPage
         WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.ID, StripeSignupLocators.email_text_id)))
         self.email_textbox.send_keys('424@foo.bar')
         self.cc_num_textbox.send_keys('4242424242424242')
@@ -47,7 +47,7 @@ class StripeSignupPage(BasePage):
         self.zip_textbox.send_keys('42424')
         self.subscribe_button.click()
         WebDriverWait(self.driver, 10).until(lambda driver: 'stripe' not in self.driver.current_url)
-        return DashboardPage(self.driver)
+        return PatronDashboardPage(self.driver)
 
 
 class StripeSignupLocators:

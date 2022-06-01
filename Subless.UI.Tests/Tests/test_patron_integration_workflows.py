@@ -1,5 +1,5 @@
 
-from PageObjectModels.DashboardPage import DashboardPage
+from PageObjectModels.PatronDashboardPage import PatronDashboardPage
 from PageObjectModels.TestSite.TestSite_HomePage import TestSite_HomePage
 
 import time
@@ -38,7 +38,7 @@ def test_paying_user_can_logout_of_test_site(web_driver, paying_user, params):
 
 def test_paying_user_hit_pushed(web_driver, subless_activated_creator_user, paying_user, params):
     # WHEN: I visit creator
-    dashboard = DashboardPage(web_driver)
+    dashboard = PatronDashboardPage(web_driver)
     hits_before = dashboard.get_hit_count()
     homepage = TestSite_HomePage(web_driver)
     homepage.open()

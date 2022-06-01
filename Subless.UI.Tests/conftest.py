@@ -6,7 +6,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 from webdriver_manager.firefox import GeckoDriverManager
 
 from ApiLib import Admin
-from EmailLib.MailSlurp import get_or_create_inbox
+from EmailLib.MailSlurp import get_or_create_inbox, CreatorInbox, PatronInbox
 from PageObjectModels.PlanSelectionPage import PlanSelectionPage
 from UsersLib.Users import get_user_id_and_cookie, create_subless_account, attempt_to_delete_user, \
     create_paid_subless_account, create_unactivated_creator_User, create_activated_creator_user
@@ -40,7 +40,7 @@ def mailslurp_inbox():
     from EmailLib import MailSlurp
 
     # create
-    inbox = MailSlurp.get_or_create_inbox("DisposableInbox")
+    inbox = MailSlurp.get_or_create_inbox(PatronInbox)
 
     yield inbox
 
@@ -116,14 +116,14 @@ def subless_partner_account():
 
 @pytest.fixture
 def subless_unactivated_creator_user(firefox_driver):
-    mailbox = get_or_create_inbox('CreatorUser')
+    mailbox = get_or_create_inbox(CreatorInbox)
     id, cookie = create_unactivated_creator_User(firefox_driver, mailbox)
     yield id, cookie
     attempt_to_delete_user(firefox_driver, mailbox)
 
 @pytest.fixture
 def subless_activated_creator_user(firefox_driver):
-    mailbox = get_or_create_inbox('CreatorUser')
+    mailbox = get_or_create_inbox(CreatorInbox)
     id, cookie = create_activated_creator_user(firefox_driver, mailbox)
     yield id, cookie
     attempt_to_delete_user(firefox_driver, mailbox)

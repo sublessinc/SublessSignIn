@@ -27,6 +27,7 @@ class TestSite_HomePage(object):
 
     def open(self):
         self.driver.get(f'https://pythonclient{os.environ["environment"]}.subless.com')
+        return self
 
     def click_login(self):
         logger.info(f'Navigating to subless login')

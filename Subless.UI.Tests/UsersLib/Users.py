@@ -6,7 +6,9 @@ import pytest
 import simplejson
 
 from EmailLib import MailSlurp
+from EmailLib.MailSlurp import PatronInbox
 
+DefaultPassword = 'SublessTestUser'
 
 def create_user(driver, inbox):
     from PageObjectModels.LoginPage import LoginPage
@@ -20,7 +22,7 @@ def create_from_login_page(driver, inbox):
     sign_up_page = login_page.click_sign_up()
     assert "signup" in driver.current_url
     otp_page = sign_up_page.sign_up(inbox.email_address,
-                                    'SublessTestUser')
+                                    DefaultPassword)
     terms_page = otp_page.confirm_otp(
         MailSlurp.get_newest_otp(inbox_id=inbox.id))
     plan_selection_page = terms_page.accept_terms()
@@ -59,7 +61,7 @@ def create_subless_account(web_driver):
     from UsersLib.Users import create_user
     from EmailLib.MailSlurp import get_or_create_inbox
 
-    mailbox = get_or_create_inbox('DisposableInbox')
+    mailbox = get_or_create_inbox(PatronInbox)
     attempt_to_delete_user(web_driver, mailbox)
 
     # create
@@ -106,7 +108,7 @@ def attempt_to_delete_user(firefox_driver, mailbox):
     from ApiLib import User
     try:
         login = LoginPage(firefox_driver).open()
-        resultpage = login.sign_in(mailbox.email_address, "SublessTestUser")
+        resultpage = login.sign_in(mailbox.email_address, DefaultPassword)
         if 'terms' in firefox_driver.current_url:
             plan_selection_page = resultpage.accept_terms()
         id, cookie = get_user_id_and_cookie(firefox_driver)

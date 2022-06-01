@@ -6,12 +6,12 @@ from selenium.webdriver.remote.webelement import WebElement
 from EmailLib import MailSlurp
 from PageObjectModels.LoginPage import LoginPage
 from PageObjectModels.PlanSelectionPage import PlanSelectionPage
-from PageObjectModels.DashboardPage import DashboardPage
+from PageObjectModels.PatronDashboardPage import PatronDashboardPage
 
 def test_paying_user_directed_to_dashboard(web_driver, paying_user, params):
     # WHEN: I sign up and pay for an account
     # THEN: I should see my dashboard
-    dashboard = DashboardPage(web_driver)
+    dashboard = PatronDashboardPage(web_driver)
     assert "subless" in web_driver.title
     assert 'profile' in web_driver.current_url
 
@@ -21,7 +21,7 @@ def test_paying_user_directed_to_dashboard(web_driver, paying_user, params):
 
 def test_paying_user_can_view_plan(web_driver, paying_user, params):
     # WHEN: I sign up and pay for an account
-    dashboard = DashboardPage(web_driver)
+    dashboard = PatronDashboardPage(web_driver)
     assert "subless" in web_driver.title
     assert 'profile' in web_driver.current_url
 
@@ -51,7 +51,7 @@ def test_paying_user_can_view_plan(web_driver, paying_user, params):
 def test_paying_user_can_change_plan(web_driver, paying_user, params):
     # WHEN: I sign up and pay for an account
     # THEN: I should see my dashboard
-    dashboard = DashboardPage(web_driver)
+    dashboard = PatronDashboardPage(web_driver)
     assert "subless" in web_driver.title
     assert 'profile' in web_driver.current_url
 
@@ -81,7 +81,7 @@ def test_paying_user_can_change_plan(web_driver, paying_user, params):
 
 def test_paying_user_can_cancel_plan(web_driver, paying_user, params):
     # WHEN: I sign up and pay for an account
-    dashboard = DashboardPage(web_driver)
+    dashboard = PatronDashboardPage(web_driver)
     assert "subless" in web_driver.title
     assert 'profile' in web_driver.current_url
 

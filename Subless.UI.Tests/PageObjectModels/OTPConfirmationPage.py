@@ -6,7 +6,7 @@ import time
 from selenium.webdriver.support.wait import WebDriverWait
 
 from PageObjectModels.BasePage import BasePage
-from PageObjectModels.DashboardPage import DashboardPage
+from PageObjectModels.PatronDashboardPage import PatronDashboardPage
 from PageObjectModels.PlanSelectionPage import PlanSelectionPage
 from PageObjectModels.TermsPage import TermsPage
 

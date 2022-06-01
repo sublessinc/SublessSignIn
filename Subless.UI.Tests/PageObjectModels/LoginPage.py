@@ -6,7 +6,8 @@ import time
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from PageObjectModels.BasePage import BasePage, BasePageLocators
-from PageObjectModels.DashboardPage import DashboardPage
+from PageObjectModels.CreatorDashboardPage import CreatorDashboardPage
+from PageObjectModels.PatronDashboardPage import PatronDashboardPage
 from PageObjectModels.PlanSelectionPage import PlanSelectionPage
 from selenium.webdriver.common.by import By
 
@@ -94,10 +95,10 @@ class LoginPage(BasePage):
 
         # returning user
         elif 'user-profile' in self.driver.current_url:
-            return DashboardPage(self.driver)
+            return PatronDashboardPage(self.driver)
 
         elif 'creator-profile' in self.driver.current_url:
-            return DashboardPage(self.driver)
+            return CreatorDashboardPage(self.driver)
 
         elif 'terms' in self.driver.current_url:
             return TermsPage(self.driver)

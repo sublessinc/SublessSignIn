@@ -17,6 +17,9 @@ configuration.api_key['x-api-key'] = Keys.mailslurp_api_key
 # CreatorUser
 # BasicUser
 
+CreatorInbox = "CreatorUser"
+PatronInbox = "DisposableInbox"
+
 def get_or_create_inbox(inbox_name):
     inboxes = get_inboxes_from_name(inbox_name)
     if any(inboxes):
