@@ -27,6 +27,8 @@ class OTPConfirmationPage(BasePage):
         self.otp_field.send_keys(otp)
         self.submit_button.click()
 
+        if ("error" in self.driver.current_url):
+            raise Exception('A problem was encountered while sending OTP')
         # wait for redirect
         WebDriverWait(self.driver, 10).until(lambda driver: 'confirm' not in self.driver.current_url)
         WebDriverWait(self.driver, 10).until(lambda driver: 'login' not in self.driver.current_url)

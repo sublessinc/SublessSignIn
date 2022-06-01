@@ -40,6 +40,7 @@ def test_paying_user_can_view_plan(web_driver, paying_user, params):
             web_driver.switch_to.window(window_handle)
             break
     assert "stripe" in web_driver.current_url
+    time.sleep(3)
     plan = manage_page.current_plan_text
     assert plan.text == "$5.00 per month"
     web_driver.close()

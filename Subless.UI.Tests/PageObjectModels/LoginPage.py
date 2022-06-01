@@ -5,7 +5,7 @@ import os
 import time
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from PageObjectModels.BasePage import BasePage
+from PageObjectModels.BasePage import BasePage, BasePageLocators
 from PageObjectModels.DashboardPage import DashboardPage
 from PageObjectModels.PlanSelectionPage import PlanSelectionPage
 from selenium.webdriver.common.by import By
@@ -47,6 +47,14 @@ class LoginPage(BasePage):
     def open(self):
         self.driver.get(f'https://{os.environ["environment"]}.subless.com')
         time.sleep(5)
+        # WebDriverWait(self.driver, 10).until(
+        #     EC.presence_of_element_located((By.NAME, LoginLocators.sign_in_button_name))
+        #     or
+        #     EC.presence_of_element_located((By.ID, BasePageLocators.logout_button_id))
+        # )
+        if ('login' not in self.driver.current_url):
+            BasePage(self.driver).logout()
+        WebDriverWait(self.driver, 10).until(lambda driver: 'login' in self.driver.current_url)
         return self
 
     def click_sign_up(self):

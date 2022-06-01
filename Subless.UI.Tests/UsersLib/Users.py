@@ -11,7 +11,7 @@ from EmailLib import MailSlurp
 def create_user(driver, inbox):
     from PageObjectModels.LoginPage import LoginPage
     login_page = LoginPage(driver).open()
-    create_from_login_page(driver, inbox)
+    return create_from_login_page(driver, inbox)
 
 
 def create_from_login_page(driver, inbox):
@@ -54,3 +54,62 @@ def save_user_test_data(data):
     with open('../userdata.json', 'w') as outfile:
         string = simplejson.dumps(data, indent=4, sort_keys=True)
         outfile.write(string)
+
+def create_subless_account(web_driver):
+    from UsersLib.Users import create_user
+    from EmailLib.MailSlurp import get_or_create_inbox
+
+    mailbox = get_or_create_inbox('DisposableInbox')
+    attempt_to_delete_user(web_driver, mailbox)
+
+    # create
+    return create_user(web_driver, mailbox)
+
+def create_paid_subless_account(web_driver):
+    from PageObjectModels.PlanSelectionPage import PlanSelectionPage
+    id, cookie = create_subless_account(web_driver)
+    plan_selection_page = PlanSelectionPage(web_driver)
+
+    # WHEN: I select a plan
+    stripe_signup_page = plan_selection_page.select_plan_5()
+
+    # THEN: I should be taken to the stripe page
+    dashboard = stripe_signup_page.SignUpForStripe()
+    return id, cookie
+
+def create_unactivated_creator_User(web_driver, mailbox):
+    from UsersLib.Users import create_from_login_page
+    from PageObjectModels.TestSite.TestSite_HomePage import TestSite_HomePage
+
+    # cleanup
+    attempt_to_delete_user(web_driver, mailbox)
+
+    # create
+    test_site = TestSite_HomePage(web_driver)
+    test_site.open()
+    profile_page = test_site.click_profile()
+    profile_page.click_activate()
+
+    return create_from_login_page(web_driver, mailbox)
+
+def create_activated_creator_user(web_driver, mailbox):
+    from PageObjectModels.PayoutSetupPage import PayoutSetupPage
+
+    id, cookie = create_unactivated_creator_User(web_driver, mailbox)
+    payout_page = PayoutSetupPage(web_driver)
+    payout_page.enter_creator_paypal(mailbox.email_address)
+    payout_page.submit_creator_paypal()
+    return id, cookie
+
+def attempt_to_delete_user(firefox_driver, mailbox):
+    from PageObjectModels.LoginPage import LoginPage
+    from ApiLib import User
+    try:
+        login = LoginPage(firefox_driver).open()
+        resultpage = login.sign_in(mailbox.email_address, "SublessTestUser")
+        if 'terms' in firefox_driver.current_url:
+            plan_selection_page = resultpage.accept_terms()
+        id, cookie = get_user_id_and_cookie(firefox_driver)
+        User.delete_user(cookie)
+    except BaseException as err:  # awful.
+        return
