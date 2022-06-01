@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Subless.PayoutCalculator
+namespace Subless.Services.Services
 {
     public interface ICalculatorService
     {

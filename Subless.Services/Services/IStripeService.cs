@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Stripe;
 using Subless.Models;
 
-namespace Subless.Services
+namespace Subless.Services.Services
 {
     public interface IStripeService
     {

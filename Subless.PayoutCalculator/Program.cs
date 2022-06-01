@@ -4,7 +4,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Serilog;
 using Subless.Data;
-using Subless.PayoutCalculator;
 using Subless.Services;
 using Subless.Services.Services;
 using System;
@@ -149,11 +148,7 @@ namespace PayoutCalculator
                 });
                 DataDi.RegisterDataDi(services);
                 ServicesDi.AddServicesDi(services);
-                services.AddTransient<ICalculatorService, CalculatorService>();
-                services.AddTransient<IFileStorageService, S3Service>();
-                services.AddTransient<AwsCredWrapper, AwsCredWrapper>();
-                services.AddTransient<IPaymentEmailService, PaymentEmailService>();
-                services.AddTransient<IHealthCheck, HealthCheck>();
+                CalculatorDi.AddCalculatorDi(services);
             });
         }
 

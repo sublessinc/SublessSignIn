@@ -3,7 +3,6 @@ using Amazon.S3.Transfer;
 using CsvHelper;
 using CsvHelper.Configuration;
 using Microsoft.Extensions.Options;
-using Subless.PayoutCalculator;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -11,7 +10,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Subless.Services
+namespace Subless.Services.Services
 {
     public class S3Service : IFileStorageService, IDisposable
     {

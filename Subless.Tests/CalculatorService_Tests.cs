@@ -3,8 +3,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
 using Subless.Models;
-using Subless.PayoutCalculator;
-using Subless.Services;
 using Subless.Services.Services;
 using System;
 using System.Collections.Generic;

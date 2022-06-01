@@ -1,13 +1,11 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Subless.Models;
-using Subless.Services;
-using Subless.Services.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Subless.PayoutCalculator
+namespace Subless.Services.Services
 {
     public class CalculatorService : ICalculatorService
     {
@@ -55,7 +53,7 @@ namespace Subless.PayoutCalculator
         public void CalculatePayments(DateTimeOffset startDate, DateTimeOffset endDate)
         {
             var emailSent = false;
-            Dictionary<string, double> allPayouts = new Dictionary<string, double>();
+            var allPayouts = new Dictionary<string, double>();
             // get what we were paid (after fees), and by who
             var payers = GetPayments(startDate, endDate);
             if (!payers.Any())
@@ -190,12 +188,12 @@ namespace Subless.PayoutCalculator
             return visits;
         }
 
-        public IEnumerable<Payee> GetCreatorPayees(Double payment, Dictionary<Guid, int> creatorHits, int totalHits, double partnerHitFraction, double sublessHitFraction)
+        public IEnumerable<Payee> GetCreatorPayees(double payment, Dictionary<Guid, int> creatorHits, int totalHits, double partnerHitFraction, double sublessHitFraction)
         {
             var payees = new List<Payee>();
             foreach (var creatorVisits in creatorHits)
             {
-                var creatorPayment = ((double)creatorVisits.Value / totalHits) * (payment * (1 - sublessHitFraction) * (1 - partnerHitFraction));
+                var creatorPayment = (double)creatorVisits.Value / totalHits * (payment * (1 - sublessHitFraction) * (1 - partnerHitFraction));
                 creatorPayment = Math.Round(creatorPayment, CurrencyPrecision, MidpointRounding.ToZero);
                 var creator = _creatorService.GetCreator(creatorVisits.Key);
                 payees.Add(new Payee
@@ -215,7 +213,7 @@ namespace Subless.PayoutCalculator
             var payees = new List<Payee>();
             foreach (var creatorVisits in creatorHits)
             {
-                var partnerPayment = (partnerHitFraction) * ((double)creatorVisits.Value / totalHits) * (payment * (1 - sublessHitFraction));
+                var partnerPayment = partnerHitFraction * ((double)creatorVisits.Value / totalHits) * (payment * (1 - sublessHitFraction));
                 partnerPayment = Math.Round(partnerPayment, CurrencyPrecision, MidpointRounding.ToZero);
                 var creator = _creatorService.GetCreator(creatorVisits.Key);
                 var partner = _partnerService.GetPartner(creator.PartnerId);

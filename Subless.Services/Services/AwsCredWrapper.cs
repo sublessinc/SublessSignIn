@@ -1,7 +1,7 @@
 ﻿using Amazon.Runtime;
 using Microsoft.Extensions.Options;
 
-namespace Subless.PayoutCalculator
+namespace Subless.Services.Services
 {
     public class AwsCredWrapper
     {
