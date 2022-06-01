@@ -52,8 +52,9 @@ namespace Subless.Services.Services
 
         public void CalculatePayments(DateTimeOffset startDate, DateTimeOffset endDate)
         {
-            var emailSent = false;
-            var allPayouts = new Dictionary<string, double>();
+            var calculatorResult = new CalculatorResult();
+            calculatorResult.EmailSent = false;
+            calculatorResult.AllPayouts = new Dictionary<string, double>();
             // get what we were paid (after fees), and by who
             var payers = GetPayments(startDate, endDate);
             if (!payers.Any())
@@ -74,7 +75,7 @@ namespace Subless.Services.Services
                 var user = userService.GetUser(payer.UserId);
                 if (!hits.Any())
                 {
-                    _stripeService.RolloverPaymentForIdleCustomer(user.StripeCustomerId);
+                    calculatorResult.IdleCustomerStripeIds.Add(user.StripeCustomerId);
                     break;
                 }
                 // group all visits to payee
@@ -96,20 +97,33 @@ namespace Subless.Services.Services
                 }
 
                 // record each outgoing payment to master list
-                var payments = SavePaymentDetails(payees, payer, endDate);
-                emailService.SendReceiptEmail(payments, user.CognitoId);
-                emailSent = true;
-                AddPayeesToMasterList(allPayouts, payees);
+                var payments = CollectPaymentDetails(payees, payer, endDate);
+                
+                calculatorResult.PaymentsPerPayer.Add(user.CognitoId, payments);
+                
+                AddPayeesToMasterList(calculatorResult.AllPayouts, payees);
             }
             // stripe sends payments in cents, paypal expects payouts in dollars
-            ConvertCentsToDollars(allPayouts);
+            ConvertCentsToDollars(calculatorResult.AllPayouts);
             // make sure we're not sending inappropriate fractions
-            RoundPaymentsForFinalPayment(allPayouts);
+            RoundPaymentsForFinalPayment(calculatorResult.AllPayouts);
+            // rollover idle customers
+            foreach (var idleCustomerId in calculatorResult.IdleCustomerStripeIds)
+            {
+                _stripeService.RolloverPaymentForIdleCustomer(idleCustomerId);
+            }
+            // send emails
+            foreach (var payer in calculatorResult.PaymentsPerPayer)
+            {
+                _paymentLogsService.SaveLogs(payer.Value);
+                emailService.SendReceiptEmail(payer.Value, payer.Key);
+                calculatorResult.EmailSent = true;
+            }
             // record to database
-            SaveMasterList(allPayouts, endDate);
+            SaveMasterList(calculatorResult.AllPayouts, endDate);
             // record to s3 bucket
-            SavePayoutsToS3(allPayouts);
-            if (emailSent)
+            SavePayoutsToS3(calculatorResult.AllPayouts);
+            if (calculatorResult.EmailSent)
             {
                 emailService.SendAdminNotification();
             }
@@ -249,9 +263,9 @@ namespace Subless.Services.Services
             }});
         }
 
-        private List<Payment> SavePaymentDetails(IEnumerable<Payee> payees, Payer payer, DateTimeOffset endDate)
+        private List<Payment> CollectPaymentDetails(IEnumerable<Payee> payees, Payer payer, DateTimeOffset endDate)
         {
-            _logger.LogInformation($"Saving payment details for one patron and {0} payees", payees.Count());
+            _logger.LogInformation($"Collecting payment details for one patron and {0} payees", payees.Count());
             var logs = new List<Payment>();
             foreach (var payee in payees)
             {
@@ -263,7 +277,6 @@ namespace Subless.Services.Services
                     Amount = payee.Payment
                 });
             }
-            _paymentLogsService.SaveLogs(logs);
             return logs;
         }
 

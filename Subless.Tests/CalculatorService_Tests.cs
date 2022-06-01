@@ -581,7 +581,7 @@ namespace Subless.Tests
             var mockLoggerFactory = new Mock<ILoggerFactory>();
             mockLoggerFactory.Setup(x => x.CreateLogger(It.IsAny<string>())).Returns(() => logger);
             var userSerivce = new Mock<IUserService>();
-            userSerivce.Setup(x => x.GetUser(It.IsAny<Guid>())).Returns(new User());
+            userSerivce.Setup(x => x.GetUser(It.IsAny<Guid>())).Returns(new User() { CognitoId = "cognitoId" });
 
             return new CalculatorService(
                 stripe?.Object ?? StripeServiceBuilder().Object,
