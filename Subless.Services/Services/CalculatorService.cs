@@ -50,7 +50,38 @@ namespace Subless.Services.Services
             SublessPayPalId = stripeOptions.Value.SublessPayPalId ?? throw new ArgumentNullException(nameof(stripeOptions));
         }
 
-        public void CalculatePayments(DateTimeOffset startDate, DateTimeOffset endDate)
+        public void ExecutePayments(DateTimeOffset startDate, DateTimeOffset endDate)
+        {
+            var calculatorResult = CaculatePayoutsOverRange(startDate, endDate);
+            if (calculatorResult == null)
+            {
+                _logger.LogWarning("No Payments found in payment period, distribution skipped.");
+                return;
+            }
+
+            // rollover idle customers
+            foreach (var idleCustomerId in calculatorResult.IdleCustomerStripeIds)
+            {
+                _stripeService.RolloverPaymentForIdleCustomer(idleCustomerId);
+            }
+            // send emails
+            foreach (var payer in calculatorResult.PaymentsPerPayer)
+            {
+                _paymentLogsService.SaveLogs(payer.Value);
+                emailService.SendReceiptEmail(payer.Value, payer.Key);
+                calculatorResult.EmailSent = true;
+            }
+            // record to database
+            SaveMasterList(calculatorResult.AllPayouts, endDate);
+            // record to s3 bucket
+            SavePayoutsToS3(calculatorResult.AllPayouts);
+            if (calculatorResult.EmailSent)
+            {
+                emailService.SendAdminNotification();
+            }
+        }
+
+        public CalculatorResult CaculatePayoutsOverRange(DateTimeOffset startDate, DateTimeOffset endDate)
         {
             var calculatorResult = new CalculatorResult();
             calculatorResult.EmailSent = false;
@@ -60,7 +91,7 @@ namespace Subless.Services.Services
             if (!payers.Any())
             {
                 _logger.LogWarning("No Payments found in payment period, calculation skipped.");
-                return;
+                return null;
             }
             // for each user
             _logger.LogInformation("Preparing to process {0} payers' payments.", payers.Count());
@@ -98,35 +129,16 @@ namespace Subless.Services.Services
 
                 // record each outgoing payment to master list
                 var payments = CollectPaymentDetails(payees, payer, endDate);
-                
+
                 calculatorResult.PaymentsPerPayer.Add(user.CognitoId, payments);
-                
+
                 AddPayeesToMasterList(calculatorResult.AllPayouts, payees);
             }
             // stripe sends payments in cents, paypal expects payouts in dollars
             ConvertCentsToDollars(calculatorResult.AllPayouts);
             // make sure we're not sending inappropriate fractions
             RoundPaymentsForFinalPayment(calculatorResult.AllPayouts);
-            // rollover idle customers
-            foreach (var idleCustomerId in calculatorResult.IdleCustomerStripeIds)
-            {
-                _stripeService.RolloverPaymentForIdleCustomer(idleCustomerId);
-            }
-            // send emails
-            foreach (var payer in calculatorResult.PaymentsPerPayer)
-            {
-                _paymentLogsService.SaveLogs(payer.Value);
-                emailService.SendReceiptEmail(payer.Value, payer.Key);
-                calculatorResult.EmailSent = true;
-            }
-            // record to database
-            SaveMasterList(calculatorResult.AllPayouts, endDate);
-            // record to s3 bucket
-            SavePayoutsToS3(calculatorResult.AllPayouts);
-            if (calculatorResult.EmailSent)
-            {
-                emailService.SendAdminNotification();
-            }
+            return calculatorResult;
         }
 
         private IEnumerable<Hit> FilterInvalidCreators(IEnumerable<Hit> hits)

@@ -28,7 +28,7 @@ namespace Subless.Tests
 
 
             //Act
-            sut.CalculatePayments(DateTimeOffset.UtcNow.AddMonths(-1), DateTimeOffset.UtcNow);
+            sut.ExecutePayments(DateTimeOffset.UtcNow.AddMonths(-1), DateTimeOffset.UtcNow);
 
             //Assert
             Assert.Empty(allPayments); // We shouldn't be paying anyone
@@ -67,7 +67,7 @@ namespace Subless.Tests
                 partnerService: partnerService
                 );
             //Act
-            sut.CalculatePayments(DateTimeOffset.UtcNow.AddMonths(-1), DateTimeOffset.UtcNow);
+            sut.ExecutePayments(DateTimeOffset.UtcNow.AddMonths(-1), DateTimeOffset.UtcNow);
 
             //Assert
             Assert.NotEmpty(allPayments); // We should have a payment directed at subless, even if it's zero
@@ -113,7 +113,7 @@ namespace Subless.Tests
                 partnerService: partnerService
                 );
             //Act
-            sut.CalculatePayments(DateTimeOffset.UtcNow.AddMonths(-1), DateTimeOffset.UtcNow);
+            sut.ExecutePayments(DateTimeOffset.UtcNow.AddMonths(-1), DateTimeOffset.UtcNow);
 
             //Assert
             Assert.NotEmpty(allPayments); // We should have a payment directed at subless, even if it's zero
@@ -151,7 +151,7 @@ namespace Subless.Tests
                 partnerService: partnerService
                 );
             //Act
-            sut.CalculatePayments(DateTimeOffset.UtcNow.AddMonths(-1), DateTimeOffset.UtcNow);
+            sut.ExecutePayments(DateTimeOffset.UtcNow.AddMonths(-1), DateTimeOffset.UtcNow);
 
             //Assert
             Assert.NotEmpty(allPayments); // We should have a payment directed at subless
@@ -189,7 +189,7 @@ namespace Subless.Tests
                 partnerService: partnerService
                 );
             //Act
-            sut.CalculatePayments(DateTimeOffset.UtcNow.AddMonths(-1), DateTimeOffset.UtcNow);
+            sut.ExecutePayments(DateTimeOffset.UtcNow.AddMonths(-1), DateTimeOffset.UtcNow);
 
             //Assert
             Assert.NotEmpty(allPayments); // We should have a payment directed at subless
@@ -228,7 +228,7 @@ namespace Subless.Tests
                 partnerService: partnerService
                 );
             //Act
-            sut.CalculatePayments(DateTimeOffset.UtcNow.AddMonths(-1), DateTimeOffset.UtcNow);
+            sut.ExecutePayments(DateTimeOffset.UtcNow.AddMonths(-1), DateTimeOffset.UtcNow);
 
             //Assert
             Assert.NotEmpty(allPayments); // We should have a payment directed at subless
@@ -273,7 +273,7 @@ namespace Subless.Tests
                 partnerService: partnerService
                 );
             //Act
-            sut.CalculatePayments(DateTimeOffset.UtcNow.AddMonths(-1), DateTimeOffset.UtcNow);
+            sut.ExecutePayments(DateTimeOffset.UtcNow.AddMonths(-1), DateTimeOffset.UtcNow);
 
             //Assert
             Assert.NotEmpty(allPayments); // We should have a payment directed at subless
@@ -551,7 +551,7 @@ namespace Subless.Tests
                 partnerService: partnerService
                 );
             //Act
-            sut.CalculatePayments(DateTimeOffset.UtcNow.AddMonths(-1), DateTimeOffset.UtcNow);
+            sut.ExecutePayments(DateTimeOffset.UtcNow.AddMonths(-1), DateTimeOffset.UtcNow);
 
             //Assert
             Assert.Empty(allPayments);

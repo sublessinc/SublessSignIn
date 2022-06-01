@@ -36,6 +36,7 @@ def test_paying_user_can_logout_of_test_site(web_driver, paying_user, params):
     # THEN: I should see a login page
     assert "login" in web_driver.current_url
 
+
 def test_paying_user_hit_pushed(web_driver, subless_activated_creator_user, paying_user, params):
     # WHEN: I visit creator
     dashboard = PatronDashboardPage(web_driver)
