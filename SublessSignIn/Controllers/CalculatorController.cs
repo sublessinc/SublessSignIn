@@ -21,8 +21,10 @@ namespace SublessSignIn.Controllers
         }
 
         [HttpGet()]
-        public CalculatorResult CalculateOverRange(DateTime start, DateTime end)
+        public CalculatorResult CalculateOverRange(DateTimeOffset start, DateTimeOffset end)
         {
+            start = start.ToUniversalTime();
+            end = end.ToUniversalTime();
             return _calculatorService.CaculatePayoutsOverRange(start, end);
 
         }
