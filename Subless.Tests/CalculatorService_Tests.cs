@@ -599,18 +599,18 @@ namespace Subless.Tests
         }
 
         private CalculatorService CalculatorServiceBuilder(
-    Mock<IStripeService> stripe = null,
-    Mock<IHitService> hitService = null,
-    Mock<ICreatorService> creatorService = null,
-    Mock<IPartnerService> partnerService = null
-    )
+            Mock<IStripeService> stripe = null,
+            Mock<IHitService> hitService = null,
+            Mock<ICreatorService> creatorService = null,
+            Mock<IPartnerService> partnerService = null
+            )
         {
             var serviceProvider = new ServiceCollection()
-    .AddLogging(x =>
-    {
-        x.AddSimpleConsole();
-    })
-    .BuildServiceProvider();
+                .AddLogging(x =>
+                {
+                    x.AddSimpleConsole();
+                })
+                .BuildServiceProvider();
             var factory = serviceProvider.GetService<ILoggerFactory>();
 
             var logger = factory.CreateLogger<CalculatorService>();
@@ -618,7 +618,7 @@ namespace Subless.Tests
             var mockLoggerFactory = new Mock<ILoggerFactory>();
             mockLoggerFactory.Setup(x => x.CreateLogger(It.IsAny<string>())).Returns(() => logger);
             var userSerivce = new Mock<IUserService>();
-            userSerivce.Setup(x => x.GetUser(It.IsAny<Guid>())).Returns(new User() { CognitoId = "cognito"});
+            userSerivce.Setup(x => x.GetUser(It.IsAny<Guid>())).Returns(new User() { CognitoId = "cognito" });
 
             //TODO split these tests, till then, both of these are the SUT
             var calculatorService = new CalculatorService(
