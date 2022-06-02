@@ -115,3 +115,14 @@ def attempt_to_delete_user(firefox_driver, mailbox):
         User.delete_user(cookie)
     except BaseException as err:  # awful.
         return
+
+
+def login_as_god_user(firefox_driver):
+    from Keys.Keys import Keys
+    from PageObjectModels.LoginPage import LoginPage
+
+    login_page = LoginPage(firefox_driver).open()
+    login_page.sign_in(Keys.god_email, Keys.god_password)
+
+    id, cookie = get_user_id_and_cookie(firefox_driver)
+    return id, cookie
