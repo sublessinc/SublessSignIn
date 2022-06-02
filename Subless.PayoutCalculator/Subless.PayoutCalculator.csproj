@@ -25,6 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Subless.Configuration\Subless.Configuration.csproj" />
     <ProjectReference Include="..\Subless.Models\Subless.Models.csproj" />
     <ProjectReference Include="..\Subless.Services\Subless.Services.csproj" />
   </ItemGroup>
