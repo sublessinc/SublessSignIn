@@ -26,11 +26,11 @@ namespace Subless.Tests
                 {
                     allPayments = y;
                 });
-            var sut = CalculatorServiceBuilder(s3Service: s3Service);
+            var sut = PaymentServiceBuilder(s3Service: s3Service);
 
 
             //Act
-            sut.CalculatePayments(DateTimeOffset.UtcNow.AddMonths(-1), DateTimeOffset.UtcNow);
+            sut.ExecutePayments(DateTimeOffset.UtcNow.AddMonths(-1), DateTimeOffset.UtcNow);
 
             //Assert
             Assert.Empty(allPayments); // We shouldn't be paying anyone
@@ -61,7 +61,7 @@ namespace Subless.Tests
                 });
             var creatorService = CreatorServiceBuilder();
             var partnerService = PartnerServiceBuilder();
-            var sut = CalculatorServiceBuilder(
+            var sut = PaymentServiceBuilder(
                 stripe: stripeService,
                 s3Service: s3Service,
                 hitService: hitService,
@@ -69,7 +69,7 @@ namespace Subless.Tests
                 partnerService: partnerService
                 );
             //Act
-            sut.CalculatePayments(DateTimeOffset.UtcNow.AddMonths(-1), DateTimeOffset.UtcNow);
+            sut.ExecutePayments(DateTimeOffset.UtcNow.AddMonths(-1), DateTimeOffset.UtcNow);
 
             //Assert
             Assert.NotEmpty(allPayments); // We should have a payment directed at subless, even if it's zero
@@ -107,7 +107,7 @@ namespace Subless.Tests
             creatorService.Setup(x => x.GetCreator(It.Is<Guid>(x => x == inActiveCreatorId))).Returns(new Creator() { Id = inActiveCreatorId, PayPalId = null });
 
             var partnerService = PartnerServiceBuilder();
-            var sut = CalculatorServiceBuilder(
+            var sut = PaymentServiceBuilder(
                 stripe: stripeService,
                 s3Service: s3Service,
                 hitService: hitService,
@@ -115,7 +115,7 @@ namespace Subless.Tests
                 partnerService: partnerService
                 );
             //Act
-            sut.CalculatePayments(DateTimeOffset.UtcNow.AddMonths(-1), DateTimeOffset.UtcNow);
+            sut.ExecutePayments(DateTimeOffset.UtcNow.AddMonths(-1), DateTimeOffset.UtcNow);
 
             //Assert
             Assert.NotEmpty(allPayments); // We should have a payment directed at subless, even if it's zero
@@ -145,7 +145,7 @@ namespace Subless.Tests
                 });
             var creatorService = CreatorServiceBuilder();
             var partnerService = PartnerServiceBuilder();
-            var sut = CalculatorServiceBuilder(
+            var sut = PaymentServiceBuilder(
                 stripe: stripeService,
                 s3Service: s3Service,
                 hitService: hitService,
@@ -153,7 +153,7 @@ namespace Subless.Tests
                 partnerService: partnerService
                 );
             //Act
-            sut.CalculatePayments(DateTimeOffset.UtcNow.AddMonths(-1), DateTimeOffset.UtcNow);
+            sut.ExecutePayments(DateTimeOffset.UtcNow.AddMonths(-1), DateTimeOffset.UtcNow);
 
             //Assert
             Assert.NotEmpty(allPayments); // We should have a payment directed at subless
@@ -183,7 +183,7 @@ namespace Subless.Tests
                 });
             var creatorService = CreatorServiceBuilder();
             var partnerService = PartnerServiceBuilder("Partner");
-            var sut = CalculatorServiceBuilder(
+            var sut = PaymentServiceBuilder(
                 stripe: stripeService,
                 s3Service: s3Service,
                 hitService: hitService,
@@ -191,7 +191,7 @@ namespace Subless.Tests
                 partnerService: partnerService
                 );
             //Act
-            sut.CalculatePayments(DateTimeOffset.UtcNow.AddMonths(-1), DateTimeOffset.UtcNow);
+            sut.ExecutePayments(DateTimeOffset.UtcNow.AddMonths(-1), DateTimeOffset.UtcNow);
 
             //Assert
             Assert.NotEmpty(allPayments); // We should have a payment directed at subless
@@ -222,7 +222,7 @@ namespace Subless.Tests
                 });
             var creatorService = CreatorServiceBuilder("Creator");
             var partnerService = PartnerServiceBuilder();
-            var sut = CalculatorServiceBuilder(
+            var sut = PaymentServiceBuilder(
                 stripe: stripeService,
                 s3Service: s3Service,
                 hitService: hitService,
@@ -230,7 +230,7 @@ namespace Subless.Tests
                 partnerService: partnerService
                 );
             //Act
-            sut.CalculatePayments(DateTimeOffset.UtcNow.AddMonths(-1), DateTimeOffset.UtcNow);
+            sut.ExecutePayments(DateTimeOffset.UtcNow.AddMonths(-1), DateTimeOffset.UtcNow);
 
             //Assert
             Assert.NotEmpty(allPayments); // We should have a payment directed at subless
@@ -267,7 +267,7 @@ namespace Subless.Tests
             creatorService.Setup(x => x.GetCreator(It.Is<Guid>(x => x == creator1))).Returns(new Creator() { PayPalId = "Creator1", Id = creator1 });
             creatorService.Setup(x => x.GetCreator(It.Is<Guid>(x => x == creator2))).Returns(new Creator() { PayPalId = "Creator2", Id = creator2 });
             var partnerService = PartnerServiceBuilder("Partner");
-            var sut = CalculatorServiceBuilder(
+            var sut = PaymentServiceBuilder(
                 stripe: stripeService,
                 s3Service: s3Service,
                 hitService: hitService,
@@ -275,7 +275,7 @@ namespace Subless.Tests
                 partnerService: partnerService
                 );
             //Act
-            sut.CalculatePayments(DateTimeOffset.UtcNow.AddMonths(-1), DateTimeOffset.UtcNow);
+            sut.ExecutePayments(DateTimeOffset.UtcNow.AddMonths(-1), DateTimeOffset.UtcNow);
 
             //Assert
             Assert.NotEmpty(allPayments); // We should have a payment directed at subless
@@ -545,7 +545,7 @@ namespace Subless.Tests
                 });
             var creatorService = new Mock<ICreatorService>();
             var partnerService = PartnerServiceBuilder("Partner");
-            var sut = CalculatorServiceBuilder(
+            var sut = PaymentServiceBuilder(
                 stripe: stripeService,
                 s3Service: s3Service,
                 hitService: hitService,
@@ -553,14 +553,14 @@ namespace Subless.Tests
                 partnerService: partnerService
                 );
             //Act
-            sut.CalculatePayments(DateTimeOffset.UtcNow.AddMonths(-1), DateTimeOffset.UtcNow);
+            sut.ExecutePayments(DateTimeOffset.UtcNow.AddMonths(-1), DateTimeOffset.UtcNow);
 
             //Assert
             Assert.Empty(allPayments);
             mockStripe.Verify(mock => mock.RolloverPaymentForIdleCustomer(It.IsAny<string>()), Times.Once());
         }
 
-        private CalculatorService CalculatorServiceBuilder(
+        private PaymentService PaymentServiceBuilder(
             Mock<IStripeService> stripe = null,
             Mock<IHitService> hitService = null,
             Mock<IFileStorageService> s3Service = null,
@@ -578,26 +578,62 @@ namespace Subless.Tests
 
             var factory = serviceProvider.GetService<ILoggerFactory>();
 
+            var logger = factory.CreateLogger<PaymentService>();
+
+            var mockLoggerFactory = new Mock<ILoggerFactory>();
+            mockLoggerFactory.Setup(x => x.CreateLogger(It.IsAny<string>())).Returns(() => logger);
+
+
+            //TODO split these tests, till then, both of these are the SUT
+            var calculatorService = CalculatorServiceBuilder(stripe, hitService, creatorService, partnerService);
+
+            return new PaymentService(
+                stripe?.Object ?? StripeServiceBuilder().Object,
+                new Mock<IPaymentLogsService>().Object,
+                s3Service?.Object ?? new Mock<IFileStorageService>().Object,
+                CreateOptions(),
+                new Mock<IPaymentEmailService>().Object,
+                calculatorService,
+                mockLoggerFactory.Object
+                );
+        }
+
+        private CalculatorService CalculatorServiceBuilder(
+            Mock<IStripeService> stripe = null,
+            Mock<IHitService> hitService = null,
+            Mock<ICreatorService> creatorService = null,
+            Mock<IPartnerService> partnerService = null
+            )
+        {
+            var serviceProvider = new ServiceCollection()
+                .AddLogging(x =>
+                {
+                    x.AddSimpleConsole();
+                })
+                .BuildServiceProvider();
+            var factory = serviceProvider.GetService<ILoggerFactory>();
+
             var logger = factory.CreateLogger<CalculatorService>();
 
             var mockLoggerFactory = new Mock<ILoggerFactory>();
             mockLoggerFactory.Setup(x => x.CreateLogger(It.IsAny<string>())).Returns(() => logger);
             var userSerivce = new Mock<IUserService>();
-            userSerivce.Setup(x => x.GetUser(It.IsAny<Guid>())).Returns(new User());
+            userSerivce.Setup(x => x.GetUser(It.IsAny<Guid>())).Returns(new User() { CognitoId = "cognito" });
 
-            return new CalculatorService(
+            //TODO split these tests, till then, both of these are the SUT
+            var calculatorService = new CalculatorService(
                 stripe?.Object ?? StripeServiceBuilder().Object,
                 hitService?.Object ?? new Mock<IHitService>().Object,
                 creatorService?.Object ?? new Mock<ICreatorService>().Object,
                 partnerService?.Object ?? new Mock<IPartnerService>().Object,
                 new Mock<IPaymentLogsService>().Object,
-                s3Service?.Object ?? new Mock<IFileStorageService>().Object,
                 userSerivce.Object,
                 CreateOptions(),
-                new Mock<IPaymentEmailService>().Object,
-                mockLoggerFactory.Object                
+                mockLoggerFactory.Object
                 );
+            return calculatorService;
         }
+
 
         private IOptions<StripeConfig> CreateOptions()
         {

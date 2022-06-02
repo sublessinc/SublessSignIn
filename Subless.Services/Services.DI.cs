@@ -44,6 +44,7 @@ namespace Subless.Services
             services.AddTransient<ICacheService, CacheService>();
             services.AddTransient<IUsageService, UsageService>();
             services.AddTransient<IEmailService, EmailService>();
+            services.AddTransient<ICalculatorService, CalculatorService>();
             services.AddMemoryCache();
             services.AddHttpClient();
             return services;

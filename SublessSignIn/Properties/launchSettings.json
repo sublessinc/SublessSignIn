@@ -34,7 +34,8 @@
         "issuerUrl": "https://devpayidp.auth.us-east-2.amazoncognito.com",
         "Logging__LogLevel__Default": "Debug",
         "IdentityServerLicenseKey": "",
-        "HitPopupEnabled": "true"
+        "HitPopupEnabled": "true",
+        "PayPalId": "contact@subless.com"
 
       },
       "dotnetRunMessages": "true",

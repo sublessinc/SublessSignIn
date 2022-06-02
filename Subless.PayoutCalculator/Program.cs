@@ -85,13 +85,13 @@ namespace PayoutCalculator
                 {
                     logger.LogInformation("Checking if calculator should be run");
                     var logsService = scope.ServiceProvider.GetRequiredService<IPaymentLogsService>();
-                    var calculator = scope.ServiceProvider.GetRequiredService<ICalculatorService>();
+                    var calculator = scope.ServiceProvider.GetRequiredService<IPaymentService>();
                     var lastExecution = logsService.GetLastPaymentDate();
 
                     if (ShouldExecuteScheduledRun(executionsPerYear, lastExecution))
                     {
                         logger.LogInformation("Running calculation");
-                        calculator.CalculatePayments(lastExecution, DateTimeOffset.UtcNow);
+                        calculator.ExecutePayments(lastExecution, DateTimeOffset.UtcNow);
                         logger.LogInformation("Calculation complete");
                     }
                     lastExecution = logsService.GetLastPaymentDate();
@@ -109,10 +109,10 @@ namespace PayoutCalculator
             using (var scope = host.Services.CreateScope())
             {
                 var logsService = scope.ServiceProvider.GetRequiredService<IPaymentLogsService>();
-                var calculator = scope.ServiceProvider.GetRequiredService<ICalculatorService>();
+                var calculator = scope.ServiceProvider.GetRequiredService<IPaymentService>();
                 var lastExecution = logsService.GetLastPaymentDate();
                 logger.LogInformation("Running calculation");
-                calculator.CalculatePayments(lastExecution, DateTimeOffset.UtcNow);
+                calculator.ExecutePayments(lastExecution, DateTimeOffset.UtcNow);
                 logger.LogError("Calculation complete... waiting indefinitly");
                 Console.Read();
             }
@@ -123,10 +123,10 @@ namespace PayoutCalculator
             using (var scope = host.Services.CreateScope())
             {
                 var logsService = scope.ServiceProvider.GetRequiredService<IPaymentLogsService>();
-                var calculator = scope.ServiceProvider.GetRequiredService<ICalculatorService>();
+                var calculator = scope.ServiceProvider.GetRequiredService<IPaymentService>();
                 var lastExecution = logsService.GetLastPaymentDate();
                 logger.LogInformation("Running calculation");
-                calculator.CalculatePayments(start, end);
+                calculator.ExecutePayments(start, end);
                 logger.LogError("Calculation complete... waiting indefinitly");
                 Console.Read();
             }
@@ -149,7 +149,7 @@ namespace PayoutCalculator
                 });
                 DataDi.RegisterDataDi(services);
                 ServicesDi.AddServicesDi(services);
-                services.AddTransient<ICalculatorService, CalculatorService>();
+                services.AddTransient<IPaymentService, PaymentService>();
                 services.AddTransient<IFileStorageService, S3Service>();
                 services.AddTransient<AwsCredWrapper, AwsCredWrapper>();
                 services.AddTransient<IPaymentEmailService, PaymentEmailService>();
