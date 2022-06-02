@@ -9,8 +9,10 @@ using Newtonsoft.Json;
 using Subless.Data;
 using Subless.Models;
 using Subless.Services;
+using Subless.Services.Services;
 using SublessSignIn.AuthServices;
 using System;
+using System.Globalization;
 using System.Linq;
 using static Subless.Data.DataDi;
 
@@ -68,6 +70,22 @@ namespace SublessSignIn
             }));
 
             ServicesDi.AddServicesDi(services);
+
+            // TODO Environment/feature flag
+            if (true)
+            {
+                CalculatorDi.AddCalculatorDi(services);
+                services.Configure<CalculatorConfiguration>(options =>
+                {
+                    options.BucketName = Environment.GetEnvironmentVariable("BucketName");
+                    options.ExecutionsPerYear = int.Parse(Environment.GetEnvironmentVariable("ExecutionsPerYear"), CultureInfo.InvariantCulture);
+                    options.RunOnStart = bool.Parse(Environment.GetEnvironmentVariable("RunOnStart") ?? "false");
+                    options.CalcuationRangeEnd = Environment.GetEnvironmentVariable("CalcuationRangeEnd");
+                    options.CalcuationRangeStart = Environment.GetEnvironmentVariable("CalcuationRangeStart");
+                    options.Domain = Environment.GetEnvironmentVariable("DOMAIN");
+                    options.PoolId = Environment.GetEnvironmentVariable("DOMAIN");
+                });
+            }
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
