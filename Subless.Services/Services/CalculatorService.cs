@@ -1,13 +1,11 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Subless.Models;
-using Subless.Services;
-using Subless.Services.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Subless.PayoutCalculator
+namespace Subless.Services.Services
 {
     public class CalculatorService : ICalculatorService
     {
@@ -22,9 +20,7 @@ namespace Subless.PayoutCalculator
         private readonly IPartnerService _partnerService;
         private readonly IPaymentLogsService _paymentLogsService;
         private readonly ILoggerFactory _loggerFactory;
-        private readonly IFileStorageService _s3Service;
         private readonly IUserService userService;
-        private readonly IPaymentEmailService emailService;
         private readonly ILogger _logger;
 
         public CalculatorService(
@@ -33,10 +29,8 @@ namespace Subless.PayoutCalculator
             ICreatorService creatorService,
             IPartnerService partnerService,
             IPaymentLogsService paymentLogsService,
-            IFileStorageService s3Service,
             IUserService userService,
             IOptions<StripeConfig> stripeOptions,
-            IPaymentEmailService emailService,
             ILoggerFactory loggerFactory)
         {
             _stripeService = stripeService ?? throw new ArgumentNullException(nameof(stripeService));
@@ -45,23 +39,23 @@ namespace Subless.PayoutCalculator
             _partnerService = partnerService ?? throw new ArgumentNullException(nameof(partnerService));
             _paymentLogsService = paymentLogsService ?? throw new ArgumentNullException(nameof(paymentLogsService));
             _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
-            _s3Service = s3Service ?? throw new ArgumentNullException(nameof(s3Service));
             this.userService = userService ?? throw new ArgumentNullException(nameof(userService));
-            this.emailService = emailService ?? throw new ArgumentNullException(nameof(emailService));
             _logger = _loggerFactory.CreateLogger<CalculatorService>();
             SublessPayPalId = stripeOptions.Value.SublessPayPalId ?? throw new ArgumentNullException(nameof(stripeOptions));
         }
 
-        public void CalculatePayments(DateTimeOffset startDate, DateTimeOffset endDate)
+
+        public CalculatorResult CaculatePayoutsOverRange(DateTimeOffset startDate, DateTimeOffset endDate)
         {
-            var emailSent = false;
-            Dictionary<string, double> allPayouts = new Dictionary<string, double>();
+            var calculatorResult = new CalculatorResult();
+            calculatorResult.EmailSent = false;
+            calculatorResult.AllPayouts = new Dictionary<string, double>();
             // get what we were paid (after fees), and by who
             var payers = GetPayments(startDate, endDate);
             if (!payers.Any())
             {
                 _logger.LogWarning("No Payments found in payment period, calculation skipped.");
-                return;
+                return null;
             }
             // for each user
             _logger.LogInformation("Preparing to process {0} payers' payments.", payers.Count());
@@ -76,7 +70,7 @@ namespace Subless.PayoutCalculator
                 var user = userService.GetUser(payer.UserId);
                 if (!hits.Any())
                 {
-                    _stripeService.RolloverPaymentForIdleCustomer(user.StripeCustomerId);
+                    calculatorResult.IdleCustomerStripeIds.Add(user.StripeCustomerId);
                     break;
                 }
                 // group all visits to payee
@@ -98,23 +92,17 @@ namespace Subless.PayoutCalculator
                 }
 
                 // record each outgoing payment to master list
-                var payments = SavePaymentDetails(payees, payer, endDate);
-                emailService.SendReceiptEmail(payments, user.CognitoId);
-                emailSent = true;
-                AddPayeesToMasterList(allPayouts, payees);
+                var payments = CollectPaymentDetails(payees, payer, endDate);
+
+                calculatorResult.PaymentsPerPayer.Add(user.CognitoId, payments);
+
+                AddPayeesToMasterList(calculatorResult.AllPayouts, payees);
             }
             // stripe sends payments in cents, paypal expects payouts in dollars
-            ConvertCentsToDollars(allPayouts);
+            ConvertCentsToDollars(calculatorResult.AllPayouts);
             // make sure we're not sending inappropriate fractions
-            RoundPaymentsForFinalPayment(allPayouts);
-            // record to database
-            SaveMasterList(allPayouts, endDate);
-            // record to s3 bucket
-            SavePayoutsToS3(allPayouts);
-            if (emailSent)
-            {
-                emailService.SendAdminNotification();
-            }
+            RoundPaymentsForFinalPayment(calculatorResult.AllPayouts);
+            return calculatorResult;
         }
 
         private IEnumerable<Hit> FilterInvalidCreators(IEnumerable<Hit> hits)
@@ -190,12 +178,12 @@ namespace Subless.PayoutCalculator
             return visits;
         }
 
-        public IEnumerable<Payee> GetCreatorPayees(Double payment, Dictionary<Guid, int> creatorHits, int totalHits, double partnerHitFraction, double sublessHitFraction)
+        public IEnumerable<Payee> GetCreatorPayees(double payment, Dictionary<Guid, int> creatorHits, int totalHits, double partnerHitFraction, double sublessHitFraction)
         {
             var payees = new List<Payee>();
             foreach (var creatorVisits in creatorHits)
             {
-                var creatorPayment = ((double)creatorVisits.Value / totalHits) * (payment * (1 - sublessHitFraction) * (1 - partnerHitFraction));
+                var creatorPayment = (double)creatorVisits.Value / totalHits * (payment * (1 - sublessHitFraction) * (1 - partnerHitFraction));
                 creatorPayment = Math.Round(creatorPayment, CurrencyPrecision, MidpointRounding.ToZero);
                 var creator = _creatorService.GetCreator(creatorVisits.Key);
                 payees.Add(new Payee
@@ -215,7 +203,7 @@ namespace Subless.PayoutCalculator
             var payees = new List<Payee>();
             foreach (var creatorVisits in creatorHits)
             {
-                var partnerPayment = (partnerHitFraction) * ((double)creatorVisits.Value / totalHits) * (payment * (1 - sublessHitFraction));
+                var partnerPayment = partnerHitFraction * ((double)creatorVisits.Value / totalHits) * (payment * (1 - sublessHitFraction));
                 partnerPayment = Math.Round(partnerPayment, CurrencyPrecision, MidpointRounding.ToZero);
                 var creator = _creatorService.GetCreator(creatorVisits.Key);
                 var partner = _partnerService.GetPartner(creator.PartnerId);
@@ -240,20 +228,9 @@ namespace Subless.PayoutCalculator
             return payees;
         }
 
-        public void SaveFirstPayment()
+        private List<Payment> CollectPaymentDetails(IEnumerable<Payee> payees, Payer payer, DateTimeOffset endDate)
         {
-            _paymentLogsService.SaveLogs(new List<Payment> { new Payment
-            {
-                Payee = null,
-                Payer = null,
-                DateSent = DateTime.UtcNow,
-                Amount = 0
-            }});
-        }
-
-        private List<Payment> SavePaymentDetails(IEnumerable<Payee> payees, Payer payer, DateTimeOffset endDate)
-        {
-            _logger.LogInformation($"Saving payment details for one patron and {0} payees", payees.Count());
+            _logger.LogInformation($"Collecting payment details for one patron and {0} payees", payees.Count());
             var logs = new List<Payment>();
             foreach (var payee in payees)
             {
@@ -265,7 +242,6 @@ namespace Subless.PayoutCalculator
                     Amount = payee.Payment
                 });
             }
-            _paymentLogsService.SaveLogs(logs);
             return logs;
         }
 
@@ -287,19 +263,6 @@ namespace Subless.PayoutCalculator
 
             _logger.LogInformation($"Updated payeeMasterList with {0} payees, {1} of which were newly added.",
                 payees.Count(), newPayees);
-        }
-
-        private void SaveMasterList(Dictionary<string, double> masterPayoutList, DateTimeOffset endDate)
-        {
-            var payments = masterPayoutList.Select(x => new PaymentAuditLog() { Payment = x.Value, PayPalId = x.Key, DatePaid = DateTimeOffset.UtcNow });
-            _logger.LogInformation("Saving our audit logs.");
-            _paymentLogsService.SaveAuditLogs(payments);
-        }
-
-        private void SavePayoutsToS3(Dictionary<string, double> masterPayoutList)
-        {
-            _logger.LogInformation("Writing out payout information to cloud stoarge.");
-            _s3Service.WritePaymentsToCloudFileStore(masterPayoutList);
         }
 
         private void ConvertCentsToDollars(Dictionary<string, double> masterPayoutList)
