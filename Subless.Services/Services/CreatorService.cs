@@ -88,7 +88,7 @@ namespace Subless.Services
                 return creator;
             }
             creator = creatorRepository.GetCreatorByUsernameAndPartnerId(username, partnerId);
-            cache.Cache.Set(key, creator, DateTimeOffset.UtcNow.AddHours(1));
+            cache.Cache.Set(key, creator, DateTimeOffset.UtcNow.AddSeconds(15));
             return creator;
         }
 
