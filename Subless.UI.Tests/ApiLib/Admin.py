@@ -37,7 +37,7 @@ def get_payout_calculation( cookie, start, end):
 
     payload = {}
     headers = {
-        'subless': f'{cookie}'
+        'Cookie': f'subless={cookie}'
     }
 
     response = requests.request("GET", url, headers=headers, data=payload)
