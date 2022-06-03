@@ -3,6 +3,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Serilog;
+using Subless.Configuration;
 using Subless.Data;
 using Subless.PayoutCalculator;
 using Subless.Services;
@@ -137,16 +138,10 @@ namespace PayoutCalculator
             .UseSerilog(LoggerConfig.GetLogger())
             .ConfigureServices((_, services) =>
             {
-                services.Configure<CalculatorConfiguration>(options =>
-                {
-                    options.BucketName = Environment.GetEnvironmentVariable("BucketName") ?? throw new ArgumentNullException("BucketName");
-                    options.ExecutionsPerYear = int.Parse(Environment.GetEnvironmentVariable("ExecutionsPerYear") ?? throw new ArgumentNullException("ExecutionsPerYear"), CultureInfo.InvariantCulture);
-                    options.RunOnStart = bool.Parse(Environment.GetEnvironmentVariable("RunOnStart") ?? "false");
-                    options.CalcuationRangeEnd = Environment.GetEnvironmentVariable("CalcuationRangeEnd");
-                    options.CalcuationRangeStart = Environment.GetEnvironmentVariable("CalcuationRangeStart");
-                    options.Domain = Environment.GetEnvironmentVariable("DOMAIN");
-                    options.PoolId = Environment.GetEnvironmentVariable("DOMAIN");
-                });
+                StripeConfiguration.RegisterStripeConfig(services);
+                CalculatorSettingsConfiguration.RegisterCalculatorConfig(services);
+                var authSettings = AuthSettingsConfiguration.GetAuthSettings();
+                BffDi.AddBffDi(services, authSettings);
                 DataDi.RegisterDataDi(services);
                 ServicesDi.AddServicesDi(services);
                 services.AddTransient<IPaymentService, PaymentService>();
