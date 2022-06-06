@@ -12,6 +12,7 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Subless.Data;
 using Subless.Models;
+using Subless.Services;
 using System;
 using System.Linq;
 using static Subless.Data.DataDi;
@@ -28,30 +29,7 @@ namespace SublessSignIn.AuthServices
     {
         public static IServiceCollection AddBffServices(this IServiceCollection services, AuthSettings AuthSettings)
         {
-            var cookieServices = services.Where<ServiceDescriptor>(x => x.ServiceType == typeof(IPostConfigureOptions<CookieAuthenticationOptions>));
-            services.AddBff(a => a.LicenseKey = AuthSettings.IdentityServerLicenseKey).AddEntityFrameworkServerSideSessions(options =>
-            {
-                options.UseNpgsql(AuthSettings.SessionStoreConnString, sqlOpts=>
-                {
-                    sqlOpts.MigrationsAssembly(typeof(Duende.Bff.EntityFramework.SessionDbContext).Assembly.FullName);
-                });
-                
-            });
-
-            var descriptor =
-                new ServiceDescriptor(
-                    typeof(IPostConfigureOptions<CookieAuthenticationOptions>),
-                    typeof(RefreshTokenRevocation),
-                    ServiceLifetime.Singleton);
-            services.RemoveAll<IPostConfigureOptions<CookieAuthenticationOptions>>();
-            foreach (var cookieSerivce in cookieServices)
-            {
-                services.Add(cookieSerivce);
-            }
-            services.AddSingleton<IPostConfigureOptions<CookieAuthenticationOptions>, RefreshTokenRevocation>();
-            services.AddSingleton<IPostConfigureOptions<CookieAuthenticationOptions>, PostConfigureApplicationValidatePrincipal>();
-            services.AddSingleton<IPostConfigureOptions<CookieAuthenticationOptions>, PostConfigureApplicationCookieTicketStore>();
-
+            services = BffDi.AddBffDi(services, AuthSettings);
             // configure server-side authentication and session management
             services.AddAuthentication(options =>
             {

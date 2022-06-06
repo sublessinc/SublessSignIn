@@ -3,23 +3,26 @@ import time
 import os
 
 from EmailLib import MailSlurp
-from Fixtures.drivers import *
+#from Fixtures.drivers import *
 from PageObjectModels.LoginPage import LoginPage
 import logging
+
+from PageObjectModels.PlanSelectionPage import PlanSelectionPage
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger()
 
 
-def test_new_un_pass_login(web_driver, params):
+def test_admin_un_pass_login(web_driver, params):
     # GIVEN: I am on the Subless login page, as a new user
     login_page = LoginPage(web_driver).open()
 
     # WHEN: I enter my username and password and click 'sign in'
-    plan_selection_page = login_page.sign_in('sublesstestuser+unselected@gmail.com', params['password'])
+    plan_selection_page = login_page.sign_in(
+        '2d4550ca-4173-423c-851a-52cfd7d01ddb@mailslurp.com', params['password'])
 
     # THEN: I should be taken to the plan selection page
-    assert "Sublessui" in web_driver.title
+    assert "subless" in web_driver.title
     assert 'register-payment' in web_driver.current_url
 
     # AND: I should be able to successfully log out
@@ -52,22 +55,11 @@ def test_incomplete_payment_processing(web_driver, params):
     pass
 
 
-def test_user_creation(web_driver, mailslurp_account, params):
-    # GIVEN: I am on the Subless login page, as a completely new user
-    login_page = LoginPage(web_driver).open()
-
-    # WHEN: I create a new account
-    sign_up_page = login_page.click_sign_up()
-    assert "signup" in web_driver.current_url
-
-    otp_page = sign_up_page.sign_up(mailslurp_account.email_address,
-                                    'SublessTestUser')
-    plan_selection_page = otp_page.confirm_otp(MailSlurp.get_newest_otp(inbox_id=mailslurp_account.id))
-
-    # THEN: I should be taken to the plan selection page
-    assert "Sublessui" in web_driver.title
+def test_user_creation(web_driver, subless_account, params):
+    # WHEN a new user is created
+    # THEN the plan selection page should be shown
+    plan_selection_page = PlanSelectionPage(web_driver)
     assert 'register-payment' in web_driver.current_url
-
     # AND: I should be able to successfully log out
     plan_selection_page.logout()
     assert 'login' in web_driver.current_url

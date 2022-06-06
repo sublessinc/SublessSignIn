@@ -23,7 +23,10 @@
         "Logging__LogLevel__Default": "debug",
         "CalcuationRangeStart": "2022-05-11 12:00:00.00+00",
         "CalcuationRangeEnd": "2023-05-11 12:00:00.00+00",
-        "DOMAIN": "https://localhost:4200/"
+        "DOMAIN": "https://localhost:4200/",
+        "appClientId": "3pfcge04qtbqj11h32tr09ndu2",
+        "userPoolId": "us-east-2_7wJbjFqDB",
+        "issuerUrl": "https://devpayidp.auth.us-east-2.amazoncognito.com"
       }
     }
   }
