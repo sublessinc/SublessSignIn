@@ -5,8 +5,13 @@ from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
 from webdriver_manager.firefox import GeckoDriverManager
 
-from EmailLib import MailSlurp
+from ApiLib import Admin
+from EmailLib.MailSlurp import get_or_create_inbox, CreatorInbox, PatronInbox
+from PageObjectModels.PlanSelectionPage import PlanSelectionPage
+from UsersLib.Users import get_user_id_and_cookie, create_subless_account, attempt_to_delete_user, \
+    create_paid_subless_account, create_unactivated_creator_User, create_activated_creator_user, login_as_god_user
 
+print(os.getcwd())
 
 def pytest_addoption(parser):
     parser.addoption("--password", action="store", help="override login password for all tests")
@@ -17,7 +22,7 @@ def pytest_addoption(parser):
 def params(request):
     params = {'password': request.config.getoption('--password') \
         if request.config.getoption('--password') is not None \
-        else 'SublessTestUser'}
+        else 'SublessGodUser'}
     if params['password'] is None:
         pytest.skip('No valid password available for tests')
 
@@ -28,51 +33,112 @@ def params(request):
     return params
 
 
+# free mailslurp account limits you to 50 accounts per month,
+# so ....
 @pytest.fixture
-def mailslurp_account():
+def mailslurp_inbox():
+    from EmailLib import MailSlurp
+
     # create
-    inbox = MailSlurp.create_inbox()
+    inbox = MailSlurp.get_or_create_inbox(PatronInbox)
 
     yield inbox
 
-    # delete
-    MailSlurp.delete_inbox_by_id(inbox.id)
+@pytest.fixture(scope='session')
+def user_data():
+    from UsersLib.Users import get_all_test_user_data, save_user_test_data
+    data = get_all_test_user_data()
+
+    yield data
+
+    save_user_test_data(data)
 
 
 # ideally this would be some sort of API call
 #   but we're working with what we've got available
+#   returns new user, with browser at plan selection screen
 @pytest.fixture
-def subless_account(mailslurp_account, chrome_driver):
+def subless_account(mailslurp_inbox, firefox_driver, ):
+
+    id, cookie = create_subless_account(firefox_driver)
+    yield id, cookie
+
+    # HACK: delete user
+    # I hate this.
+    attempt_to_delete_user(firefox_driver, mailslurp_inbox)
+
+
+@pytest.fixture
+def paying_user(firefox_driver):
+    id, cookie = create_paid_subless_account(firefox_driver)
+    yield id, cookie
+    attempt_to_delete_user(firefox_driver, mailslurp_inbox)
+
+
+# this is technically also a fixture!
+# in the cases where we need two distinct users
+# additional_subless_account = subless_account
+# TODO:  nope, can't do this until mailslurp month rolls over
+
+
+@pytest.fixture
+def subless_admin_account(subless_god_account):
+    from ApiLib import User
+    from UsersLib.Users import create_user
+    god_id, god_cookie = subless_god_account
+
+    mailbox = get_or_create_inbox('AdminUser')
     # create
-    from PageObjectModels.LoginPage import LoginPage
-    login_page = LoginPage(chrome_driver).open()
-    sign_up_page = login_page.click_sign_up()
-    otp_page = sign_up_page.sign_up(mailslurp_account.email_address,
-                                    'SublessTestUser')
-    otp_page.confirm_otp(MailSlurp.get_newest_otp(inbox_id=mailslurp_account.id))
+    id, cookie = create_user(firefox_driver, mailbox)
+    Admin.set_admin(id, god_cookie)
+    # LoginPage(firefox_driver).logout()  # do we need to logout here??
 
-    chrome_driver.get(f'https://{os.environ["environment"]}.subless.com/register-payment#id')
+    yield id, cookie
 
-    id_field = chrome_driver.find_elements_by_id('id')[0]
-    id = id_field.get_attribute('value')
-
-    yield id
-
-    # todo: do not have this functionality yet
-    # destroy
+    User.delete_user(cookie)
 
 
-# todo: stubbing this for now as it may be useful later
 @pytest.fixture
-def subless_admin_account(subless_account):
-    # update perms
+def subless_partner_account():
+    from ApiLib import User
+    from UsersLib.Users import create_user
 
-    yield 'baz'
+    mailbox = get_or_create_inbox('PartnerUser')
+    # create
+    id, cookie = create_user(firefox_driver, mailbox)
+    # LoginPage(firefox_driver).logout()  # do we need to logout here??
+    # TODO:  set partner perms
+
+    yield id, cookie
+
+    User.delete_user(cookie)
+
+
+@pytest.fixture
+def subless_unactivated_creator_user(firefox_driver):
+    mailbox = get_or_create_inbox(CreatorInbox)
+    id, cookie = create_unactivated_creator_User(firefox_driver, mailbox)
+    yield id, cookie
+    attempt_to_delete_user(firefox_driver, mailbox)
+
+@pytest.fixture
+def subless_activated_creator_user(firefox_driver):
+    mailbox = get_or_create_inbox(CreatorInbox)
+    id, cookie = create_activated_creator_user(firefox_driver, mailbox)
+    yield id, cookie
+    attempt_to_delete_user(firefox_driver, mailbox)
+
+
+
+@pytest.fixture
+def subless_god_account(user_data, firefox_driver):
+    id, cookie = login_as_god_user(firefox_driver)
+    yield id, cookie
 
 
 @pytest.fixture(params=[
-    'chrome_driver',
-    # 'firefox_driver',
+    # 'chrome_driver',
+    'firefox_driver',
 ])
 def web_driver(request):
     return request.getfixturevalue(request.param)

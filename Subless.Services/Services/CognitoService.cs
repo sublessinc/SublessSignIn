@@ -1,6 +1,7 @@
 ﻿using Amazon;
 using Amazon.CognitoIdentityProvider;
 using Amazon.CognitoIdentityProvider.Model;
+using Duende.Bff;
 using Microsoft.Extensions.Options;
 using Subless.Models;
 using System;
@@ -11,12 +12,14 @@ namespace Subless.Services.Services
 {
     public class CognitoService : ICognitoService, IDisposable
     {
+        private readonly IUserSessionStore _userSessionStore;
         private readonly IOptions<DomainConfig> options;
 
         private readonly AmazonCognitoIdentityProviderClient _client;
         private readonly string PoolId;
-        public CognitoService(IOptions<DomainConfig> options)
+        public CognitoService(IUserSessionStore userSessionStore ,IOptions<DomainConfig> options)
         {
+            _userSessionStore = userSessionStore ?? throw new ArgumentNullException(nameof(userSessionStore));
             this.options = options ?? throw new ArgumentNullException(nameof(options));
             PoolId = options.Value?.UserPool ?? throw new ArgumentNullException(nameof(options.Value.UserPool));
             var region = RegionEndpoint.GetBySystemName(options.Value.Region);
@@ -31,6 +34,11 @@ namespace Subless.Services.Services
                 UserPoolId = PoolId
             };
             await _client.AdminDeleteUserAsync(deleteRequest);
+
+            await _userSessionStore.DeleteUserSessionsAsync(new UserSessionsFilter()
+            {
+                SubjectId = cognitoUserId,
+            });            
         }
 
         public async Task<string> GetCognitoUserEmail(string cognitoUserId)
