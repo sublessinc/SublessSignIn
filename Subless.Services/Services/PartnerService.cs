@@ -128,7 +128,7 @@ namespace Subless.Services
                 return (Partner)cache.Cache.Get(uri.ToString());
             }
             Partner partner = partnerRepository.GetPartnerByUri(uri);
-            cache.Cache.Set(uri.ToString(), partner, DateTimeOffset.UtcNow.AddHours(1));
+            cache.Cache.Set(uri.ToString(), partner, DateTimeOffset.UtcNow.AddMinutes(15));
             return partner;
         }
 
