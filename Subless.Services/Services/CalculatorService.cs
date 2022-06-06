@@ -71,7 +71,7 @@ namespace Subless.Services.Services
                 if (!hits.Any())
                 {
                     calculatorResult.IdleCustomerStripeIds.Add(user.StripeCustomerId);
-                    break;
+                    continue;
                 }
                 // group all visits to payee
                 var creatorVisits = GetVisitsPerCreator(hits);
