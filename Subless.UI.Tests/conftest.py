@@ -9,7 +9,7 @@ from ApiLib import Admin
 from EmailLib.MailSlurp import get_or_create_inbox, CreatorInbox, PatronInbox
 from PageObjectModels.PlanSelectionPage import PlanSelectionPage
 from UsersLib.Users import get_user_id_and_cookie, create_subless_account, attempt_to_delete_user, \
-    create_paid_subless_account, create_unactivated_creator_User, create_activated_creator_user
+    create_paid_subless_account, create_unactivated_creator_User, create_activated_creator_user, login_as_god_user
 
 print(os.getcwd())
 
@@ -132,20 +132,7 @@ def subless_activated_creator_user(firefox_driver):
 
 @pytest.fixture
 def subless_god_account(user_data, firefox_driver):
-    from Keys.Keys import Keys
-    from PageObjectModels.LoginPage import LoginPage
-
-    login_page = LoginPage(firefox_driver).open()
-    login_page.sign_in(Keys.god_email, Keys.god_password)
-
-    id, cookie = get_user_id_and_cookie(firefox_driver)
-
-    # login_page.logout()  # do we need to logout here??
-
-    user_data['GodUser'] = {'id': id,
-                            'email': Keys.god_email,
-                            'cookie': cookie}
-
+    id, cookie = login_as_god_user(firefox_driver)
     yield id, cookie
 
 

@@ -31,3 +31,17 @@ def get_user_capabilities(user_id, cookie):
 
     return json.loads(response.content)
 
+
+def get_payout_calculation( cookie, start, end):
+    url = f'https://{os.environ["environment"]}.subless.com/api/Calculator?start={start}&end={end}'
+
+    payload = {}
+    headers = {
+        'Cookie': f'subless={cookie}'
+    }
+
+    response = requests.request("GET", url, headers=headers, data=payload)
+
+    print(f'Calculator returned code: {response.status_code} - {response.reason} - {response.text}')
+
+    return json.loads(response.content)
