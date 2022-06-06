@@ -77,7 +77,7 @@ namespace Subless.PayoutCalculator
                 if (!hits.Any())
                 {
                     _stripeService.RolloverPaymentForIdleCustomer(user.StripeCustomerId);
-                    break;
+                    continue;
                 }
                 // group all visits to payee
                 var creatorVisits = GetVisitsPerCreator(hits);
