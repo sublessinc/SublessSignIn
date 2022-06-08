@@ -18,7 +18,7 @@ namespace Subless.Services
         private readonly IPartnerService partnerService;
         private readonly ICacheService cache;
         private readonly ILogger<CreatorService> logger;
-        IPaymentRepository paymentRepository;
+        private readonly IPaymentRepository paymentRepository;
         private readonly IEmailService _emailService;
 
         public CreatorService(
@@ -26,6 +26,7 @@ namespace Subless.Services
             ICreatorRepository creatorRepository,
             IPartnerService partnerService,
             IPaymentRepository paymentRepository,
+            IPaymentLogsService logsService,
             IEmailService emailService,
             ICacheService cache,
             ILoggerFactory loggerFactory)
@@ -132,7 +133,7 @@ namespace Subless.Services
                         MonthStartDay = paymentMonth,
                     });
                 }
-                paymentStats[paymentMonth].DollarsPaid += (int)(payment.Amount/100);
+                paymentStats[paymentMonth].DollarsPaid += Math.Round(payment.Amount/100, 2);
                 paymentStats[paymentMonth].Payers += 1;
             }
             return paymentStats.Values.OrderBy(x => x.MonthStartDay);
