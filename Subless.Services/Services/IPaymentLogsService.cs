@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Subless.Services
+namespace Subless.Services.Services
 {
     public interface IPaymentLogsService
     {

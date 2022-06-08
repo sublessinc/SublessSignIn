@@ -5,7 +5,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Assets\Receipt.html" />
     <None Remove="Resources\Receipt.html" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Assets\Receipt.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
   </ItemGroup>
 
   <ItemGroup>

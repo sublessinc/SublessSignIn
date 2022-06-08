@@ -1,13 +1,11 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Subless.Models;
-using Subless.Services;
-using Subless.Services.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Subless.PayoutCalculator
+namespace Subless.Services.Services
 {
     public class PaymentService : IPaymentService
     {
@@ -48,9 +46,9 @@ namespace Subless.PayoutCalculator
             SublessPayPalId = stripeOptions.Value.SublessPayPalId ?? throw new ArgumentNullException(nameof(stripeOptions));
         }
 
-        public void ExecutePayments(DateTimeOffset startDate, DateTimeOffset endDate)
+        public void ExecutePayments(DateTimeOffset startDate, DateTimeOffset endDate, List<Guid> selectedUserIds = null)
         {
-            var calculatorResult = _calculatorService.CaculatePayoutsOverRange(startDate, endDate);
+            var calculatorResult = _calculatorService.CaculatePayoutsOverRange(startDate, endDate, selectedUserIds);
             if (calculatorResult == null)
             {
                 _logger.LogWarning("No Payments found in payment period, distribution skipped.");
