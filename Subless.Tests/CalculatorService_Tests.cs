@@ -560,6 +560,72 @@ namespace Subless.Tests
             mockStripe.Verify(mock => mock.RolloverPaymentForIdleCustomer(It.IsAny<string>()), Times.Once());
         }
 
+
+        [Fact]
+        public void Rollover_WithOtherPayers_ExecutesOtherPayments()
+        {
+
+            //Arrange
+
+            var creator = new Creator()
+            {
+                Id = Guid.NewGuid(),
+                PayPalId = "paypal"
+            };
+            var partners = new Dictionary<Guid, List<Guid>>();
+            var partner = Guid.NewGuid();
+            partners.Add(partner, new List<Guid> { creator.Id });
+
+            var payer = new User()
+            {
+                CognitoId = "cognito",
+                Id = Guid.NewGuid()
+            };
+            var allPayments = new Dictionary<string, double>();
+            var mockStripe = new Mock<IStripeService>();
+            mockStripe.Setup(x => x.RolloverPaymentForIdleCustomer(It.IsAny<string>()));
+
+            var stripeService = StripeServiceBuilder(new List<Payer>
+            {
+                new Payer()
+                {
+                    Payment = 940,
+                    UserId = payer.Id
+                },
+                new Payer()
+                {
+                    Payment = 940,
+                    UserId = Guid.NewGuid()
+                }
+            }, mockStripe);
+
+            var hit = new List<Hit>
+            {
+                new Hit()
+                {
+                    CreatorId = creator.Id,
+                    CognitoId = payer.CognitoId
+                }
+            };
+            var hitService = new Mock<IHitService>();
+            hitService.Setup(x => x.GetHitsByDate(It.IsAny<DateTimeOffset>(), It.IsAny<DateTimeOffset>(), payer.Id)).Returns(hit); 
+            var creatorService = new Mock<ICreatorService>();
+            creatorService.Setup(x => x.GetCreator(creator.Id)).Returns(creator);
+            var partnerService = PartnerServiceBuilder("Partner");
+            var sut = CalculatorServiceBuilder(
+                stripe: stripeService,
+                hitService: hitService,
+                creatorService: creatorService,
+                partnerService: partnerService
+                );
+            //Act
+            var result = sut.CaculatePayoutsOverRange(DateTimeOffset.UtcNow.AddMonths(-1), DateTimeOffset.UtcNow);
+
+            //Assert
+            Assert.Equal(3, result.AllPayouts.Count);
+            Assert.Single(result.IdleCustomerStripeIds);
+        }
+
         private PaymentService PaymentServiceBuilder(
             Mock<IStripeService> stripe = null,
             Mock<IHitService> hitService = null,
