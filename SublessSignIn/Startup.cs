@@ -36,6 +36,7 @@ namespace SublessSignIn
             //The order of these two auth schemes matters. The last one added will be the default, so we add the partner facing bearer token scheme first.
             AuthSettingsConfiguration.RegisterAuthSettingsConfig(services, AuthSettings);
             StripeConfiguration.RegisterStripeConfig(services);
+            CalculatorSettingsConfiguration.RegisterCalculatorConfig(services);
             services = new BearerAuth().AddBearerAuthServices(services, AuthSettings);
             services.AddTransient<IHealthCheck, HealthCheck>();
             services.AddTransient<IVersion, FileVersion>();

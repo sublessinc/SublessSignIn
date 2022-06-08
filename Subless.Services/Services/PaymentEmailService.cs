@@ -76,7 +76,7 @@ namespace Subless.Services.Services
 
         private string GetEmailTemplate()
         {
-            var fileName = "Subless.PayoutCalculator.Assets.Receipt.html";
+            var fileName = "Subless.Services.Assets.Receipt.html";
             var assembly = Assembly.GetExecutingAssembly();
             var stream = assembly.GetManifestResourceStream(fileName);
             StreamReader reader = new StreamReader(stream);

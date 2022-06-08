@@ -7,6 +7,7 @@ using Subless.Configuration;
 using Subless.Data;
 using Subless.PayoutCalculator;
 using Subless.Services;
+using Subless.Services.Extensions;
 using Subless.Services.Services;
 using System;
 using System.Globalization;
@@ -144,10 +145,6 @@ namespace PayoutCalculator
                 BffDi.AddBffDi(services, authSettings);
                 DataDi.RegisterDataDi(services);
                 ServicesDi.AddServicesDi(services);
-                services.AddTransient<IPaymentService, PaymentService>();
-                services.AddTransient<IFileStorageService, S3Service>();
-                services.AddTransient<AwsCredWrapper, AwsCredWrapper>();
-                services.AddTransient<IPaymentEmailService, PaymentEmailService>();
                 services.AddTransient<IHealthCheck, HealthCheck>();
             });
         }

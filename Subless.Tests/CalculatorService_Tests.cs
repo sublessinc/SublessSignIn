@@ -3,8 +3,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
 using Subless.Models;
-using Subless.PayoutCalculator;
-using Subless.Services;
 using Subless.Services.Services;
 using System;
 using System.Collections.Generic;
@@ -626,6 +624,91 @@ namespace Subless.Tests
             Assert.Single(result.IdleCustomerStripeIds);
         }
 
+
+        [Fact]
+        public void Execution_WithUserFilter_IgnoresOthers()
+        {
+
+            //Arrange
+
+            var creator = new Creator()
+            {
+                Id = Guid.NewGuid(),
+                PayPalId = "paypal"
+            };
+            var partners = new Dictionary<Guid, List<Guid>>();
+            var partner = Guid.NewGuid();
+            partners.Add(partner, new List<Guid> { creator.Id });
+
+            var payer = new User()
+            {
+                CognitoId = "cognito",
+                Id = Guid.NewGuid()
+            };
+            var payer2 = new User()
+            {
+                CognitoId = "cognito2",
+                Id = Guid.NewGuid()
+            };
+            var allPayments = new Dictionary<string, double>();
+            var mockStripe = new Mock<IStripeService>();
+            mockStripe.Setup(x => x.RolloverPaymentForIdleCustomer(It.IsAny<string>()));
+
+            var stripeService = StripeServiceBuilder(new List<Payer>
+            {
+                new Payer()
+                {
+                    Payment = 940,
+                    UserId = payer.Id
+                },
+                new Payer()
+                {
+                    Payment = 940,
+                    UserId = payer2.Id
+                }
+            }, mockStripe);
+
+            var hit = new List<Hit>
+            {
+                new Hit()
+                {
+                    CreatorId = creator.Id,
+                    CognitoId = payer.CognitoId
+                }
+            };
+            var hit2 = new List<Hit>
+            {
+                new Hit()
+                {
+                    CreatorId = creator.Id,
+                    CognitoId = payer2.CognitoId
+                }
+            };
+            var hitService = new Mock<IHitService>();
+            hitService.Setup(x => x.GetHitsByDate(It.IsAny<DateTimeOffset>(), It.IsAny<DateTimeOffset>(), payer.Id)).Returns(hit);
+            hitService.Setup(x => x.GetHitsByDate(It.IsAny<DateTimeOffset>(), It.IsAny<DateTimeOffset>(), payer2.Id)).Returns(hit2);
+            var creatorService = new Mock<ICreatorService>();
+            creatorService.Setup(x => x.GetCreator(creator.Id)).Returns(creator);
+            var userService = new Mock<IUserService>();
+            userService.Setup(x => x.GetUser(payer.Id)).Returns(payer);
+            userService.Setup(x => x.GetUser(payer2.Id)).Returns(payer2);
+            var partnerService = PartnerServiceBuilder("Partner");
+            var sut = CalculatorServiceBuilder(
+                stripe: stripeService,
+                hitService: hitService,
+                creatorService: creatorService,
+                partnerService: partnerService,
+                userService: userService
+                );
+            //Act
+            var result = sut.CaculatePayoutsOverRange(DateTimeOffset.UtcNow.AddMonths(-1), DateTimeOffset.UtcNow, new List<Guid> {  payer2.Id });
+
+            //Assert
+            Assert.Equal(3, result.AllPayouts.Count);
+            Assert.DoesNotContain(result.PaymentsPerPayer, x=>x.Key==payer.CognitoId);
+        }
+
+
         private PaymentService PaymentServiceBuilder(
             Mock<IStripeService> stripe = null,
             Mock<IHitService> hitService = null,
@@ -668,7 +751,8 @@ namespace Subless.Tests
             Mock<IStripeService> stripe = null,
             Mock<IHitService> hitService = null,
             Mock<ICreatorService> creatorService = null,
-            Mock<IPartnerService> partnerService = null
+            Mock<IPartnerService> partnerService = null,
+            Mock<IUserService> userService = null
             )
         {
             var serviceProvider = new ServiceCollection()
@@ -683,8 +767,8 @@ namespace Subless.Tests
 
             var mockLoggerFactory = new Mock<ILoggerFactory>();
             mockLoggerFactory.Setup(x => x.CreateLogger(It.IsAny<string>())).Returns(() => logger);
-            var userSerivce = new Mock<IUserService>();
-            userSerivce.Setup(x => x.GetUser(It.IsAny<Guid>())).Returns(new User() { CognitoId = "cognito" });
+            var baseUserSerivce = new Mock<IUserService>();
+            baseUserSerivce.Setup(x => x.GetUser(It.IsAny<Guid>())).Returns(new User() { CognitoId = "cognito" });
 
             //TODO split these tests, till then, both of these are the SUT
             var calculatorService = new CalculatorService(
@@ -693,7 +777,7 @@ namespace Subless.Tests
                 creatorService?.Object ?? new Mock<ICreatorService>().Object,
                 partnerService?.Object ?? new Mock<IPartnerService>().Object,
                 new Mock<IPaymentLogsService>().Object,
-                userSerivce.Object,
+                userService?.Object ?? baseUserSerivce.Object,
                 CreateOptions(),
                 mockLoggerFactory.Object
                 );
@@ -761,4 +845,5 @@ namespace Subless.Tests
         }
     }
 }
+
 
