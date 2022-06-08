@@ -45,3 +45,15 @@ def get_payout_calculation( cookie, start, end):
     print(f'Calculator returned code: {response.status_code} - {response.reason} - {response.text}')
 
     return json.loads(response.content)
+
+def execute_payout( cookie, start, end):
+    url = f'https://{os.environ["environment"]}.subless.com/api/Calculator?start={start}&end={end}'
+
+    payload = {}
+    headers = {
+        'Cookie': f'subless={cookie}'
+    }
+
+    response = requests.request("POST", url, headers=headers, data=payload)
+
+    print(f'Calculator returned code: {response.status_code} - {response.reason} - {response.text}')
