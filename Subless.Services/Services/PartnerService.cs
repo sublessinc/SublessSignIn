@@ -13,9 +13,8 @@ using Microsoft.Extensions.Logging;
 using Subless.Data;
 using Subless.Models;
 using Subless.Services.Extensions;
-using Subless.Services.Services;
 
-namespace Subless.Services
+namespace Subless.Services.Services
 {
     public class PartnerService : IPartnerService
     {
@@ -41,8 +40,8 @@ namespace Subless.Services
             this.partnerRepository = partnerRepository ?? throw new ArgumentNullException(nameof(partnerRepository));
             this.creatorRepository = creatorRepository ?? throw new ArgumentNullException(nameof(creatorRepository));
             this.cache = cache ?? throw new ArgumentNullException(nameof(cache));
-            this.httpClient = httpClientFactory?.CreateClient() ?? throw new ArgumentNullException(nameof(httpClientFactory));
-            this.logger = loggerFactory.CreateLogger<PartnerService>();
+            httpClient = httpClientFactory?.CreateClient() ?? throw new ArgumentNullException(nameof(httpClientFactory));
+            logger = loggerFactory.CreateLogger<PartnerService>();
         }
 
         public Partner GetPartner(Guid id)
@@ -103,7 +102,7 @@ namespace Subless.Services
 
         public Guid CreatePartner(Partner partner)
         {
-            partner.Sites = partner.Sites.Select(x=> new Uri(x.GetLeftPart(UriPartial.Authority))).ToArray();
+            partner.Sites = partner.Sites.Select(x => new Uri(x.GetLeftPart(UriPartial.Authority))).ToArray();
             partnerRepository.AddPartner(partner);
             cache.InvalidateCache();
             return partner.Id;
@@ -127,14 +126,14 @@ namespace Subless.Services
             {
                 return (Partner)cache.Cache.Get(uri.ToString());
             }
-            Partner partner = partnerRepository.GetPartnerByUri(uri);
+            var partner = partnerRepository.GetPartnerByUri(uri);
             cache.Cache.Set(uri.ToString(), partner, DateTimeOffset.UtcNow.AddMinutes(15));
             return partner;
         }
 
         public async Task<bool> CreatorChangeWebhook(PartnerViewCreator creator)
         {
-            this.logger.LogInformation($"Creator {creator.Id} activated, firing webhook");
+            logger.LogInformation($"Creator {creator.Id} activated, firing webhook");
             var partner = GetPartner(creator.PartnerId);
             if (partner.CreatorWebhook != null)
             {

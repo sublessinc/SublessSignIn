@@ -45,7 +45,7 @@ namespace Subless.Services.Services
         }
 
 
-        public CalculatorResult CaculatePayoutsOverRange(DateTimeOffset startDate, DateTimeOffset endDate)
+        public CalculatorResult CaculatePayoutsOverRange(DateTimeOffset startDate, DateTimeOffset endDate, List<Guid> selectedUserIds = null)
         {
             var calculatorResult = new CalculatorResult();
             calculatorResult.EmailSent = false;
@@ -59,6 +59,12 @@ namespace Subless.Services.Services
             }
             // for each user
             _logger.LogInformation("Preparing to process {0} payers' payments.", payers.Count());
+            if (selectedUserIds != null)
+            {
+                _logger.LogWarning("Exclusing users from calculation!");
+                _logger.LogWarning($"Only the following users are being evaluated \n {string.Join('\n', selectedUserIds)}");
+                payers = payers.Where(x => selectedUserIds.Contains(x.UserId));
+            }
             foreach (var payer in payers)
             {
                 var payees = new List<Payee>();

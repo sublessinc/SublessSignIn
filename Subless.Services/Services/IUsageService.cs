@@ -1,7 +1,7 @@
 ﻿using System;
 using Subless.Models;
 
-namespace Subless.Services
+namespace Subless.Services.Services
 {
     public interface IUsageService
     {

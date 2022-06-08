@@ -12,7 +12,7 @@ using System;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace SublessSignIn.AuthServices
+namespace Subless.Services.Services
 {
     /// <summary>
     /// Cookie configuration to revoke refresh token on logout.

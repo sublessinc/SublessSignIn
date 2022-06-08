@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Subless.Services
+namespace Subless.Services.Services
 {
     public class CreatorAlreadyActiveException : Exception
     {

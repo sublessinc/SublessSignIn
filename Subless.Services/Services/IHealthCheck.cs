@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace Subless.PayoutCalculator
+namespace Subless.Services.Services
 {
     public interface IHealthCheck
     {
