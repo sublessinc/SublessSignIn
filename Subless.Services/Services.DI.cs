@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Subless.Models;
+using Subless.Services.Extensions;
 using Subless.Services.Services;
 using System;
 
@@ -34,6 +35,10 @@ namespace Subless.Services
             services.AddTransient<IUsageService, UsageService>();
             services.AddTransient<IEmailService, EmailService>();
             services.AddTransient<ICalculatorService, CalculatorService>();
+            services.AddTransient<IPaymentService, PaymentService>();
+            services.AddTransient<IFileStorageService, S3Service>();
+            services.AddTransient<AwsCredWrapper, AwsCredWrapper>();
+            services.AddTransient<IPaymentEmailService, PaymentEmailService>();
             services.AddMemoryCache();
             services.AddHttpClient();
             return services;

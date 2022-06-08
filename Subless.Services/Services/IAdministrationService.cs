@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace Subless.Services
+namespace Subless.Services.Services
 {
     public interface IAdministrationService
     {

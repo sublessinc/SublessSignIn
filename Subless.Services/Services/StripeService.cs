@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Subless.Services
+namespace Subless.Services.Services
 {
     public class StripeService : IStripeService
     {
@@ -41,7 +41,7 @@ namespace Subless.Services
 
         public async Task<CreateCheckoutSessionResponse> CreateCheckoutSession(long userBudget, string cognitoId)
         {
-            var priceId = this.GetPriceIDByDollarAmount(userBudget);
+            var priceId = GetPriceIDByDollarAmount(userBudget);
             if (priceId == null)
             {
                 _logger.LogCritical($"Price not found for budget of {userBudget}.");
@@ -140,9 +140,9 @@ namespace Subless.Services
 
         private string GetPriceIDByDollarAmount(long dollarAmount)
         {
-            var prices = this.GetPrices().ToList<Price>();
+            var prices = GetPrices().ToList();
             //Stripe keeps the price in cents.
-            long dollarAmountInCents = dollarAmount * 100;
+            var dollarAmountInCents = dollarAmount * 100;
             var price = prices.Where(x => x.UnitAmount == dollarAmountInCents).Single();
 
             return price?.Id;
@@ -303,14 +303,14 @@ namespace Subless.Services
                 else
                 {
                     long payment = 0;
-                    long taxes = invoice?.Tax ?? 0; 
+                    var taxes = invoice?.Tax ?? 0;
                     long fees = 0;
                     if (invoice.ChargeId != null)
                     {
                         var charge = chargeService.Get(invoice.ChargeId);
                         var balanceTrans = balanceTransactionService.Get(charge.BalanceTransactionId);
                         fees = balanceTrans.Fee;
-                        
+
                         payment = balanceTrans.Net;
                     }
                     // if we have a discount, we need to calculate the payment differently
