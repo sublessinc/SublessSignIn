@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace Subless.Services
+namespace Subless.Services.Services
 {
     public class HitService : IHitService
     {
@@ -94,7 +94,7 @@ namespace Subless.Services
             var user = _userService.GetUser(userId);
             _logger.LogDebug($"Getting hits for range {startDate} to {endDate}");
             var hits = hitRepository.GetValidHitsByDate(startDate, endDate, user.CognitoId).ToList();
-            var creators = _creatorService.FilterInactiveCreators( hits.Select(x => x.CreatorId));
+            var creators = _creatorService.FilterInactiveCreators(hits.Select(x => x.CreatorId));
             return hits.Where(x => creators.Contains(x.CreatorId));
         }
 
@@ -162,7 +162,7 @@ namespace Subless.Services
                 {
                     continue;
                 }
-                var regexPattern = "(?:" + pattern.Replace(creatorPlaceholder, ")([^/]*)(?:", System.StringComparison.Ordinal) + ")";
+                var regexPattern = "(?:" + pattern.Replace(creatorPlaceholder, ")([^/]*)(?:", StringComparison.Ordinal) + ")";
                 var matches = Regex.Matches(uri.ToString(), regexPattern);
                 if (!matches.Any())
                 {

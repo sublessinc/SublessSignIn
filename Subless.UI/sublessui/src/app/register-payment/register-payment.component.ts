@@ -36,6 +36,10 @@ export class RegisterPaymentComponent implements OnInit, OnDestroy {
     if (this.router.url.startsWith("/register-payment")) {
       this.backgroundClass = "darkBackground";
     }
+    this.fetchBudget();
+  }
+
+  fetchBudget(): void {
     this.subs.push(this.checkoutService.getCurrentPlan().subscribe({
       next: (plan: number | null) => {
         if (plan != null) {
@@ -46,6 +50,7 @@ export class RegisterPaymentComponent implements OnInit, OnDestroy {
       }
     }));
   }
+
   ngOnDestroy(): void {
     this.subs.forEach((item: Subscription) => { item.unsubscribe(); })
   }
@@ -76,6 +81,7 @@ export class RegisterPaymentComponent implements OnInit, OnDestroy {
           this._snackBar.open("Saved", "Ok", {
             duration: 2000,
           });
+          this.fetchBudget();
         }
       }
     }));

@@ -3,13 +3,12 @@ using Microsoft.Extensions.Logging;
 using Subless.Data;
 using Subless.Models;
 using Subless.Services.Extensions;
-using Subless.Services.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Subless.Services
+namespace Subless.Services.Services
 {
     public class CreatorService : ICreatorService
     {
@@ -18,7 +17,7 @@ namespace Subless.Services
         private readonly IPartnerService partnerService;
         private readonly ICacheService cache;
         private readonly ILogger<CreatorService> logger;
-        IPaymentRepository paymentRepository;
+        private readonly IPaymentRepository paymentRepository;
         private readonly IEmailService _emailService;
 
         public CreatorService(
@@ -26,6 +25,7 @@ namespace Subless.Services
             ICreatorRepository creatorRepository,
             IPartnerService partnerService,
             IPaymentRepository paymentRepository,
+            IPaymentLogsService logsService,
             IEmailService emailService,
             ICacheService cache,
             ILoggerFactory loggerFactory)
@@ -41,7 +41,7 @@ namespace Subless.Services
             this.paymentRepository = paymentRepository ?? throw new ArgumentNullException(nameof(paymentRepository));
             _emailService = emailService ?? throw new ArgumentNullException(nameof(emailService));
             this.cache = cache ?? throw new ArgumentNullException(nameof(cache));
-            this.logger = loggerFactory?.CreateLogger<CreatorService>() ?? throw new ArgumentNullException(nameof(loggerFactory));
+            logger = loggerFactory?.CreateLogger<CreatorService>() ?? throw new ArgumentNullException(nameof(loggerFactory));
         }
 
         public async Task ActivateCreator(Guid userId, Guid activationCode, string email)
@@ -102,7 +102,7 @@ namespace Subless.Services
             // Set user modifiable properties
             var currentCreator = creators.First();
             var wasValid = CreatorValid(currentCreator);
-            if (currentCreator.PayPalId != null && currentCreator.PayPalId!=creator.PayPalId)
+            if (currentCreator.PayPalId != null && currentCreator.PayPalId != creator.PayPalId)
             {
                 await _emailService.SendEmail(GetPaymentChangedEmail(creator.Username), currentCreator.PayPalId, "Subless payout no longer associated with this email");
             }
@@ -132,7 +132,7 @@ namespace Subless.Services
                         MonthStartDay = paymentMonth,
                     });
                 }
-                paymentStats[paymentMonth].DollarsPaid += (int)(payment.Amount/100);
+                paymentStats[paymentMonth].DollarsPaid += Math.Round(payment.Amount/100, 2);
                 paymentStats[paymentMonth].Payers += 1;
             }
             return paymentStats.Values.OrderBy(x => x.MonthStartDay);
@@ -140,10 +140,10 @@ namespace Subless.Services
 
         private bool CreatorValid(Creator creator)
         {
-            return (
+            return
                 creator.Active &&
                 creator.PayPalId != null
-                );
+                ;
         }
 
         public async Task FireCreatorActivationWebhook(Creator creator, bool wasValid)

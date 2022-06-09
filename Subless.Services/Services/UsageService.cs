@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Subless.Data;
 using Subless.Models;
 
-namespace Subless.Services
+namespace Subless.Services.Services
 {
     public class UsageService : IUsageService
     {

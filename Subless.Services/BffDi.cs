@@ -12,7 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using Subless.Models;
-using SublessSignIn.AuthServices;
+using Subless.Services.Services;
 
 namespace Subless.Services
 {

@@ -35,8 +35,10 @@
         "Logging__LogLevel__Default": "Debug",
         "IdentityServerLicenseKey": "",
         "HitPopupEnabled": "true",
-        "PayPalId": "contact@subless.com"
-
+        "PayPalId": "contact@subless.com",
+        "BucketName": "devpays3bucket",
+        "ExecutionsPerYear": "365",
+        "RunOnStart": "false"
       },
       "dotnetRunMessages": "true",
       "applicationUrl": "https://localhost:5001;http://localhost:5000"
