@@ -129,7 +129,7 @@ namespace Subless.Tests
             {
                 new Payer()
                 {
-                    Payment = 100,
+                    Payment = 10205,
                     UserId = Guid.NewGuid()
                 }
             });
@@ -155,7 +155,7 @@ namespace Subless.Tests
 
             //Assert
             Assert.NotEmpty(allPayments); // We should have a payment directed at subless
-            Assert.Equal(CalculatorService.SublessFraction, allPayments[sut.SublessPayPalId]);
+            Assert.Equal(CalculatorService.SublessFraction*100, allPayments[sut.SublessPayPalId]);
         }
 
         [Fact]
@@ -193,7 +193,7 @@ namespace Subless.Tests
 
             //Assert
             Assert.NotEmpty(allPayments); // We should have a payment directed at subless
-            Assert.Equal(.13, allPayments["Partner"]);
+            Assert.Equal(.12, allPayments["Partner"]);
         }
 
 
@@ -232,7 +232,45 @@ namespace Subless.Tests
 
             //Assert
             Assert.NotEmpty(allPayments); // We should have a payment directed at subless
-            Assert.Equal(.52, allPayments["Creator"]);
+            Assert.Equal(.51, allPayments["Creator"]);
+        }
+
+        [Fact]
+        public void CalculatorService_WithOneDollarAndOneView_AccountsForPaypalFees()
+        {
+            //Arrange
+            var allPayments = new Dictionary<string, double>();
+            var stripeService = StripeServiceBuilder(new List<Payer>
+            {
+                new Payer()
+                {
+                    Payment = 1000,
+                    UserId = Guid.NewGuid()
+                }
+            });
+            var hit = new List<Hit> { new Hit { CognitoId = "test" } };
+            var hitService = HitServiceBuilder(hit);
+            var s3Service = new Mock<IFileStorageService>();
+            s3Service.Setup(x => x.WritePaymentsToCloudFileStore(It.IsAny<Dictionary<string, double>>()))
+                .Callback<Dictionary<string, double>>(y =>
+                {
+                    allPayments = y;
+                });
+            var creatorService = CreatorServiceBuilder("Creator");
+            var partnerService = PartnerServiceBuilder();
+            var sut = PaymentServiceBuilder(
+                stripe: stripeService,
+                s3Service: s3Service,
+                hitService: hitService,
+                creatorService: creatorService,
+                partnerService: partnerService
+                );
+            //Act
+            sut.ExecutePayments(DateTimeOffset.UtcNow.AddMonths(-1), DateTimeOffset.UtcNow);
+
+            //Assert
+            Assert.NotEmpty(allPayments); // We should have a payment directed at subless
+            Assert.Equal(9.79, allPayments.Values.Sum());
         }
 
         [Fact]
@@ -277,9 +315,9 @@ namespace Subless.Tests
 
             //Assert
             Assert.NotEmpty(allPayments); // We should have a payment directed at subless
-            Assert.Equal(3.68, allPayments["Creator1"]);
-            Assert.Equal(3.68, allPayments["Creator2"]);
-            Assert.Equal(1.84, allPayments["Partner"]);
+            Assert.Equal(3.61, allPayments["Creator1"]);
+            Assert.Equal(3.61, allPayments["Creator2"]);
+            Assert.Equal(1.80, allPayments["Partner"]);
         }
 
         [Fact]

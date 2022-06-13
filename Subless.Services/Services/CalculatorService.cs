@@ -99,11 +99,10 @@ namespace Subless.Services.Services
 
                 // record each outgoing payment to master list
                 var payments = CollectPaymentDetails(payees, payer, endDate);
-
                 calculatorResult.PaymentsPerPayer.Add(user.CognitoId, payments);
-
                 AddPayeesToMasterList(calculatorResult.AllPayouts, payees);
             }
+            DeductPaypalFees(calculatorResult.AllPayouts);
             // stripe sends payments in cents, paypal expects payouts in dollars
             ConvertCentsToDollars(calculatorResult.AllPayouts);
             // make sure we're not sending inappropriate fractions
@@ -276,6 +275,14 @@ namespace Subless.Services.Services
             foreach (var key in masterPayoutList.Keys)
             {
                 masterPayoutList[key] = masterPayoutList[key] / 100;
+            }
+        }
+
+        private void DeductPaypalFees(Dictionary<string, double> masterPayoutList)
+        {
+            foreach (var key in masterPayoutList.Keys)
+            {
+                masterPayoutList[key] = masterPayoutList[key] * .98;
             }
         }
     }
