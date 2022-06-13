@@ -274,6 +274,44 @@ namespace Subless.Tests
         }
 
         [Fact]
+        public void CalculatorService_PaypalFees_MathExplainer()
+        {
+            //Arrange 
+            var userPayment = 10000000; // thank you for the $100k budget, kind patron
+            var paypalPayoutFeeRate = .02;
+            var stripeService = StripeServiceBuilder(new List<Payer>
+            {
+                new Payer()
+                {
+                    Payment = userPayment,
+                    UserId = Guid.NewGuid()
+                }
+            });
+            var hit = new List<Hit> { new Hit { CognitoId = "test" } };
+            var hitService = HitServiceBuilder(hit);
+            var creatorService = CreatorServiceBuilder("Creator");
+            var partnerService = PartnerServiceBuilder();
+            var sut = CalculatorServiceBuilder(
+                stripe: stripeService,
+                hitService: hitService,
+                creatorService: creatorService,
+                partnerService: partnerService
+                );
+            //Act
+            var result = sut.CaculatePayoutsOverRange(DateTimeOffset.UtcNow.AddMonths(-1), DateTimeOffset.UtcNow);
+
+            //Assert
+            Assert.NotEmpty(result.AllPayouts); // We should have a payment directed at subless
+            Assert.Equal(98039.20, Math.Round(result.AllPayouts.Values.Sum(), 2));
+            
+            //The amount of money available for distribution should be 2% less than the sum of all the payments
+            //We lose an average of $.005 cents per payment target due to rounding. There are three targets, and we lose $0.015, rounded to $0.02
+            Assert.Equal(userPayment/100 - .02, 
+                Math.Round(result.AllPayouts.Values.Sum(),2) 
+                + Math.Round(result.AllPayouts.Values.Sum() * paypalPayoutFeeRate, 2));
+        }
+
+        [Fact]
         public void CalculatorService_WithTwoCreators_CalculatesCreatorCut()
         {
             //Arrange

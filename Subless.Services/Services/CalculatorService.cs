@@ -282,7 +282,7 @@ namespace Subless.Services.Services
         {
             foreach (var key in masterPayoutList.Keys)
             {
-                masterPayoutList[key] = masterPayoutList[key] * .98;
+                masterPayoutList[key] = masterPayoutList[key] / 1.02;
             }
         }
     }
