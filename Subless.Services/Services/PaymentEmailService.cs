@@ -28,6 +28,9 @@ namespace Subless.Services.Services
         public const string StripeFeeKey = "{{stripefee}}"; //$0.10
         public const string SiteLinkKey = "{{sitelink}}"; // https://pay.subless.com
         public const string LogoUrl = "{{logourl}}"; //https://pay.subless.com/SublessLogo.svg
+
+        public const string PayPalFeesKey = "{{paypalfees}}";
+        
         public readonly CalculatorConfiguration authSettings;
         private readonly ICognitoService cognitoService;
         private readonly ILogger logger;
@@ -59,6 +62,8 @@ namespace Subless.Services.Services
             emailTask.Wait();
         }
 
+        
+
         public void SendAdminNotification()
         {
             var emailTask = Task.Run(() => _emailSerivce.SendEmail(
@@ -82,6 +87,24 @@ namespace Subless.Services.Services
             StreamReader reader = new StreamReader(stream);
             return reader.ReadToEnd();
         }
+
+        //private string GetCreatorEmailTemplate()
+        //{
+        //    var fileName = "Subless.Services.Assets.CreatorReceipt.html";
+        //    var assembly = Assembly.GetExecutingAssembly();
+        //    var stream = assembly.GetManifestResourceStream(fileName);
+        //    StreamReader reader = new StreamReader(stream);
+        //    return reader.ReadToEnd();
+        //}
+
+        //private string GetPartnerEmailTemplate()
+        //{
+        //    var fileName = "Subless.Services.Assets.CreatorReceipt.html";
+        //    var assembly = Assembly.GetExecutingAssembly();
+        //    var stream = assembly.GetManifestResourceStream(fileName);
+        //    StreamReader reader = new StreamReader(stream);
+        //    return reader.ReadToEnd();
+        //}
 
         private string GenerateEmailBodyForUser(string template, List<Payment> payments)
         {

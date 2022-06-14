@@ -49,7 +49,6 @@ namespace Subless.Services.Services
         {
             var calculatorResult = new CalculatorResult();
             calculatorResult.EmailSent = false;
-            calculatorResult.AllPayouts = new Dictionary<string, double>();
             // get what we were paid (after fees), and by who
             var payers = GetPayments(startDate, endDate);
             if (!payers.Any())
@@ -132,11 +131,13 @@ namespace Subless.Services.Services
             return payers;
         }
 
-        private void RoundPaymentsForFinalPayment(Dictionary<string, double> masterPayoutList)
+        private void RoundPaymentsForFinalPayment(List<PaymentAuditLog> masterPayoutList)
         {
-            foreach (var key in masterPayoutList.Keys)
+            foreach (var payout in masterPayoutList)
             {
-                masterPayoutList[key] = Math.Round(masterPayoutList[key], 2, MidpointRounding.ToZero);
+                payout.Payment = Math.Round(payout.Payment, 2, MidpointRounding.ToZero);
+                payout.Revenue = Math.Round(payout.Revenue, 2, MidpointRounding.ToZero);
+                payout.Fees = Math.Round(payout.Fees, 2, MidpointRounding.ToZero);
             }
         }
 
@@ -146,7 +147,9 @@ namespace Subless.Services.Services
             {
                 Name = "Subless",
                 Payment = Math.Round(Payment * sublessFraction, CurrencyPrecision, MidpointRounding.ToZero),
-                PayPalId = SublessPayPalId
+                PayPalId = SublessPayPalId,
+                TargetId = Guid.Empty,
+                PayeeType = PayeeType.Subless
             };
         }
 
@@ -195,7 +198,9 @@ namespace Subless.Services.Services
                 {
                     Name = creator.Username,
                     Payment = creatorPayment,
-                    PayPalId = creator.PayPalId
+                    PayPalId = creator.PayPalId,
+                    TargetId = creator.Id,
+                    PayeeType = PayeeType.Creator
                 });
             }
 
@@ -223,7 +228,9 @@ namespace Subless.Services.Services
                     {
                         Name = partner.Sites.First().Host,
                         PayPalId = partner.PayPalId,
-                        Payment = partnerPayment
+                        Payment = partnerPayment,
+                        TargetId = partner.Id,
+                        PayeeType = PayeeType.Partner
                     };
                     payees.Add(payee);
                 }
@@ -250,18 +257,25 @@ namespace Subless.Services.Services
             return logs;
         }
 
-        private void AddPayeesToMasterList(Dictionary<string, double> masterPayoutList, IEnumerable<Payee> payees)
+        private void AddPayeesToMasterList(List<PaymentAuditLog> masterPayoutList, IEnumerable<Payee> payees)
         {
             var newPayees = 0;
             foreach (var payee in payees)
             {
-                if (masterPayoutList.ContainsKey(payee.PayPalId))
+                if (masterPayoutList.Any(x=> x.PayPalId == payee.PayPalId))
                 {
-                    masterPayoutList[payee.PayPalId] += payee.Payment;
+                    masterPayoutList.Single(x=> x.PayPalId == payee.PayPalId).Revenue += payee.Payment;
                 }
                 else
                 {
-                    masterPayoutList.Add(payee.PayPalId, payee.Payment);
+                    masterPayoutList.Add(new PaymentAuditLog()
+                    {
+                        TargetId = payee.TargetId,
+                        PayeeType = payee.PayeeType,
+                        Revenue = payee.Payment,
+                        PayPalId = payee.PayPalId,
+                        DatePaid = DateTimeOffset.UtcNow
+                    });
                     newPayees += 1;
                 }
             }
@@ -270,19 +284,22 @@ namespace Subless.Services.Services
                 payees.Count(), newPayees);
         }
 
-        private void ConvertCentsToDollars(Dictionary<string, double> masterPayoutList)
+        private void ConvertCentsToDollars(List<PaymentAuditLog> masterPayoutList)
         {
-            foreach (var key in masterPayoutList.Keys)
+            foreach (var payout in masterPayoutList)
             {
-                masterPayoutList[key] = masterPayoutList[key] / 100;
+                payout.Payment = payout.Payment / 100;
+                payout.Revenue = payout.Revenue / 100;
+                payout.Fees = payout.Fees / 100;
             }
         }
 
-        private void DeductPaypalFees(Dictionary<string, double> masterPayoutList)
+        private void DeductPaypalFees(List<PaymentAuditLog> masterPayoutList)
         {
-            foreach (var key in masterPayoutList.Keys)
+            foreach (var payout in masterPayoutList)
             {
-                masterPayoutList[key] = masterPayoutList[key] / 1.02;
+                payout.Payment = payout.Revenue / 1.02;
+                payout.Fees = payout.Revenue - payout.Payment;
             }
         }
     }
