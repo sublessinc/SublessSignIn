@@ -6,8 +6,8 @@ namespace Subless.Models
     {
         public Guid Id { get; set; }
         public string PayPalId { get; set; }
-        #nullable enable
+#nullable enable
         public Uri? CreatorWebhook { get; set; }
-        #nullable disable
+#nullable disable
     }
 }

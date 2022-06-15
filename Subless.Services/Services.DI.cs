@@ -1,8 +1,8 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System;
+using Microsoft.Extensions.DependencyInjection;
 using Subless.Models;
 using Subless.Services.Extensions;
 using Subless.Services.Services;
-using System;
 
 namespace Subless.Services
 {

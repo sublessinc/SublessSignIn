@@ -1,4 +1,10 @@
-﻿using Amazon.S3;
+﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using Amazon.S3;
 using Amazon.S3.Transfer;
 using CsvHelper;
 using CsvHelper.Configuration;
@@ -6,12 +12,6 @@ using Microsoft.Extensions.Options;
 using Subless.Models;
 using Subless.PayoutCalculator;
 using Subless.Services.Extensions;
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Subless.Services.Services
 {

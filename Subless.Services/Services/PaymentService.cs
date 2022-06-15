@@ -1,9 +1,8 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Subless.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Subless.Services.Services
 {
@@ -70,14 +69,14 @@ namespace Subless.Services.Services
             foreach (var payee in calculatorResult.AllPayouts)
             {
                 if (payee.PayeeType == PayeeType.Creator)
-                {                    
+                {
                     emailService.SendCreatorReceiptEmail(payee.TargetId, payee);
                 }
                 if (payee.PayeeType == PayeeType.Partner)
                 {
                     emailService.SendPartnerReceiptEmail(payee.TargetId, payee);
                 }
-                
+
             }
             // record to database
             SaveMasterList(calculatorResult.AllPayouts);

@@ -1,4 +1,7 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -7,12 +10,7 @@ using Subless.Configuration;
 using Subless.Data;
 using Subless.PayoutCalculator;
 using Subless.Services;
-using Subless.Services.Extensions;
 using Subless.Services.Services;
-using System;
-using System.Globalization;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace PayoutCalculator
 {

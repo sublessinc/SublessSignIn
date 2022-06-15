@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -6,9 +9,6 @@ using Subless.Models;
 using Subless.Services.Extensions;
 using Subless.Services.Services;
 using SublessSignIn.Models;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 
 
 namespace SublessSignIn.Controllers

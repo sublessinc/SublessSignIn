@@ -1,8 +1,4 @@
-﻿using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Logging;
-using Subless.Data;
-using Subless.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -12,7 +8,6 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Subless.Data;
 using Subless.Models;
-using Subless.Services.Extensions;
 
 namespace Subless.Services.Services
 {

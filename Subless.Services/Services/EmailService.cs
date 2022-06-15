@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Amazon.SimpleEmail;
 using Amazon.SimpleEmail.Model;
@@ -9,18 +7,18 @@ using Microsoft.Extensions.Logging;
 
 namespace Subless.Services.Services
 {
-    public class EmailService: IEmailService
+    public class EmailService : IEmailService
     {
         public ILogger<EmailService> logger;
         public EmailService(ILoggerFactory loggerFactory)
         {
             logger = loggerFactory?.CreateLogger<EmailService>() ?? throw new ArgumentNullException(nameof(loggerFactory));
         }
-        public async Task SendEmail(string body, string to, string subject, string from= "contact@subless.com")
+        public async Task SendEmail(string body, string to, string subject, string from = "contact@subless.com")
         {
             using (var client = new AmazonSimpleEmailServiceClient(region: Amazon.RegionEndpoint.USEast2))
             {
-                
+
                 var sendRequest = new SendEmailRequest
                 {
                     Source = from,

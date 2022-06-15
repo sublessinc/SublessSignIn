@@ -1,9 +1,9 @@
-﻿using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Subless.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Subless.Models;
 
 namespace Subless.Services.Services
 {
@@ -262,9 +262,9 @@ namespace Subless.Services.Services
             var newPayees = 0;
             foreach (var payee in payees)
             {
-                if (masterPayoutList.Any(x=> x.PayPalId == payee.PayPalId))
+                if (masterPayoutList.Any(x => x.PayPalId == payee.PayPalId))
                 {
-                    masterPayoutList.Single(x=> x.PayPalId == payee.PayPalId).Revenue += payee.Payment;
+                    masterPayoutList.Single(x => x.PayPalId == payee.PayPalId).Revenue += payee.Payment;
                 }
                 else
                 {

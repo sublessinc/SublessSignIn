@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
 using Subless.Services.Services;
-using System;
 
 namespace Subless.Services
 {
@@ -12,13 +12,15 @@ namespace Subless.Services
         private readonly IUserService _userService;
         private readonly ILogger logger;
 
-        public IUserService userService {
-            get {
+        public IUserService userService
+        {
+            get
+            {
                 return _userService;
             }
         }
 
-        #pragma warning disable CA1019 // The loggerfactory is not stored, so we do not need to expose it.
+#pragma warning disable CA1019 // The loggerfactory is not stored, so we do not need to expose it.
         public AdminAuthorizationFilter(IUserService userService, ILoggerFactory loggerFactory)
         {
             this._userService = userService ?? throw new ArgumentNullException(nameof(userService));

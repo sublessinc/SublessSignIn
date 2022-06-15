@@ -155,7 +155,7 @@ namespace Subless.Tests
 
             //Assert
             Assert.NotEmpty(allPayments); // We should have a payment directed at subless
-            Assert.Equal(CalculatorService.SublessFraction*100, allPayments.Single(x => x.PayPalId == sut.SublessPayPalId).Payment);
+            Assert.Equal(CalculatorService.SublessFraction * 100, allPayments.Single(x => x.PayPalId == sut.SublessPayPalId).Payment);
         }
 
         [Fact]
@@ -270,7 +270,7 @@ namespace Subless.Tests
 
             //Assert
             Assert.NotEmpty(allPayments); // We should have a payment directed at subless
-            Assert.Equal(9.79, allPayments.Sum(x=>x.Payment));
+            Assert.Equal(9.79, allPayments.Sum(x => x.Payment));
         }
 
         [Fact]
@@ -303,12 +303,12 @@ namespace Subless.Tests
             //Assert
             Assert.NotEmpty(result.AllPayouts); // We should have a payment directed at subless
             Assert.Equal(98039.20, Math.Round(result.AllPayouts.Sum(x => x.Payment), 2));
-            
+
             //The amount of money available for distribution should be 2% less than the sum of all the payments
             //We lose an average of $.005 cents per payment target due to rounding. There are three targets, and we lose $0.015, rounded to $0.02
-            Assert.Equal(userPayment/100 - .02, 
-                Math.Round(result.AllPayouts.Sum(x=> x.Payment), 2) 
-                + Math.Round(result.AllPayouts.Sum(x=> x.Payment) * paypalPayoutFeeRate, 2));
+            Assert.Equal(userPayment / 100 - .02,
+                Math.Round(result.AllPayouts.Sum(x => x.Payment), 2)
+                + Math.Round(result.AllPayouts.Sum(x => x.Payment) * paypalPayoutFeeRate, 2));
         }
 
         [Fact]
@@ -682,7 +682,7 @@ namespace Subless.Tests
                 }
             };
             var hitService = new Mock<IHitService>();
-            hitService.Setup(x => x.GetHitsByDate(It.IsAny<DateTimeOffset>(), It.IsAny<DateTimeOffset>(), payer.Id)).Returns(hit); 
+            hitService.Setup(x => x.GetHitsByDate(It.IsAny<DateTimeOffset>(), It.IsAny<DateTimeOffset>(), payer.Id)).Returns(hit);
             var creatorService = new Mock<ICreatorService>();
             creatorService.Setup(x => x.GetCreator(creator.Id)).Returns(creator);
             var partnerService = PartnerServiceBuilder("Partner");
@@ -777,11 +777,11 @@ namespace Subless.Tests
                 userService: userService
                 );
             //Act
-            var result = sut.CaculatePayoutsOverRange(DateTimeOffset.UtcNow.AddMonths(-1), DateTimeOffset.UtcNow, new List<Guid> {  payer2.Id });
+            var result = sut.CaculatePayoutsOverRange(DateTimeOffset.UtcNow.AddMonths(-1), DateTimeOffset.UtcNow, new List<Guid> { payer2.Id });
 
             //Assert
             Assert.Equal(3, result.AllPayouts.Count);
-            Assert.DoesNotContain(result.PaymentsPerPayer, x=>x.Key==payer.CognitoId);
+            Assert.DoesNotContain(result.PaymentsPerPayer, x => x.Key == payer.CognitoId);
         }
 
 
