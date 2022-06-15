@@ -12,5 +12,7 @@ namespace Subless.Models
         public string Name { get; set; }
         public double Payment { get; set; }
         public string PayPalId { get; set; }
+        public Guid TargetId { get; set; }
+        public PayeeType PayeeType { get; set; }
     }
 }

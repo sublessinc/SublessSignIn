@@ -6,6 +6,7 @@ using Subless.Services.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Mail;
 using System.Threading.Tasks;
 
 namespace Subless.Services.Services
@@ -102,17 +103,33 @@ namespace Subless.Services.Services
             // Set user modifiable properties
             var currentCreator = creators.First();
             var wasValid = CreatorValid(currentCreator);
-            if (currentCreator.PayPalId != null && currentCreator.PayPalId != creator.PayPalId)
+            if (currentCreator.PayPalId != null && currentCreator.PayPalId != creator.PayPalId  && PaypalAddressIsEmail(currentCreator.PayPalId))
             {
                 await _emailService.SendEmail(GetPaymentChangedEmail(creator.Username), currentCreator.PayPalId, "Subless payout no longer associated with this email");
             }
             currentCreator.PayPalId = creator.PayPalId;
             creatorRepository.UpdateCreator(currentCreator);
-            await _emailService.SendEmail(GetPaymentSetEmail(creator.Username), creator.PayPalId, "Subless payout email set");
+            if (PaypalAddressIsEmail(creator.PayPalId))
+            {
+                await _emailService.SendEmail(GetPaymentSetEmail(creator.Username), creator.PayPalId, "Subless payout email set");
+            }
             await FireCreatorActivationWebhook(creator, wasValid);
             return currentCreator;
         }
 
+        private bool PaypalAddressIsEmail(string paypalid)
+        {
+            try
+            {
+                var m = new MailAddress(paypalid);
+
+                return true;
+            }
+            catch (FormatException)
+            {
+                return false;
+            }
+        }
 
         public IEnumerable<MontlyPaymentStats> GetStatsForCreator(Creator creator)
         {

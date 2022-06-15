@@ -20,31 +20,30 @@
     <div style="width: 100%; ">
 
         <div style="width: 75%; margin-left: auto; margin-right: auto; padding-bottom: 20px;" id="header">
-            This is your subless receipt for the month of {{month}}. Here you can see how your payment for this month was
-            divided among creators and partners you visited. You will be billed again, and recieve another reciept in
+            This is your subless creator payout receipt for the month of {{month}}. Here you can see your payout is divided. You will recieve another reciept in
             one month.
         </div>
 
         <table style="width: 100%; border-collapse: collapse;">
-            <tr style="padding: 10px; border-color: black; border-bottom-width: 1px; border-bottom-style: solid; font-weight: 700;">
-                <td>Creator</td>
-                <td style="text-align: right;">Payment</td>
-            </tr>
+          <tr style="padding: 10px; border-color: black; border-bottom-width: 1px; border-bottom-style: solid; font-weight: 700;">
+            <td>Source</td>
+            <td style="text-align: right;">Payment</td>
+          </tr>
 
-            {{payments}}
-            
-            <tr style="border-color: black; border-top-width: 1px; border-top-style: solid;  padding-top: 20px; padding: 10px;">
-                <td>Stripe Fees</td>
-                <td style="text-align: right;">{{stripefee}}</td>
-            </tr>
-            <tr style="padding: 10px; padding-bottom: 20px;">
-                <td>Taxes</td>
-                <td style="text-align: right;">$0.00</td>
-            </tr>
-            <tr style="border-color: black; border-top-width: 1px; border-top-style: solid; padding-top: 20px; padding: 10px; ">
-                <td>Total Payment</td>
-                <td style="text-align: right;">{{totalpayment}}</td>
-            </tr>
+          <tr style='padding: 10px;padding-bottom: 20px;'><td>Patron donations</td><td style='text-align: right;'>{{creatorpayment}}</td></tr>
+
+          <tr style="border-color: black; border-top-width: 1px; border-top-style: solid;  padding-top: 20px; padding: 10px;">
+            <td>Paypal Fees</td>
+            <td style="text-align: right;">{{paypalfees}}</td>
+          </tr>
+          <tr style="padding: 10px; padding-bottom: 20px;">
+            <td>Taxes</td>
+            <td style="text-align: right;">$0.00</td>
+          </tr>
+          <tr style="border-color: black; border-top-width: 1px; border-top-style: solid; padding-top: 20px; padding: 10px; ">
+            <td>Total Payout</td>
+            <td style="text-align: right;">{{totalpayment}}</td>
+          </tr>
         </table>
         <table id="navigate" style="margin-left: auto; margin-right: auto;">
             <tr>
