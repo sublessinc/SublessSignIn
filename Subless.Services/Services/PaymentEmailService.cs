@@ -33,14 +33,29 @@ namespace Subless.Services.Services
         
         public readonly CalculatorConfiguration authSettings;
         private readonly ICognitoService cognitoService;
+        private readonly ICreatorService _creatorService;
+        private readonly IPartnerService _partnerService;
+        private readonly IUserService _userService;
         private readonly ILogger logger;
         private readonly IEmailService _emailSerivce;
 
-        public PaymentEmailService(IOptions<CalculatorConfiguration> options, IEmailService emailService, ICognitoService cognitoService, ILoggerFactory loggerFactory)
+        public PaymentEmailService(
+            IOptions<CalculatorConfiguration> options,
+            IEmailService emailService,
+            ICognitoService cognitoService,
+            ICreatorService creatorService,
+            IPartnerService partnerService,
+            IUserService userService,
+            ILoggerFactory loggerFactory)
         {
             if (options is null)
             {
                 throw new ArgumentNullException(nameof(options));
+            }
+
+            if (loggerFactory is null)
+            {
+                throw new ArgumentNullException(nameof(loggerFactory));
             }
 
             if (options.Value.Domain is null)
@@ -49,7 +64,10 @@ namespace Subless.Services.Services
             }
             authSettings = options.Value;
             this.cognitoService = cognitoService ?? throw new ArgumentNullException(nameof(cognitoService));
-            _emailSerivce= emailService?? throw new ArgumentNullException(nameof(emailService));
+            _creatorService = creatorService ?? throw new ArgumentNullException(nameof(creatorService));
+            _partnerService = partnerService ?? throw new ArgumentNullException(nameof(partnerService));
+            _userService = userService ?? throw new ArgumentNullException(nameof(userService));
+            _emailSerivce = emailService?? throw new ArgumentNullException(nameof(emailService));
             logger = loggerFactory.CreateLogger<PaymentEmailService>();
         }
 
@@ -63,18 +81,30 @@ namespace Subless.Services.Services
         }
 
 
-        public void SendCreatorReceiptEmail(string email, PaymentAuditLog paymentAuditLog)
+        public void SendCreatorReceiptEmail(Guid id, PaymentAuditLog paymentAuditLog)
         {
+
+            var creator = _creatorService.GetCreator(id);
+            
             var body = GetCreatorEmailBody(paymentAuditLog);
-            var emailTask = Task.Run(() => _emailSerivce.SendEmail(body, email, "Your subless payout receipt"));
+            var emailTask = Task.Run(() => _emailSerivce.SendEmail(body, GetEmailFromUserId(creator.UserId.Value), "Your subless payout receipt"));
             emailTask.Wait();
         }
 
-        public void SendPartnerReceiptEmail(string email, PaymentAuditLog paymentAuditLog)
+        public void SendPartnerReceiptEmail(Guid id, PaymentAuditLog paymentAuditLog)
         {
             var body = GetPartnerEmailBody(paymentAuditLog);
-            var emailTask = Task.Run(() => _emailSerivce.SendEmail(body, email, "Your subless payout receipt"));
+            var partner = _partnerService.GetPartner(id);            
+            var emailTask = Task.Run(() => _emailSerivce.SendEmail(body, GetEmailFromUserId(partner.Admin), "Your subless payout receipt"));
             emailTask.Wait();
+        }
+
+        private string GetEmailFromUserId(Guid userId)
+        {
+            var user = _userService.GetUser(userId);
+            var usertask = Task.Run(() => cognitoService.GetCognitoUserEmail(user.CognitoId));
+            usertask.Wait();
+            return usertask.Result;
         }
 
         public void SendAdminNotification()
