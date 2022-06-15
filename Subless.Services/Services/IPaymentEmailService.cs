@@ -8,6 +8,8 @@ namespace Subless.Services.Services
     {
         string GetEmailBody(List<Payment> payments);
         void SendAdminNotification();
+        void SendCreatorReceiptEmail(string email, PaymentAuditLog paymentAuditLog);
+        void SendPartnerReceiptEmail(string email, PaymentAuditLog paymentAuditLog);
         void SendReceiptEmail(List<Payment> payments, string cognitoId);
     }
 }

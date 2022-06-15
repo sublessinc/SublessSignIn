@@ -20,6 +20,7 @@ namespace Subless.Services.Services
         private readonly IFileStorageService _s3Service;
         private readonly IPaymentEmailService emailService;
         private readonly ICalculatorService _calculatorService;
+        private readonly ICreatorService _creatorService;
         private readonly ILogger _logger;
 
         public PaymentService(
@@ -29,6 +30,7 @@ namespace Subless.Services.Services
             IOptions<StripeConfig> stripeOptions,
             IPaymentEmailService emailService,
             ICalculatorService calculatorService,
+            ICreatorService creatorService,
             ILoggerFactory loggerFactory)
         {
             if (stripeOptions is null)
@@ -42,6 +44,7 @@ namespace Subless.Services.Services
             _s3Service = s3Service ?? throw new ArgumentNullException(nameof(s3Service));
             this.emailService = emailService ?? throw new ArgumentNullException(nameof(emailService));
             _calculatorService = calculatorService ?? throw new ArgumentNullException(nameof(calculatorService));
+            _creatorService = creatorService ?? throw new ArgumentNullException(nameof(creatorService));
             _logger = _loggerFactory.CreateLogger<PaymentService>();
             SublessPayPalId = stripeOptions.Value.SublessPayPalId ?? throw new ArgumentNullException(nameof(stripeOptions));
         }
@@ -66,6 +69,21 @@ namespace Subless.Services.Services
                 _paymentLogsService.SaveLogs(payer.Value);
                 emailService.SendReceiptEmail(payer.Value, payer.Key);
                 calculatorResult.EmailSent = true;
+            }
+            foreach (var payee in calculatorResult.AllPayouts)
+            {
+                if (payee.PayeeType == PayeeType.Creator)
+                {
+                    var creator = _creatorService.GetCreator(payee.TargetId);
+                    emailService.SendCreatorReceiptEmail(creator.Email, payee);
+                }
+                if (payee.PayeeType == PayeeType.Partner)
+                {
+                    // TODO: we don't save a partner email anywhere yet, so I'm using the paypal address.
+                    // This will be a problem if the paypal address is a phone number
+                    emailService.SendPartnerReceiptEmail(payee.PayPalId, payee);
+                }
+                
             }
             // record to database
             SaveMasterList(calculatorResult.AllPayouts);
