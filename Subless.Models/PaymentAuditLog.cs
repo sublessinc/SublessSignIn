@@ -12,7 +12,6 @@ namespace Subless.Models
         public double Payment { get; set; }
         public double Revenue { get; set; }
         public double Fees { get; set; }
-        public bool Paid { get; set; }
         public DateTimeOffset DatePaid { get; set; }
     }
 }

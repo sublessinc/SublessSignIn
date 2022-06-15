@@ -31,6 +31,7 @@ namespace Subless.Data
             }
             return PaymentAuditLogs.Max(x => x.DatePaid);
         }
+
         public void SavePaymentLogs(IEnumerable<Payment> logs)
         {
             Payments.AddRange(logs);
