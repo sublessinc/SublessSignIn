@@ -99,7 +99,7 @@ namespace Subless.Services.Services
                 // record each outgoing payment to master list
                 var payments = CollectPaymentDetails(payees, payer, endDate);
                 calculatorResult.PaymentsPerPayer.Add(user.CognitoId, payments);
-                AddPayeesToMasterList(calculatorResult.AllPayouts, payees);
+                AddPayeesToMasterList(calculatorResult.AllPayouts, payees, startDate, endDate);
             }
             DeductPaypalFees(calculatorResult.AllPayouts);
             // stripe sends payments in cents, paypal expects payouts in dollars
@@ -257,7 +257,7 @@ namespace Subless.Services.Services
             return logs;
         }
 
-        private void AddPayeesToMasterList(List<PaymentAuditLog> masterPayoutList, IEnumerable<Payee> payees)
+        private void AddPayeesToMasterList(List<PaymentAuditLog> masterPayoutList, IEnumerable<Payee> payees, DateTimeOffset startDate, DateTimeOffset endDate)
         {
             var newPayees = 0;
             foreach (var payee in payees)
@@ -274,7 +274,9 @@ namespace Subless.Services.Services
                         PayeeType = payee.PayeeType,
                         Revenue = payee.Payment,
                         PayPalId = payee.PayPalId,
-                        DatePaid = DateTimeOffset.UtcNow
+                        DatePaid = DateTimeOffset.UtcNow,
+                        PaymentPeriodStart = startDate,
+                        PaymentPeriodEnd = endDate
                     });
                     newPayees += 1;
                 }
