@@ -1,6 +1,7 @@
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { IAnalytics } from '../models/IAnalytics';
+import { DateFormatter } from '../services/dateformatter.service';
 import { UserService } from '../services/user.service';
 
 @Component({
@@ -17,7 +18,8 @@ export class UserprofileComponent implements OnInit, OnDestroy {
 
   constructor(
     private userService: UserService,
-    private changeDetector: ChangeDetectorRef
+    private changeDetector: ChangeDetectorRef,
+    public dateFormatter: DateFormatter
   ) { }
 
   ngOnInit(): void {

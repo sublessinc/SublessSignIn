@@ -47,7 +47,7 @@ export class DateFormatter {
     }
 
     public GetLastPeriodString(stats: IStats): string {
-        return formatDate(stats.periodStart, 'dd-MM', this.locale) + ' to ' + formatDate(stats.periodStart, 'dd-MM', this.locale);
+        return formatDate(stats.periodStart, 'dd-MM-yyyy', this.locale) + ' to ' + formatDate(stats.periodStart, 'dd-MM-yyyy', this.locale);
     }
 }
 
