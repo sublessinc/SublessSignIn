@@ -10,8 +10,8 @@ import { UserService } from '../services/user.service';
 })
 export class UserprofileComponent implements OnInit, OnDestroy {
   public analytics: IAnalytics = {
-    thisMonth: { views: 0, creators: 0, partners: 0 },
-    lastMonth: { views: 0, creators: 0, partners: 0 }
+    thisMonth: { views: 0, creators: 0, partners: 0, periodStart: new Date(), periodEnd: new Date() },
+    lastMonth: { views: 0, creators: 0, partners: 0, periodStart: new Date(), periodEnd: new Date() }
   };
   private subs: Subscription[] = [];
 

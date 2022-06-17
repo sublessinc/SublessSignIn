@@ -14,8 +14,8 @@ import { ComponentCanDeactivate } from '../stop-nav.guard';
 })
 export class PartnerprofileComponent implements OnInit, OnDestroy {
   public analytics: IPartnerAnalytics = {
-    thisMonth: { views: 0, creators: 0, visitors: 0 },
-    lastMonth: { views: 0, creators: 0, visitors: 0 }
+    thisMonth: { views: 0, creators: 0, visitors: 0, periodStart: new Date(), periodEnd: new Date() },
+    lastMonth: { views: 0, creators: 0, visitors: 0, periodStart: new Date(), periodEnd: new Date() }
   };
   private subs: Subscription[] = [];
 

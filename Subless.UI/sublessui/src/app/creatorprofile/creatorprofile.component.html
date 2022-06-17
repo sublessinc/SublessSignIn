@@ -31,7 +31,8 @@
                 title="These are the total number of different pieces of content you've created that patrons have viewed.">
                 <mat-card-content class="statHeader">Unique content viewed</mat-card-content>
                 <mat-card-content class="numberText">{{analytics.thisMonth.piecesOfContent}}</mat-card-content>
-                <mat-card-content><b>{{analytics.lastMonth.piecesOfContent}}</b> Unqiue content viewed last month
+                <mat-card-content><b>{{analytics.lastMonth.piecesOfContent}}</b> Unqiue content viewed
+                    {{this.dateFormatter.GetLastPeriodString(analytics.lastMonth)}}
                 </mat-card-content>
             </div>
         </mat-card>
