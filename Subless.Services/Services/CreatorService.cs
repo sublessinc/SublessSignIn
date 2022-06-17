@@ -1,13 +1,13 @@
-﻿using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Logging;
-using Subless.Data;
-using Subless.Models;
-using Subless.Services.Extensions;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mail;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
+using Subless.Data;
+using Subless.Models;
+using Subless.Services.Extensions;
 
 namespace Subless.Services.Services
 {
@@ -103,7 +103,7 @@ namespace Subless.Services.Services
             // Set user modifiable properties
             var currentCreator = creators.First();
             var wasValid = CreatorValid(currentCreator);
-            if (currentCreator.PayPalId != null && currentCreator.PayPalId != creator.PayPalId  && PaypalAddressIsEmail(currentCreator.PayPalId))
+            if (currentCreator.PayPalId != null && currentCreator.PayPalId != creator.PayPalId && PaypalAddressIsEmail(currentCreator.PayPalId))
             {
                 await _emailService.SendEmail(GetPaymentChangedEmail(creator.Username), currentCreator.PayPalId, "Subless payout no longer associated with this email");
             }
@@ -149,7 +149,7 @@ namespace Subless.Services.Services
                         MonthStartDay = paymentMonth,
                     });
                 }
-                paymentStats[paymentMonth].DollarsPaid += Math.Round(payment.Amount/100, 2);
+                paymentStats[paymentMonth].DollarsPaid += Math.Round(payment.Amount / 100, 2);
                 paymentStats[paymentMonth].Payers += 1;
             }
             return paymentStats.Values.OrderBy(x => x.MonthStartDay);

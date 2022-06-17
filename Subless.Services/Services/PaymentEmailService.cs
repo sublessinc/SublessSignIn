@@ -1,19 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Resources;
-using System.Reflection;
-using System.IO;
-using Subless.Models;
-using Microsoft.Extensions.Options;
 using System.Globalization;
-using Subless.PayoutCalculator;
-using Amazon.SimpleEmail;
-using Amazon;
-using Amazon.SimpleEmail.Model;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Subless.Models;
+using Subless.PayoutCalculator;
 
 namespace Subless.Services.Services
 {
@@ -30,7 +25,7 @@ namespace Subless.Services.Services
         public const string LogoUrl = "{{logourl}}"; //https://pay.subless.com/SublessLogo.svg
 
         public const string PayPalFeesKey = "{{paypalfees}}";
-        
+
         public readonly CalculatorConfiguration authSettings;
         private readonly ICognitoService cognitoService;
         private readonly ICreatorService _creatorService;
@@ -67,7 +62,7 @@ namespace Subless.Services.Services
             _creatorService = creatorService ?? throw new ArgumentNullException(nameof(creatorService));
             _partnerService = partnerService ?? throw new ArgumentNullException(nameof(partnerService));
             _userService = userService ?? throw new ArgumentNullException(nameof(userService));
-            _emailSerivce = emailService?? throw new ArgumentNullException(nameof(emailService));
+            _emailSerivce = emailService ?? throw new ArgumentNullException(nameof(emailService));
             logger = loggerFactory.CreateLogger<PaymentEmailService>();
         }
 
@@ -85,7 +80,7 @@ namespace Subless.Services.Services
         {
 
             var creator = _creatorService.GetCreator(id);
-            
+
             var body = GetCreatorEmailBody(paymentAuditLog);
             var emailTask = Task.Run(() => _emailSerivce.SendEmail(body, GetEmailFromUserId(creator.UserId.Value), "Your subless payout receipt"));
             emailTask.Wait();
@@ -94,7 +89,7 @@ namespace Subless.Services.Services
         public void SendPartnerReceiptEmail(Guid id, PaymentAuditLog paymentAuditLog)
         {
             var body = GetPartnerEmailBody(paymentAuditLog);
-            var partner = _partnerService.GetPartner(id);            
+            var partner = _partnerService.GetPartner(id);
             var emailTask = Task.Run(() => _emailSerivce.SendEmail(body, GetEmailFromUserId(partner.Admin), "Your subless payout receipt"));
             emailTask.Wait();
         }
@@ -164,10 +159,10 @@ namespace Subless.Services.Services
         private string GenerateEmailBodyForUser(string template, List<Payment> payments)
         {
             var month = $"{payments.First().DateSent.ToString("MMMM", CultureInfo.InvariantCulture)}, {payments.First().DateSent.ToString("yyyy", CultureInfo.InvariantCulture)}";
-            var fees = payments.First().Payer.Fees/100;
+            var fees = payments.First().Payer.Fees / 100;
             var userEmail = template.Replace(MonthKey, month, StringComparison.Ordinal);
             userEmail = userEmail.Replace(SiteLinkKey, authSettings.Domain, StringComparison.Ordinal);
-            userEmail = userEmail.Replace(LogoUrl, authSettings.Domain+ "/dist/assets/SublessLogo.png", StringComparison.Ordinal);
+            userEmail = userEmail.Replace(LogoUrl, authSettings.Domain + "/dist/assets/SublessLogo.png", StringComparison.Ordinal);
             userEmail = userEmail.Replace(PaymentsKey, String.Join("\n", GetPaymentItems(payments)), StringComparison.Ordinal);
             var specifier = "C";
             var culture = CultureInfo.CreateSpecificCulture("en-US");
@@ -214,7 +209,7 @@ namespace Subless.Services.Services
                 var individualPayment = IndividualPaymentTemplate.Replace(CreatorNameKey, payment.Payee.Name, StringComparison.Ordinal);
                 var specifier = "C";
                 var culture = CultureInfo.CreateSpecificCulture("en-US");
-                individualPayment = individualPayment.Replace(CreatorPaymentKey, (payment.Amount/100).ToString(specifier, culture), StringComparison.Ordinal);
+                individualPayment = individualPayment.Replace(CreatorPaymentKey, (payment.Amount / 100).ToString(specifier, culture), StringComparison.Ordinal);
                 formattedPayments.Add(individualPayment);
             }
             return formattedPayments;

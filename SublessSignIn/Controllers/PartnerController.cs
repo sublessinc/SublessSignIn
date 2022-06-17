@@ -1,4 +1,9 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Web;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -8,11 +13,6 @@ using Subless.Services.Extensions;
 using Subless.Services.Services;
 using SublessSignIn.AuthServices;
 using SublessSignIn.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Web;
 
 namespace SublessSignIn.Controllers
 {
@@ -265,7 +265,7 @@ namespace SublessSignIn.Controllers
                     thisMonth = hitsThisMonth,
                     LastMonth = hitsLastMonth
                 });
-                
+
             }
             catch (UnauthorizedAccessException e)
             {

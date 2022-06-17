@@ -1,5 +1,3 @@
-using Subless.Services;
-using System;
 using System.Threading.Tasks;
 
 namespace SublessSignIn
@@ -10,9 +8,12 @@ namespace SublessSignIn
 
         public FileVersion()
         {
-            try {
+            try
+            {
                 this.version = System.IO.File.ReadAllText(@"version.txt");
-            } catch {
+            }
+            catch
+            {
                 this.version = "";
             }
         }

@@ -1,6 +1,9 @@
 ﻿// Copyright (c) Duende Software. All rights reserved.
 // See LICENSE in the project root for license information.
 
+using System;
+using System.Net.Http;
+using System.Threading.Tasks;
 using Duende.Bff;
 using IdentityModel.AspNetCore.AccessTokenManagement;
 using Microsoft.AspNetCore.Authentication;
@@ -8,9 +11,6 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Subless.Models;
-using System;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Subless.Services.Services
 {

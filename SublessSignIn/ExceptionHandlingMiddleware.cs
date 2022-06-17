@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json;
+﻿using System;
 using System.Net;
 using System.Threading.Tasks;
-using System;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 namespace SublessSignIn
 {
@@ -60,6 +60,6 @@ namespace SublessSignIn
                 return context.Response.WriteAsync(errorMessage);
             }
 
-            }
         }
+    }
 }
