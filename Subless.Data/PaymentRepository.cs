@@ -51,6 +51,11 @@ namespace Subless.Data
             return PaymentAuditLogs.Where(x => x.TargetId == TargetId).OrderByDescending(x => x.PaymentPeriodEnd).FirstOrDefault();
         }
 
+        public IEnumerable<PaymentAuditLog> GetAllPaymentsToUser(Guid targetId)
+        {          
+            return PaymentAuditLogs.Where(x => x.TargetId == targetId).OrderByDescending(x => x.PaymentPeriodEnd);
+        }
+
         public void SavePaymentLogs(IEnumerable<Payment> logs)
         {
             Payments.AddRange(logs);

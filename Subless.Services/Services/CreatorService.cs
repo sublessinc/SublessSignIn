@@ -137,22 +137,21 @@ namespace Subless.Services.Services
             {
                 throw new ArgumentNullException(nameof(creator));
             }
-            var payments = paymentRepository.GetPaymentsByPayeePayPalId(creator.PayPalId);
-            var paymentStats = new Dictionary<DateTimeOffset, MontlyPaymentStats>();
-            foreach (var payment in payments)
+            var paymentStats = new List<MontlyPaymentStats>();
+            var paymentAuditLogs = paymentRepository.GetAllPaymentsToUser(creator.Id);
+            foreach (var payment in paymentAuditLogs)
             {
-                var paymentMonth = new DateTimeOffset(new DateTime(payment.DateSent.Year, payment.DateSent.Month, 1));
-                if (!paymentStats.Keys.Any(x => new DateTimeOffset(new DateTime(x.Year, x.Month, 1)) == paymentMonth))
-                {
-                    paymentStats.Add(paymentMonth, new MontlyPaymentStats()
+                paymentStats.Add(new MontlyPaymentStats()
                     {
-                        MonthStartDay = paymentMonth,
+                        MonthStart = payment.PaymentPeriodStart,
+                        Revenue = payment.Revenue,
+                        PaymentProcessorFees = payment.Fees,
+                        Payment = payment.Payment,
+                        MonthEnd = payment.PaymentPeriodEnd
                     });
-                }
-                paymentStats[paymentMonth].DollarsPaid += Math.Round(payment.Amount / 100, 2);
-                paymentStats[paymentMonth].Payers += 1;
+                
             }
-            return paymentStats.Values.OrderBy(x => x.MonthStartDay);
+            return paymentStats.OrderBy(x => x.MonthStart);
         }
 
         private bool CreatorValid(Creator creator)
