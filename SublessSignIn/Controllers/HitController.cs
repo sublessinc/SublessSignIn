@@ -38,11 +38,11 @@ namespace SublessSignIn.Controllers
                 if (string.IsNullOrWhiteSpace(body))
                 {
                     _logger.LogWarning("Invalid hit data recieved:{Environment.NewLine}" +
-                       $"Http Request Information:{Environment.NewLine}" +
-                       $"Schema:{Request.Scheme} " +
-                       $"Host: {Request.Host} " +
-                       $"Path: {Request.Path} " +
-                       $"QueryString: {HttpUtility.UrlEncode(Request.QueryString.Value)}");
+                        $"Http Request Information:{Environment.NewLine}" +
+                        $"Schema:{Request.Scheme} " +
+                        $"Host: {Request.Host} " +
+                        $"Path: {Request.Path} " +
+                        $"QueryString: {HttpUtility.UrlEncode(Request.QueryString.Value)}");
                     return BadRequest("No url included in hit");
                 }
                 if (!Uri.TryCreate(body, UriKind.RelativeOrAbsolute, out Uri hitSource))

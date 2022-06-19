@@ -42,6 +42,13 @@ namespace SublessSignIn
                 return context.Response.WriteAsync("Timeout encountered during login");
             }
 
+            if (ex is BadHttpRequestException && context.Request.Path.Value.Contains("Hit", StringComparison.InvariantCultureIgnoreCase))
+            {
+                _logger.LogWarning(ex, "Exception occurred when processing a hit");
+                context.Response.StatusCode = 400;                
+                return context.Response.WriteAsync("Hit could not be processed");
+            }
+
             // Redirect to login if login session has timed out
             if (ex.Message == "An error was encountered while handling the remote login.")
             {
