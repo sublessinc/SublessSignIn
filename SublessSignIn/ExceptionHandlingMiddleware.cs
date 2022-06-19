@@ -43,7 +43,9 @@ namespace SublessSignIn
             }
 
             // Redirect to login if login session has timed out
-            if (ex.Message == "An error was encountered while handling the remote login.")
+            if (ex.Message == "An error was encountered while handling the remote login." ||
+                (ex.Message == "Exception occurred while processing message."
+                    && ex.InnerException.Message.Contains("IDX21324: The 'nonce' has expired", StringComparison.InvariantCultureIgnoreCase)))
             {
                 _logger.LogWarning(ex, "Timeout exception during login");
                 context.Response.StatusCode = 302;
