@@ -31,39 +31,31 @@ namespace SublessSignIn.Controllers
         [Authorize]
         public async Task<ActionResult<bool>> Hit()
         {
-            try
+            bool validHit = false;
+            using (var reader = new StreamReader(Request.Body))
             {
-                bool validHit = false;
-                using (var reader = new StreamReader(Request.Body))
+                var body = await reader.ReadToEndAsync();
+                if (string.IsNullOrWhiteSpace(body))
                 {
-                    var body = await reader.ReadToEndAsync();
-                    if (string.IsNullOrWhiteSpace(body))
-                    {
-                        _logger.LogWarning("Invalid hit data recieved:{Environment.NewLine}" +
-                           $"Http Request Information:{Environment.NewLine}" +
-                           $"Schema:{Request.Scheme} " +
-                           $"Host: {Request.Host} " +
-                           $"Path: {Request.Path} " +
-                           $"QueryString: {HttpUtility.UrlEncode(Request.QueryString.Value)}");
-                        return BadRequest("No url included in hit");
-                    }
-                    if (!Uri.TryCreate(body, UriKind.RelativeOrAbsolute, out Uri hitSource))
-                    {
-                        return BadRequest("Could not read source url");
-                    }
-                    if (userService.GetUserClaim(HttpContext.User) == null)
-                    {
-                        return Unauthorized("User claim could not be found");
-                    }
-                    validHit = _hitService.SaveHit(userService.GetUserClaim(HttpContext.User), hitSource);
+                    _logger.LogWarning("Invalid hit data recieved:{Environment.NewLine}" +
+                        $"Http Request Information:{Environment.NewLine}" +
+                        $"Schema:{Request.Scheme} " +
+                        $"Host: {Request.Host} " +
+                        $"Path: {Request.Path} " +
+                        $"QueryString: {HttpUtility.UrlEncode(Request.QueryString.Value)}");
+                    return BadRequest("No url included in hit");
                 }
-                return Ok(validHit);
+                if (!Uri.TryCreate(body, UriKind.RelativeOrAbsolute, out Uri hitSource))
+                {
+                    return BadRequest("Could not read source url");
+                }
+                if (userService.GetUserClaim(HttpContext.User) == null)
+                {
+                    return Unauthorized("User claim could not be found");
+                }
+                validHit = _hitService.SaveHit(userService.GetUserClaim(HttpContext.User), hitSource);
             }
-            catch (Exception ex)
-            {
-                _logger.LogWarning(ex, $"Exception occurred when processing a hit");
-                return Ok(false);
-            }
+            return Ok(validHit);
         }
 
         [HttpPost("Test")]
