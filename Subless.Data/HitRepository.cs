@@ -48,6 +48,8 @@ namespace Subless.Data
                 Views = hits.Count(),
                 Creators = Creators.Where(creator => distinctCreators.Contains(creator.Id) && creator.Active).Count(),
                 Partners = hits.Select(x => x.PartnerId).Distinct().Count(),
+                PeriodEnd = endDate,
+                PeriodStart = startDate
             };
 
         }
@@ -60,7 +62,9 @@ namespace Subless.Data
             {
                 PiecesOfContent = hits.Select(x => x.Uri).Distinct().Count(),
                 Views = hits.Count(),
-                Visitors = hits.Select(x => x.CognitoId).Distinct().Count()
+                Visitors = hits.Select(x => x.CognitoId).Distinct().Count(),
+                PeriodEnd = endDate,
+                PeriodStart = startDate,
             };
         }
 
@@ -73,7 +77,9 @@ namespace Subless.Data
             {
                 Creators = Creators.Where(creator => distinctCreators.Contains(creator.Id) && creator.Active).Count(),
                 Views = hits.Count(),
-                Visitors = hits.Select(x => x.CognitoId).Distinct().Count()
+                Visitors = hits.Select(x => x.CognitoId).Distinct().Count(),
+                PeriodStart = startDate,
+                PeriodEnd = endDate,
             };
         }
 

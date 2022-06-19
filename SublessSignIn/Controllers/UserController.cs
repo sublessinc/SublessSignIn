@@ -83,17 +83,36 @@ namespace SublessSignIn.Controllers
         {
             var cognitoId = userService.GetUserClaim(HttpContext.User);
             var user = userService.GetUserByCognitoId(cognitoId);
-            var paymentDate = paymentLogsService.GetLastPaymentDate();
-            if (paymentDate == DateTimeOffset.MinValue)
-            {
-                paymentDate = DateTimeOffset.UtcNow.AddMonths(-1);
-            }
+            var paymentPeriod = paymentLogsService.GetLastPaymentPeriod();
             _usageService.SaveUsage(UsageType.UserStats, user.Id);
-            return Ok(new HistoricalStats<UserStats>
+
+            if (paymentPeriod == null)
             {
-                LastMonth = hitService.GetUserStats(paymentDate.AddMonths(-1), paymentDate, user.Id),
-                thisMonth = hitService.GetUserStats(paymentDate, DateTimeOffset.UtcNow, user.Id)
-            });
+
+                // DEPRECATED
+
+                var paymentDate = paymentLogsService.GetLastPaymentDate();
+                if (paymentDate == DateTimeOffset.MinValue)
+                {
+                    paymentDate = DateTimeOffset.UtcNow.AddMonths(-1);
+                }
+
+                // END DEPRECATED
+                return Ok(new HistoricalStats<UserStats>
+                {
+                    LastMonth = hitService.GetUserStats(paymentDate.AddMonths(-1), paymentDate, user.Id),
+                    thisMonth = hitService.GetUserStats(paymentDate, DateTimeOffset.UtcNow, user.Id)
+                });
+            }
+            else
+            {
+                return Ok(new HistoricalStats<UserStats>
+                {
+                    LastMonth = hitService.GetUserStats(paymentPeriod.Item1, paymentPeriod.Item2, user.Id),
+                    thisMonth = hitService.GetUserStats(paymentPeriod.Item2, DateTimeOffset.UtcNow, user.Id)
+                });
+            }
+
         }
 
         [HttpGet("loggedIn")]

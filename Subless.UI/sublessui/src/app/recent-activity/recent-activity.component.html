@@ -9,8 +9,8 @@
                         <div><a href="{{hit.content}}">{{hit.title}}</a></div>
                     </div>
                     <div class="timestamp">
-                        <div class="bold">{{this.formatDatestamp(hit.timestamp)}}</div>
-                        <div class="faint">{{this.formatTimestamp(hit.timestamp)}}</div>
+                        <div class="bold">{{this.dateService.formatDatestamp(hit.timestamp)}}</div>
+                        <div class="faint">{{this.dateService.formatTimestamp(hit.timestamp)}}</div>
                     </div>
                 </div>
             </mat-card-content>
