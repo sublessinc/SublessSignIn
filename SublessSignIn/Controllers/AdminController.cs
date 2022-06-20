@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Subless.Services;
 using Subless.Services.Services;
-using System;
 
 namespace SublessSignIn.Controllers
 {
@@ -56,7 +56,7 @@ namespace SublessSignIn.Controllers
             {
                 cognitoId = userService.GetUser(userId.Value)?.CognitoId;
             }
-           if (cognitoId == null)
+            if (cognitoId == null)
             {
                 return NotFound();
             }

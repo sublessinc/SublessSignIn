@@ -4,8 +4,11 @@ namespace Subless.Models
 {
     public class MontlyPaymentStats
     {
-        public DateTimeOffset MonthStartDay { get; set; }
-        public double DollarsPaid { get; set; }
-        public int Payers { get; set; }
+        public DateTimeOffset MonthStart { get; set; }
+        public DateTimeOffset MonthEnd { get; set; }
+        public double Revenue { get; set; }
+        public double PaymentProcessorFees { get; set; }
+
+        public double Payment { get; set; }
     }
 }

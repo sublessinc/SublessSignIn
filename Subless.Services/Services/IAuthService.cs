@@ -1,6 +1,6 @@
-﻿using Subless.Models;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Subless.Models;
 
 namespace Subless.Services.Services
 {

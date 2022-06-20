@@ -1,4 +1,9 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Web;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -8,11 +13,6 @@ using Subless.Services.Extensions;
 using Subless.Services.Services;
 using SublessSignIn.AuthServices;
 using SublessSignIn.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Web;
 
 namespace SublessSignIn.Controllers
 {
@@ -252,20 +252,36 @@ namespace SublessSignIn.Controllers
             }
             try
             {
-                var paymentDate = paymentLogsService.GetLastPaymentDate();
-                if (paymentDate == DateTimeOffset.MinValue)
+
+                var lastPayment = paymentLogsService.GetLastPayment(partner.Id);
+                PartnerStats hitsThisMonth;
+                PartnerStats hitsLastMonth;
+                if (lastPayment == null)
                 {
-                    paymentDate = DateTimeOffset.UtcNow.AddMonths(-1);
+
+                    // DEPRECATED
+                    var paymentDate = paymentLogsService.GetLastPaymentDate();
+                    if (paymentDate == DateTimeOffset.MinValue)
+                    {
+                        paymentDate = DateTimeOffset.UtcNow.AddMonths(-1);
+                    }
+                    hitsThisMonth = hitService.GetPartnerStats(paymentDate, DateTimeOffset.UtcNow, partner.Id);
+                    hitsLastMonth = hitService.GetPartnerStats(paymentDate.AddMonths(-1), paymentDate, partner.Id);
+                    // END DEPRECATED
                 }
-                var hitsThisMonth = hitService.GetPartnerStats(paymentDate, DateTimeOffset.UtcNow, partner.Id);
-                var hitsLastMonth = hitService.GetPartnerStats(paymentDate.AddMonths(-1), paymentDate, partner.Id);
+                else
+                {
+                    hitsThisMonth = hitService.GetPartnerStats(lastPayment.PaymentPeriodEnd, DateTimeOffset.UtcNow, partner.Id);
+                    hitsLastMonth = hitService.GetPartnerStats(lastPayment.PaymentPeriodStart, lastPayment.PaymentPeriodEnd, partner.Id);
+                }
+
                 _usageService.SaveUsage(UsageType.PartnerStats, user.Id);
                 return Ok(new HistoricalStats<PartnerStats>()
                 {
                     thisMonth = hitsThisMonth,
                     LastMonth = hitsLastMonth
                 });
-                
+
             }
             catch (UnauthorizedAccessException e)
             {

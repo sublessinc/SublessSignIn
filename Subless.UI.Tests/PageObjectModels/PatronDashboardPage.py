@@ -30,6 +30,7 @@ class PatronDashboardPage(NavbarPage):
     def get_hit_count(self):
         time.sleep(3)
         hit_count = self.driver.find_element_by_css_selector(PatronDashboardLocators.hit_count_selector)
+        logger.info("Hits on dashboard" + hit_count.text)
         return hit_count.text
 
     def open(self):

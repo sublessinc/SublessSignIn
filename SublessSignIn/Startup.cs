@@ -1,19 +1,17 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using System;
+using System.Linq;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using Newtonsoft.Json;
 using Subless.Configuration;
 using Subless.Data;
 using Subless.Models;
 using Subless.Services;
 using SublessSignIn.AuthServices;
-using System;
-using System.Linq;
-using static Subless.Data.DataDi;
 
 namespace SublessSignIn
 {

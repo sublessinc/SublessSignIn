@@ -1,13 +1,13 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System;
+using System.IO;
+using System.Threading.Tasks;
+using System.Web;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Subless.Models;
 using Subless.Services.Services;
-using System;
-using System.IO;
-using System.Threading.Tasks;
-using System.Web;
 
 namespace SublessSignIn.Controllers
 {
@@ -38,11 +38,11 @@ namespace SublessSignIn.Controllers
                 if (string.IsNullOrWhiteSpace(body))
                 {
                     _logger.LogWarning("Invalid hit data recieved:{Environment.NewLine}" +
-                       $"Http Request Information:{Environment.NewLine}" +
-                       $"Schema:{Request.Scheme} " +
-                       $"Host: {Request.Host} " +
-                       $"Path: {Request.Path} " +
-                       $"QueryString: {HttpUtility.UrlEncode(Request.QueryString.Value)}");
+                        $"Http Request Information:{Environment.NewLine}" +
+                        $"Schema:{Request.Scheme} " +
+                        $"Host: {Request.Host} " +
+                        $"Path: {Request.Path} " +
+                        $"QueryString: {HttpUtility.UrlEncode(Request.QueryString.Value)}");
                     return BadRequest("No url included in hit");
                 }
                 if (!Uri.TryCreate(body, UriKind.RelativeOrAbsolute, out Uri hitSource))

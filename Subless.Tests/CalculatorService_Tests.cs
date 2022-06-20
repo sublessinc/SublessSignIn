@@ -17,10 +17,10 @@ namespace Subless.Tests
         public void CalculatorService_WithNoPayment_SendsNoPayment()
         {
             //Arrange
-            var allPayments = new Dictionary<string, double>();
+            var allPayments = new List<PaymentAuditLog>();
             var s3Service = new Mock<IFileStorageService>();
-            s3Service.Setup(x => x.WritePaymentsToCloudFileStore(It.IsAny<Dictionary<string, double>>()))
-                .Callback<Dictionary<string, double>>(y =>
+            s3Service.Setup(x => x.WritePaymentsToCloudFileStore(It.IsAny<List<PaymentAuditLog>>()))
+                .Callback<List<PaymentAuditLog>>(y =>
                 {
                     allPayments = y;
                 });
@@ -32,7 +32,7 @@ namespace Subless.Tests
 
             //Assert
             Assert.Empty(allPayments); // We shouldn't be paying anyone
-            Assert.Equal(0, allPayments.Sum(payment => payment.Value)); //We shouldn't be paying anyone
+            Assert.Equal(0, allPayments.Sum(payment => payment.Payment)); //We shouldn't be paying anyone
 
         }
 
@@ -40,7 +40,7 @@ namespace Subless.Tests
         public void CalculatorService_WithOneView_SendsToUsCreatorAndPartner()
         {
             //Arrange
-            var allPayments = new Dictionary<string, double>();
+            var allPayments = new List<PaymentAuditLog>();
             var stripeService = StripeServiceBuilder(new List<Payer>
             {
                 new Payer()
@@ -52,8 +52,8 @@ namespace Subless.Tests
             var hit = new List<Hit> { new Hit { CognitoId = "test" } };
             var hitService = HitServiceBuilder(hit);
             var s3Service = new Mock<IFileStorageService>();
-            s3Service.Setup(x => x.WritePaymentsToCloudFileStore(It.IsAny<Dictionary<string, double>>()))
-                .Callback<Dictionary<string, double>>(y =>
+            s3Service.Setup(x => x.WritePaymentsToCloudFileStore(It.IsAny<List<PaymentAuditLog>>()))
+                .Callback<List<PaymentAuditLog>>(y =>
                 {
                     allPayments = y;
                 });
@@ -78,7 +78,7 @@ namespace Subless.Tests
         public void CalculatorService_WithInActiveCreator_SkipsInactive()
         {
             //Arrange
-            var allPayments = new Dictionary<string, double>();
+            var allPayments = new List<PaymentAuditLog>();
             var stripeService = StripeServiceBuilder(new List<Payer>
             {
                 new Payer()
@@ -95,8 +95,8 @@ namespace Subless.Tests
             };
             var hitService = HitServiceBuilder(hit);
             var s3Service = new Mock<IFileStorageService>();
-            s3Service.Setup(x => x.WritePaymentsToCloudFileStore(It.IsAny<Dictionary<string, double>>()))
-                .Callback<Dictionary<string, double>>(y =>
+            s3Service.Setup(x => x.WritePaymentsToCloudFileStore(It.IsAny<List<PaymentAuditLog>>()))
+                .Callback<List<PaymentAuditLog>>(y =>
                 {
                     allPayments = y;
                 });
@@ -124,20 +124,20 @@ namespace Subless.Tests
         public void CalculatorService_WithOneDollar_CalculatesOurCut()
         {
             //Arrange
-            var allPayments = new Dictionary<string, double>();
+            var allPayments = new List<PaymentAuditLog>();
             var stripeService = StripeServiceBuilder(new List<Payer>
             {
                 new Payer()
                 {
-                    Payment = 100,
+                    Payment = 10205,
                     UserId = Guid.NewGuid()
                 }
             });
             var hit = new List<Hit> { new Hit { CognitoId = "test" } };
             var hitService = HitServiceBuilder(hit);
             var s3Service = new Mock<IFileStorageService>();
-            s3Service.Setup(x => x.WritePaymentsToCloudFileStore(It.IsAny<Dictionary<string, double>>()))
-                .Callback<Dictionary<string, double>>(y =>
+            s3Service.Setup(x => x.WritePaymentsToCloudFileStore(It.IsAny<List<PaymentAuditLog>>()))
+                .Callback<List<PaymentAuditLog>>(y =>
                 {
                     allPayments = y;
                 });
@@ -155,14 +155,14 @@ namespace Subless.Tests
 
             //Assert
             Assert.NotEmpty(allPayments); // We should have a payment directed at subless
-            Assert.Equal(CalculatorService.SublessFraction, allPayments[sut.SublessPayPalId]);
+            Assert.Equal(CalculatorService.SublessFraction * 100, allPayments.Single(x => x.PayPalId == sut.SublessPayPalId).Payment);
         }
 
         [Fact]
         public void CalculatorService_WithOneDollarAndOneView_CalculatesPartnerCut()
         {
             //Arrange
-            var allPayments = new Dictionary<string, double>();
+            var allPayments = new List<PaymentAuditLog>();
             var stripeService = StripeServiceBuilder(new List<Payer>
             {
                 new Payer()
@@ -174,8 +174,8 @@ namespace Subless.Tests
             var hit = new List<Hit> { new Hit { CognitoId = "test" } };
             var hitService = HitServiceBuilder(hit);
             var s3Service = new Mock<IFileStorageService>();
-            s3Service.Setup(x => x.WritePaymentsToCloudFileStore(It.IsAny<Dictionary<string, double>>()))
-                .Callback<Dictionary<string, double>>(y =>
+            s3Service.Setup(x => x.WritePaymentsToCloudFileStore(It.IsAny<List<PaymentAuditLog>>()))
+                .Callback<List<PaymentAuditLog>>(y =>
                 {
                     allPayments = y;
                 });
@@ -193,7 +193,7 @@ namespace Subless.Tests
 
             //Assert
             Assert.NotEmpty(allPayments); // We should have a payment directed at subless
-            Assert.Equal(.13, allPayments["Partner"]);
+            Assert.Equal(.12, allPayments.Single(x => x.PayPalId == "Partner").Payment);
         }
 
 
@@ -201,7 +201,7 @@ namespace Subless.Tests
         public void CalculatorService_WithOneDollarAndOneView_CalculatesCreatorCut()
         {
             //Arrange
-            var allPayments = new Dictionary<string, double>();
+            var allPayments = new List<PaymentAuditLog>();
             var stripeService = StripeServiceBuilder(new List<Payer>
             {
                 new Payer()
@@ -213,8 +213,8 @@ namespace Subless.Tests
             var hit = new List<Hit> { new Hit { CognitoId = "test" } };
             var hitService = HitServiceBuilder(hit);
             var s3Service = new Mock<IFileStorageService>();
-            s3Service.Setup(x => x.WritePaymentsToCloudFileStore(It.IsAny<Dictionary<string, double>>()))
-                .Callback<Dictionary<string, double>>(y =>
+            s3Service.Setup(x => x.WritePaymentsToCloudFileStore(It.IsAny<List<PaymentAuditLog>>()))
+                .Callback<List<PaymentAuditLog>>(y =>
                 {
                     allPayments = y;
                 });
@@ -232,14 +232,90 @@ namespace Subless.Tests
 
             //Assert
             Assert.NotEmpty(allPayments); // We should have a payment directed at subless
-            Assert.Equal(.52, allPayments["Creator"]);
+            Assert.Equal(.51, allPayments.Single(x => x.PayPalId == "Creator").Payment);
+        }
+
+        [Fact]
+        public void CalculatorService_WithOneDollarAndOneView_AccountsForPaypalFees()
+        {
+            //Arrange
+            var allPayments = new List<PaymentAuditLog>();
+            var stripeService = StripeServiceBuilder(new List<Payer>
+            {
+                new Payer()
+                {
+                    Payment = 1000,
+                    UserId = Guid.NewGuid()
+                }
+            });
+            var hit = new List<Hit> { new Hit { CognitoId = "test" } };
+            var hitService = HitServiceBuilder(hit);
+            var s3Service = new Mock<IFileStorageService>();
+            s3Service.Setup(x => x.WritePaymentsToCloudFileStore(It.IsAny<List<PaymentAuditLog>>()))
+                .Callback<List<PaymentAuditLog>>(y =>
+                {
+                    allPayments = y;
+                });
+            var creatorService = CreatorServiceBuilder("Creator");
+            var partnerService = PartnerServiceBuilder();
+            var sut = PaymentServiceBuilder(
+                stripe: stripeService,
+                s3Service: s3Service,
+                hitService: hitService,
+                creatorService: creatorService,
+                partnerService: partnerService
+                );
+            //Act
+            sut.ExecutePayments(DateTimeOffset.UtcNow.AddMonths(-1), DateTimeOffset.UtcNow);
+
+            //Assert
+            Assert.NotEmpty(allPayments); // We should have a payment directed at subless
+            Assert.Equal(9.79, allPayments.Sum(x => x.Payment));
+        }
+
+        [Fact]
+        public void CalculatorService_PaypalFees_MathExplainer()
+        {
+            //Arrange 
+            var userPayment = 10000000; // thank you for the $100k budget, kind patron
+            var paypalPayoutFeeRate = .02;
+            var stripeService = StripeServiceBuilder(new List<Payer>
+            {
+                new Payer()
+                {
+                    Payment = userPayment,
+                    UserId = Guid.NewGuid()
+                }
+            });
+            var hit = new List<Hit> { new Hit { CognitoId = "test" } };
+            var hitService = HitServiceBuilder(hit);
+            var creatorService = CreatorServiceBuilder("Creator");
+            var partnerService = PartnerServiceBuilder();
+            var sut = CalculatorServiceBuilder(
+                stripe: stripeService,
+                hitService: hitService,
+                creatorService: creatorService,
+                partnerService: partnerService
+                );
+            //Act
+            var result = sut.CaculatePayoutsOverRange(DateTimeOffset.UtcNow.AddMonths(-1), DateTimeOffset.UtcNow);
+
+            //Assert
+            Assert.NotEmpty(result.AllPayouts); // We should have a payment directed at subless
+            Assert.Equal(98039.20, Math.Round(result.AllPayouts.Sum(x => x.Payment), 2));
+
+            //The amount of money available for distribution should be 2% less than the sum of all the payments
+            //We lose an average of $.005 cents per payment target due to rounding. There are three targets, and we lose $0.015, rounded to $0.02
+            Assert.Equal(userPayment / 100 - .02,
+                Math.Round(result.AllPayouts.Sum(x => x.Payment), 2)
+                + Math.Round(result.AllPayouts.Sum(x => x.Payment) * paypalPayoutFeeRate, 2));
         }
 
         [Fact]
         public void CalculatorService_WithTwoCreators_CalculatesCreatorCut()
         {
             //Arrange
-            var allPayments = new Dictionary<string, double>();
+            var allPayments = new List<PaymentAuditLog>();
             var stripeService = StripeServiceBuilder(new List<Payer>
             {
                 new Payer()
@@ -256,8 +332,8 @@ namespace Subless.Tests
             };
             var hitService = HitServiceBuilder(hit);
             var s3Service = new Mock<IFileStorageService>();
-            s3Service.Setup(x => x.WritePaymentsToCloudFileStore(It.IsAny<Dictionary<string, double>>()))
-                .Callback<Dictionary<string, double>>(y =>
+            s3Service.Setup(x => x.WritePaymentsToCloudFileStore(It.IsAny<List<PaymentAuditLog>>()))
+                .Callback<List<PaymentAuditLog>>(y =>
                 {
                     allPayments = y;
                 });
@@ -277,9 +353,9 @@ namespace Subless.Tests
 
             //Assert
             Assert.NotEmpty(allPayments); // We should have a payment directed at subless
-            Assert.Equal(3.68, allPayments["Creator1"]);
-            Assert.Equal(3.68, allPayments["Creator2"]);
-            Assert.Equal(1.84, allPayments["Partner"]);
+            Assert.Equal(3.61, allPayments.Single(x => x.PayPalId == "Creator1").Payment);
+            Assert.Equal(3.61, allPayments.Single(x => x.PayPalId == "Creator2").Payment);
+            Assert.Equal(1.80, allPayments.Single(x => x.PayPalId == "Partner").Payment);
         }
 
         [Fact]
@@ -517,7 +593,7 @@ namespace Subless.Tests
         public void Payer_WithNoHits_RollsOverPayment()
         {
             //Arrange
-            var allPayments = new Dictionary<string, double>();
+            var allPayments = new List<PaymentAuditLog>();
             var mockStripe = new Mock<IStripeService>();
             mockStripe.Setup(x => x.RolloverPaymentForIdleCustomer(It.IsAny<string>()));
 
@@ -536,8 +612,8 @@ namespace Subless.Tests
             };
             var hitService = HitServiceBuilder(hit);
             var s3Service = new Mock<IFileStorageService>();
-            s3Service.Setup(x => x.WritePaymentsToCloudFileStore(It.IsAny<Dictionary<string, double>>()))
-                .Callback<Dictionary<string, double>>(y =>
+            s3Service.Setup(x => x.WritePaymentsToCloudFileStore(It.IsAny<List<PaymentAuditLog>>()))
+                .Callback<List<PaymentAuditLog>>(y =>
                 {
                     allPayments = y;
                 });
@@ -579,7 +655,7 @@ namespace Subless.Tests
                 CognitoId = "cognito",
                 Id = Guid.NewGuid()
             };
-            var allPayments = new Dictionary<string, double>();
+            var allPayments = new List<PaymentAuditLog>();
             var mockStripe = new Mock<IStripeService>();
             mockStripe.Setup(x => x.RolloverPaymentForIdleCustomer(It.IsAny<string>()));
 
@@ -606,7 +682,7 @@ namespace Subless.Tests
                 }
             };
             var hitService = new Mock<IHitService>();
-            hitService.Setup(x => x.GetHitsByDate(It.IsAny<DateTimeOffset>(), It.IsAny<DateTimeOffset>(), payer.Id)).Returns(hit); 
+            hitService.Setup(x => x.GetHitsByDate(It.IsAny<DateTimeOffset>(), It.IsAny<DateTimeOffset>(), payer.Id)).Returns(hit);
             var creatorService = new Mock<ICreatorService>();
             creatorService.Setup(x => x.GetCreator(creator.Id)).Returns(creator);
             var partnerService = PartnerServiceBuilder("Partner");
@@ -650,7 +726,7 @@ namespace Subless.Tests
                 CognitoId = "cognito2",
                 Id = Guid.NewGuid()
             };
-            var allPayments = new Dictionary<string, double>();
+            var allPayments = new List<PaymentAuditLog>();
             var mockStripe = new Mock<IStripeService>();
             mockStripe.Setup(x => x.RolloverPaymentForIdleCustomer(It.IsAny<string>()));
 
@@ -701,11 +777,11 @@ namespace Subless.Tests
                 userService: userService
                 );
             //Act
-            var result = sut.CaculatePayoutsOverRange(DateTimeOffset.UtcNow.AddMonths(-1), DateTimeOffset.UtcNow, new List<Guid> {  payer2.Id });
+            var result = sut.CaculatePayoutsOverRange(DateTimeOffset.UtcNow.AddMonths(-1), DateTimeOffset.UtcNow, new List<Guid> { payer2.Id });
 
             //Assert
             Assert.Equal(3, result.AllPayouts.Count);
-            Assert.DoesNotContain(result.PaymentsPerPayer, x=>x.Key==payer.CognitoId);
+            Assert.DoesNotContain(result.PaymentsPerPayer, x => x.Key == payer.CognitoId);
         }
 
 

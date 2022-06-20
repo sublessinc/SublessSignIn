@@ -1,9 +1,8 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Subless.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Subless.Services.Services
 {
@@ -67,8 +66,20 @@ namespace Subless.Services.Services
                 emailService.SendReceiptEmail(payer.Value, payer.Key);
                 calculatorResult.EmailSent = true;
             }
+            foreach (var payee in calculatorResult.AllPayouts)
+            {
+                if (payee.PayeeType == PayeeType.Creator)
+                {
+                    emailService.SendCreatorReceiptEmail(payee.TargetId, payee);
+                }
+                if (payee.PayeeType == PayeeType.Partner)
+                {
+                    emailService.SendPartnerReceiptEmail(payee.TargetId, payee);
+                }
+
+            }
             // record to database
-            SaveMasterList(calculatorResult.AllPayouts, endDate);
+            SaveMasterList(calculatorResult.AllPayouts);
             // record to s3 bucket
             SavePayoutsToS3(calculatorResult.AllPayouts);
             if (calculatorResult.EmailSent)
@@ -88,14 +99,13 @@ namespace Subless.Services.Services
             }});
         }
 
-        private void SaveMasterList(Dictionary<string, double> masterPayoutList, DateTimeOffset endDate)
+        private void SaveMasterList(List<PaymentAuditLog> masterPayoutList)
         {
-            var payments = masterPayoutList.Select(x => new PaymentAuditLog() { Payment = x.Value, PayPalId = x.Key, DatePaid = DateTimeOffset.UtcNow });
             _logger.LogInformation("Saving our audit logs.");
-            _paymentLogsService.SaveAuditLogs(payments);
+            _paymentLogsService.SaveAuditLogs(masterPayoutList);
         }
 
-        private void SavePayoutsToS3(Dictionary<string, double> masterPayoutList)
+        private void SavePayoutsToS3(List<PaymentAuditLog> masterPayoutList)
         {
             _logger.LogInformation("Writing out payout information to cloud stoarge.");
             _s3Service.WritePaymentsToCloudFileStore(masterPayoutList);

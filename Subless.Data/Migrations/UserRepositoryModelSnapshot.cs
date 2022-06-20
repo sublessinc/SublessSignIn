@@ -165,8 +165,14 @@ namespace Subless.Data.Migrations
                     b.Property<string>("PayPalId")
                         .HasColumnType("text");
 
+                    b.Property<int>("PayeeType")
+                        .HasColumnType("integer");
+
                     b.Property<double>("Payment")
                         .HasColumnType("double precision");
+
+                    b.Property<Guid>("TargetId")
+                        .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
@@ -232,11 +238,29 @@ namespace Subless.Data.Migrations
                     b.Property<DateTimeOffset>("DatePaid")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<double>("Fees")
+                        .HasColumnType("double precision");
+
                     b.Property<string>("PayPalId")
                         .HasColumnType("text");
 
+                    b.Property<int>("PayeeType")
+                        .HasColumnType("integer");
+
                     b.Property<double>("Payment")
                         .HasColumnType("double precision");
+
+                    b.Property<DateTimeOffset>("PaymentPeriodEnd")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("PaymentPeriodStart")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<double>("Revenue")
+                        .HasColumnType("double precision");
+
+                    b.Property<Guid>("TargetId")
+                        .HasColumnType("uuid");
 
                     b.HasKey("Id");
 

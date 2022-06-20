@@ -1,10 +1,10 @@
-﻿using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+﻿using System;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Subless.Models;
 using Subless.Services.Services;
-using System;
-using System.Threading.Tasks;
 
 namespace SublessSignIn.AuthServices
 {

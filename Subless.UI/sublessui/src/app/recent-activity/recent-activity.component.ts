@@ -3,6 +3,7 @@ import { ChangeDetectorRef, Component, Inject, LOCALE_ID, OnDestroy, OnInit } fr
 import { Subscription } from 'rxjs';
 import { IHitView } from '../models/IHitView';
 import { CreatorService } from '../services/creator.service';
+import { DateFormatter } from '../services/dateformatter.service';
 
 @Component({
   selector: 'app-recent-activity',
@@ -14,8 +15,8 @@ export class RecentActivityComponent implements OnInit, OnDestroy {
   private subs: Subscription[] = [];
 
   constructor(private creatorService: CreatorService,
-    private changeDetector: ChangeDetectorRef,
-    @Inject(LOCALE_ID) public locale: string) { }
+    public dateService: DateFormatter,
+    private changeDetector: ChangeDetectorRef) { }
 
   ngOnInit(): void {
     this.subs.push(this.creatorService.getRecentFeed().subscribe({
@@ -28,15 +29,5 @@ export class RecentActivityComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.subs.forEach((item: Subscription) => { item.unsubscribe(); })
-  }
-
-  public formatDatestamp(timestamp: Date): string {
-    if (formatDate(new Date(), 'dd-MM-yyyy', this.locale) === formatDate(timestamp, 'dd-MM-yyyy', this.locale)) {
-      return "Today";
-    }
-    return formatDate(timestamp, 'dd-MM-yyyy', this.locale);
-  }
-  public formatTimestamp(timestamp: Date): string {
-    return formatDate(timestamp, 'HH:MM', this.locale);
   }
 }

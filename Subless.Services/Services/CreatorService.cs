@@ -1,12 +1,13 @@
-﻿using Microsoft.Extensions.Caching.Memory;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net.Mail;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Subless.Data;
 using Subless.Models;
 using Subless.Services.Extensions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Subless.Services.Services
 {
@@ -102,17 +103,33 @@ namespace Subless.Services.Services
             // Set user modifiable properties
             var currentCreator = creators.First();
             var wasValid = CreatorValid(currentCreator);
-            if (currentCreator.PayPalId != null && currentCreator.PayPalId != creator.PayPalId)
+            if (currentCreator.PayPalId != null && currentCreator.PayPalId != creator.PayPalId && PaypalAddressIsEmail(currentCreator.PayPalId))
             {
                 await _emailService.SendEmail(GetPaymentChangedEmail(creator.Username), currentCreator.PayPalId, "Subless payout no longer associated with this email");
             }
             currentCreator.PayPalId = creator.PayPalId;
             creatorRepository.UpdateCreator(currentCreator);
-            await _emailService.SendEmail(GetPaymentSetEmail(creator.Username), creator.PayPalId, "Subless payout email set");
+            if (PaypalAddressIsEmail(creator.PayPalId))
+            {
+                await _emailService.SendEmail(GetPaymentSetEmail(creator.Username), creator.PayPalId, "Subless payout email set");
+            }
             await FireCreatorActivationWebhook(creator, wasValid);
             return currentCreator;
         }
 
+        private bool PaypalAddressIsEmail(string paypalid)
+        {
+            try
+            {
+                var m = new MailAddress(paypalid);
+
+                return true;
+            }
+            catch (FormatException)
+            {
+                return false;
+            }
+        }
 
         public IEnumerable<MontlyPaymentStats> GetStatsForCreator(Creator creator)
         {
@@ -120,22 +137,21 @@ namespace Subless.Services.Services
             {
                 throw new ArgumentNullException(nameof(creator));
             }
-            var payments = paymentRepository.GetPaymentsByPayeePayPalId(creator.PayPalId);
-            var paymentStats = new Dictionary<DateTimeOffset, MontlyPaymentStats>();
-            foreach (var payment in payments)
+            var paymentStats = new List<MontlyPaymentStats>();
+            var paymentAuditLogs = paymentRepository.GetAllPaymentsToUser(creator.Id);
+            foreach (var payment in paymentAuditLogs)
             {
-                var paymentMonth = new DateTimeOffset(new DateTime(payment.DateSent.Year, payment.DateSent.Month, 1));
-                if (!paymentStats.Keys.Any(x => new DateTimeOffset(new DateTime(x.Year, x.Month, 1)) == paymentMonth))
-                {
-                    paymentStats.Add(paymentMonth, new MontlyPaymentStats()
+                paymentStats.Add(new MontlyPaymentStats()
                     {
-                        MonthStartDay = paymentMonth,
+                        MonthStart = payment.PaymentPeriodStart,
+                        Revenue = payment.Revenue,
+                        PaymentProcessorFees = payment.Fees,
+                        Payment = payment.Payment,
+                        MonthEnd = payment.PaymentPeriodEnd
                     });
-                }
-                paymentStats[paymentMonth].DollarsPaid += Math.Round(payment.Amount/100, 2);
-                paymentStats[paymentMonth].Payers += 1;
+                
             }
-            return paymentStats.Values.OrderBy(x => x.MonthStartDay);
+            return paymentStats.OrderBy(x => x.MonthStart);
         }
 
         private bool CreatorValid(Creator creator)

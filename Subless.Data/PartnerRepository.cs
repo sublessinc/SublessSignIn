@@ -1,8 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Subless.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
+using Subless.Models;
 
 namespace Subless.Data
 {
@@ -52,7 +52,7 @@ namespace Subless.Data
 
         public Partner GetPartnerByUri(Uri uri)
         {
-            return Partners.FirstOrDefault(partner => partner.Sites.Any(x=> x == uri));
+            return Partners.FirstOrDefault(partner => partner.Sites.Any(x => x == uri));
         }
 
         public IEnumerable<Uri> GetPartnerUris()
