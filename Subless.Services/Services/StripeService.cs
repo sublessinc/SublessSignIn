@@ -335,7 +335,10 @@ namespace Subless.Services.Services
         {
             var service = new SubscriptionService(_client);
             var user = _userService.GetUserByCognitoId(cognitoId);
-
+            if (string.IsNullOrWhiteSpace(user.StripeCustomerId))
+            {
+                return false;
+            }
             var subOptions = new SubscriptionListOptions() { Customer = user.StripeCustomerId };
             var subs = service.List(subOptions);
             foreach (var sub in subs)
@@ -343,7 +346,7 @@ namespace Subless.Services.Services
                 var cancelOptions = new SubscriptionCancelOptions
                 {
                     InvoiceNow = false,
-                    Prorate = false,
+                    Prorate = true,
                 };
                 service.Cancel(sub.Id, cancelOptions);
             }
