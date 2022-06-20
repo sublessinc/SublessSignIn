@@ -1,11 +1,13 @@
 import json
+import logging
 import os
 
 import mailslurp_client
 import re
 
 from Keys.Keys import Keys
-
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger()
 configuration = mailslurp_client.Configuration()
 configuration.api_key['x-api-key'] = Keys.mailslurp_api_key
 
@@ -67,12 +69,17 @@ def receive_email(inbox_name='', inbox_id=''):
         if not inbox_id:
             inbox_id = get_or_create_inbox(inbox_name)
 
-        # wait for email
-        wait_controller = mailslurp_client.WaitForControllerApi(api_client)
-        email = wait_controller.wait_for_latest_email(inbox_id=inbox_id,
-                                                      timeout=30000, unread_only=True)
+        try:
+            # wait for email
+            wait_controller = mailslurp_client.WaitForControllerApi(api_client)
+            email = wait_controller.wait_for_latest_email(inbox_id=inbox_id,
+                                                          timeout=30000, unread_only=True)
 
-        return email
+            return email
+        except Exception as err:
+            logger.error("error getting email")
+            raise
+
 
 
 def get_newest_otp(inbox_name='', inbox_id=''):

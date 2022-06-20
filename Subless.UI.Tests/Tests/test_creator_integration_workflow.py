@@ -1,3 +1,5 @@
+import time
+
 from EmailLib.MailSlurp import get_or_create_inbox, receive_email, CreatorInbox, PatronInbox
 from PageObjectModels.PayoutSetupPage import PayoutSetupPage
 from UsersLib.Users import DefaultPassword
@@ -21,6 +23,8 @@ def test_creator_activate(web_driver, subless_unactivated_creator_user, params):
 
 def test_creator_hit(web_driver, subless_activated_creator_user, paying_user, params):
     # WHEN a creator with a set number of hits is visited by a patron
+    # Wait for creator cache to refresh
+    time.sleep(15)
     patron_mailbox = get_or_create_inbox(PatronInbox)
     creator_mailbox = get_or_create_inbox(CreatorInbox)
     from PageObjectModels.LoginPage import LoginPage
@@ -36,11 +40,13 @@ def test_creator_hit(web_driver, subless_activated_creator_user, paying_user, pa
     from PageObjectModels.TestSite.TestSite_HomePage import TestSite_HomePage
     test_site = TestSite_HomePage(web_driver).open()
     test_site.click_profile()
+    # Wait for hit to process
+    time.sleep(2)
     # THEN the creator's hit count should increase by one
     login_page = LoginPage(web_driver).open()
     creator_dashboard = login_page.sign_in(creator_mailbox.email_address, DefaultPassword)
     after_hit_count = creator_dashboard.get_hit_count()
-    assert after_hit_count-before_hit_count == 1
+    assert int(after_hit_count)-int(before_hit_count) == 1
 
 
 

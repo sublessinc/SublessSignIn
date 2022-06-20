@@ -21,11 +21,18 @@ def test_payout_calculation(web_driver, subless_activated_creator_user, paying_u
     id, cookie = login_as_god_user(web_driver)
     endTime = datetime.utcnow()
     calculator_result = get_payout_calculation(cookie, startTime, endTime)
-    payments = calculator_result['allPayouts'].values()
-    assert 0.89 in payments
-    assert 0.09 in payments
-    assert 3.56 in payments
-
+    allThePaymentsInTheResults = list(x['payment'] for x in calculator_result['allPayouts'])
+    assert 0.87 in allThePaymentsInTheResults
+    assert 0.08 in allThePaymentsInTheResults
+    assert 3.49 in allThePaymentsInTheResults
+    allTheFeesInTheResults = list(x['fees'] for x in calculator_result['allPayouts'])
+    assert 0.06 in allTheFeesInTheResults
+    assert 0.01 in allTheFeesInTheResults
+    assert 0.00 in allTheFeesInTheResults
+    allTheRevenuesInTheResults = list(x['revenue'] for x in calculator_result['allPayouts'])
+    assert 0.89 in allTheRevenuesInTheResults
+    assert 0.09 in allTheRevenuesInTheResults
+    assert 3.56 in allTheRevenuesInTheResults
 
 def test_payout_emails(web_driver, subless_activated_creator_user, paying_user, params):
     # WHEN a creator with a set number of hits is visited by a patron
