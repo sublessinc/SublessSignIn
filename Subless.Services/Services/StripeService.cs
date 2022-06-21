@@ -335,15 +335,22 @@ namespace Subless.Services.Services
         {
             var service = new SubscriptionService(_client);
             var user = _userService.GetUserByCognitoId(cognitoId);
-
+            if (string.IsNullOrWhiteSpace(user.StripeCustomerId))
+            {
+                return false;
+            }
             var subOptions = new SubscriptionListOptions() { Customer = user.StripeCustomerId };
             var subs = service.List(subOptions);
+            if (subs.Count() > 1)
+            {
+                _logger.LogError("User had more than one subscription.... that doesn't seem right");
+            }
             foreach (var sub in subs)
             {
                 var cancelOptions = new SubscriptionCancelOptions
                 {
                     InvoiceNow = false,
-                    Prorate = false,
+                    Prorate = true,
                 };
                 service.Cancel(sub.Id, cancelOptions);
             }
