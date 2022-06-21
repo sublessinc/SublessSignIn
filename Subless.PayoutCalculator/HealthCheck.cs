@@ -1,7 +1,7 @@
-﻿using Subless.Data;
-using Subless.Services.Services;
-using System;
+﻿using System;
 using System.Threading.Tasks;
+using Subless.Data;
+using Subless.Services.Services;
 
 namespace Subless.PayoutCalculator
 {

@@ -4,6 +4,7 @@ import { Observable, Subscription } from 'rxjs';
 import { IPartner } from '../models/IPartner';
 import { IPartnerAnalytics } from '../models/IPartnerAnalytics';
 import { IPartnerWrite } from '../models/IPartnerWrite';
+import { DateFormatter } from '../services/dateformatter.service';
 import { PartnerService } from '../services/partner.service';
 import { ComponentCanDeactivate } from '../stop-nav.guard';
 
@@ -14,13 +15,14 @@ import { ComponentCanDeactivate } from '../stop-nav.guard';
 })
 export class PartnerprofileComponent implements OnInit, OnDestroy {
   public analytics: IPartnerAnalytics = {
-    thisMonth: { views: 0, creators: 0, visitors: 0 },
-    lastMonth: { views: 0, creators: 0, visitors: 0 }
+    thisMonth: { views: 0, creators: 0, visitors: 0, periodStart: new Date(), periodEnd: new Date() },
+    lastMonth: { views: 0, creators: 0, visitors: 0, periodStart: new Date(), periodEnd: new Date() }
   };
   private subs: Subscription[] = [];
 
   constructor(private partnerService: PartnerService,
-    private changeDetector: ChangeDetectorRef) { }
+    private changeDetector: ChangeDetectorRef,
+    public dateFormatter: DateFormatter) { }
 
   ngOnInit(): void {
     this.subs.push(this.partnerService.getAnalytics().subscribe

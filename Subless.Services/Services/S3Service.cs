@@ -1,16 +1,17 @@
-﻿using Amazon.S3;
-using Amazon.S3.Transfer;
-using CsvHelper;
-using CsvHelper.Configuration;
-using Microsoft.Extensions.Options;
-using Subless.PayoutCalculator;
-using Subless.Services.Extensions;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Amazon.S3;
+using Amazon.S3.Transfer;
+using CsvHelper;
+using CsvHelper.Configuration;
+using Microsoft.Extensions.Options;
+using Subless.Models;
+using Subless.PayoutCalculator;
+using Subless.Services.Extensions;
 
 namespace Subless.Services.Services
 {
@@ -31,12 +32,12 @@ namespace Subless.Services.Services
             BucketName = options?.Value?.BucketName ?? throw new ArgumentNullException(nameof(options));
         }
 
-        public void WritePaymentsToCloudFileStore(Dictionary<string, double> masterPayoutList)
+        public void WritePaymentsToCloudFileStore(List<PaymentAuditLog> masterPayoutList)
         {
             var payoutsInPaypalFormat = masterPayoutList.Select(x => new PayPalItem()
             {
-                Email = x.Key,
-                Amount = x.Value
+                Email = x.PayPalId,
+                Amount = x.Payment
             }).ToList();
             var csv = GetPathToGeneratedCsv(payoutsInPaypalFormat);
             transferUtility.Upload(csv, BucketName);

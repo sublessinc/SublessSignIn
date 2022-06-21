@@ -129,13 +129,27 @@ namespace SublessSignIn.Controllers
             try
             {
                 var creator = _creatorService.GetCreatorByCognitoid(cognitoId);
-                var paymentDate = paymentLogsService.GetLastPaymentDate();
-                if (paymentDate == DateTimeOffset.MinValue)
+                var lastPayment = paymentLogsService.GetLastPayment(creator.Id);
+                CreatorStats hitsThisMonth;
+                CreatorStats hitsLastMonth;
+                if (lastPayment == null)
                 {
-                    paymentDate = DateTimeOffset.UtcNow.AddMonths(-1);
+
+                    // DEPRECATED
+                    var paymentDate = paymentLogsService.GetLastPaymentDate();
+                    if (paymentDate == DateTimeOffset.MinValue)
+                    {
+                        paymentDate = DateTimeOffset.UtcNow.AddMonths(-1);
+                    }
+                    hitsThisMonth = hitService.GetCreatorStats(paymentDate, DateTimeOffset.UtcNow, creator.Id);
+                    hitsLastMonth = hitService.GetCreatorStats(paymentDate.AddMonths(-1), paymentDate, creator.Id);
+                    // END DEPRECATED
                 }
-                var hitsThisMonth = hitService.GetCreatorStats(paymentDate, DateTimeOffset.UtcNow, creator.Id);
-                var hitsLastMonth = hitService.GetCreatorStats(paymentDate.AddMonths(-1), paymentDate, creator.Id);
+                else
+                {
+                    hitsThisMonth = hitService.GetCreatorStats(lastPayment.PaymentPeriodEnd, DateTimeOffset.UtcNow, creator.Id);
+                    hitsLastMonth = hitService.GetCreatorStats(lastPayment.PaymentPeriodStart, lastPayment.PaymentPeriodEnd, creator.Id);
+                }
                 if (creator.UserId != null)
                 {
                     _usageService.SaveUsage(UsageType.UserStats, (Guid)creator.UserId);

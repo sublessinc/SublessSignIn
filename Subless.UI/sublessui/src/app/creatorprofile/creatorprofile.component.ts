@@ -2,6 +2,7 @@ import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { ICreatorAnalytics } from '../models/ICreatorAnalytics';
 import { CreatorService } from '../services/creator.service';
+import { DateFormatter } from '../services/dateformatter.service';
 
 @Component({
   selector: 'app-creatorprofile',
@@ -11,14 +12,15 @@ import { CreatorService } from '../services/creator.service';
 export class CreatorprofileComponent implements OnInit, OnDestroy {
 
   public analytics: ICreatorAnalytics = {
-    thisMonth: { views: 0, visitors: 0, piecesOfContent: 0 },
-    lastMonth: { views: 0, visitors: 0, piecesOfContent: 0 }
+    thisMonth: { views: 0, visitors: 0, piecesOfContent: 0, periodStart: new Date(), periodEnd: new Date() },
+    lastMonth: { views: 0, visitors: 0, piecesOfContent: 0, periodStart: new Date(), periodEnd: new Date() }
   };
   private subs: Subscription[] = [];
 
   constructor(
     private creatorService: CreatorService,
-    private changeDetector: ChangeDetectorRef
+    private changeDetector: ChangeDetectorRef,
+    public dateFormatter: DateFormatter
   ) { }
 
   ngOnInit(): void {
@@ -37,4 +39,7 @@ export class CreatorprofileComponent implements OnInit, OnDestroy {
       }
     }));
   }
+
+
+
 }

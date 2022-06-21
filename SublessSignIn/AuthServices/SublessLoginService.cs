@@ -1,8 +1,8 @@
-﻿using Duende.Bff;
+﻿using System.Linq;
+using System.Threading.Tasks;
+using Duende.Bff;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace SublessSignIn
 {

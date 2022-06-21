@@ -1,10 +1,6 @@
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace SublessSignIn.Controllers
 {
@@ -24,7 +20,8 @@ namespace SublessSignIn.Controllers
         public async Task<ActionResult<string>> GetVersion()
         {
             var version = await releaseVersion.GetVersion();
-            if (!string.IsNullOrEmpty(version)){
+            if (!string.IsNullOrEmpty(version))
+            {
                 return Ok(version);
             }
 
