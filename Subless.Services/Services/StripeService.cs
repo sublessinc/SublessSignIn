@@ -263,30 +263,13 @@ namespace Subless.Services.Services
             return await service.GetAsync(sessionId);
         }
 
-        public IEnumerable<Payer> GetInvoicesForRange(DateTimeOffset startDate, DateTimeOffset endDate)
+        public IEnumerable<Payer> GetPayersForRange(DateTimeOffset startDate, DateTimeOffset endDate)
         {
             var utcutcStartDate = new DateTime(startDate.ToUniversalTime().Ticks, DateTimeKind.Utc);
             var utcutcEndDate = new DateTime(endDate.ToUniversalTime().Ticks, DateTimeKind.Utc);
             _logger.LogDebug($"Looking for invoices in time range UTC kind, UTC Time: {utcutcStartDate}  --  {utcutcEndDate}");
             //Stripe seems to convert datetimes to json and back, and use the local time when doing so. We need to pass a local time to prevent a double UTC conversion.
-            var utcInvoices = GetInvoicesForRange(utcutcStartDate, utcutcEndDate);
-
-            return utcInvoices;
-        }
-
-        private IEnumerable<Payer> GetInvoicesForRange(DateTime startDate, DateTime endDate)
-        {
-            var filters = new InvoiceListOptions()
-            {
-                Status = "paid",
-                Created = new DateRangeOptions
-                {
-                    GreaterThan = startDate,
-                    LessThanOrEqual = endDate
-                }
-            };
-            var invoiceService = new InvoiceService(_client);
-            var invoices = invoiceService.List(filters);
+            var invoices = GetInvoiceInRage(utcutcStartDate, utcutcEndDate);
             var cusomterIds = invoices.Select(invoice => invoice.CustomerId);
             var users = _userService.GetUsersFromStripeIds(cusomterIds);
             var payers = new List<Payer>();
@@ -331,6 +314,42 @@ namespace Subless.Services.Services
             return payers;
         }
 
+        private List<Invoice> GetInvoiceInRage(DateTime startDate, DateTime endDate)
+        {
+            var invoices = new List<Invoice>();
+            var filters = new InvoiceListOptions()
+            {
+                Status = "paid",
+                Created = new DateRangeOptions
+                {
+                    GreaterThan = startDate,
+                    LessThanOrEqual = endDate
+                },
+                Limit = 10,
+            };
+            var invoiceService = new InvoiceService(_client);
+            var nextSet = invoiceService.List(filters);
+
+            invoices.AddRange(nextSet);
+            while (nextSet.Any())
+            {
+                filters = new InvoiceListOptions()
+                {
+                    Status = "paid",
+                    Created = new DateRangeOptions
+                    {
+                        GreaterThan = startDate,
+                        LessThanOrEqual = endDate
+                    },
+                    Limit = 1,
+                    StartingAfter = nextSet.Last().Id
+                };
+                nextSet = invoiceService.List(filters);
+                invoices.AddRange(nextSet);
+            }
+            return invoices;
+
+        }
         public bool CancelSubscription(string cognitoId)
         {
             var service = new SubscriptionService(_client);
