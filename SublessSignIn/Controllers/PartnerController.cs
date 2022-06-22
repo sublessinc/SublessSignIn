@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
+using CsvHelper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -296,6 +299,44 @@ namespace SublessSignIn.Controllers
             var cognitoId = _userService.GetUserClaim(HttpContext.User);
             _partnerService.AcceptTerms(cognitoId);
             return Ok();
+        }
+
+        [HttpGet("statscsv")]
+        public ActionResult<string> GetStatsCsv()
+        {
+            var cognitoId = _userService.GetUserClaim(HttpContext.User);
+            if (cognitoId == null)
+            {
+                return Unauthorized();
+            }
+            try
+            {
+                var user = _userService.GetUserByCognitoId(cognitoId);
+                var partner = _partnerService.GetPartnerByAdminId(user.Id);
+                if (partner == null)
+                {
+                    return Unauthorized("Attemped to access forbidden zone");
+                }
+                var stats = _partnerService.GetStatsForPartner(partner);
+                var ms = new MemoryStream();
+                var sw = new StreamWriter(ms);
+                using (var csv = new CsvWriter(sw, CultureInfo.InvariantCulture))
+                {
+                    csv.WriteHeader<MontlyPaymentStats>();
+                    csv.NextRecord();
+                    csv.WriteRecords(stats);
+                    csv.Flush();
+                    ms.Seek(0, SeekOrigin.Begin);
+                    var reader = new StreamReader(ms);
+                    return reader.ReadToEnd();
+                }
+            }
+            catch (UnauthorizedAccessException e)
+            {
+                _logger.LogWarning(e, "Unauthorized user attempted to get creator stats");
+
+                return Unauthorized();
+            }
         }
     }
 }

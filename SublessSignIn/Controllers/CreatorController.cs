@@ -77,27 +77,6 @@ namespace SublessSignIn.Controllers
             }
         }
 
-        [HttpGet("stats")]
-        public ActionResult<IEnumerable<MontlyPaymentStats>> GetStats()
-        {
-            var cognitoId = userService.GetUserClaim(HttpContext.User);
-            if (cognitoId == null)
-            {
-                return Unauthorized();
-            }
-            try
-            {
-                var creator = _creatorService.GetCreatorByCognitoid(cognitoId);
-                return Ok(_creatorService.GetStatsForCreator(creator));
-
-            }
-            catch (UnauthorizedAccessException e)
-            {
-                _logger.LogWarning(e, "Unauthorized user attempted to get creator stats");
-                return Unauthorized();
-            }
-        }
-
         [HttpDelete("{id}/Unlink")]
         public ActionResult Unlink(Guid id)
         {
@@ -166,6 +145,7 @@ namespace SublessSignIn.Controllers
                 return Unauthorized();
             }
         }
+
         [HttpGet("statscsv")]
         public ActionResult<string> GetStatsCsv()
         {

@@ -11,11 +11,11 @@ export class StatsService {
 
   constructor(private httpClient: HttpClient) { }
 
-  getStat(): Observable<IStat[]> {
-    return this.httpClient.get<IStat[]>('/api/Creator/stats');
+  downloadCreatorFile(): any {
+    return this.httpClient.get('/api/Creator/statscsv', { responseType: 'blob' });
   }
 
-  downloadFile(): any {
-		return this.httpClient.get('/api/Creator/statscsv', {responseType: 'blob'});
+  downloadPartnerFile(): any {
+    return this.httpClient.get('/api/Partner/statscsv', { responseType: 'blob' });
   }
 }

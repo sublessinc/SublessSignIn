@@ -18,6 +18,7 @@ namespace Subless.Services.Services
         private readonly IUserRepository _userRepository;
         private readonly IPartnerRepository partnerRepository;
         private readonly ICreatorRepository creatorRepository;
+        private readonly IPaymentRepository _paymentRepository;
         private readonly ICacheService cache;
         private readonly HttpClient httpClient;
         private readonly ILogger<PartnerService> logger;
@@ -27,6 +28,7 @@ namespace Subless.Services.Services
             IPartnerRepository partnerRepository,
             ICreatorRepository creatorRepository,
             IHttpClientFactory httpClientFactory,
+            IPaymentRepository paymentRepository,
             ICacheService cache,
             ILoggerFactory loggerFactory
             )
@@ -34,6 +36,7 @@ namespace Subless.Services.Services
             _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
             this.partnerRepository = partnerRepository ?? throw new ArgumentNullException(nameof(partnerRepository));
             this.creatorRepository = creatorRepository ?? throw new ArgumentNullException(nameof(creatorRepository));
+            _paymentRepository = paymentRepository;
             this.cache = cache ?? throw new ArgumentNullException(nameof(cache));
             httpClient = httpClientFactory?.CreateClient() ?? throw new ArgumentNullException(nameof(httpClientFactory));
             logger = loggerFactory.CreateLogger<PartnerService>();
@@ -125,6 +128,30 @@ namespace Subless.Services.Services
             cache.Cache.Set(uri.ToString(), partner, DateTimeOffset.UtcNow.AddMinutes(15));
             return partner;
         }
+
+        public IEnumerable<MontlyPaymentStats> GetStatsForPartner(Partner partner)
+        {
+            if (partner is null)
+            {
+                throw new ArgumentNullException(nameof(partner));
+            }
+            var paymentStats = new List<MontlyPaymentStats>();
+            var paymentAuditLogs = _paymentRepository.GetAllPaymentsToUser(partner.Id);
+            foreach (var payment in paymentAuditLogs)
+            {
+                paymentStats.Add(new MontlyPaymentStats()
+                {
+                    MonthStart = payment.PaymentPeriodStart,
+                    Revenue = payment.Revenue,
+                    PaymentProcessorFees = payment.Fees,
+                    Payment = payment.Payment,
+                    MonthEnd = payment.PaymentPeriodEnd
+                });
+
+            }
+            return paymentStats.OrderBy(x => x.MonthStart);
+        }
+
 
         public async Task<bool> CreatorChangeWebhook(PartnerViewCreator creator)
         {
