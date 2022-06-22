@@ -322,7 +322,7 @@ namespace SublessSignIn.Controllers
                 var sw = new StreamWriter(ms);
                 using (var csv = new CsvWriter(sw, CultureInfo.InvariantCulture))
                 {
-                    csv.WriteHeader<MontlyPaymentStats>();
+                    csv.WriteHeader<MonthlyPaymentStats>();
                     csv.NextRecord();
                     csv.WriteRecords(stats);
                     csv.Flush();

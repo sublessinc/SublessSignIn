@@ -129,17 +129,17 @@ namespace Subless.Services.Services
             return partner;
         }
 
-        public IEnumerable<MontlyPaymentStats> GetStatsForPartner(Partner partner)
+        public IEnumerable<MonthlyPaymentStats> GetStatsForPartner(Partner partner)
         {
             if (partner is null)
             {
                 throw new ArgumentNullException(nameof(partner));
             }
-            var paymentStats = new List<MontlyPaymentStats>();
+            var paymentStats = new List<MonthlyPaymentStats>();
             var paymentAuditLogs = _paymentRepository.GetAllPaymentsToUser(partner.Id);
             foreach (var payment in paymentAuditLogs)
             {
-                paymentStats.Add(new MontlyPaymentStats()
+                paymentStats.Add(new MonthlyPaymentStats()
                 {
                     MonthStart = payment.PaymentPeriodStart,
                     Revenue = payment.Revenue,
