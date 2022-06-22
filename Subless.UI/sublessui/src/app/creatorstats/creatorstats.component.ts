@@ -27,7 +27,7 @@ export class CreatorstatsComponent implements OnDestroy {
       (response: any) => {
         let blob: any = new Blob([response], { type: 'text/json; charset=utf-8' });
         const url = window.URL.createObjectURL(blob);
-        fileSaver.saveAs(blob, 'stats.csv');
+        fileSaver.saveAs(blob, 'payout-history.csv');
       })),
       (error: any) => console.log('Error downloading the file'),
       () => console.info('File downloaded successfully');
