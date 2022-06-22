@@ -2,7 +2,7 @@
 
 namespace Subless.Models
 {
-    public class MontlyPaymentStats
+    public class MonthlyPaymentStats
     {
         public DateTimeOffset MonthStart { get; set; }
         public DateTimeOffset MonthEnd { get; set; }

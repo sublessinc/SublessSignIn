@@ -131,17 +131,17 @@ namespace Subless.Services.Services
             }
         }
 
-        public IEnumerable<MontlyPaymentStats> GetStatsForCreator(Creator creator)
+        public IEnumerable<MonthlyPaymentStats> GetStatsForCreator(Creator creator)
         {
             if (creator is null)
             {
                 throw new ArgumentNullException(nameof(creator));
             }
-            var paymentStats = new List<MontlyPaymentStats>();
+            var paymentStats = new List<MonthlyPaymentStats>();
             var paymentAuditLogs = paymentRepository.GetAllPaymentsToUser(creator.Id);
             foreach (var payment in paymentAuditLogs)
             {
-                paymentStats.Add(new MontlyPaymentStats()
+                paymentStats.Add(new MonthlyPaymentStats()
                     {
                         MonthStart = payment.PaymentPeriodStart,
                         Revenue = payment.Revenue,
