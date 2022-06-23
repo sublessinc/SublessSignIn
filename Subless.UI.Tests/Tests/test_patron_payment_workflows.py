@@ -1,3 +1,4 @@
+import logging
 import time
 
 import pytest
@@ -7,6 +8,8 @@ from EmailLib import MailSlurp
 from PageObjectModels.LoginPage import LoginPage
 from PageObjectModels.PlanSelectionPage import PlanSelectionPage
 from PageObjectModels.PatronDashboardPage import PatronDashboardPage
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger()
 
 def test_paying_user_directed_to_dashboard(web_driver, paying_user, params):
     # WHEN: I sign up and pay for an account
@@ -27,6 +30,7 @@ def test_paying_user_can_view_plan(web_driver, paying_user, params):
 
     plan_select = dashboard.navigate_to_change_plan()
     assert "plan" in web_driver.current_url
+    logging.info("Waiting for plan page to render")
     time.sleep(3)
     # THEN: My plan should be visible on the plan select page
     assert plan_select.is_5_plan_selected == "true"
