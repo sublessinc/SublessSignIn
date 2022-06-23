@@ -73,7 +73,7 @@ def receive_email(inbox_name='', inbox_id=''):
             # wait for email
             wait_controller = mailslurp_client.WaitForControllerApi(api_client)
             email = wait_controller.wait_for_latest_email(inbox_id=inbox_id,
-                                                          timeout=30000, unread_only=True)
+                                                          timeout=90000, unread_only=True)
 
             return email
         except Exception as err:
