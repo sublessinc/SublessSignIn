@@ -13,6 +13,7 @@ logger = logging.getLogger()
 class CreatorDashboardPage(NavbarPage):
 
     def get_hit_count(self):
+        logging.info("Waiting for stat request to finish")
         time.sleep(3)
         hit_count = self.driver.find_element_by_css_selector(CreatorDashboardLocators.hit_count_selector)
         logger.info("Hits on dashboard" + hit_count.text)

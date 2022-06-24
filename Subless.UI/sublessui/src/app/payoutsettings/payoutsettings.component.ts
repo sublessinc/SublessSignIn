@@ -1,5 +1,6 @@
 import { AfterViewInit, Component, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { Observable, Subscription } from 'rxjs';
 import { Creator } from '../models/Creator';
@@ -32,7 +33,8 @@ export class PayoutsettingsComponent implements OnInit, ComponentCanDeactivate, 
   constructor(private router: Router,
     private creatorService: CreatorService,
     private partnerService: PartnerService,
-    private authService: AuthorizationService
+    private authService: AuthorizationService,
+    private _snackBar: MatSnackBar
   ) {
     this.activationRedirectUrl = sessionStorage.getItem('postActivationRedirect');
   }
@@ -92,6 +94,9 @@ export class PayoutsettingsComponent implements OnInit, ComponentCanDeactivate, 
         if (this.isModal) {
           this.finalize();
         }
+        this._snackBar.open("Saved", "Ok", {
+          duration: 2000,
+        });
       }
     }));
   }
@@ -103,6 +108,9 @@ export class PayoutsettingsComponent implements OnInit, ComponentCanDeactivate, 
         if (this.isModal) {
           this.finalize();
         }
+        this._snackBar.open("Saved", "Ok", {
+          duration: 2000,
+        });
       }
     }));
   }

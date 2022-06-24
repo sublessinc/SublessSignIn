@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 import time
 
@@ -7,6 +8,8 @@ import simplejson
 
 from EmailLib import MailSlurp
 from EmailLib.MailSlurp import PatronInbox
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger()
 
 DefaultPassword = 'SublessTestUser'
 
@@ -113,6 +116,10 @@ def attempt_to_delete_user(firefox_driver, mailbox):
             plan_selection_page = resultpage.accept_terms()
         id, cookie = get_user_id_and_cookie(firefox_driver)
         User.delete_user(cookie)
+        logging.info("Waiting for AWS to complete deletion")
+        time.sleep(5)
+        logging.info("Opening login page to allow cookie clearing")
+        login = LoginPage(firefox_driver).open()
     except BaseException as err:  # awful.
         return
 

@@ -7,7 +7,8 @@
             <mat-card-content class="statHeader">Total views this month</mat-card-content>
             <mat-card-content class="numberText">{{analytics.thisMonth.views}}</mat-card-content>
             <mat-card-content matTooltip="{{this.dateFormatter.GetLastPeriodString(analytics.lastMonth)}}">
-                <b>{{analytics.lastMonth.views}}</b> Total views last month</mat-card-content>
+                <b>{{analytics.lastMonth.views}}</b> Total views last month
+            </mat-card-content>
         </div>
     </mat-card>
     <mat-card class="card">
@@ -34,4 +35,8 @@
             </mat-card-content>
         </div>
     </mat-card>
+    <div class="card downloadWrapper">
+        <app-partnerstats>
+        </app-partnerstats>
+    </div>
 </div>
