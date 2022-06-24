@@ -1,9 +1,11 @@
+import logging
 import time
 
 from EmailLib.MailSlurp import get_or_create_inbox, receive_email, CreatorInbox, PatronInbox
 from PageObjectModels.PayoutSetupPage import PayoutSetupPage
 from UsersLib.Users import DefaultPassword
-
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger()
 
 def test_creator_activate(web_driver, subless_unactivated_creator_user, params):
     # WHEN: I sign up for a creator account

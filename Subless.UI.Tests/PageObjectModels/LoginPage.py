@@ -40,13 +40,18 @@ class LoginPage(BasePage):
 
     @property
     def signup_link(self):
-        WebDriverWait(self.driver, 10).until(
-            EC.element_to_be_clickable((By.CSS_SELECTOR, LoginLocators.signup_link_selector)))
-        link = self.driver.find_element_by_css_selector(LoginLocators.signup_link_selector)
-        return link
+        try:
+            WebDriverWait(self.driver, 10).until(
+                EC.element_to_be_clickable((By.CSS_SELECTOR, LoginLocators.signup_link_selector)))
+            link = self.driver.find_element_by_css_selector(LoginLocators.signup_link_selector)
+            return link
+        except Exception as e:
+            raise
+
 
     def open(self):
         self.driver.get(f'https://{os.environ["environment"]}.subless.com')
+        logging.info("Waiting for login page redirect to complete")
         time.sleep(5)
         # WebDriverWait(self.driver, 10).until(
         #     EC.presence_of_element_located((By.NAME, LoginLocators.sign_in_button_name))

@@ -872,7 +872,7 @@ namespace Subless.Tests
         private Mock<IStripeService> StripeServiceBuilder(List<Payer> payers = null, Mock<IStripeService> stripeService = null)
         {
             var service = stripeService ?? new Mock<IStripeService>();
-            service.Setup(x => x.GetInvoicesForRange(It.IsAny<DateTimeOffset>(), It.IsAny<DateTimeOffset>())).Returns(payers ?? new List<Payer>());
+            service.Setup(x => x.GetPayersForRange(It.IsAny<DateTimeOffset>(), It.IsAny<DateTimeOffset>())).Returns(payers ?? new List<Payer>());
             return service;
         }
 

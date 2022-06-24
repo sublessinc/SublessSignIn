@@ -28,6 +28,7 @@ class PatronDashboardPage(NavbarPage):
         # todo:  I don't know what's supposed to happen here-- might not make sense to be part of this POM
 
     def get_hit_count(self):
+        logging.info("Waiting for stat request to finish")
         time.sleep(3)
         hit_count = self.driver.find_element_by_css_selector(PatronDashboardLocators.hit_count_selector)
         logger.info("Hits on dashboard" + hit_count.text)

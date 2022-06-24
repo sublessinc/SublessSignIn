@@ -98,7 +98,15 @@ namespace Subless.Services.Services
 
                 // record each outgoing payment to master list
                 var payments = CollectPaymentDetails(payees, payer, endDate);
-                calculatorResult.PaymentsPerPayer.Add(user.CognitoId, payments);
+                // if someone has paid twice (cancelled and resubbed), we should just combine their payments
+                if (calculatorResult.PaymentsPerPayer.ContainsKey(user.CognitoId))
+                {
+                    calculatorResult.PaymentsPerPayer[user.CognitoId].AddRange(payments);
+                }
+                else
+                {
+                    calculatorResult.PaymentsPerPayer.Add(user.CognitoId, payments);
+                }
                 AddPayeesToMasterList(calculatorResult.AllPayouts, payees, startDate, endDate);
             }
             DeductPaypalFees(calculatorResult.AllPayouts);
@@ -127,7 +135,7 @@ namespace Subless.Services.Services
         private IEnumerable<Payer> GetPayments(DateTimeOffset startDate, DateTimeOffset endDate)
         {
             _logger.LogDebug($"Searching in range {startDate} to end date {endDate}");
-            var payers = _stripeService.GetInvoicesForRange(startDate, endDate);
+            var payers = _stripeService.GetPayersForRange(startDate, endDate);
             return payers;
         }
 

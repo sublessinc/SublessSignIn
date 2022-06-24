@@ -42,6 +42,7 @@ class PlanSelectionPage(NavbarPage):
         logger.info(f'Selecting plan')
         self.plan_5_selection_button.click()
         self.plan_confirm_button.click()
+        logging.info("Waiting for plan change to execute")
         time.sleep(3)
         return StripeSignupPage(self.driver)
 
@@ -49,6 +50,7 @@ class PlanSelectionPage(NavbarPage):
         logger.info(f'Changing Plan')
         self.plan_10_selection_button.click()
         self.plan_confirm_button.click()
+        logging.info("Waiting for plan change to execute")
         time.sleep(3)
         return StripeSignupPage(self.driver)
 
