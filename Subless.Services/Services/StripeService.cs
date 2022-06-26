@@ -274,6 +274,7 @@ namespace Subless.Services.Services
             var users = _userService.GetUsersFromStripeIds(cusomterIds);
             var payers = new List<Payer>();
             var balanceTransactionService = new BalanceTransactionService(_client);
+            var refundService = new RefundService(_client);
             var chargeService = new ChargeService(_client);
             foreach (var invoice in invoices)
             {
@@ -293,8 +294,17 @@ namespace Subless.Services.Services
                         var charge = chargeService.Get(invoice.ChargeId);
                         var balanceTrans = balanceTransactionService.Get(charge.BalanceTransactionId);
                         fees = balanceTrans.Fee;
-
                         payment = balanceTrans.Net;
+                        var refunds = refundService.List(new RefundListOptions() { Charge = invoice.ChargeId });
+                        if (refunds.Any())
+                        {
+                            var totalRefund = refunds.Select(x => x.Amount).Sum();
+                            payment = balanceTrans.Amount - totalRefund;
+                            if (payment - fees < 0)
+                            {
+                                payment = 0;
+                            }
+                        }
                     }
                     // if we have a discount, we need to calculate the payment differently
                     else
@@ -312,6 +322,11 @@ namespace Subless.Services.Services
                 }
             }
             return payers;
+        }
+
+        public void CheckIfInvoiceWasRefunded(Invoice invoice)
+        {
+
         }
 
         private List<Invoice> GetInvoiceInRage(DateTime startDate, DateTime endDate)
