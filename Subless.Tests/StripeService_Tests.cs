@@ -83,6 +83,14 @@ namespace Subless.Tests
             Assert.Equal(users.Single().Id, payers.Single().UserId);
             Assert.Equal(97, payers.Single().Fees);
         }
+
+        // TODO request paging
+
+        // TODO tax tracking
+
+        // TODO Date time conversion
+
+
         public static class StripeServiceBuilder 
         {
             public static StripeService BuildStripeService(
