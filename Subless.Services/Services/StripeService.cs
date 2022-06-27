@@ -310,11 +310,6 @@ namespace Subless.Services.Services
             return payers;
         }
 
-        public void CheckIfInvoiceWasRefunded(Invoice invoice)
-        {
-
-        }
-
         private List<Invoice> GetInvoiceInRage(DateTime startDate, DateTime endDate)
         {
             var invoices = new List<Invoice>();
