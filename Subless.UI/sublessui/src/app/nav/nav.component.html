@@ -48,10 +48,16 @@
     </mat-nav-list>
   </mat-sidenav>
   <mat-sidenav-content #content class="content">
-    <a *ngIf="!showDrawer()" id="logout2" class="logout2" (click)="logout()">
-      <img matListAvatar class="avatar" src="../../assets/img/logout.svg">
-      <div>Log Out</div>
-    </a>
+    <div id="smallnav" class="smallnav">
+      <a *ngIf="!showDrawer()" id="account-settings2" class="smallnavitem" routerLink="/account-settings">
+        <img matListAvatar class="avatar" src="../../assets/img/account.svg">
+        <div>Account Settings</div>
+      </a>
+      <a *ngIf="!showDrawer()" id="logout2" class="smallnavitem" (click)="logout()">
+        <img matListAvatar class="avatar" src="../../assets/img/logout.svg">
+        <div>Log Out</div>
+      </a>
+    </div>
     <router-outlet></router-outlet>
     <app-id></app-id>
   </mat-sidenav-content>
