@@ -9,10 +9,13 @@ Docker
 
 dotnet core
 
+npm
+
 powershell
 
 dotnet tool install --global dotnet-ef
 
+python 3+
 
 ### Debug
 
@@ -33,19 +36,42 @@ userPoolId=
 CONNECTION_STRING=
 ```
 
-Run application
+Install npm dependencies
+
+```bash
+cd ./Subless.UI/sublessui/
+npm install
+```
+
+Run back end
 
 ```bash
 dotnet run --project SublessSignIn/SublessSignIn.csproj
 ```
 
-Browse to [http://localhost:7070/](http://localhost:7070/)
+Run front end
+```bash
+cd ./Subless.UI/sublessui/
+npm start
+```
+
+Browse to [https://localhost:4200/](https://localhost:4200/)
+
+
+Optional - Build Redistributable
+```bash
+cd ./Subless.JS
+npm install
+npm run build:local
+```
+
+## Test
+
+```bash
+cd ./Subless.UI.Tests/
+bash run_tests.sh
+```
 
 ## Deploy
 
-Run
-```bash
-promoteToAws.sh
-```
-Stop [the current running task](https://console.aws.amazon.com/ecs/home?region=us-east-1#/clusters/SublessPayments/services/paysubless/tasks)
-
+Merge to the "dev" branch
