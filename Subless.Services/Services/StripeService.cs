@@ -273,26 +273,29 @@ namespace Subless.Services.Services
                 else
                 {
                     long payment = 0;
-                    var taxes = invoice?.Tax ?? 0;
                     long fees = 0;
-                    if (invoice.ChargeId != null)
+                    var taxes = invoice?.Tax ?? 0;
+                    if (invoice.ChargeId != null) // Charges will not be present if the payment was made with a coupon
                     {
                         var charge = _stripeApiWrapperService.ChargeService.Get(invoice.ChargeId);
                         var balanceTrans = _stripeApiWrapperService.BalanceTransactionService.Get(charge.BalanceTransactionId);
                         fees = balanceTrans.Fee;
                         payment = balanceTrans.Net;
                         var refunds = _stripeApiWrapperService.RefundService.List(new RefundListOptions() { Charge = invoice.ChargeId });
+                        // Check to see if it was a full refund. Set payment to 0 if it was.
                         if (refunds.Any())
                         {
                             var totalRefund = refunds.Select(x => x.Amount).Sum();
                             payment = balanceTrans.Amount - totalRefund;
-                            if (payment - fees < 0)
+                            // Fees are subtracted from the payment by stripe. If we refunded less than the payment, we have to manually address the fees
+                            payment = payment - fees;
+                            if (payment < 0)
                             {
                                 payment = 0;
                             }
                         }
                     }
-                    // if we have a discount, we need to calculate the payment differently
+                    // if we were paid with a coupon, we need to calculate the payment differently
                     else
                     {
                         payment = invoice.Subtotal;
