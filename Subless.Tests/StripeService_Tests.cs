@@ -17,7 +17,7 @@ namespace Subless.Tests
     public class StripeService_Tests
     {
         [Fact]
-        public void GetPayers_Executes()
+        public void GetPayers_Executes() // verifies that the mocks work to construct the object
         {
             var sut = StripeServiceBuilder.BuildStripeService();
             sut.GetPayersForRange(new DateTimeOffset(), new DateTimeOffset());
