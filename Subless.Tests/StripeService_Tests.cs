@@ -84,12 +84,50 @@ namespace Subless.Tests
             Assert.Equal(97, payers.Single().Fees);
         }
 
-        // TODO request paging
+        [Fact]
+        public void GetPayers_WithInvoiceWithTaxes_ReturnsTaxesInPayment()
+        {
+            var stripeId = "stripeId";
+            var chargeId = "chargeId";
+            var invoices = new List<Invoice>() { new Invoice() { CustomerId = stripeId, ChargeId = chargeId, Tax = 22 } };
+            var charge = new Charge() { Id = chargeId, Amount = 1000 };
+            var users = new List<User>() { new User() { StripeCustomerId = stripeId, Id = Guid.NewGuid() } };
+            var sut = StripeServiceBuilder.BuildStripeService(
+                invoices,
+                users,
+                new List<Refund> { },
+                new List<Charge> { charge },
+                new BalanceTransaction() { Fee = 97 });
+            var payers = sut.GetPayersForRange(new DateTimeOffset(), new DateTimeOffset());
+            Assert.Single(payers);
+            Assert.Equal(users.Single().Id, payers.Single().UserId);
+            Assert.Equal(22, payers.Single().Taxes);
+        }
 
-        // TODO tax tracking
-
-        // TODO Date time conversion
-
+        [Fact]
+        public void GetPayers_WithInvoiceWithMultiplePages_ReturnsAllPayments()
+        {
+            var stripeId = "stripeId";
+            var chargeId = "chargeId";
+            var invoiceService = new Mock<InvoiceService>();
+            var invoices = new StripeList<Invoice>() { Data = new List<Invoice>() { new Invoice() { CustomerId = stripeId, ChargeId = chargeId } }};
+            var invoices2 = new StripeList<Invoice>() { Data = new List<Invoice>() { new Invoice() { CustomerId = stripeId, ChargeId = chargeId } } };
+            invoiceService.SetupSequence(x => x.List(It.IsAny<InvoiceListOptions>(), null))
+                .Returns(invoices)
+                .Returns(invoices2)
+                .Returns(new StripeList<Invoice>() { Data = new List<Invoice>() }); 
+            var charge = new Charge() { Id = chargeId, Amount = 1000 };
+            var users = new List<User>() { new User() { StripeCustomerId = stripeId, Id = Guid.NewGuid() } };
+            var sut = StripeServiceBuilder.BuildStripeService(
+                null,
+                users,
+                new List<Refund> { },
+                new List<Charge> { charge },
+                new BalanceTransaction() { },
+                invoiceService);
+            var payers = sut.GetPayersForRange(new DateTimeOffset(), new DateTimeOffset());
+            Assert.Equal(2, payers.Count());
+        }
 
         public static class StripeServiceBuilder 
         {
@@ -98,7 +136,9 @@ namespace Subless.Tests
                 List<User> users = null,
                 List<Refund> refunds = null,
                 List<Charge> charges = null,
-                BalanceTransaction balanceTransaction = null)
+                BalanceTransaction balanceTransaction = null,
+                Mock<InvoiceService> invoiceSerivceMock = null
+                )
             {
                 var serviceProvider = new ServiceCollection()
                     .AddLogging(x =>
@@ -113,7 +153,7 @@ namespace Subless.Tests
                 invoiceService.SetupSequence(x => x.List(It.IsAny<InvoiceListOptions>(), null))
                     .Returns(invoices)
                     .Returns(new StripeList<Invoice>() { Data = new List<Invoice>() }); // Need two returns in sequence to account for paging
-                stripeWrapper.Setup(x => x.InvoiceService).Returns(invoiceService.Object);
+                stripeWrapper.Setup(x => x.InvoiceService).Returns(invoiceSerivceMock?.Object ?? invoiceService.Object);
                 var userService = new Mock<IUserService>();
                 userService.Setup(x => x.GetUsersFromStripeIds(It.IsAny<IEnumerable<string>>())).Returns(users ?? new List<User>());
                 var refundService = new Mock<RefundService>();
