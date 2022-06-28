@@ -51,6 +51,7 @@ namespace SublessSignIn
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
+                    webBuilder.UseKestrel(o => { o.Limits.KeepAliveTimeout = TimeSpan.FromMinutes(10); });
                     webBuilder.UseUrls("http://0.0.0.0:7070/");
                     webBuilder.UseShutdownTimeout(TimeSpan.FromSeconds(2));
                 });
