@@ -66,29 +66,29 @@ namespace Subless.Services.Services
             logger = loggerFactory.CreateLogger<PaymentEmailService>();
         }
 
-        public void SendReceiptEmail(List<Payment> payments, string cognitoId)
+        public void SendReceiptEmail(List<Payment> payments, string cognitoId, DateTimeOffset PaymentPeriodStart, DateTimeOffset PaymentPeriodEnd)
         {
             var usertask = Task.Run(() => cognitoService.GetCognitoUserEmail(cognitoId));
             usertask.Wait();
-            var body = GetEmailBody(payments);
+            var body = GetEmailBody(payments, PaymentPeriodStart, PaymentPeriodEnd);
             var emailTask = Task.Run(() => _emailSerivce.SendEmail(body, usertask.Result, "Your subless receipt"));
             emailTask.Wait();
         }
 
 
-        public void SendCreatorReceiptEmail(Guid id, PaymentAuditLog paymentAuditLog)
+        public void SendCreatorReceiptEmail(Guid id, PaymentAuditLog paymentAuditLog, DateTimeOffset PaymentPeriodStart, DateTimeOffset PaymentPeriodEnd)
         {
 
             var creator = _creatorService.GetCreator(id);
 
-            var body = GetCreatorEmailBody(paymentAuditLog);
+            var body = GetCreatorEmailBody(paymentAuditLog, PaymentPeriodStart, PaymentPeriodEnd);
             var emailTask = Task.Run(() => _emailSerivce.SendEmail(body, GetEmailFromUserId(creator.UserId.Value), "Your subless payout receipt"));
             emailTask.Wait();
         }
 
-        public void SendPartnerReceiptEmail(Guid id, PaymentAuditLog paymentAuditLog)
+        public void SendPartnerReceiptEmail(Guid id, PaymentAuditLog paymentAuditLog, DateTimeOffset PaymentPeriodStart, DateTimeOffset PaymentPeriodEnd)
         {
-            var body = GetPartnerEmailBody(paymentAuditLog);
+            var body = GetPartnerEmailBody(paymentAuditLog, PaymentPeriodStart, PaymentPeriodEnd);
             var partner = _partnerService.GetPartner(id);
             var emailTask = Task.Run(() => _emailSerivce.SendEmail(body, GetEmailFromUserId(partner.Admin), "Your subless payout receipt"));
             emailTask.Wait();
@@ -111,22 +111,22 @@ namespace Subless.Services.Services
             emailTask.Wait();
         }
 
-        public string GetEmailBody(List<Payment> payments)
+        public string GetEmailBody(List<Payment> payments, DateTimeOffset PaymentPeriodStart, DateTimeOffset PaymentPeriodEnd)
         {
             var template = GetEmailTemplate();
-            return GenerateEmailBodyForUser(template, payments);
+            return GenerateEmailBodyForUser(template, payments, PaymentPeriodStart, PaymentPeriodEnd);
         }
 
-        private string GetCreatorEmailBody(PaymentAuditLog paymentAuditLog)
+        private string GetCreatorEmailBody(PaymentAuditLog paymentAuditLog, DateTimeOffset PaymentPeriodStart, DateTimeOffset PaymentPeriodEnd)
         {
             var template = GetCreatorEmailTemplate();
-            return GenerateEmailBodyForCreator(template, paymentAuditLog);
+            return GenerateEmailBodyForCreator(template, paymentAuditLog, PaymentPeriodStart, PaymentPeriodEnd);
         }
 
-        private string GetPartnerEmailBody(PaymentAuditLog paymentAuditLog)
+        private string GetPartnerEmailBody(PaymentAuditLog paymentAuditLog, DateTimeOffset PaymentPeriodStart, DateTimeOffset PaymentPeriodEnd)
         {
             var template = GetPartnerEmailTemplate();
-            return GenerateEmailBodyForPartner(template, paymentAuditLog);
+            return GenerateEmailBodyForPartner(template, paymentAuditLog, PaymentPeriodStart, PaymentPeriodEnd);
         }
 
         private string GetEmailTemplate()
@@ -156,9 +156,9 @@ namespace Subless.Services.Services
             return reader.ReadToEnd();
         }
 
-        private string GenerateEmailBodyForUser(string template, List<Payment> payments)
+        private string GenerateEmailBodyForUser(string template, List<Payment> payments, DateTimeOffset PaymentPeriodStart, DateTimeOffset PaymentPeriodEnd)
         {
-            var month = $"{payments.First().DateSent.ToString("MMMM", CultureInfo.InvariantCulture)}, {payments.First().DateSent.ToString("yyyy", CultureInfo.InvariantCulture)}";
+            var month = $"{PaymentPeriodStart.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}";
             var fees = payments.First().Payer.Fees / 100;
             var userEmail = template.Replace(MonthKey, month, StringComparison.Ordinal);
             userEmail = userEmail.Replace(SiteLinkKey, authSettings.Domain, StringComparison.Ordinal);
@@ -173,9 +173,9 @@ namespace Subless.Services.Services
             return userEmail;
         }
 
-        private string GenerateEmailBodyForCreator(string template, PaymentAuditLog paymentAuditLog)
+        private string GenerateEmailBodyForCreator(string template, PaymentAuditLog paymentAuditLog, DateTimeOffset PaymentPeriodStart, DateTimeOffset PaymentPeriodEnd)
         {
-            var month = $"{paymentAuditLog.DatePaid.ToString("MMMM", CultureInfo.InvariantCulture)}, {paymentAuditLog.DatePaid.ToString("yyyy", CultureInfo.InvariantCulture)}";
+            var month = $"{PaymentPeriodStart.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}";
             var creatorEmail = template.Replace(MonthKey, month, StringComparison.Ordinal);
             creatorEmail = creatorEmail.Replace(SiteLinkKey, authSettings.Domain, StringComparison.Ordinal);
             creatorEmail = creatorEmail.Replace(LogoUrl, authSettings.Domain + "/dist/assets/SublessLogo.png", StringComparison.Ordinal);
@@ -187,9 +187,9 @@ namespace Subless.Services.Services
             return creatorEmail;
         }
 
-        private string GenerateEmailBodyForPartner(string template, PaymentAuditLog paymentAuditLog)
+        private string GenerateEmailBodyForPartner(string template, PaymentAuditLog paymentAuditLog, DateTimeOffset PaymentPeriodStart, DateTimeOffset PaymentPeriodEnd)
         {
-            var month = $"{paymentAuditLog.DatePaid.ToString("MMMM", CultureInfo.InvariantCulture)}, {paymentAuditLog.DatePaid.ToString("yyyy", CultureInfo.InvariantCulture)}";
+            var month = $"{PaymentPeriodStart.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}";
             var partnerEmail = template.Replace(MonthKey, month, StringComparison.Ordinal);
             partnerEmail = partnerEmail.Replace(SiteLinkKey, authSettings.Domain, StringComparison.Ordinal);
             partnerEmail = partnerEmail.Replace(LogoUrl, authSettings.Domain + "/dist/assets/SublessLogo.png", StringComparison.Ordinal);

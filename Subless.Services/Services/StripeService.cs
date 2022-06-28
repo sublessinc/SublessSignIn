@@ -12,23 +12,23 @@ namespace Subless.Services.Services
 {
     public class StripeService : IStripeService
     {
-        private readonly IStripeClient _client;
         private readonly IOptions<StripeConfig> _stripeConfig;
         private readonly IUserService _userService;
+        private readonly IStripeApiWrapperService _stripeApiWrapperService;
         private readonly ILogger _logger;
 
-        public StripeService(IOptions<StripeConfig> stripeConfig, IUserService userService, ILoggerFactory loggerFactory)
+        public StripeService(IOptions<StripeConfig> stripeConfig, IUserService userService, IStripeApiWrapperService stripeApiWrapperService, ILoggerFactory loggerFactory)
         {
             _stripeConfig = stripeConfig ?? throw new ArgumentNullException(nameof(stripeConfig));
             _userService = userService ?? throw new ArgumentNullException(nameof(userService));
+            _stripeApiWrapperService = stripeApiWrapperService ?? throw new ArgumentNullException(nameof(stripeApiWrapperService));
             _logger = loggerFactory?.CreateLogger<StripeService>() ?? throw new ArgumentNullException(nameof(loggerFactory));
-            _client = new StripeClient(_stripeConfig.Value.SecretKey ?? throw new ArgumentNullException(nameof(_stripeConfig.Value.SecretKey)));
+
         }
 
         public async Task<bool> CanAccessStripe()
         {
-            var service = new CustomerService(_client);
-            var list = service.List(new CustomerListOptions()
+            var list = _stripeApiWrapperService.CustomerService.List(new CustomerListOptions()
             {
                 Limit = 1
             });
@@ -63,7 +63,6 @@ namespace Subless.Services.Services
         private void UpgradeCustomer(string customer, string cognitoId, string priceId)
         {
             var subs = GetSubscriptions(customer);
-            var service = new SubscriptionService(_client);
             var subscription = subs.Single();
 
             var items = new List<SubscriptionItemOptions> {
@@ -79,7 +78,7 @@ namespace Subless.Services.Services
                 ProrationBehavior = "create_prorations",
                 Items = items,
             };
-            service.Update(subscription.Id, options);
+            _stripeApiWrapperService.SubscriptionService.Update(subscription.Id, options);
         }
 
         private async Task<CreateCheckoutSessionResponse> NewSubscription(User user, string priceId)
@@ -108,8 +107,7 @@ namespace Subless.Services.Services
                 },
             };
             options.AddExtraParam("allow_promotion_codes", "true");
-            var service = new SessionService(_client);
-            var session = await service.CreateAsync(options);
+            var session = await _stripeApiWrapperService.SessionService.CreateAsync(options);
             _userService.AddStripeSessionId(user.CognitoId, session.Id);
             return new CreateCheckoutSessionResponse
             {
@@ -123,8 +121,7 @@ namespace Subless.Services.Services
             {
                 Description = cognitoId
             };
-            var service = new CustomerService(_client);
-            var customer = service.Create(customerDetails);
+            var customer = _stripeApiWrapperService.CustomerService.Create(customerDetails);
             _userService.AddStripeCustomerId(cognitoId, customer.Id);
             return customer;
         }
@@ -133,8 +130,7 @@ namespace Subless.Services.Services
         {
             //TODO: productoptions should filter to only susbcription plans
             var productOptions = new PriceListOptions();
-            var productService = new PriceService(_client);
-            var prices = productService.List(productOptions);
+            var prices = _stripeApiWrapperService.PriceService.List(productOptions);
             return prices;
         }
 
@@ -171,8 +167,7 @@ namespace Subless.Services.Services
                 PercentOff = 100,
                 MaxRedemptions = 1
             };
-            var service = new CouponService(_client);
-            return service.Create(options);
+            return _stripeApiWrapperService.CouponService.Create(options);
 
         }
 
@@ -182,8 +177,7 @@ namespace Subless.Services.Services
             {
                 Coupon = coupon.Id,
             };
-            var service = new SubscriptionService(_client);
-            return service.Update(sub.Id, updateOptions);
+            return _stripeApiWrapperService.SubscriptionService.Update(sub.Id, updateOptions);
         }
 
         public bool CustomerHasPaid(string cognitoId)
@@ -225,10 +219,8 @@ namespace Subless.Services.Services
 
         private StripeList<Subscription> GetSubscriptions(string stripeCustomerId)
         {
-            var customerService = new CustomerService(_client);
-            var customer = customerService.Get(stripeCustomerId);
-            var subscriptionService = new SubscriptionService(_client);
-            var subscriptions = subscriptionService.List(new SubscriptionListOptions()
+            var customer = _stripeApiWrapperService.CustomerService.Get(stripeCustomerId);
+            var subscriptions = _stripeApiWrapperService.SubscriptionService.List(new SubscriptionListOptions()
             {
                 Customer = customer.Id
             });
@@ -241,8 +233,7 @@ namespace Subless.Services.Services
             // For demonstration purposes, we're using the Checkout session to retrieve the customer ID. 
             // Typically this is stored alongside the authenticated user in your database.
             var checkoutSessionId = _userService.GetStripeIdFromCognitoId(cognitoId);
-            var checkoutService = new SessionService(_client);
-            var checkoutSession = await checkoutService.GetAsync(checkoutSessionId);
+            var checkoutSession = await _stripeApiWrapperService.SessionService.GetAsync(checkoutSessionId);
 
             // This is the URL to which your customer will return after
             // they are done managing billing in the Customer Portal.
@@ -253,14 +244,12 @@ namespace Subless.Services.Services
                 Customer = checkoutSession.CustomerId,
                 ReturnUrl = $"{returnUrl}/user-profile",
             };
-            var service = new Stripe.BillingPortal.SessionService(_client);
-            return await service.CreateAsync(options);
+            return await _stripeApiWrapperService.BillingSessionService.CreateAsync(options);
         }
 
         public async Task<Session> GetSession(string sessionId)
         {
-            var service = new SessionService(_client);
-            return await service.GetAsync(sessionId);
+            return await _stripeApiWrapperService.SessionService.GetAsync(sessionId);
         }
 
         public IEnumerable<Payer> GetPayersForRange(DateTimeOffset startDate, DateTimeOffset endDate)
@@ -273,8 +262,6 @@ namespace Subless.Services.Services
             var cusomterIds = invoices.Select(invoice => invoice.CustomerId);
             var users = _userService.GetUsersFromStripeIds(cusomterIds);
             var payers = new List<Payer>();
-            var balanceTransactionService = new BalanceTransactionService(_client);
-            var chargeService = new ChargeService(_client);
             foreach (var invoice in invoices)
             {
                 _logger.LogDebug($"Invoice {invoice.Id} found for date {invoice.Created}");
@@ -286,17 +273,29 @@ namespace Subless.Services.Services
                 else
                 {
                     long payment = 0;
-                    var taxes = invoice?.Tax ?? 0;
                     long fees = 0;
-                    if (invoice.ChargeId != null)
+                    var taxes = invoice?.Tax ?? 0;
+                    if (invoice.ChargeId != null) // Charges will not be present if the payment was made with a coupon
                     {
-                        var charge = chargeService.Get(invoice.ChargeId);
-                        var balanceTrans = balanceTransactionService.Get(charge.BalanceTransactionId);
+                        var charge = _stripeApiWrapperService.ChargeService.Get(invoice.ChargeId);
+                        var balanceTrans = _stripeApiWrapperService.BalanceTransactionService.Get(charge.BalanceTransactionId);
                         fees = balanceTrans.Fee;
-
                         payment = balanceTrans.Net;
+                        var refunds = _stripeApiWrapperService.RefundService.List(new RefundListOptions() { Charge = invoice.ChargeId });
+                        // Check to see if it was a full refund. Set payment to 0 if it was.
+                        if (refunds.Any())
+                        {
+                            var totalRefund = refunds.Select(x => x.Amount).Sum();
+                            payment = balanceTrans.Amount - totalRefund;
+                            // Fees are subtracted from the payment by stripe. If we refunded less than the payment, we have to manually address the fees
+                            payment = payment - fees;
+                            if (payment < 0)
+                            {
+                                payment = 0;
+                            }
+                        }
                     }
-                    // if we have a discount, we need to calculate the payment differently
+                    // if we were paid with a coupon, we need to calculate the payment differently
                     else
                     {
                         payment = invoice.Subtotal;
@@ -327,8 +326,7 @@ namespace Subless.Services.Services
                 },
                 Limit = 10,
             };
-            var invoiceService = new InvoiceService(_client);
-            var nextSet = invoiceService.List(filters);
+            var nextSet = _stripeApiWrapperService.InvoiceService.List(filters);
 
             invoices.AddRange(nextSet);
             while (nextSet.Any())
@@ -344,7 +342,7 @@ namespace Subless.Services.Services
                     Limit = 1,
                     StartingAfter = nextSet.Last().Id
                 };
-                nextSet = invoiceService.List(filters);
+                nextSet = _stripeApiWrapperService.InvoiceService.List(filters);
                 invoices.AddRange(nextSet);
             }
             return invoices;
@@ -352,14 +350,14 @@ namespace Subless.Services.Services
         }
         public bool CancelSubscription(string cognitoId)
         {
-            var service = new SubscriptionService(_client);
+            
             var user = _userService.GetUserByCognitoId(cognitoId);
             if (string.IsNullOrWhiteSpace(user.StripeCustomerId))
             {
                 return false;
             }
             var subOptions = new SubscriptionListOptions() { Customer = user.StripeCustomerId };
-            var subs = service.List(subOptions);
+            var subs = _stripeApiWrapperService.SubscriptionService.List(subOptions);
             if (subs.Count() > 1)
             {
                 _logger.LogError("User had more than one subscription.... that doesn't seem right");
@@ -371,7 +369,7 @@ namespace Subless.Services.Services
                     InvoiceNow = false,
                     Prorate = true,
                 };
-                service.Cancel(sub.Id, cancelOptions);
+                _stripeApiWrapperService.SubscriptionService.Cancel(sub.Id, cancelOptions);
             }
             return true;
         }

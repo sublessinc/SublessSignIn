@@ -63,18 +63,18 @@ namespace Subless.Services.Services
             foreach (var payer in calculatorResult.PaymentsPerPayer)
             {
                 _paymentLogsService.SaveLogs(payer.Value);
-                emailService.SendReceiptEmail(payer.Value, payer.Key);
+                emailService.SendReceiptEmail(payer.Value, payer.Key, startDate, endDate);
                 calculatorResult.EmailSent = true;
             }
             foreach (var payee in calculatorResult.AllPayouts)
             {
                 if (payee.PayeeType == PayeeType.Creator)
                 {
-                    emailService.SendCreatorReceiptEmail(payee.TargetId, payee);
+                    emailService.SendCreatorReceiptEmail(payee.TargetId, payee, startDate, endDate);
                 }
                 if (payee.PayeeType == PayeeType.Partner)
                 {
-                    emailService.SendPartnerReceiptEmail(payee.TargetId, payee);
+                    emailService.SendPartnerReceiptEmail(payee.TargetId, payee, startDate, endDate);
                 }
 
             }
