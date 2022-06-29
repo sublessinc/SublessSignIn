@@ -43,6 +43,7 @@ Subless.UI.Tests/.env
 /Subless.UI.Tests/keys.json
 /Subless.UI.Tests/.cache/
 /Subless.UI.Tests/.pytest_cache/
+/Subless.UI.Tests/Tests/geckodriver.log
 
 Subless.JS/node_modules/**
 SublessSignIn/wwwroot/**
