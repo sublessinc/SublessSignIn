@@ -2,10 +2,12 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Polly;
 using StackExchange.Profiling;
 using Stripe;
 using Stripe.Checkout;
@@ -265,44 +267,47 @@ namespace Subless.Services.Services
             using (MiniProfiler.Current.Step("Get invoices"))
             {
                 GetInvoiceInRage(utcutcStartDate, utcutcEndDate, invoices);
-
             }
-
             var payers = new ConcurrentBag<Payer>();
             var tasks = new ConcurrentBag<Task>();
             using (MiniProfiler.Current.Step("Per-payer data retrieval"))
             {
                 await foreach (var invoice in invoices.Reader.ReadAllAsync())
                 {
+                    // Reduce parallelism to stop from getting rate limted by stripe servers
+                    while (tasks.Where(task=> !task.IsCompleted).Count() > _stripeConfig.Value.ParallelRequests)
+                    {
+                        Thread.Sleep(200);
+                    }
                     _logger.LogDebug("Processing payer");
                     tasks.Add(ProcessPayer(invoice, payers));
-
                 }
             }
             await Task.WhenAll(tasks);
             return payers.ToList();
-        }
-
-        
+        }        
 
         private async Task ProcessPayer(Invoice invoice, ConcurrentBag<Payer> payers)
         {
-
             var users = _userService.GetUsersFromStripeIds(new List<string> { invoice.CustomerId });
- 
+            if (!users.Any())
+            {
+                _logger.LogWarning($"User payment detected without corresponding user in subless system. CustomerId: {invoice.CustomerId} Email: {invoice.CustomerEmail}");
+                return;
+            }
             _logger.LogDebug($"Invoice {invoice.Id} found for date {invoice.Created}");
             var user = users.FirstOrDefault(x => x.StripeCustomerId == invoice.CustomerId);
             var taxes = invoice?.Tax ?? 0;
             if (invoice.ChargeId != null) // Charges will not be present if the payment was made with a coupon
             {
                 var charge = _stripeApiWrapperService.ChargeService.GetAsync(invoice.ChargeId);  
-                var balanceTrans = await _stripeApiWrapperService.BalanceTransactionService.GetAsync((await charge).BalanceTransactionId);
-                var refunds = _stripeApiWrapperService.RefundService.ListAsync(new RefundListOptions() { Charge = invoice.ChargeId });
+                var balanceTrans = _stripeApiWrapperService.BalanceTransactionService.Get((await charge).BalanceTransactionId);
+                var refunds = _stripeApiWrapperService.RefundService.List(new RefundListOptions() { Charge = invoice.ChargeId });
                 var payment = balanceTrans.Net;
                 // Check to see if it was a full refund. Set payment to 0 if it was.
-                if ((await refunds).Any())
+                if (refunds.Any())
                 {
-                    var totalRefund = (await refunds).Select(x => x.Amount).Sum();
+                    var totalRefund = refunds.Select(x => x.Amount).Sum();
                     payment = balanceTrans.Amount - totalRefund;
                     // Fees are subtracted from the payment by stripe. If we refunded less than the payment, we have to manually address the fees
                     payment = payment - balanceTrans.Fee;
@@ -311,11 +316,6 @@ namespace Subless.Services.Services
                         payment = 0;
                     }
                 }
-                if (!users.Any())
-                {
-                    _logger.LogWarning($"User payment detected without corresponding user in subless system. CustomerId: {invoice.CustomerId} Email: {invoice.CustomerEmail}");
-                    return;
-                }
                 payers.Add(new Payer
                 {
                     UserId = users.Single(x => x.StripeCustomerId == invoice.CustomerId).Id,
@@ -323,11 +323,6 @@ namespace Subless.Services.Services
                     Taxes = taxes,
                     Fees = balanceTrans.Fee
                 });
-            }
-            if (!users.Any())
-            {
-                _logger.LogWarning($"User payment detected without corresponding user in subless system. CustomerId: {invoice.CustomerId} Email: {invoice.CustomerEmail}");
-                return;
             }
             // if we were paid with a coupon, we need to calculate the payment differently
             else
@@ -381,8 +376,8 @@ namespace Subless.Services.Services
                 }
             }
             invoices.Writer.Complete();
-
         }
+
         public bool CancelSubscription(string cognitoId)
         {
             
