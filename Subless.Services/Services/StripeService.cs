@@ -7,7 +7,6 @@ using System.Threading.Channels;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Polly;
 using StackExchange.Profiling;
 using Stripe;
 using Stripe.Checkout;
