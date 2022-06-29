@@ -1,8 +1,8 @@
-﻿using Subless.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using Subless.Models;
 
-namespace Subless.Services
+namespace Subless.Services.Services
 {
     public interface IHitService
     {

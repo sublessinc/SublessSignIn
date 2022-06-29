@@ -1,17 +1,21 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Web;
+using CsvHelper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Subless.Models;
 using Subless.Services;
 using Subless.Services.Extensions;
+using Subless.Services.Services;
 using SublessSignIn.AuthServices;
 using SublessSignIn.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Web;
 
 namespace SublessSignIn.Controllers
 {
@@ -251,20 +255,36 @@ namespace SublessSignIn.Controllers
             }
             try
             {
-                var paymentDate = paymentLogsService.GetLastPaymentDate();
-                if (paymentDate == DateTimeOffset.MinValue)
+
+                var lastPayment = paymentLogsService.GetLastPayment(partner.Id);
+                PartnerStats hitsThisMonth;
+                PartnerStats hitsLastMonth;
+                if (lastPayment == null)
                 {
-                    paymentDate = DateTimeOffset.UtcNow.AddMonths(-1);
+
+                    // DEPRECATED
+                    var paymentDate = paymentLogsService.GetLastPaymentDate();
+                    if (paymentDate == DateTimeOffset.MinValue)
+                    {
+                        paymentDate = DateTimeOffset.UtcNow.AddMonths(-1);
+                    }
+                    hitsThisMonth = hitService.GetPartnerStats(paymentDate, DateTimeOffset.UtcNow, partner.Id);
+                    hitsLastMonth = hitService.GetPartnerStats(paymentDate.AddMonths(-1), paymentDate, partner.Id);
+                    // END DEPRECATED
                 }
-                var hitsThisMonth = hitService.GetPartnerStats(paymentDate, DateTimeOffset.UtcNow, partner.Id);
-                var hitsLastMonth = hitService.GetPartnerStats(paymentDate.AddMonths(-1), paymentDate, partner.Id);
+                else
+                {
+                    hitsThisMonth = hitService.GetPartnerStats(lastPayment.PaymentPeriodEnd, DateTimeOffset.UtcNow, partner.Id);
+                    hitsLastMonth = hitService.GetPartnerStats(lastPayment.PaymentPeriodStart, lastPayment.PaymentPeriodEnd, partner.Id);
+                }
+
                 _usageService.SaveUsage(UsageType.PartnerStats, user.Id);
                 return Ok(new HistoricalStats<PartnerStats>()
                 {
                     thisMonth = hitsThisMonth,
                     LastMonth = hitsLastMonth
                 });
-                
+
             }
             catch (UnauthorizedAccessException e)
             {
@@ -279,6 +299,44 @@ namespace SublessSignIn.Controllers
             var cognitoId = _userService.GetUserClaim(HttpContext.User);
             _partnerService.AcceptTerms(cognitoId);
             return Ok();
+        }
+
+        [HttpGet("statscsv")]
+        public ActionResult<string> GetStatsCsv()
+        {
+            var cognitoId = _userService.GetUserClaim(HttpContext.User);
+            if (cognitoId == null)
+            {
+                return Unauthorized();
+            }
+            try
+            {
+                var user = _userService.GetUserByCognitoId(cognitoId);
+                var partner = _partnerService.GetPartnerByAdminId(user.Id);
+                if (partner == null)
+                {
+                    return Unauthorized("Attemped to access forbidden zone");
+                }
+                var stats = _partnerService.GetStatsForPartner(partner);
+                var ms = new MemoryStream();
+                var sw = new StreamWriter(ms);
+                using (var csv = new CsvWriter(sw, CultureInfo.InvariantCulture))
+                {
+                    csv.WriteHeader<MonthlyPaymentStats>();
+                    csv.NextRecord();
+                    csv.WriteRecords(stats);
+                    csv.Flush();
+                    ms.Seek(0, SeekOrigin.Begin);
+                    var reader = new StreamReader(ms);
+                    return reader.ReadToEnd();
+                }
+            }
+            catch (UnauthorizedAccessException e)
+            {
+                _logger.LogWarning(e, "Unauthorized user attempted to get creator stats");
+
+                return Unauthorized();
+            }
         }
     }
 }

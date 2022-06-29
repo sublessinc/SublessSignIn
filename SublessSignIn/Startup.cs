@@ -1,18 +1,17 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using System;
+using System.Linq;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using Newtonsoft.Json;
+using Subless.Configuration;
 using Subless.Data;
 using Subless.Models;
 using Subless.Services;
 using SublessSignIn.AuthServices;
-using System;
-using System.Linq;
-using static Subless.Data.DataDi;
 
 namespace SublessSignIn
 {
@@ -21,24 +20,7 @@ namespace SublessSignIn
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
-            AuthSettings = new AuthSettings
-            {
-                Region = Environment.GetEnvironmentVariable("region") ?? throw new ArgumentNullException("region"),
-                PoolId = Environment.GetEnvironmentVariable("userPoolId") ?? throw new ArgumentNullException("userPoolId"),
-                AppClientId = Environment.GetEnvironmentVariable("appClientId") ?? throw new ArgumentNullException("appClientId")
-            };
-            AuthSettings.IssuerUrl = Environment.GetEnvironmentVariable("issuerUrl") ?? throw new ArgumentNullException("issuerUrl");
-            AuthSettings.CognitoUrl = $"https://cognito-idp.{AuthSettings.Region}.amazonaws.com/{AuthSettings.PoolId}";
-            AuthSettings.JwtKeySetUrl = AuthSettings.CognitoUrl + "/.well-known/jwks.json";
-            AuthSettings.Domain = Environment.GetEnvironmentVariable("DOMAIN") ?? throw new ArgumentNullException("DOMAIN");
-            AuthSettings.IdentityServerLicenseKey = Environment.GetEnvironmentVariable("IdentityServerLicenseKey") ?? "";
-            var json = Environment.GetEnvironmentVariable("dbCreds") ?? throw new ArgumentNullException("dbCreds");
-            var dbCreds = JsonConvert.DeserializeObject<DbCreds>(json);
-            AuthSettings.SessionStoreConnString = dbCreds.GetDatabaseConnection();
-            if (!AuthSettings.Domain.EndsWith('/'))
-            {
-                AuthSettings.Domain += '/';
-            }
+            AuthSettings = AuthSettingsConfiguration.GetAuthSettings();
 
         }
 
@@ -50,6 +32,9 @@ namespace SublessSignIn
         public void ConfigureServices(IServiceCollection services)
         {
             //The order of these two auth schemes matters. The last one added will be the default, so we add the partner facing bearer token scheme first.
+            AuthSettingsConfiguration.RegisterAuthSettingsConfig(services, AuthSettings);
+            StripeConfiguration.RegisterStripeConfig(services);
+            CalculatorSettingsConfiguration.RegisterCalculatorConfig(services);
             services = new BearerAuth().AddBearerAuthServices(services, AuthSettings);
             services.AddTransient<IHealthCheck, HealthCheck>();
             services.AddTransient<IVersion, FileVersion>();
@@ -95,6 +80,17 @@ namespace SublessSignIn
                   });
             });
             services.AddMvc();
+            if (false) // disable miniprofiler
+            {
+                services.AddMiniProfiler(options =>
+                {
+                    options.RouteBasePath = "/profiler";
+                    options.SqlFormatter = new StackExchange.Profiling.SqlFormatters.InlineFormatter();
+                    options.TrackConnectionOpenClose = true;
+                    options.EnableMvcFilterProfiling = true;
+                    options.EnableMvcViewProfiling = true;
+                });
+            }
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -103,6 +99,10 @@ namespace SublessSignIn
             applicationLifetime.ApplicationStarted.Register(OnStarted);
             applicationLifetime.ApplicationStopping.Register(OnStopping);
             applicationLifetime.ApplicationStopped.Register(OnStopped);
+            if (false) // disable miniprofiler
+            {
+                app.UseMiniProfiler();
+            }
 
             Console.CancelKeyPress += (sender, eventArgs) =>
             {

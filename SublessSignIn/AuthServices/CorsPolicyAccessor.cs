@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Cors.Infrastructure;
+﻿using System;
+using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Subless.Services;
-using System;
+using Subless.Services.Services;
 
 namespace SublessSignIn.AuthServices
 {

@@ -4,13 +4,16 @@ import { Observable } from 'rxjs';
 import { IPartner } from '../models/IPartner';
 import { IPartnerAnalytics } from '../models/IPartnerAnalytics';
 import { IPartnerWrite } from '../models/IPartnerWrite';
+import { map } from 'rxjs/operators';
+import { DateFormatter } from './dateformatter.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PartnerService {
 
-  constructor(private httpClient: HttpClient) { }
+  constructor(private httpClient: HttpClient,
+    private dateFormatterService: DateFormatter) { }
 
   getPartner(): Observable<IPartner> {
     return this.httpClient.get<IPartner>('/api/Partner/config');
@@ -23,7 +26,8 @@ export class PartnerService {
   testWebhook(): Observable<Boolean> {
     return this.httpClient.post<Boolean>('/api/Partner/WebhookTest', null);
   }
+
   getAnalytics(): Observable<IPartnerAnalytics> {
-    return this.httpClient.get<IPartnerAnalytics>("/api/Partner/Analytics");
+    return this.httpClient.get<IPartnerAnalytics>("/api/Partner/Analytics").pipe(map(this.dateFormatterService.ParsePartnerAnalytics));
   }
 }

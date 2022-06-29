@@ -1,8 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Subless.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
+using Subless.Models;
 
 namespace Subless.Data
 {
@@ -48,6 +48,8 @@ namespace Subless.Data
                 Views = hits.Count(),
                 Creators = Creators.Where(creator => distinctCreators.Contains(creator.Id) && creator.Active).Count(),
                 Partners = hits.Select(x => x.PartnerId).Distinct().Count(),
+                PeriodEnd = endDate,
+                PeriodStart = startDate
             };
 
         }
@@ -60,7 +62,9 @@ namespace Subless.Data
             {
                 PiecesOfContent = hits.Select(x => x.Uri).Distinct().Count(),
                 Views = hits.Count(),
-                Visitors = hits.Select(x => x.CognitoId).Distinct().Count()
+                Visitors = hits.Select(x => x.CognitoId).Distinct().Count(),
+                PeriodEnd = endDate,
+                PeriodStart = startDate,
             };
         }
 
@@ -73,7 +77,9 @@ namespace Subless.Data
             {
                 Creators = Creators.Where(creator => distinctCreators.Contains(creator.Id) && creator.Active).Count(),
                 Views = hits.Count(),
-                Visitors = hits.Select(x => x.CognitoId).Distinct().Count()
+                Visitors = hits.Select(x => x.CognitoId).Distinct().Count(),
+                PeriodStart = startDate,
+                PeriodEnd = endDate,
             };
         }
 
@@ -82,10 +88,12 @@ namespace Subless.Data
             return Hits.Where(x => x.CreatorId == creatorId)
                 .OrderByDescending(x => x.TimeStamp)
                 .Select(x =>
-                new HitView {
+                new HitView
+                {
                     Content = x.Uri,
-                    Title = x.Uri.Segments.Length > 1 ? x.Uri.Segments.Last(): x.Uri.Host,
-                    Timestamp = x.TimeStamp.DateTime })
+                    Title = x.Uri.Segments.Length > 1 ? x.Uri.Segments.Last() : x.Uri.Host,
+                    Timestamp = x.TimeStamp.DateTime
+                })
                 .Take(5)
                 .ToList();
         }
@@ -95,11 +103,13 @@ namespace Subless.Data
             return Hits.Where(x => x.CreatorId == creatorId)
                 .GroupBy(x => x.Uri)
                 .Select(g =>
-                new ContentHitCount {
-                    Content= g.Key,
+                new ContentHitCount
+                {
+                    Content = g.Key,
                     Title = g.Key.Segments.Length > 1 ? g.Key.Segments.Last() : g.Key.Host,
-                    Hits = g.Count() })
-                .OrderByDescending(x=>x.Hits)
+                    Hits = g.Count()
+                })
+                .OrderByDescending(x => x.Hits)
                 .Take(5)
                 .ToList();
         }

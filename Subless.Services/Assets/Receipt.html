@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="Cache-Control" content="max-age=0, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <title>Subless</title>
+    <base href="/">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#455A64">
+    <link href="https://fonts.googleapis.com/css?family=DM+Sans:300,400,500" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="https://app.subless.com/assets/img/favicon.svg">
+</head>
+
+<body style="width: 500px;">
+
+    <img id="logo" src="{{logourl}}" style="display: block; margin-left: auto; margin-right: auto; width: 50%; padding-bottom: 50px;" />
+    <div style="width: 100%; ">
+
+
+        <div style="width: 75%; margin-left: auto; margin-right: auto; padding-bottom: 20px;" id="header">
+            This is your subless receipt for the month starting {{month}}. Here you can see how your payment for this month was
+            divided among creators and partners you visited. This payment period is not the same as your billing period. You will
+            recieve another reciept in one month.
+        </div>
+
+        <table style="width: 100%; border-collapse: collapse;">
+            <tr style="padding: 10px; border-color: black; border-bottom-width: 1px; border-bottom-style: solid; font-weight: 700;">
+                <td>Creator</td>
+                <td style="text-align: right;">Payment</td>
+            </tr>
+
+            {{payments}}
+            
+            <tr style="border-color: black; border-top-width: 1px; border-top-style: solid;  padding-top: 20px; padding: 10px;">
+                <td>Stripe Fees</td>
+                <td style="text-align: right;">{{stripefee}}</td>
+            </tr>
+            <tr style="padding: 10px; padding-bottom: 20px;">
+                <td>Taxes</td>
+                <td style="text-align: right;">$0.00</td>
+            </tr>
+            <tr style="border-color: black; border-top-width: 1px; border-top-style: solid; padding-top: 20px; padding: 10px; ">
+                <td>Total Payment</td>
+                <td style="text-align: right;">{{totalpayment}}</td>
+            </tr>
+        </table>
+        <table id="navigate" style="margin-left: auto; margin-right: auto;">
+            <tr>
+                <td align="center">
+                    <form  action="{{sitelink}}">
+                        <input id="navButton" style="text-align:center; background-color: rgb(254, 29, 128); margin-top: 50px; border-radius: 4px; border-style: none; color: white; font-family: 'DM Sans'; height: 50px; width: 300px; font-size: 16px; font-weight: 500;" type="submit" value="View your profile" />
+                    </form>
+                </td>
+            </tr>
+        </table>
+        </div>
+</body>

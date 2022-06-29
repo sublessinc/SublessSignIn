@@ -5,7 +5,22 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Assets\CreatorReceipt.html" />
+    <None Remove="Assets\PartnerReceipt.html" />
+    <None Remove="Assets\Receipt.html" />
     <None Remove="Resources\Receipt.html" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Assets\PartnerReceipt.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Assets\CreatorReceipt.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Assets\Receipt.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
   </ItemGroup>
 
   <ItemGroup>

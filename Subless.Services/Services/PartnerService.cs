@@ -1,8 +1,4 @@
-﻿using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Logging;
-using Subless.Data;
-using Subless.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -12,10 +8,8 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Subless.Data;
 using Subless.Models;
-using Subless.Services.Extensions;
-using Subless.Services.Services;
 
-namespace Subless.Services
+namespace Subless.Services.Services
 {
     public class PartnerService : IPartnerService
     {
@@ -24,6 +18,7 @@ namespace Subless.Services
         private readonly IUserRepository _userRepository;
         private readonly IPartnerRepository partnerRepository;
         private readonly ICreatorRepository creatorRepository;
+        private readonly IPaymentRepository _paymentRepository;
         private readonly ICacheService cache;
         private readonly HttpClient httpClient;
         private readonly ILogger<PartnerService> logger;
@@ -33,6 +28,7 @@ namespace Subless.Services
             IPartnerRepository partnerRepository,
             ICreatorRepository creatorRepository,
             IHttpClientFactory httpClientFactory,
+            IPaymentRepository paymentRepository,
             ICacheService cache,
             ILoggerFactory loggerFactory
             )
@@ -40,9 +36,10 @@ namespace Subless.Services
             _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
             this.partnerRepository = partnerRepository ?? throw new ArgumentNullException(nameof(partnerRepository));
             this.creatorRepository = creatorRepository ?? throw new ArgumentNullException(nameof(creatorRepository));
+            _paymentRepository = paymentRepository;
             this.cache = cache ?? throw new ArgumentNullException(nameof(cache));
-            this.httpClient = httpClientFactory?.CreateClient() ?? throw new ArgumentNullException(nameof(httpClientFactory));
-            this.logger = loggerFactory.CreateLogger<PartnerService>();
+            httpClient = httpClientFactory?.CreateClient() ?? throw new ArgumentNullException(nameof(httpClientFactory));
+            logger = loggerFactory.CreateLogger<PartnerService>();
         }
 
         public Partner GetPartner(Guid id)
@@ -103,7 +100,7 @@ namespace Subless.Services
 
         public Guid CreatePartner(Partner partner)
         {
-            partner.Sites = partner.Sites.Select(x=> new Uri(x.GetLeftPart(UriPartial.Authority))).ToArray();
+            partner.Sites = partner.Sites.Select(x => new Uri(x.GetLeftPart(UriPartial.Authority))).ToArray();
             partnerRepository.AddPartner(partner);
             cache.InvalidateCache();
             return partner.Id;
@@ -127,14 +124,38 @@ namespace Subless.Services
             {
                 return (Partner)cache.Cache.Get(uri.ToString());
             }
-            Partner partner = partnerRepository.GetPartnerByUri(uri);
-            cache.Cache.Set(uri.ToString(), partner, DateTimeOffset.UtcNow.AddHours(1));
+            var partner = partnerRepository.GetPartnerByUri(uri);
+            cache.Cache.Set(uri.ToString(), partner, DateTimeOffset.UtcNow.AddMinutes(15));
             return partner;
         }
 
+        public IEnumerable<MonthlyPaymentStats> GetStatsForPartner(Partner partner)
+        {
+            if (partner is null)
+            {
+                throw new ArgumentNullException(nameof(partner));
+            }
+            var paymentStats = new List<MonthlyPaymentStats>();
+            var paymentAuditLogs = _paymentRepository.GetAllPaymentsToUser(partner.Id);
+            foreach (var payment in paymentAuditLogs)
+            {
+                paymentStats.Add(new MonthlyPaymentStats()
+                {
+                    MonthStart = payment.PaymentPeriodStart,
+                    Revenue = payment.Revenue,
+                    PaymentProcessorFees = payment.Fees,
+                    Payment = payment.Payment,
+                    MonthEnd = payment.PaymentPeriodEnd
+                });
+
+            }
+            return paymentStats.OrderBy(x => x.MonthStart);
+        }
+
+
         public async Task<bool> CreatorChangeWebhook(PartnerViewCreator creator)
         {
-            this.logger.LogInformation($"Creator {creator.Id} activated, firing webhook");
+            logger.LogInformation($"Creator {creator.Id} activated, firing webhook");
             var partner = GetPartner(creator.PartnerId);
             if (partner.CreatorWebhook != null)
             {

@@ -6,16 +6,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Assets\Receipt.html" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="Assets\Receipt.html">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="AWSSDK.SimpleEmail" Version="3.7.0.139" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="6.0.0" />
@@ -25,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Subless.Configuration\Subless.Configuration.csproj" />
     <ProjectReference Include="..\Subless.Models\Subless.Models.csproj" />
     <ProjectReference Include="..\Subless.Services\Subless.Services.csproj" />
   </ItemGroup>

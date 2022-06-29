@@ -6,7 +6,9 @@
         <div class="statText">
             <mat-card-content class="statHeader">Total views this month</mat-card-content>
             <mat-card-content class="numberText">{{analytics.thisMonth.views}}</mat-card-content>
-            <mat-card-content><b>{{analytics.lastMonth.views}}</b> Total views last month</mat-card-content>
+            <mat-card-content matTooltip="{{this.dateFormatter.GetLastPeriodString(analytics.lastMonth)}}">
+                <b>{{analytics.lastMonth.views}}</b> Total views last month
+            </mat-card-content>
         </div>
     </mat-card>
     <mat-card class="card">
@@ -16,7 +18,8 @@
         <div class="statText">
             <mat-card-content class="statHeader">Unique visitors this month</mat-card-content>
             <mat-card-content class="numberText">{{analytics.thisMonth.visitors}}</mat-card-content>
-            <mat-card-content><b>{{analytics.lastMonth.visitors}}</b> Unique visitors last month
+            <mat-card-content matTooltip="{{this.dateFormatter.GetLastPeriodString(analytics.lastMonth)}}">
+                <b>{{analytics.lastMonth.visitors}}</b> Unique visitors last month
             </mat-card-content>
         </div>
     </mat-card>
@@ -27,8 +30,13 @@
         <div class="statText">
             <mat-card-content class="statHeader">Creators visited this month</mat-card-content>
             <mat-card-content class="numberText">{{analytics.thisMonth.creators}}</mat-card-content>
-            <mat-card-content><b>{{analytics.lastMonth.creators}}</b> Creators visited last month
+            <mat-card-content matTooltip="{{this.dateFormatter.GetLastPeriodString(analytics.lastMonth)}}">
+                <b>{{analytics.lastMonth.creators}}</b> Creators visited last month
             </mat-card-content>
         </div>
     </mat-card>
+    <div class="card downloadWrapper">
+        <app-partnerstats>
+        </app-partnerstats>
+    </div>
 </div>

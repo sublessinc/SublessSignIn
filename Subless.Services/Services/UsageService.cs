@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Subless.Data;
 using Subless.Models;
 
-namespace Subless.Services
+namespace Subless.Services.Services
 {
     public class UsageService : IUsageService
     {

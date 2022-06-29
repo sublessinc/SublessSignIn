@@ -1,9 +1,9 @@
-﻿using Subless.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Subless.Models;
 
-namespace Subless.Services
+namespace Subless.Services.Services
 {
     public interface ICreatorService
     {
@@ -14,7 +14,7 @@ namespace Subless.Services
         Creator GetCreator(Guid id);
         Creator GetCreatorByCognitoid(string cognitoId);
         IEnumerable<Creator> GetCreatorsByPartnerId(Guid partnerId);
-        IEnumerable<MontlyPaymentStats> GetStatsForCreator(Creator creator);
+        IEnumerable<MonthlyPaymentStats> GetStatsForCreator(Creator creator);
         Task UnlinkCreator(string cognitoId, Guid id);
         Task<Creator> UpdateCreator(string cognitoId, Creator creator);
         void AcceptTerms(string cognitoId);

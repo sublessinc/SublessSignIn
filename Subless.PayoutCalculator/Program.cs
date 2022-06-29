@@ -1,16 +1,16 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Serilog;
+using Subless.Configuration;
 using Subless.Data;
 using Subless.PayoutCalculator;
 using Subless.Services;
 using Subless.Services.Services;
-using System;
-using System.Globalization;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace PayoutCalculator
 {
@@ -85,13 +85,13 @@ namespace PayoutCalculator
                 {
                     logger.LogInformation("Checking if calculator should be run");
                     var logsService = scope.ServiceProvider.GetRequiredService<IPaymentLogsService>();
-                    var calculator = scope.ServiceProvider.GetRequiredService<ICalculatorService>();
+                    var calculator = scope.ServiceProvider.GetRequiredService<IPaymentService>();
                     var lastExecution = logsService.GetLastPaymentDate();
 
                     if (ShouldExecuteScheduledRun(executionsPerYear, lastExecution))
                     {
                         logger.LogInformation("Running calculation");
-                        calculator.CalculatePayments(lastExecution, DateTimeOffset.UtcNow);
+                        calculator.ExecutePayments(lastExecution, DateTimeOffset.UtcNow);
                         logger.LogInformation("Calculation complete");
                     }
                     lastExecution = logsService.GetLastPaymentDate();
@@ -109,10 +109,10 @@ namespace PayoutCalculator
             using (var scope = host.Services.CreateScope())
             {
                 var logsService = scope.ServiceProvider.GetRequiredService<IPaymentLogsService>();
-                var calculator = scope.ServiceProvider.GetRequiredService<ICalculatorService>();
+                var calculator = scope.ServiceProvider.GetRequiredService<IPaymentService>();
                 var lastExecution = logsService.GetLastPaymentDate();
                 logger.LogInformation("Running calculation");
-                calculator.CalculatePayments(lastExecution, DateTimeOffset.UtcNow);
+                calculator.ExecutePayments(lastExecution, DateTimeOffset.UtcNow);
                 logger.LogError("Calculation complete... waiting indefinitly");
                 Console.Read();
             }
@@ -123,10 +123,10 @@ namespace PayoutCalculator
             using (var scope = host.Services.CreateScope())
             {
                 var logsService = scope.ServiceProvider.GetRequiredService<IPaymentLogsService>();
-                var calculator = scope.ServiceProvider.GetRequiredService<ICalculatorService>();
+                var calculator = scope.ServiceProvider.GetRequiredService<IPaymentService>();
                 var lastExecution = logsService.GetLastPaymentDate();
                 logger.LogInformation("Running calculation");
-                calculator.CalculatePayments(start, end);
+                calculator.ExecutePayments(start, end);
                 logger.LogError("Calculation complete... waiting indefinitly");
                 Console.Read();
             }
@@ -137,22 +137,12 @@ namespace PayoutCalculator
             .UseSerilog(LoggerConfig.GetLogger())
             .ConfigureServices((_, services) =>
             {
-                services.Configure<CalculatorConfiguration>(options =>
-                {
-                    options.BucketName = Environment.GetEnvironmentVariable("BucketName") ?? throw new ArgumentNullException("BucketName");
-                    options.ExecutionsPerYear = int.Parse(Environment.GetEnvironmentVariable("ExecutionsPerYear") ?? throw new ArgumentNullException("ExecutionsPerYear"), CultureInfo.InvariantCulture);
-                    options.RunOnStart = bool.Parse(Environment.GetEnvironmentVariable("RunOnStart") ?? "false");
-                    options.CalcuationRangeEnd = Environment.GetEnvironmentVariable("CalcuationRangeEnd");
-                    options.CalcuationRangeStart = Environment.GetEnvironmentVariable("CalcuationRangeStart");
-                    options.Domain = Environment.GetEnvironmentVariable("DOMAIN");
-                    options.PoolId = Environment.GetEnvironmentVariable("DOMAIN");
-                });
+                StripeConfiguration.RegisterStripeConfig(services);
+                CalculatorSettingsConfiguration.RegisterCalculatorConfig(services);
+                var authSettings = AuthSettingsConfiguration.GetAuthSettings();
+                BffDi.AddBffDi(services, authSettings);
                 DataDi.RegisterDataDi(services);
                 ServicesDi.AddServicesDi(services);
-                services.AddTransient<ICalculatorService, CalculatorService>();
-                services.AddTransient<IFileStorageService, S3Service>();
-                services.AddTransient<AwsCredWrapper, AwsCredWrapper>();
-                services.AddTransient<IPaymentEmailService, PaymentEmailService>();
                 services.AddTransient<IHealthCheck, HealthCheck>();
             });
         }

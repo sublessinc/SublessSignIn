@@ -34,6 +34,8 @@ import { CreatorTermsComponent } from './creator-terms/creator-terms.component';
 import { PartnerTermsComponent } from './partner-terms/partner-terms.component';
 import { RecentActivityComponent } from './recent-activity/recent-activity.component';
 import { TopContentComponent } from './top-content/top-content.component';
+import { DateFormatter } from './services/dateformatter.service';
+import { PartnerstatsComponent } from './partnerstats/partnerstats.component';
 
 @NgModule({
   declarations: [
@@ -59,7 +61,8 @@ import { TopContentComponent } from './top-content/top-content.component';
     CreatorTermsComponent,
     PartnerTermsComponent,
     RecentActivityComponent,
-    TopContentComponent
+    TopContentComponent,
+    PartnerstatsComponent
   ],
   imports: [
     ThemeModule,
@@ -73,7 +76,6 @@ import { TopContentComponent } from './top-content/top-content.component';
     { provide: HTTP_INTERCEPTORS, useClass: UnauthorizedInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
     { provide: ErrorHandler, useClass: GlobalerrorhandlerService },
-
     StopNavGuard
   ],
   bootstrap: [AppComponent],

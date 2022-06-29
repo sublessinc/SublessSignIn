@@ -1,7 +1,8 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System;
+using Microsoft.Extensions.DependencyInjection;
 using Subless.Models;
+using Subless.Services.Extensions;
 using Subless.Services.Services;
-using System;
 
 namespace Subless.Services
 {
@@ -9,18 +10,7 @@ namespace Subless.Services
     {
         public static IServiceCollection AddServicesDi(IServiceCollection services)
         {
-            services.Configure<StripeConfig>(options =>
-            {
-                options.PublishableKey = Environment.GetEnvironmentVariable("STRIPE_PUBLISHABLE_KEY") ?? throw new ArgumentNullException("STRIPE_PUBLISHABLE_KEY");
-                options.SecretKey = Environment.GetEnvironmentVariable("STRIPE_SECRET_KEY") ?? throw new ArgumentNullException("STRIPE_SECRET_KEY");
-                options.WebhookSecret = Environment.GetEnvironmentVariable("STRIPE_WEBHOOK_SECRET") ?? throw new ArgumentNullException("STRIPE_WEBHOOK_SECRET");
-                options.Domain = Environment.GetEnvironmentVariable("DOMAIN") ?? throw new ArgumentNullException("DOMAIN");
-                if (!options.Domain.EndsWith('/'))
-                {
-                    options.Domain += '/';
-                }
-                options.SublessPayPalId = Environment.GetEnvironmentVariable("PayPalId");
-            });
+
             services.Configure<DomainConfig>(options =>
             {
                 options.Domain = Environment.GetEnvironmentVariable("DOMAIN") ?? throw new ArgumentNullException("DOMAIN");
@@ -44,6 +34,12 @@ namespace Subless.Services
             services.AddTransient<ICacheService, CacheService>();
             services.AddTransient<IUsageService, UsageService>();
             services.AddTransient<IEmailService, EmailService>();
+            services.AddTransient<ICalculatorService, CalculatorService>();
+            services.AddTransient<IPaymentService, PaymentService>();
+            services.AddTransient<IFileStorageService, S3Service>();
+            services.AddTransient<AwsCredWrapper, AwsCredWrapper>();
+            services.AddTransient<IPaymentEmailService, PaymentEmailService>();
+            services.AddTransient<IStripeApiWrapperService, StripeApiWrapperService>();
             services.AddMemoryCache();
             services.AddHttpClient();
             return services;

@@ -1,10 +1,10 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.Extensions.Logging;
 using Subless.Data;
 using Subless.Models;
-using System;
-using System.Collections.Generic;
 
-namespace Subless.Services
+namespace Subless.Services.Services
 {
     public class PaymentLogsService : IPaymentLogsService
     {
@@ -34,8 +34,18 @@ namespace Subless.Services
         public DateTimeOffset GetLastPaymentDate()
         {
             var date = paymentRepository.GetLastPaymentDate();
-            _logger.LogInformation($"Last payment date {date}, time now {DateTimeOffset.UtcNow}");
             return date;
+        }
+
+        public PaymentAuditLog GetLastPayment(Guid targetId)
+        {
+            var date = paymentRepository.GetLastPayment(targetId);
+            return date;
+        }
+
+        public Tuple<DateTimeOffset, DateTimeOffset> GetLastPaymentPeriod()
+        {
+            return paymentRepository.GetLastPaymentPeriod();
         }
     }
 }

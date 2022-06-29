@@ -1,15 +1,15 @@
-﻿using Microsoft.Extensions.Caching.Memory;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net.Mail;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Subless.Data;
 using Subless.Models;
 using Subless.Services.Extensions;
-using Subless.Services.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace Subless.Services
+namespace Subless.Services.Services
 {
     public class CreatorService : ICreatorService
     {
@@ -18,7 +18,7 @@ namespace Subless.Services
         private readonly IPartnerService partnerService;
         private readonly ICacheService cache;
         private readonly ILogger<CreatorService> logger;
-        IPaymentRepository paymentRepository;
+        private readonly IPaymentRepository paymentRepository;
         private readonly IEmailService _emailService;
 
         public CreatorService(
@@ -26,6 +26,7 @@ namespace Subless.Services
             ICreatorRepository creatorRepository,
             IPartnerService partnerService,
             IPaymentRepository paymentRepository,
+            IPaymentLogsService logsService,
             IEmailService emailService,
             ICacheService cache,
             ILoggerFactory loggerFactory)
@@ -41,7 +42,7 @@ namespace Subless.Services
             this.paymentRepository = paymentRepository ?? throw new ArgumentNullException(nameof(paymentRepository));
             _emailService = emailService ?? throw new ArgumentNullException(nameof(emailService));
             this.cache = cache ?? throw new ArgumentNullException(nameof(cache));
-            this.logger = loggerFactory?.CreateLogger<CreatorService>() ?? throw new ArgumentNullException(nameof(loggerFactory));
+            logger = loggerFactory?.CreateLogger<CreatorService>() ?? throw new ArgumentNullException(nameof(loggerFactory));
         }
 
         public async Task ActivateCreator(Guid userId, Guid activationCode, string email)
@@ -88,7 +89,7 @@ namespace Subless.Services
                 return creator;
             }
             creator = creatorRepository.GetCreatorByUsernameAndPartnerId(username, partnerId);
-            cache.Cache.Set(key, creator, DateTimeOffset.UtcNow.AddHours(1));
+            cache.Cache.Set(key, creator, DateTimeOffset.UtcNow.AddSeconds(15));
             return creator;
         }
 
@@ -102,48 +103,63 @@ namespace Subless.Services
             // Set user modifiable properties
             var currentCreator = creators.First();
             var wasValid = CreatorValid(currentCreator);
-            if (currentCreator.PayPalId != null && currentCreator.PayPalId!=creator.PayPalId)
+            if (currentCreator.PayPalId != null && currentCreator.PayPalId != creator.PayPalId && PaypalAddressIsEmail(currentCreator.PayPalId))
             {
                 await _emailService.SendEmail(GetPaymentChangedEmail(creator.Username), currentCreator.PayPalId, "Subless payout no longer associated with this email");
             }
             currentCreator.PayPalId = creator.PayPalId;
             creatorRepository.UpdateCreator(currentCreator);
-            await _emailService.SendEmail(GetPaymentSetEmail(creator.Username), creator.PayPalId, "Subless payout email set");
+            if (PaypalAddressIsEmail(creator.PayPalId))
+            {
+                await _emailService.SendEmail(GetPaymentSetEmail(creator.Username), creator.PayPalId, "Subless payout email set");
+            }
             await FireCreatorActivationWebhook(creator, wasValid);
             return currentCreator;
         }
 
+        private bool PaypalAddressIsEmail(string paypalid)
+        {
+            try
+            {
+                var m = new MailAddress(paypalid);
 
-        public IEnumerable<MontlyPaymentStats> GetStatsForCreator(Creator creator)
+                return true;
+            }
+            catch (FormatException)
+            {
+                return false;
+            }
+        }
+
+        public IEnumerable<MonthlyPaymentStats> GetStatsForCreator(Creator creator)
         {
             if (creator is null)
             {
                 throw new ArgumentNullException(nameof(creator));
             }
-            var payments = paymentRepository.GetPaymentsByPayeePayPalId(creator.PayPalId);
-            var paymentStats = new Dictionary<DateTimeOffset, MontlyPaymentStats>();
-            foreach (var payment in payments)
+            var paymentStats = new List<MonthlyPaymentStats>();
+            var paymentAuditLogs = paymentRepository.GetAllPaymentsToUser(creator.Id);
+            foreach (var payment in paymentAuditLogs)
             {
-                var paymentMonth = new DateTimeOffset(new DateTime(payment.DateSent.Year, payment.DateSent.Month, 1));
-                if (!paymentStats.Keys.Any(x => new DateTimeOffset(new DateTime(x.Year, x.Month, 1)) == paymentMonth))
-                {
-                    paymentStats.Add(paymentMonth, new MontlyPaymentStats()
+                paymentStats.Add(new MonthlyPaymentStats()
                     {
-                        MonthStartDay = paymentMonth,
+                        MonthStart = payment.PaymentPeriodStart,
+                        Revenue = payment.Revenue,
+                        PaymentProcessorFees = payment.Fees,
+                        Payment = payment.Payment,
+                        MonthEnd = payment.PaymentPeriodEnd
                     });
-                }
-                paymentStats[paymentMonth].DollarsPaid += (int)(payment.Amount/100);
-                paymentStats[paymentMonth].Payers += 1;
+                
             }
-            return paymentStats.Values.OrderBy(x => x.MonthStartDay);
+            return paymentStats.OrderBy(x => x.MonthStart);
         }
 
         private bool CreatorValid(Creator creator)
         {
-            return (
+            return
                 creator.Active &&
                 creator.PayPalId != null
-                );
+                ;
         }
 
         public async Task FireCreatorActivationWebhook(Creator creator, bool wasValid)

@@ -1,19 +1,14 @@
-﻿using Duende.Bff;
-using Duende.Bff.EntityFramework;
-using Microsoft.AspNetCore.Authentication.Cookies;
+﻿using System;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Subless.Data;
 using Subless.Models;
-using System;
-using System.Linq;
+using Subless.Services;
 using static Subless.Data.DataDi;
 
 namespace SublessSignIn.AuthServices
@@ -28,30 +23,7 @@ namespace SublessSignIn.AuthServices
     {
         public static IServiceCollection AddBffServices(this IServiceCollection services, AuthSettings AuthSettings)
         {
-            var cookieServices = services.Where<ServiceDescriptor>(x => x.ServiceType == typeof(IPostConfigureOptions<CookieAuthenticationOptions>));
-            services.AddBff(a => a.LicenseKey = AuthSettings.IdentityServerLicenseKey).AddEntityFrameworkServerSideSessions(options =>
-            {
-                options.UseNpgsql(AuthSettings.SessionStoreConnString, sqlOpts=>
-                {
-                    sqlOpts.MigrationsAssembly(typeof(Duende.Bff.EntityFramework.SessionDbContext).Assembly.FullName);
-                });
-                
-            });
-
-            var descriptor =
-                new ServiceDescriptor(
-                    typeof(IPostConfigureOptions<CookieAuthenticationOptions>),
-                    typeof(RefreshTokenRevocation),
-                    ServiceLifetime.Singleton);
-            services.RemoveAll<IPostConfigureOptions<CookieAuthenticationOptions>>();
-            foreach (var cookieSerivce in cookieServices)
-            {
-                services.Add(cookieSerivce);
-            }
-            services.AddSingleton<IPostConfigureOptions<CookieAuthenticationOptions>, RefreshTokenRevocation>();
-            services.AddSingleton<IPostConfigureOptions<CookieAuthenticationOptions>, PostConfigureApplicationValidatePrincipal>();
-            services.AddSingleton<IPostConfigureOptions<CookieAuthenticationOptions>, PostConfigureApplicationCookieTicketStore>();
-
+            services = BffDi.AddBffDi(services, AuthSettings);
             // configure server-side authentication and session management
             services.AddAuthentication(options =>
             {
@@ -78,7 +50,7 @@ namespace SublessSignIn.AuthServices
 
             var json = Environment.GetEnvironmentVariable("dbCreds");
             var dbCreds = JsonConvert.DeserializeObject<DbCreds>(json);
-                        
+
             // Add a DbContext to store your Database Keys
             services.AddDbContext<KeyStorageContext>(options =>
                 options.UseNpgsql(

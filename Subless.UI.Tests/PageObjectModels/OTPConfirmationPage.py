@@ -6,8 +6,9 @@ import time
 from selenium.webdriver.support.wait import WebDriverWait
 
 from PageObjectModels.BasePage import BasePage
-from PageObjectModels.DashboardPage import DashboardPage
+from PageObjectModels.PatronDashboardPage import PatronDashboardPage
 from PageObjectModels.PlanSelectionPage import PlanSelectionPage
+from PageObjectModels.TermsPage import TermsPage
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger()
@@ -26,11 +27,13 @@ class OTPConfirmationPage(BasePage):
         self.otp_field.send_keys(otp)
         self.submit_button.click()
 
+        if ("error" in self.driver.current_url):
+            raise Exception('A problem was encountered while sending OTP')
         # wait for redirect
         WebDriverWait(self.driver, 10).until(lambda driver: 'confirm' not in self.driver.current_url)
         WebDriverWait(self.driver, 10).until(lambda driver: 'login' not in self.driver.current_url)
 
-        return PlanSelectionPage(self.driver)
+        return TermsPage(self.driver)
 
 
 class OTPLocators:

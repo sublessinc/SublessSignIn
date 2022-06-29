@@ -1,7 +1,7 @@
-﻿using Serilog;
+﻿using System;
+using Serilog;
 using Serilog.Core;
 using Serilog.Events;
-using System;
 
 namespace Subless.Services.Services
 {
@@ -25,7 +25,8 @@ namespace Subless.Services.Services
         private static LoggingLevelSwitch GetLogLevelSwitch()
         {
             var level = Environment.GetEnvironmentVariable("Logging__LogLevel__Default");
-            if (!Enum.TryParse(level, out LogEventLevel parsedlevel)) {
+            if (!Enum.TryParse(level, out LogEventLevel parsedlevel))
+            {
                 parsedlevel = LogEventLevel.Warning;
                 Console.WriteLine("Warning: Were not able to get the Logging__LogLevel__Default env var to set our LogEventLevel.");
             }

@@ -1,9 +1,9 @@
-﻿using Subless.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Subless.Models;
 
-namespace Subless.Services
+namespace Subless.Services.Services
 {
     public interface IPartnerService
     {
@@ -19,5 +19,6 @@ namespace Subless.Services
         void UpdatePartner(Partner partner);
         Partner UpdatePartnerWritableFields(PartnerWriteModel partnerModel);
         void AcceptTerms(string cognitoId);
+        IEnumerable<MonthlyPaymentStats> GetStatsForPartner(Partner partner);
     }
 }

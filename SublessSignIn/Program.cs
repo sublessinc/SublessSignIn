@@ -1,15 +1,12 @@
-﻿using Duende.Bff.EntityFramework;
+﻿using System;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 using Subless.Data;
-using Subless.Models;
-using Subless.Services;
 using Subless.Services.Services;
 using SublessSignIn.AuthServices;
-using System;
 
 namespace SublessSignIn
 {
@@ -54,6 +51,7 @@ namespace SublessSignIn
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
+                    webBuilder.UseKestrel(o => { o.Limits.KeepAliveTimeout = TimeSpan.FromMinutes(10); });
                     webBuilder.UseUrls("http://0.0.0.0:7070/");
                     webBuilder.UseShutdownTimeout(TimeSpan.FromSeconds(2));
                 });

@@ -1,14 +1,14 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Stripe;
 using Subless.Models;
-using Subless.Services;
+using Subless.Services.Services;
 using SublessSignIn.Models;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace SublessSignIn.Controllers
 {
@@ -24,10 +24,10 @@ namespace SublessSignIn.Controllers
         public CheckoutController(ILoggerFactory loggerFactory, IOptions<StripeConfig> stripeConfig, IUserService userService, IStripeService stripeService)
         {
             _stripeConfig = stripeConfig ?? throw new ArgumentNullException(nameof(stripeConfig));
-            _ = stripeConfig.Value.PublishableKey ?? throw new ArgumentNullException(nameof(stripeConfig.Value.PublishableKey));
-            _ = stripeConfig.Value.Domain ?? throw new ArgumentNullException(nameof(stripeConfig.Value.Domain));
-            _ = stripeConfig.Value.SecretKey ?? throw new ArgumentNullException(nameof(stripeConfig.Value.SecretKey));
-            _ = stripeConfig.Value.WebhookSecret ?? throw new ArgumentNullException(nameof(stripeConfig.Value.WebhookSecret));
+            _ = stripeConfig.Value.PublishableKey ?? throw new ArgumentNullException(nameof(stripeConfig));
+            _ = stripeConfig.Value.Domain ?? throw new ArgumentNullException(nameof(stripeConfig));
+            _ = stripeConfig.Value.SecretKey ?? throw new ArgumentNullException(nameof(stripeConfig));
+            _ = stripeConfig.Value.WebhookSecret ?? throw new ArgumentNullException(nameof(stripeConfig));
             _userService = userService ?? throw new ArgumentNullException(nameof(userService));
             _stripeService = stripeService ?? throw new ArgumentNullException(nameof(stripeService));
             _logger = loggerFactory.CreateLogger<CheckoutController>();
