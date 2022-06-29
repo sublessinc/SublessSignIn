@@ -372,7 +372,7 @@ namespace Subless.Services.Services
                         GreaterThan = startDate,
                         LessThanOrEqual = endDate
                     },
-                    Limit = 1,
+                    Limit = 10,
                     StartingAfter = nextSet.Last().Id
                 };
                 nextSet = _stripeApiWrapperService.InvoiceService.List(filters);
