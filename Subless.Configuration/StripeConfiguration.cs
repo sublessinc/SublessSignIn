@@ -18,6 +18,8 @@ namespace Subless.Configuration
                     options.Domain += '/';
                 }
                 options.SublessPayPalId = Environment.GetEnvironmentVariable("PayPalId");
+                var parsed = int.TryParse(Environment.GetEnvironmentVariable("ParallelRequests"), out int requests);
+                options.ParallelRequests = parsed ? requests : 3;
             });
             return services;
         }
