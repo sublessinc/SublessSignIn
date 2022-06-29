@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using StackExchange.Profiling;
 using Subless.Models;
 
 namespace Subless.Services.Services
@@ -50,7 +51,11 @@ namespace Subless.Services.Services
             var calculatorResult = new CalculatorResult();
             calculatorResult.EmailSent = false;
             // get what we were paid (after fees), and by who
-            var payers = GetPayments(startDate, endDate);
+            IEnumerable<Payer> payers;
+            using (MiniProfiler.Current.Step("Get payers"))
+            {
+                payers = GetPayments(startDate, endDate);
+            }
             if (!payers.Any())
             {
                 _logger.LogWarning("No Payments found in payment period, calculation skipped.");
@@ -64,57 +69,60 @@ namespace Subless.Services.Services
                 _logger.LogWarning($"Only the following users are being evaluated \n {string.Join('\n', selectedUserIds)}");
                 payers = payers.Where(x => selectedUserIds.Contains(x.UserId));
             }
-            foreach (var payer in payers)
+            using (MiniProfiler.Current.Step("Do subless math"))
             {
-                var payees = new List<Payee>();
-                // get who they visited
-                var hits = RetrieveUsersMonthlyHits(payer.UserId, startDate, endDate);
-                // filter out incomplete creators
-                _logger.LogInformation("We have {0} total hits of any kind from this user", hits.Count());
-                hits = FilterInvalidCreators(hits);
-                var user = userService.GetUser(payer.UserId);
-                if (!hits.Any())
+                foreach (var payer in payers)
                 {
-                    calculatorResult.IdleCustomerStripeIds.Add(user.StripeCustomerId);
-                    continue;
-                }
-                // group all visits to payee
-                var creatorVisits = GetVisitsPerCreator(hits);
-                // get partner share
-                var partnerVisits = GetVisitsPerPartner(hits);
-                // fraction each creator by the percentage of total visits
-                // multiply payment by that fraction
-                _logger.LogInformation($"Found {0} creators visited and {1} partners visited for a payer.", creatorVisits.Count, partnerVisits.Count);
-                payees.AddRange(GetCreatorPayees(payer.Payment, creatorVisits, hits.Count(), PartnerFraction, SublessFraction));
-                payees.AddRange(GetPartnerPayees(payer.Payment, creatorVisits, hits.Count(), PartnerFraction, SublessFraction));
-                // set aside 2% for us
-                payees.Add(GetSublessPayment(payer.Payment, SublessFraction));
-                // ensure total payment adds up
-                var totalPayments = Math.Round(payees.Sum(payee => payee.Payment), CurrencyPrecision, MidpointRounding.ToZero);
-                if (totalPayments > payer.Payment)
-                {
-                    throw new ArithmeticException($"The math did not add up for payer:{payer.UserId}");
-                }
+                    var payees = new List<Payee>();
+                    // get who they visited
+                    var hits = RetrieveUsersMonthlyHits(payer.UserId, startDate, endDate);
+                    // filter out incomplete creators
+                    _logger.LogInformation("We have {0} total hits of any kind from this user", hits.Count());
+                    hits = FilterInvalidCreators(hits);
+                    var user = userService.GetUser(payer.UserId);
+                    if (!hits.Any())
+                    {
+                        calculatorResult.IdleCustomerStripeIds.Add(user.StripeCustomerId);
+                        continue;
+                    }
+                    // group all visits to payee
+                    var creatorVisits = GetVisitsPerCreator(hits);
+                    // get partner share
+                    var partnerVisits = GetVisitsPerPartner(hits);
+                    // fraction each creator by the percentage of total visits
+                    // multiply payment by that fraction
+                    _logger.LogInformation($"Found {0} creators visited and {1} partners visited for a payer.", creatorVisits.Count, partnerVisits.Count);
+                    payees.AddRange(GetCreatorPayees(payer.Payment, creatorVisits, hits.Count(), PartnerFraction, SublessFraction));
+                    payees.AddRange(GetPartnerPayees(payer.Payment, creatorVisits, hits.Count(), PartnerFraction, SublessFraction));
+                    // set aside 2% for us
+                    payees.Add(GetSublessPayment(payer.Payment, SublessFraction));
+                    // ensure total payment adds up
+                    var totalPayments = Math.Round(payees.Sum(payee => payee.Payment), CurrencyPrecision, MidpointRounding.ToZero);
+                    if (totalPayments > payer.Payment)
+                    {
+                        throw new ArithmeticException($"The math did not add up for payer:{payer.UserId}");
+                    }
 
-                // record each outgoing payment to master list
-                var payments = CollectPaymentDetails(payees, payer, endDate);
-                // if someone has paid twice (cancelled and resubbed), we should just combine their payments
-                if (calculatorResult.PaymentsPerPayer.ContainsKey(user.CognitoId))
-                {
-                    calculatorResult.PaymentsPerPayer[user.CognitoId].AddRange(payments);
+                    // record each outgoing payment to master list
+                    var payments = CollectPaymentDetails(payees, payer, endDate);
+                    // if someone has paid twice (cancelled and resubbed), we should just combine their payments
+                    if (calculatorResult.PaymentsPerPayer.ContainsKey(user.CognitoId))
+                    {
+                        calculatorResult.PaymentsPerPayer[user.CognitoId].AddRange(payments);
+                    }
+                    else
+                    {
+                        calculatorResult.PaymentsPerPayer.Add(user.CognitoId, payments);
+                    }
+                    AddPayeesToMasterList(calculatorResult.AllPayouts, payees, startDate, endDate);
                 }
-                else
-                {
-                    calculatorResult.PaymentsPerPayer.Add(user.CognitoId, payments);
-                }
-                AddPayeesToMasterList(calculatorResult.AllPayouts, payees, startDate, endDate);
+                DeductPaypalFees(calculatorResult.AllPayouts);
+                // stripe sends payments in cents, paypal expects payouts in dollars
+                ConvertCentsToDollars(calculatorResult.AllPayouts);
+                // make sure we're not sending inappropriate fractions
+                RoundPaymentsForFinalPayment(calculatorResult.AllPayouts);
+                return calculatorResult;
             }
-            DeductPaypalFees(calculatorResult.AllPayouts);
-            // stripe sends payments in cents, paypal expects payouts in dollars
-            ConvertCentsToDollars(calculatorResult.AllPayouts);
-            // make sure we're not sending inappropriate fractions
-            RoundPaymentsForFinalPayment(calculatorResult.AllPayouts);
-            return calculatorResult;
         }
 
         private IEnumerable<Hit> FilterInvalidCreators(IEnumerable<Hit> hits)

@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using StackExchange.Profiling;
 using Stripe;
 using Stripe.Checkout;
 using Subless.Models;
@@ -258,59 +260,90 @@ namespace Subless.Services.Services
             var utcutcEndDate = new DateTime(endDate.ToUniversalTime().Ticks, DateTimeKind.Utc);
             _logger.LogDebug($"Looking for invoices in time range UTC kind, UTC Time: {utcutcStartDate}  --  {utcutcEndDate}");
             //Stripe seems to convert datetimes to json and back, and use the local time when doing so. We need to pass a local time to prevent a double UTC conversion.
-            var invoices = GetInvoiceInRage(utcutcStartDate, utcutcEndDate);
+            List<Invoice> invoices;
+            using (MiniProfiler.Current.Step("Get invoices"))
+            {
+                invoices = GetInvoiceInRage(utcutcStartDate, utcutcEndDate);
+
+            }
             var cusomterIds = invoices.Select(invoice => invoice.CustomerId);
             var users = _userService.GetUsersFromStripeIds(cusomterIds);
-            var payers = new List<Payer>();
-            foreach (var invoice in invoices)
+            var payers = new ConcurrentBag<Payer>();
+            using (MiniProfiler.Current.Step("Per-payer data retrieval"))
             {
-                _logger.LogDebug($"Invoice {invoice.Id} found for date {invoice.Created}");
-                var user = users.FirstOrDefault(x => x.StripeCustomerId == invoice.CustomerId);
-                if (user == null)
+                Parallel.ForEach(invoices, invoice =>
                 {
-                    _logger.LogWarning($"User payment detected without corresponding user in subless system. CustomerId: {invoice.CustomerId} Email: {invoice.CustomerEmail}");
-                }
-                else
-                {
-                    long payment = 0;
-                    long fees = 0;
-                    var taxes = invoice?.Tax ?? 0;
-                    if (invoice.ChargeId != null) // Charges will not be present if the payment was made with a coupon
+                    var payer = ProcessPayer(invoice, users);
+                    if (payer != null)
                     {
-                        var charge = _stripeApiWrapperService.ChargeService.Get(invoice.ChargeId);
-                        var balanceTrans = _stripeApiWrapperService.BalanceTransactionService.Get(charge.BalanceTransactionId);
-                        fees = balanceTrans.Fee;
-                        payment = balanceTrans.Net;
-                        var refunds = _stripeApiWrapperService.RefundService.List(new RefundListOptions() { Charge = invoice.ChargeId });
-                        // Check to see if it was a full refund. Set payment to 0 if it was.
-                        if (refunds.Any())
+                        payers.Add(payer);
+                    }
+                });
+            }
+            return payers.ToList();
+        }
+
+        private Payer ProcessPayer(Invoice invoice, IEnumerable<User> users)
+        {
+            _logger.LogDebug($"Invoice {invoice.Id} found for date {invoice.Created}");
+            var user = users.FirstOrDefault(x => x.StripeCustomerId == invoice.CustomerId);
+            if (user == null)
+            {
+                _logger.LogWarning($"User payment detected without corresponding user in subless system. CustomerId: {invoice.CustomerId} Email: {invoice.CustomerEmail}");
+            }
+            else
+            {
+                long payment = 0;
+                long fees = 0;
+                Charge charge;
+                BalanceTransaction balanceTrans;
+                StripeList<Refund> refunds;
+                var taxes = invoice?.Tax ?? 0;
+                if (invoice.ChargeId != null) // Charges will not be present if the payment was made with a coupon
+                {
+                    using (MiniProfiler.Current.Step("Get Charge"))
+                    {
+                        charge = _stripeApiWrapperService.ChargeService.Get(invoice.ChargeId);
+
+                    }
+                    using (MiniProfiler.Current.Step("Get balance trans"))
+                    {
+                        balanceTrans = _stripeApiWrapperService.BalanceTransactionService.Get(charge.BalanceTransactionId);
+                    }
+                    fees = balanceTrans.Fee;
+                    payment = balanceTrans.Net;
+                    using (MiniProfiler.Current.Step("Get refunds"))
+                    {
+                        refunds = _stripeApiWrapperService.RefundService.List(new RefundListOptions() { Charge = invoice.ChargeId });
+                    }
+                    // Check to see if it was a full refund. Set payment to 0 if it was.
+                    if (refunds.Any())
+                    {
+                        var totalRefund = refunds.Select(x => x.Amount).Sum();
+                        payment = balanceTrans.Amount - totalRefund;
+                        // Fees are subtracted from the payment by stripe. If we refunded less than the payment, we have to manually address the fees
+                        payment = payment - fees;
+                        if (payment < 0)
                         {
-                            var totalRefund = refunds.Select(x => x.Amount).Sum();
-                            payment = balanceTrans.Amount - totalRefund;
-                            // Fees are subtracted from the payment by stripe. If we refunded less than the payment, we have to manually address the fees
-                            payment = payment - fees;
-                            if (payment < 0)
-                            {
-                                payment = 0;
-                            }
+                            payment = 0;
                         }
                     }
-                    // if we were paid with a coupon, we need to calculate the payment differently
-                    else
-                    {
-                        payment = invoice.Subtotal;
-                    }
-
-                    payers.Add(new Payer
-                    {
-                        UserId = users.Single(x => x.StripeCustomerId == invoice.CustomerId).Id,
-                        Payment = payment,
-                        Taxes = taxes,
-                        Fees = fees
-                    });
                 }
+                // if we were paid with a coupon, we need to calculate the payment differently
+                else
+                {
+                    payment = invoice.Subtotal;
+                }
+
+                return new Payer
+                {
+                    UserId = users.Single(x => x.StripeCustomerId == invoice.CustomerId).Id,
+                    Payment = payment,
+                    Taxes = taxes,
+                    Fees = fees
+                };
             }
-            return payers;
+            return null;
         }
 
         private List<Invoice> GetInvoiceInRage(DateTime startDate, DateTime endDate)
