@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Channels;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -254,37 +255,39 @@ namespace Subless.Services.Services
             return await _stripeApiWrapperService.SessionService.GetAsync(sessionId);
         }
 
-        public IEnumerable<Payer> GetPayersForRange(DateTimeOffset startDate, DateTimeOffset endDate)
+        public async Task<IEnumerable<Payer>> GetPayersForRange(DateTimeOffset startDate, DateTimeOffset endDate)
         {
             var utcutcStartDate = new DateTime(startDate.ToUniversalTime().Ticks, DateTimeKind.Utc);
             var utcutcEndDate = new DateTime(endDate.ToUniversalTime().Ticks, DateTimeKind.Utc);
             _logger.LogDebug($"Looking for invoices in time range UTC kind, UTC Time: {utcutcStartDate}  --  {utcutcEndDate}");
             //Stripe seems to convert datetimes to json and back, and use the local time when doing so. We need to pass a local time to prevent a double UTC conversion.
-            List<Invoice> invoices;
+            var invoices = Channel.CreateUnbounded<Invoice>();
             using (MiniProfiler.Current.Step("Get invoices"))
             {
-                invoices = GetInvoiceInRage(utcutcStartDate, utcutcEndDate);
+                GetInvoiceInRage(utcutcStartDate, utcutcEndDate, invoices);
 
             }
-            var cusomterIds = invoices.Select(invoice => invoice.CustomerId);
-            var users = _userService.GetUsersFromStripeIds(cusomterIds);
+
             var payers = new ConcurrentBag<Payer>();
             using (MiniProfiler.Current.Step("Per-payer data retrieval"))
             {
-                Parallel.ForEach(invoices, invoice =>
+                await foreach (var invoice in invoices.Reader.ReadAllAsync())
                 {
-                    var payer = ProcessPayer(invoice, users);
+                    var payer = ProcessPayer(invoice);
                     if (payer != null)
                     {
                         payers.Add(payer);
                     }
-                });
+                }
             }
             return payers.ToList();
         }
 
-        private Payer ProcessPayer(Invoice invoice, IEnumerable<User> users)
+        
+
+        private Payer ProcessPayer(Invoice invoice)
         {
+            var users = _userService.GetUsersFromStripeIds(new List<string> { invoice.CustomerId });
             _logger.LogDebug($"Invoice {invoice.Id} found for date {invoice.Created}");
             var user = users.FirstOrDefault(x => x.StripeCustomerId == invoice.CustomerId);
             if (user == null)
@@ -346,9 +349,8 @@ namespace Subless.Services.Services
             return null;
         }
 
-        private List<Invoice> GetInvoiceInRage(DateTime startDate, DateTime endDate)
+        private async void GetInvoiceInRage(DateTime startDate, DateTime endDate, Channel<Invoice> invoices)
         {
-            var invoices = new List<Invoice>();
             var filters = new InvoiceListOptions()
             {
                 Status = "paid",
@@ -361,7 +363,10 @@ namespace Subless.Services.Services
             };
             var nextSet = _stripeApiWrapperService.InvoiceService.List(filters);
 
-            invoices.AddRange(nextSet);
+            foreach (var invoice in nextSet)
+            {
+                await invoices.Writer.WriteAsync(invoice);
+            }
             while (nextSet.Any())
             {
                 filters = new InvoiceListOptions()
@@ -376,9 +381,12 @@ namespace Subless.Services.Services
                     StartingAfter = nextSet.Last().Id
                 };
                 nextSet = _stripeApiWrapperService.InvoiceService.List(filters);
-                invoices.AddRange(nextSet);
+                foreach (var invoice in nextSet)
+                {
+                    await invoices.Writer.WriteAsync(invoice);
+                }
             }
-            return invoices;
+            invoices.Writer.Complete();
 
         }
         public bool CancelSubscription(string cognitoId)

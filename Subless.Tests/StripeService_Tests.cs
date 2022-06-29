@@ -17,35 +17,35 @@ namespace Subless.Tests
     public class StripeService_Tests
     {
         [Fact]
-        public void GetPayers_Executes() // verifies that the mocks work to construct the object
+        public async Task GetPayers_Executes() // verifies that the mocks work to construct the object
         {
             var sut = StripeServiceBuilder.BuildStripeService();
-            sut.GetPayersForRange(new DateTimeOffset(), new DateTimeOffset());
+            await sut.GetPayersForRange(new DateTimeOffset(), new DateTimeOffset());
         }
 
         [Fact]
-        public void GetPayers_WithOneInvoiceAndNoUsers_ReturnsNoPayers()
+        public async Task GetPayers_WithOneInvoiceAndNoUsers_ReturnsNoPayers()
         {
             var invoices = new List<Invoice>() { new Invoice() };
             var sut = StripeServiceBuilder.BuildStripeService(invoices);
-            var payers = sut.GetPayersForRange(new DateTimeOffset(), new DateTimeOffset());
+            var payers = await sut.GetPayersForRange(new DateTimeOffset(), new DateTimeOffset());
             Assert.Empty(payers);
         }
 
         [Fact]
-        public void GetPayers_WithOneInvoiceAndOneUser_ReturnsOnePayer()
+        public async Task GetPayers_WithOneInvoiceAndOneUser_ReturnsOnePayer()
         {
             var stripeId = "stripeId";
             var invoices = new List<Invoice>() { new Invoice() { CustomerId = stripeId } };
             var users = new List<User>() { new User() { StripeCustomerId = stripeId, Id = Guid.NewGuid() } };
             var sut = StripeServiceBuilder.BuildStripeService(invoices, users);
-            var payers = sut.GetPayersForRange(new DateTimeOffset(), new DateTimeOffset());
+            var payers = await sut.GetPayersForRange(new DateTimeOffset(), new DateTimeOffset());
             Assert.Single(payers);
             Assert.Equal(users.Single().Id, payers.Single().UserId);
         }
 
         [Fact]
-        public void GetPayers_WithInvoiceAndFullRefund_ReturnsNoPayment()
+        public async Task GetPayers_WithInvoiceAndFullRefund_ReturnsNoPayment()
         {
             var stripeId = "stripeId";
             var chargeId = "chargeId";
@@ -59,13 +59,13 @@ namespace Subless.Tests
                 new List<Refund> { refund} , 
                 new List<Charge> { charge },
                 new BalanceTransaction());
-            var payers = sut.GetPayersForRange(new DateTimeOffset(), new DateTimeOffset());
+            var payers = await sut.GetPayersForRange(new DateTimeOffset(), new DateTimeOffset());
             Assert.Single(payers);
             Assert.Equal(users.Single().Id, payers.Single().UserId);
             Assert.Equal(0, payers.Single().Payment);
         }
         [Fact]
-        public void GetPayers_WithInvoiceWithFees_ReturnsFeesInPayment()
+        public async Task GetPayers_WithInvoiceWithFees_ReturnsFeesInPayment()
         {
             var stripeId = "stripeId";
             var chargeId = "chargeId";
@@ -78,14 +78,14 @@ namespace Subless.Tests
                 new List<Refund> { },
                 new List<Charge> { charge },
                 new BalanceTransaction(){ Fee = 97 });
-            var payers = sut.GetPayersForRange(new DateTimeOffset(), new DateTimeOffset());
+            var payers = await sut.GetPayersForRange(new DateTimeOffset(), new DateTimeOffset());
             Assert.Single(payers);
             Assert.Equal(users.Single().Id, payers.Single().UserId);
             Assert.Equal(97, payers.Single().Fees);
         }
 
         [Fact]
-        public void GetPayers_WithInvoiceWithTaxes_ReturnsTaxesInPayment()
+        public async Task GetPayers_WithInvoiceWithTaxes_ReturnsTaxesInPayment()
         {
             var stripeId = "stripeId";
             var chargeId = "chargeId";
@@ -98,14 +98,14 @@ namespace Subless.Tests
                 new List<Refund> { },
                 new List<Charge> { charge },
                 new BalanceTransaction() { Fee = 97 });
-            var payers = sut.GetPayersForRange(new DateTimeOffset(), new DateTimeOffset());
+            var payers = await sut.GetPayersForRange(new DateTimeOffset(), new DateTimeOffset());
             Assert.Single(payers);
             Assert.Equal(users.Single().Id, payers.Single().UserId);
             Assert.Equal(22, payers.Single().Taxes);
         }
 
         [Fact]
-        public void GetPayers_WithInvoiceWithMultiplePages_ReturnsAllPayments()
+        public async Task GetPayers_WithInvoiceWithMultiplePages_ReturnsAllPayments()
         {
             var stripeId = "stripeId";
             var chargeId = "chargeId";
@@ -125,7 +125,7 @@ namespace Subless.Tests
                 new List<Charge> { charge },
                 new BalanceTransaction() { },
                 invoiceService);
-            var payers = sut.GetPayersForRange(new DateTimeOffset(), new DateTimeOffset());
+            var payers = await sut.GetPayersForRange(new DateTimeOffset(), new DateTimeOffset());
             Assert.Equal(2, payers.Count());
         }
 

@@ -7,6 +7,7 @@ using Subless.Services.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Subless.Tests
@@ -274,7 +275,7 @@ namespace Subless.Tests
         }
 
         [Fact]
-        public void CalculatorService_PaypalFees_MathExplainer()
+        public async Task CalculatorService_PaypalFees_MathExplainer()
         {
             //Arrange 
             var userPayment = 10000000; // thank you for the $100k budget, kind patron
@@ -298,7 +299,7 @@ namespace Subless.Tests
                 partnerService: partnerService
                 );
             //Act
-            var result = sut.CaculatePayoutsOverRange(DateTimeOffset.UtcNow.AddMonths(-1), DateTimeOffset.UtcNow);
+            var result = await sut.CaculatePayoutsOverRange(DateTimeOffset.UtcNow.AddMonths(-1), DateTimeOffset.UtcNow);
 
             //Assert
             Assert.NotEmpty(result.AllPayouts); // We should have a payment directed at subless
@@ -590,7 +591,7 @@ namespace Subless.Tests
         }
 
         [Fact]
-        public void Payer_WithNoHits_RollsOverPayment()
+        public async Task Payer_WithNoHits_RollsOverPayment()
         {
             //Arrange
             var allPayments = new List<PaymentAuditLog>();
@@ -627,7 +628,7 @@ namespace Subless.Tests
                 partnerService: partnerService
                 );
             //Act
-            sut.ExecutePayments(DateTimeOffset.UtcNow.AddMonths(-1), DateTimeOffset.UtcNow);
+            await sut.ExecutePayments(DateTimeOffset.UtcNow.AddMonths(-1), DateTimeOffset.UtcNow);
 
             //Assert
             Assert.Empty(allPayments);
@@ -636,7 +637,7 @@ namespace Subless.Tests
 
 
         [Fact]
-        public void Rollover_WithOtherPayers_ExecutesOtherPayments()
+        public async Task Rollover_WithOtherPayers_ExecutesOtherPayments()
         {
 
             //Arrange
@@ -693,7 +694,7 @@ namespace Subless.Tests
                 partnerService: partnerService
                 );
             //Act
-            var result = sut.CaculatePayoutsOverRange(DateTimeOffset.UtcNow.AddMonths(-1), DateTimeOffset.UtcNow);
+            var result = await sut.CaculatePayoutsOverRange(DateTimeOffset.UtcNow.AddMonths(-1), DateTimeOffset.UtcNow);
 
             //Assert
             Assert.Equal(3, result.AllPayouts.Count);
@@ -702,7 +703,7 @@ namespace Subless.Tests
 
 
         [Fact]
-        public void Execution_WithUserFilter_IgnoresOthers()
+        public async Task Execution_WithUserFilter_IgnoresOthers()
         {
 
             //Arrange
@@ -777,7 +778,7 @@ namespace Subless.Tests
                 userService: userService
                 );
             //Act
-            var result = sut.CaculatePayoutsOverRange(DateTimeOffset.UtcNow.AddMonths(-1), DateTimeOffset.UtcNow, new List<Guid> { payer2.Id });
+            var result = await sut.CaculatePayoutsOverRange(DateTimeOffset.UtcNow.AddMonths(-1), DateTimeOffset.UtcNow, new List<Guid> { payer2.Id });
 
             //Assert
             Assert.Equal(3, result.AllPayouts.Count);
@@ -872,7 +873,7 @@ namespace Subless.Tests
         private Mock<IStripeService> StripeServiceBuilder(List<Payer> payers = null, Mock<IStripeService> stripeService = null)
         {
             var service = stripeService ?? new Mock<IStripeService>();
-            service.Setup(x => x.GetPayersForRange(It.IsAny<DateTimeOffset>(), It.IsAny<DateTimeOffset>())).Returns(payers ?? new List<Payer>());
+            service.Setup(x => x.GetPayersForRange(It.IsAny<DateTimeOffset>(), It.IsAny<DateTimeOffset>())).ReturnsAsync(payers ?? new List<Payer>());
             return service;
         }
 
