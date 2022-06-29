@@ -80,7 +80,7 @@ namespace SublessSignIn
                   });
             });
             services.AddMvc();
-            if (true) // disable miniprofiler
+            if (false) // disable miniprofiler
             {
                 services.AddMiniProfiler(options =>
                 {
@@ -99,7 +99,7 @@ namespace SublessSignIn
             applicationLifetime.ApplicationStarted.Register(OnStarted);
             applicationLifetime.ApplicationStopping.Register(OnStopping);
             applicationLifetime.ApplicationStopped.Register(OnStopped);
-            if (true) // disable miniprofiler
+            if (false) // disable miniprofiler
             {
                 app.UseMiniProfiler();
             }
