@@ -269,84 +269,77 @@ namespace Subless.Services.Services
             }
 
             var payers = new ConcurrentBag<Payer>();
+            var tasks = new ConcurrentBag<Task>();
             using (MiniProfiler.Current.Step("Per-payer data retrieval"))
             {
                 await foreach (var invoice in invoices.Reader.ReadAllAsync())
                 {
-                    var payer = ProcessPayer(invoice);
-                    if (payer != null)
-                    {
-                        payers.Add(payer);
-                    }
+                    _logger.LogDebug("Processing payer");
+                    tasks.Add(ProcessPayer(invoice, payers));
+
                 }
             }
+            await Task.WhenAll(tasks);
             return payers.ToList();
         }
 
         
 
-        private Payer ProcessPayer(Invoice invoice)
+        private async Task ProcessPayer(Invoice invoice, ConcurrentBag<Payer> payers)
         {
+
             var users = _userService.GetUsersFromStripeIds(new List<string> { invoice.CustomerId });
+ 
             _logger.LogDebug($"Invoice {invoice.Id} found for date {invoice.Created}");
             var user = users.FirstOrDefault(x => x.StripeCustomerId == invoice.CustomerId);
-            if (user == null)
+            var taxes = invoice?.Tax ?? 0;
+            if (invoice.ChargeId != null) // Charges will not be present if the payment was made with a coupon
             {
-                _logger.LogWarning($"User payment detected without corresponding user in subless system. CustomerId: {invoice.CustomerId} Email: {invoice.CustomerEmail}");
-            }
-            else
-            {
-                long payment = 0;
-                long fees = 0;
-                Charge charge;
-                BalanceTransaction balanceTrans;
-                StripeList<Refund> refunds;
-                var taxes = invoice?.Tax ?? 0;
-                if (invoice.ChargeId != null) // Charges will not be present if the payment was made with a coupon
+                var charge = _stripeApiWrapperService.ChargeService.GetAsync(invoice.ChargeId);  
+                var balanceTrans = await _stripeApiWrapperService.BalanceTransactionService.GetAsync((await charge).BalanceTransactionId);
+                var refunds = _stripeApiWrapperService.RefundService.ListAsync(new RefundListOptions() { Charge = invoice.ChargeId });
+                var payment = balanceTrans.Net;
+                // Check to see if it was a full refund. Set payment to 0 if it was.
+                if ((await refunds).Any())
                 {
-                    using (MiniProfiler.Current.Step("Get Charge"))
+                    var totalRefund = (await refunds).Select(x => x.Amount).Sum();
+                    payment = balanceTrans.Amount - totalRefund;
+                    // Fees are subtracted from the payment by stripe. If we refunded less than the payment, we have to manually address the fees
+                    payment = payment - balanceTrans.Fee;
+                    if (payment < 0)
                     {
-                        charge = _stripeApiWrapperService.ChargeService.Get(invoice.ChargeId);
-
-                    }
-                    using (MiniProfiler.Current.Step("Get balance trans"))
-                    {
-                        balanceTrans = _stripeApiWrapperService.BalanceTransactionService.Get(charge.BalanceTransactionId);
-                    }
-                    fees = balanceTrans.Fee;
-                    payment = balanceTrans.Net;
-                    using (MiniProfiler.Current.Step("Get refunds"))
-                    {
-                        refunds = _stripeApiWrapperService.RefundService.List(new RefundListOptions() { Charge = invoice.ChargeId });
-                    }
-                    // Check to see if it was a full refund. Set payment to 0 if it was.
-                    if (refunds.Any())
-                    {
-                        var totalRefund = refunds.Select(x => x.Amount).Sum();
-                        payment = balanceTrans.Amount - totalRefund;
-                        // Fees are subtracted from the payment by stripe. If we refunded less than the payment, we have to manually address the fees
-                        payment = payment - fees;
-                        if (payment < 0)
-                        {
-                            payment = 0;
-                        }
+                        payment = 0;
                     }
                 }
-                // if we were paid with a coupon, we need to calculate the payment differently
-                else
+                if (!users.Any())
                 {
-                    payment = invoice.Subtotal;
+                    _logger.LogWarning($"User payment detected without corresponding user in subless system. CustomerId: {invoice.CustomerId} Email: {invoice.CustomerEmail}");
+                    return;
                 }
-
-                return new Payer
+                payers.Add(new Payer
                 {
                     UserId = users.Single(x => x.StripeCustomerId == invoice.CustomerId).Id,
                     Payment = payment,
                     Taxes = taxes,
-                    Fees = fees
-                };
+                    Fees = balanceTrans.Fee
+                });
             }
-            return null;
+            if (!users.Any())
+            {
+                _logger.LogWarning($"User payment detected without corresponding user in subless system. CustomerId: {invoice.CustomerId} Email: {invoice.CustomerEmail}");
+                return;
+            }
+            // if we were paid with a coupon, we need to calculate the payment differently
+            else
+            {
+                payers.Add(new Payer
+                {
+                    UserId = users.Single(x => x.StripeCustomerId == invoice.CustomerId).Id,
+                    Payment = invoice.Subtotal,
+                    Taxes = 0,
+                    Fees = 0
+                });
+            }
         }
 
         private async void GetInvoiceInRage(DateTime startDate, DateTime endDate, Channel<Invoice> invoices)
@@ -361,13 +354,14 @@ namespace Subless.Services.Services
                 },
                 Limit = 10,
             };
-            var nextSet = _stripeApiWrapperService.InvoiceService.List(filters);
+            var nextSet = _stripeApiWrapperService.InvoiceService.ListAsync(filters);
 
-            foreach (var invoice in nextSet)
+            foreach (var invoice in await nextSet)
             {
+                _logger.LogDebug("Getting invoice batch");
                 await invoices.Writer.WriteAsync(invoice);
             }
-            while (nextSet.Any())
+            while ((await nextSet).Any())
             {
                 filters = new InvoiceListOptions()
                 {
@@ -378,10 +372,10 @@ namespace Subless.Services.Services
                         LessThanOrEqual = endDate
                     },
                     Limit = 10,
-                    StartingAfter = nextSet.Last().Id
+                    StartingAfter = (await nextSet).Last().Id
                 };
-                nextSet = _stripeApiWrapperService.InvoiceService.List(filters);
-                foreach (var invoice in nextSet)
+                nextSet = _stripeApiWrapperService.InvoiceService.ListAsync(filters);
+                foreach (var invoice in await nextSet)
                 {
                     await invoices.Writer.WriteAsync(invoice);
                 }

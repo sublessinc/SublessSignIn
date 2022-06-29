@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -112,10 +113,10 @@ namespace Subless.Tests
             var invoiceService = new Mock<InvoiceService>();
             var invoices = new StripeList<Invoice>() { Data = new List<Invoice>() { new Invoice() { CustomerId = stripeId, ChargeId = chargeId } }};
             var invoices2 = new StripeList<Invoice>() { Data = new List<Invoice>() { new Invoice() { CustomerId = stripeId, ChargeId = chargeId } } };
-            invoiceService.SetupSequence(x => x.List(It.IsAny<InvoiceListOptions>(), null))
-                .Returns(invoices)
-                .Returns(invoices2)
-                .Returns(new StripeList<Invoice>() { Data = new List<Invoice>() }); 
+            invoiceService.SetupSequence(x => x.ListAsync(It.IsAny<InvoiceListOptions>(), null, new CancellationToken()))
+                .ReturnsAsync(invoices)
+                .ReturnsAsync(invoices2)
+                .ReturnsAsync(new StripeList<Invoice>() { Data = new List<Invoice>() }); 
             var charge = new Charge() { Id = chargeId, Amount = 1000 };
             var users = new List<User>() { new User() { StripeCustomerId = stripeId, Id = Guid.NewGuid() } };
             var sut = StripeServiceBuilder.BuildStripeService(
@@ -150,25 +151,25 @@ namespace Subless.Tests
                 var stripeWrapper = new Mock<IStripeApiWrapperService>();
                 var invoiceService = new Mock<InvoiceService>();
                 var invoices = new StripeList<Invoice>() { Data = testInvoices ?? new List<Invoice>() };
-                invoiceService.SetupSequence(x => x.List(It.IsAny<InvoiceListOptions>(), null))
-                    .Returns(invoices)
-                    .Returns(new StripeList<Invoice>() { Data = new List<Invoice>() }); // Need two returns in sequence to account for paging
+                invoiceService.SetupSequence(x => x.ListAsync(It.IsAny<InvoiceListOptions>(), null, new CancellationToken()))
+                    .ReturnsAsync(invoices)
+                    .ReturnsAsync(new StripeList<Invoice>() { Data = new List<Invoice>() }); // Need two returns in sequence to account for paging
                 stripeWrapper.Setup(x => x.InvoiceService).Returns(invoiceSerivceMock?.Object ?? invoiceService.Object);
                 var userService = new Mock<IUserService>();
                 userService.Setup(x => x.GetUsersFromStripeIds(It.IsAny<IEnumerable<string>>())).Returns(users ?? new List<User>());
                 var refundService = new Mock<RefundService>();
-                refundService.Setup(x => x.List(It.IsAny<RefundListOptions>(), null))
-                    .Returns(new StripeList<Refund> { Data = refunds ?? new List<Refund>() });
+                refundService.Setup(x => x.ListAsync(It.IsAny<RefundListOptions>(), null, new CancellationToken()))
+                    .ReturnsAsync(new StripeList<Refund> { Data = refunds ?? new List<Refund>() });
                 stripeWrapper.Setup(x => x.RefundService).Returns(refundService.Object);
                 var chargeService = new Mock<ChargeService>();
-                chargeService.Setup(x => x.List(It.IsAny<ChargeListOptions>(), null))
-                    .Returns(new StripeList<Charge> { Data = charges ?? new List<Charge>() });
-                chargeService.Setup(x => x.Get(It.IsAny<string>(), null, null))
-                .Returns(charges?.First());
+                chargeService.Setup(x => x.ListAsync(It.IsAny<ChargeListOptions>(), null, new CancellationToken()))
+                    .ReturnsAsync(new StripeList<Charge> { Data = charges ?? new List<Charge>() });
+                chargeService.Setup(x => x.GetAsync(It.IsAny<string>(), null, null, new CancellationToken()))
+                .ReturnsAsync(charges?.First());
                 stripeWrapper.Setup(x => x.ChargeService).Returns(chargeService.Object);
                 var balanceTransactionService = new Mock<BalanceTransactionService>();
-                balanceTransactionService.Setup(x => x.Get(It.IsAny<string>(), null, null))
-                    .Returns(balanceTransaction);
+                balanceTransactionService.Setup(x => x.GetAsync(It.IsAny<string>(), null, null, new CancellationToken()))
+                    .ReturnsAsync(balanceTransaction);
                 stripeWrapper.Setup(x => x.BalanceTransactionService).Returns(balanceTransactionService.Object);
                 var sut = new StripeService(Options.Create(new Models.StripeConfig()), userService.Object, stripeWrapper.Object, factory);
                 return sut;
