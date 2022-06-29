@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using StackExchange.Profiling;
 using Subless.Models;
 using Subless.Services;
 using Subless.Services.Services;
@@ -29,9 +30,13 @@ namespace SublessSignIn.Controllers
             [FromQuery] DateTimeOffset end
             )
         {
-            start = start.ToUniversalTime();
-            end = end.ToUniversalTime();
-            return Ok(_calculatorService.CaculatePayoutsOverRange(start, end));
+            using (MiniProfiler.Current.Step("CalculatorExecute"))
+            {
+
+                start = start.ToUniversalTime();
+                end = end.ToUniversalTime();
+                return Ok(_calculatorService.CaculatePayoutsOverRange(start, end));
+            }
         }
 
         [HttpGet("forusers")]

@@ -80,6 +80,17 @@ namespace SublessSignIn
                   });
             });
             services.AddMvc();
+            if (false) // disable miniprofiler
+            {
+                services.AddMiniProfiler(options =>
+                {
+                    options.RouteBasePath = "/profiler";
+                    options.SqlFormatter = new StackExchange.Profiling.SqlFormatters.InlineFormatter();
+                    options.TrackConnectionOpenClose = true;
+                    options.EnableMvcFilterProfiling = true;
+                    options.EnableMvcViewProfiling = true;
+                });
+            }
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -88,6 +99,10 @@ namespace SublessSignIn
             applicationLifetime.ApplicationStarted.Register(OnStarted);
             applicationLifetime.ApplicationStopping.Register(OnStopping);
             applicationLifetime.ApplicationStopped.Register(OnStopped);
+            if (false) // disable miniprofiler
+            {
+                app.UseMiniProfiler();
+            }
 
             Console.CancelKeyPress += (sender, eventArgs) =>
             {
