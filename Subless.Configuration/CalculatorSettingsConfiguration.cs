@@ -11,10 +11,6 @@ namespace Subless.Configuration
             services.Configure<CalculatorConfiguration>(options =>
             {
                 options.BucketName = Environment.GetEnvironmentVariable("BucketName") ?? throw new ArgumentNullException("BucketName");
-                options.ExecutionsPerYear = int.Parse(Environment.GetEnvironmentVariable("ExecutionsPerYear") ?? throw new ArgumentNullException("ExecutionsPerYear"), CultureInfo.InvariantCulture);
-                options.RunOnStart = bool.Parse(Environment.GetEnvironmentVariable("RunOnStart") ?? "false");
-                options.CalcuationRangeEnd = Environment.GetEnvironmentVariable("CalcuationRangeEnd");
-                options.CalcuationRangeStart = Environment.GetEnvironmentVariable("CalcuationRangeStart");
                 options.Domain = Environment.GetEnvironmentVariable("DOMAIN");
                 options.PoolId = Environment.GetEnvironmentVariable("DOMAIN");
             });

@@ -8,6 +8,5 @@
 
         public string Domain { get; set; }
         public string SublessPayPalId { get; set; }
-        public int ParallelRequests { get; set; }
     }
 }
