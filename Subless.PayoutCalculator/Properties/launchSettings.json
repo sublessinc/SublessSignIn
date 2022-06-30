@@ -20,7 +20,7 @@
         "RunOnStart": "false",
         "PayPalId": "contact@subless.com",
         "dbCreds": "{  'password': 'zkleRY0BHaU8gI4Jsx3RXOX3',  'engine': 'postgres',  'port': 5432,  'dbInstanceIdentifier': 'sublessusers',  'host': 'localhost',  'username': 'postgres'}",
-        "Logging__LogLevel__Default": "debug",
+        "Logging__LogLevel__Default": "Debug",
         "CalcuationRangeStart": "2022-05-11 12:00:00.00+00",
         "CalcuationRangeEnd": "2023-05-11 12:00:00.00+00",
         "DOMAIN": "https://localhost:4200/",
