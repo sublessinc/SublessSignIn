@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using StackExchange.Profiling;
@@ -26,7 +25,7 @@ namespace SublessSignIn.Controllers
         }
 
         [HttpGet()]
-        public async Task<ActionResult<CalculatorResult>> CalculateOverRange(
+        public ActionResult<CalculatorResult> CalculateOverRange(
             [FromQuery] DateTimeOffset start,
             [FromQuery] DateTimeOffset end
             )
@@ -36,12 +35,12 @@ namespace SublessSignIn.Controllers
 
                 start = start.ToUniversalTime();
                 end = end.ToUniversalTime();
-                return Ok(await _calculatorService.CaculatePayoutsOverRange(start, end));
+                return Ok(_calculatorService.CaculatePayoutsOverRange(start, end));
             }
         }
 
         [HttpGet("forusers")]
-        public async Task<ActionResult<CalculatorResult>> CalculateOverRangeForUsers(
+        public ActionResult<CalculatorResult> CalculateOverRangeForUsers(
             [FromQuery] DateTimeOffset start,
             [FromQuery] DateTimeOffset end,
             [FromBody] List<Guid> selectedUserIds
@@ -49,29 +48,29 @@ namespace SublessSignIn.Controllers
         {
             start = start.ToUniversalTime();
             end = end.ToUniversalTime();
-            return Ok(await _calculatorService.CaculatePayoutsOverRange(start, end, selectedUserIds));
+            return Ok(_calculatorService.CaculatePayoutsOverRange(start, end, selectedUserIds));
         }
 
 
         [HttpPost()]
-        public async Task<ActionResult> ExecutePayoutOverRange([FromQuery] DateTimeOffset start,
+        public ActionResult ExecutePayoutOverRange([FromQuery] DateTimeOffset start,
             [FromQuery] DateTimeOffset end)
         {
             start = start.ToUniversalTime();
             end = end.ToUniversalTime();
-            await _paymentService.ExecutePayments(start, end, null);
+            _paymentService.ExecutePayments(start, end, null);
             return Ok();
 
         }
 
         [HttpPost("forusers")]
-        public async Task<ActionResult> ExecutePayoutOverRangeForUsers([FromQuery] DateTimeOffset start,
+        public ActionResult ExecutePayoutOverRangeForUsers([FromQuery] DateTimeOffset start,
             [FromQuery] DateTimeOffset end,
             [FromBody] List<Guid> selectedUserIds)
         {
             start = start.ToUniversalTime();
             end = end.ToUniversalTime();
-            await _paymentService.ExecutePayments(start, end, selectedUserIds);
+            _paymentService.ExecutePayments(start, end, selectedUserIds);
             return Ok();
 
         }
