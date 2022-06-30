@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
+using Subless.Data;
 using Subless.Models;
 using Subless.Services.Services;
 using System;
@@ -819,6 +820,7 @@ namespace Subless.Tests
                 CreateOptions(),
                 new Mock<IPaymentEmailService>().Object,
                 calculatorService,
+                new Mock<ICalculatorQueueRepository>().Object,
                 mockLoggerFactory.Object
                 );
         }
@@ -854,6 +856,7 @@ namespace Subless.Tests
                 partnerService?.Object ?? new Mock<IPartnerService>().Object,
                 new Mock<IPaymentLogsService>().Object,
                 userService?.Object ?? baseUserSerivce.Object,
+                new Mock<ICalculatorQueueRepository>().Object,
                 CreateOptions(),
                 mockLoggerFactory.Object
                 );

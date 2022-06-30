@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Subless.Data;
@@ -11,9 +12,10 @@ using Subless.Data;
 namespace Subless.Data.Migrations
 {
     [DbContext(typeof(Repository))]
-    partial class UserRepositoryModelSnapshot : ModelSnapshot
+    [Migration("20220630161618_AddedCaculationQueue")]
+    partial class AddedCaculationQueue
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -34,6 +36,10 @@ namespace Subless.Data.Migrations
                     b.Property<DateTimeOffset>("DateQueued")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<bool>("IsCompleted")
                         .HasColumnType("boolean");
 
@@ -52,6 +58,8 @@ namespace Subless.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("CalculatorExecutions");
+
+                    b.HasDiscriminator<string>("Discriminator").HasValue("CalculatorExecution");
                 });
 
             modelBuilder.Entity("Subless.Models.Creator", b =>
@@ -299,35 +307,6 @@ namespace Subless.Data.Migrations
                     b.ToTable("PaymentAuditLogs");
                 });
 
-            modelBuilder.Entity("Subless.Models.PaymentExecution", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTimeOffset>("DateExecuted")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTimeOffset>("DateQueued")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("IsCompleted")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsProcessing")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTimeOffset>("PeriodEnd")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTimeOffset>("PeriodStart")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("PaymentExecutions");
-                });
-
             modelBuilder.Entity("Subless.Models.RuntimeConfiguration", b =>
                 {
                     b.Property<Guid>("Id")
@@ -429,6 +408,13 @@ namespace Subless.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("Subless.Models.PaymentExecution", b =>
+                {
+                    b.HasBaseType("Subless.Models.CalculatorExecution");
+
+                    b.HasDiscriminator().HasValue("PaymentExecution");
                 });
 
             modelBuilder.Entity("Subless.Models.Creator", b =>
