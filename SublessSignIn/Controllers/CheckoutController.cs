@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Web;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -21,7 +22,7 @@ namespace SublessSignIn.Controllers
         private readonly IUserService _userService;
         private readonly IStripeService _stripeService;
         private readonly ILogger<CheckoutController> _logger;
-        public CheckoutController(ILoggerFactory loggerFactory, IOptions<StripeConfig> stripeConfig, IUserService userService, IStripeService stripeService)
+        public CheckoutController(ILoggerFactory loggerFactory, IOptions<StripeConfig> stripeConfig,  IUserService userService, IStripeService stripeService)
         {
             _stripeConfig = stripeConfig ?? throw new ArgumentNullException(nameof(stripeConfig));
             _ = stripeConfig.Value.PublishableKey ?? throw new ArgumentNullException(nameof(stripeConfig));
@@ -137,11 +138,11 @@ namespace SublessSignIn.Controllers
         }
 
         [HttpDelete]
-        public IActionResult CancelSubscription()
+        public ActionResult<string> CancelSubscription()
         {
             var cognitoId = _userService.GetUserClaim(HttpContext.User);
-            var cancelled = _stripeService.CancelSubscription(cognitoId);
-            return Ok(cancelled);
+            var result = _stripeService.CancelSubscription(cognitoId);
+            return Ok(result);
         }
 
         private class SessionId
