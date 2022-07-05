@@ -11,6 +11,5 @@
         public string Domain { get; set; }
         public string IdentityServerLicenseKey { get; set; }
         public string SessionStoreConnString { get; set; }
-        public string CancellationSurvey { get; set; }
     }
 }
