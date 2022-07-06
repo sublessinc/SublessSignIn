@@ -63,7 +63,7 @@ namespace SublessSignIn.Controllers
             {
                 _logger.LogWarning(ex, "Failed to record hit");
             }
-            return false;
+            return Ok(false);
         }
 
         [HttpPost("Test")]
