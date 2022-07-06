@@ -20,7 +20,8 @@
         "dbCreds": "{  'password': 'zkleRY0BHaU8gI4Jsx3RXOX3',  'engine': 'postgres',  'port': 5432,  'dbInstanceIdentifier': 'sublessusers',  'host': 'localhost',  'username': 'postgres'}",
         "Logging__LogLevel__Default": "Debug",
         "appClientId": "3pfcge04qtbqj11h32tr09ndu2",
-        "issuerUrl": "https://devpayidp.auth.us-east-2.amazoncognito.com"
+        "issuerUrl": "https://devpayidp.auth.us-east-2.amazoncognito.com",
+        "EnvironmentName": "local"
       }
     }
   }

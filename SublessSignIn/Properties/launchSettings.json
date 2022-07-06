@@ -38,7 +38,8 @@
         "PayPalId": "contact@subless.com",
         "BucketName": "devpays3bucket",
         "ExecutionsPerYear": "365",
-        "RunOnStart": "false"
+        "RunOnStart": "false",
+        "EnvironmentName": "local"
       },
       "dotnetRunMessages": "true",
       "applicationUrl": "https://localhost:5001;http://localhost:5000"
