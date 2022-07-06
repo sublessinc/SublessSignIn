@@ -1,3 +1,4 @@
+import logging
 import os
 
 import pytest
@@ -10,7 +11,8 @@ from EmailLib.MailSlurp import get_or_create_inbox, CreatorInbox, PatronInbox
 from PageObjectModels.PlanSelectionPage import PlanSelectionPage
 from UsersLib.Users import get_user_id_and_cookie, create_subless_account, attempt_to_delete_user, \
     create_paid_subless_account, create_unactivated_creator_User, create_activated_creator_user, login_as_god_user
-
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger()
 print(os.getcwd())
 
 def pytest_addoption(parser):
@@ -38,6 +40,7 @@ def params(request):
 @pytest.fixture
 def mailslurp_inbox():
     from EmailLib import MailSlurp
+    logging.info("Creating inbox")
 
     # create
     inbox = MailSlurp.get_or_create_inbox(PatronInbox)
@@ -59,19 +62,22 @@ def user_data():
 #   returns new user, with browser at plan selection screen
 @pytest.fixture
 def subless_account(mailslurp_inbox, firefox_driver, ):
-
+    logging.info("Creating subless account")
     id, cookie = create_subless_account(firefox_driver)
     yield id, cookie
 
     # HACK: delete user
     # I hate this.
+    logging.info("deleting subless account")
     attempt_to_delete_user(firefox_driver, mailslurp_inbox)
 
 
 @pytest.fixture
 def paying_user(firefox_driver):
+    logging.info("Creating paid account")
     id, cookie = create_paid_subless_account(firefox_driver)
     yield id, cookie
+    logging.info("Deleting subless account")
     attempt_to_delete_user(firefox_driver, mailslurp_inbox)
 
 
@@ -85,6 +91,7 @@ def paying_user(firefox_driver):
 def subless_admin_account(subless_god_account):
     from ApiLib import User
     from UsersLib.Users import create_user
+    logging.info("Getting admin account")
     god_id, god_cookie = subless_god_account
 
     mailbox = get_or_create_inbox('AdminUser')
@@ -102,7 +109,7 @@ def subless_admin_account(subless_god_account):
 def subless_partner_account():
     from ApiLib import User
     from UsersLib.Users import create_user
-
+    logging.info("Creating partner user")
     mailbox = get_or_create_inbox('PartnerUser')
     # create
     id, cookie = create_user(firefox_driver, mailbox)
@@ -116,6 +123,7 @@ def subless_partner_account():
 
 @pytest.fixture
 def subless_unactivated_creator_user(firefox_driver):
+    logging.info("Making unactivated creator")
     mailbox = get_or_create_inbox(CreatorInbox)
     id, cookie = create_unactivated_creator_User(firefox_driver, mailbox)
     yield id, cookie
@@ -123,6 +131,7 @@ def subless_unactivated_creator_user(firefox_driver):
 
 @pytest.fixture
 def subless_activated_creator_user(firefox_driver):
+    logging.info("Making activated creator")
     mailbox = get_or_create_inbox(CreatorInbox)
     id, cookie = create_activated_creator_user(firefox_driver, mailbox)
     yield id, cookie
