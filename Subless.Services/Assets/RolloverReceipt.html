@@ -19,30 +19,29 @@
     <img id="logo" src="{{logourl}}" style="display: block; margin-left: auto; margin-right: auto; width: 50%; padding-bottom: 50px;" />
     <div style="width: 100%; ">
 
-      <div style="width: 75%; margin-left: auto; margin-right: auto; padding-bottom: 20px;" id="header">
-        This is your subless creator payout receipt for the month starting {{month}}. Here you can see your payout is divided. You will recieve another reciept in
-        one month.
-      </div>
+
+        <div style="width: 75%; margin-left: auto; margin-right: auto; padding-bottom: 20px;" id="header">
+          You did not visit any subless creators in the month starting {{month}}, so we couldn't pay out your budget to subless creators.
+          Instead of charging you again this month, we have rolled over your last payment to this month.
+          You will not be charged again until a distribution is made.
+        </div>
 
         <table style="width: 100%; border-collapse: collapse;">
           <tr style="padding: 10px; border-color: black; border-bottom-width: 1px; border-bottom-style: solid; font-weight: 700;">
-            <td>Source</td>
+            <td></td>
             <td style="text-align: right;">Payment</td>
           </tr>
-
-          <tr style='padding: 10px;padding-bottom: 20px;'><td>Patron donations</td><td style='text-align: right;'>{{creatorpayment}}</td></tr>
-
           <tr style="border-color: black; border-top-width: 1px; border-top-style: solid;  padding-top: 20px; padding: 10px;">
-            <td>Paypal Fees</td>
-            <td style="text-align: right;">{{paypalfees}}</td>
+            <td>Budget last month</td>
+            <td style="text-align: right;">{{totalpayment}}</td>
           </tr>
-          <tr style="padding: 10px; padding-bottom: 20px;">
-            <td>Taxes</td>
-            <td style="text-align: right;">$0.00</td>
+          <tr style="border-color: black; border-top-width: 1px; border-top-style: solid;  padding-top: 20px; padding: 10px;">
+            <td>Rollover to this month</td>
+            <td style="text-align: right;">-{{rollover}}</td>
           </tr>
           <tr style="border-color: black; border-top-width: 1px; border-top-style: solid; padding-top: 20px; padding: 10px; ">
-            <td>Total Payout</td>
-            <td style="text-align: right;">{{totalpayment}}</td>
+            <td>Total Payment</td>
+            <td style="text-align: right;">$0.00</td>
           </tr>
         </table>
         <table id="navigate" style="margin-left: auto; margin-right: auto;">
