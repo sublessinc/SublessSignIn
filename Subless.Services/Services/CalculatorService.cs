@@ -83,7 +83,12 @@ namespace Subless.Services.Services
                     var user = userService.GetUser(payer.UserId);
                     if (!hits.Any())
                     {
-                        calculatorResult.IdleCustomerStripeIds.Add(user.StripeCustomerId);
+                        calculatorResult.IdleCustomerRollovers.Add(
+                            new IdleCustomerRollover() {
+                                CognitoId = user.CognitoId,
+                                CustomerId = user.StripeCustomerId,
+                                Payment = Math.Round(payer.Payment/100, CurrencyPrecision, MidpointRounding.ToZero)
+                            });
                         continue;
                     }
                     // group all visits to payee

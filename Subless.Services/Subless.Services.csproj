@@ -8,6 +8,7 @@
     <None Remove="Assets\CreatorReceipt.html" />
     <None Remove="Assets\PartnerReceipt.html" />
     <None Remove="Assets\Receipt.html" />
+    <None Remove="Assets\RolloverReceipt.html" />
     <None Remove="Resources\Receipt.html" />
   </ItemGroup>
 
@@ -16,6 +17,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
     <EmbeddedResource Include="Assets\CreatorReceipt.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Assets\RolloverReceipt.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
     <EmbeddedResource Include="Assets\Receipt.html">
