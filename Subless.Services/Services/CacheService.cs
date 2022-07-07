@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Caching.Memory;
 using MemoryCache = Microsoft.Extensions.Caching.Memory.MemoryCache;
 
 namespace Subless.Services.Services

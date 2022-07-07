@@ -1,4 +1,4 @@
-﻿using Subless.Models;
+using Subless.Models;
 
 namespace Subless.Data
 {
