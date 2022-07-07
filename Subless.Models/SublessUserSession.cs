@@ -1,4 +1,4 @@
-﻿using Duende.Bff.EntityFramework;
+using Duende.Bff.EntityFramework;
 
 namespace Subless.Models
 {

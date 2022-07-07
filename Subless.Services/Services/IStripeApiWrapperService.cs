@@ -1,4 +1,4 @@
-﻿using Stripe;
+using Stripe;
 
 namespace Subless.Services.Services
 {

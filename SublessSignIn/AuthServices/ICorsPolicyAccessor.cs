@@ -1,4 +1,4 @@
-﻿namespace SublessSignIn.AuthServices
+namespace SublessSignIn.AuthServices
 {
     public interface ICorsPolicyAccessor
     {

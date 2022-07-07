@@ -1,4 +1,4 @@
-﻿using Amazon.Runtime;
+using Amazon.Runtime;
 using Microsoft.Extensions.Options;
 using Subless.PayoutCalculator;
 
