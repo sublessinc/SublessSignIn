@@ -31,31 +31,39 @@ namespace SublessSignIn.Controllers
         [Authorize]
         public async Task<ActionResult<bool>> Hit()
         {
-            bool validHit = false;
-            using (var reader = new StreamReader(Request.Body))
+            try
             {
-                var body = await reader.ReadToEndAsync();
-                if (string.IsNullOrWhiteSpace(body))
+                bool validHit = false;
+                using (var reader = new StreamReader(Request.Body))
                 {
-                    _logger.LogWarning("Invalid hit data recieved:{Environment.NewLine}" +
-                        $"Http Request Information:{Environment.NewLine}" +
-                        $"Schema:{Request.Scheme} " +
-                        $"Host: {Request.Host} " +
-                        $"Path: {Request.Path} " +
-                        $"QueryString: {HttpUtility.UrlEncode(Request.QueryString.Value)}");
-                    return BadRequest("No url included in hit");
+                    var body = await reader.ReadToEndAsync();
+                    if (string.IsNullOrWhiteSpace(body))
+                    {
+                        _logger.LogWarning("Invalid hit data recieved:{Environment.NewLine}" +
+                            $"Http Request Information:{Environment.NewLine}" +
+                            $"Schema:{Request.Scheme} " +
+                            $"Host: {Request.Host} " +
+                            $"Path: {Request.Path} " +
+                            $"QueryString: {HttpUtility.UrlEncode(Request.QueryString.Value)}");
+                        return BadRequest("No url included in hit");
+                    }
+                    if (!Uri.TryCreate(body, UriKind.RelativeOrAbsolute, out Uri hitSource))
+                    {
+                        return BadRequest("Could not read source url");
+                    }
+                    if (userService.GetUserClaim(HttpContext.User) == null)
+                    {
+                        return Unauthorized("User claim could not be found");
+                    }
+                    validHit = _hitService.SaveHit(userService.GetUserClaim(HttpContext.User), hitSource);
                 }
-                if (!Uri.TryCreate(body, UriKind.RelativeOrAbsolute, out Uri hitSource))
-                {
-                    return BadRequest("Could not read source url");
-                }
-                if (userService.GetUserClaim(HttpContext.User) == null)
-                {
-                    return Unauthorized("User claim could not be found");
-                }
-                validHit = _hitService.SaveHit(userService.GetUserClaim(HttpContext.User), hitSource);
+                return Ok(validHit);
             }
-            return Ok(validHit);
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Failed to record hit");
+            }
+            return Ok(false);
         }
 
         [HttpPost("Test")]

@@ -82,6 +82,7 @@ namespace PayoutCalculator
             {
                 StripeConfiguration.RegisterStripeConfig(services);
                 CalculatorSettingsConfiguration.RegisterCalculatorConfig(services);
+                GeneralConfiguration.RegisterGeneralConfig(services);
                 var authSettings = AuthSettingsConfiguration.GetAuthSettings();
                 BffDi.AddBffDi(services, authSettings);
                 DataDi.RegisterDataDi(services);

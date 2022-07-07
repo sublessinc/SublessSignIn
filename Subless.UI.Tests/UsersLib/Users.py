@@ -24,6 +24,7 @@ def create_from_login_page(driver, inbox):
     login_page = LoginPage(driver)
     sign_up_page = login_page.click_sign_up()
     assert "signup" in driver.current_url
+    time.sleep(5)
     otp_page = sign_up_page.sign_up(inbox.email_address,
                                     DefaultPassword)
     terms_page = otp_page.confirm_otp(
@@ -110,6 +111,7 @@ def attempt_to_delete_user(firefox_driver, mailbox):
     from PageObjectModels.LoginPage import LoginPage
     from ApiLib import User
     try:
+        logging.info("Deleting user")
         login = LoginPage(firefox_driver).open()
         resultpage = login.sign_in(mailbox.email_address, DefaultPassword)
         if 'terms' in firefox_driver.current_url:
@@ -120,6 +122,7 @@ def attempt_to_delete_user(firefox_driver, mailbox):
         time.sleep(5)
         logging.info("Opening login page to allow cookie clearing")
         login = LoginPage(firefox_driver).open()
+        time.sleep(5)
     except BaseException as err:  # awful.
         return
 

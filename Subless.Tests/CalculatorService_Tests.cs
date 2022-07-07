@@ -698,7 +698,7 @@ namespace Subless.Tests
 
             //Assert
             Assert.Equal(3, result.AllPayouts.Count);
-            Assert.Single(result.IdleCustomerStripeIds);
+            Assert.Single(result.IdleCustomerRollovers);
         }
 
 
