@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -20,6 +20,7 @@ namespace Subless.Services.Services
         public const string CreatorNameKey = "{{creatorname}}"; // CreatorUserName
         public const string CreatorPaymentKey = "{{creatorpayment}}"; //$50.00
         public const string TotalPaymentKey = "{{totalpayment}}"; //$500.00
+        public const string RolloverKey = "{{rollover}}"; //$500.00
         public const string StripeFeeKey = "{{stripefee}}"; //$0.10
         public const string SiteLinkKey = "{{sitelink}}"; // https://pay.subless.com
         public const string LogoUrl = "{{logourl}}"; //https://pay.subless.com/SublessLogo.svg
@@ -70,6 +71,11 @@ namespace Subless.Services.Services
         {
             var usertask = Task.Run(() => cognitoService.GetCognitoUserEmail(cognitoId));
             usertask.Wait();
+            if (usertask.Result == null)
+            {
+                logger.LogInformation($"No email present for cognitoid {cognitoId}");
+                return;
+            }
             var body = GetEmailBody(payments, PaymentPeriodStart, PaymentPeriodEnd);
             var emailTask = Task.Run(() => _emailSerivce.SendEmail(body, usertask.Result, "Your subless receipt"));
             emailTask.Wait();
@@ -80,9 +86,14 @@ namespace Subless.Services.Services
         {
 
             var creator = _creatorService.GetCreator(id);
-
             var body = GetCreatorEmailBody(paymentAuditLog, PaymentPeriodStart, PaymentPeriodEnd);
-            var emailTask = Task.Run(() => _emailSerivce.SendEmail(body, GetEmailFromUserId(creator.UserId.Value), "Your subless payout receipt"));
+            var email = GetEmailFromUserId(creator.UserId.Value);
+            if (email == null)
+            {
+                logger.LogInformation($"No email present for user {creator.UserId.Value}");
+                return;
+            }
+            var emailTask = Task.Run(() => _emailSerivce.SendEmail(body, email, "Your subless payout receipt"));
             emailTask.Wait();
         }
 
@@ -90,7 +101,27 @@ namespace Subless.Services.Services
         {
             var body = GetPartnerEmailBody(paymentAuditLog, PaymentPeriodStart, PaymentPeriodEnd);
             var partner = _partnerService.GetPartner(id);
-            var emailTask = Task.Run(() => _emailSerivce.SendEmail(body, GetEmailFromUserId(partner.Admin), "Your subless payout receipt"));
+            var email = GetEmailFromUserId(partner.Admin);
+            if (email == null)
+            {
+                logger.LogInformation($"No email present for user {partner.Admin}");
+                return;
+            }
+            var emailTask = Task.Run(() => _emailSerivce.SendEmail(body, email, "Your subless payout receipt"));
+            emailTask.Wait();
+        }
+
+        public void SendPatronRolloverReceiptEmail(string cognitoId, double payment, DateTimeOffset PaymentPeriodStart, DateTimeOffset PaymentPeriodEnd)
+        {
+            var usertask = Task.Run(() => cognitoService.GetCognitoUserEmail(cognitoId));
+            usertask.Wait();
+            if (usertask.Result == null)
+            {
+                logger.LogInformation($"No email present for cognitoid {cognitoId}");
+                return;
+            }
+            var body = GetRolloverEmailBody(payment, PaymentPeriodStart, PaymentPeriodEnd);
+            var emailTask = Task.Run(() => _emailSerivce.SendEmail(body, usertask.Result, "Your subless rollover receipt"));
             emailTask.Wait();
         }
 
@@ -129,6 +160,12 @@ namespace Subless.Services.Services
             return GenerateEmailBodyForPartner(template, paymentAuditLog, PaymentPeriodStart, PaymentPeriodEnd);
         }
 
+        private string GetRolloverEmailBody(double payment, DateTimeOffset PaymentPeriodStart, DateTimeOffset PaymentPeriodEnd)
+        {
+            var template = GetRolloverEmailTemplate();
+            return GenerateEmailBodyForRolloverPatron(template, payment, PaymentPeriodStart, PaymentPeriodEnd);
+        }
+
         private string GetEmailTemplate()
         {
             var fileName = "Subless.Services.Assets.Receipt.html";
@@ -150,6 +187,15 @@ namespace Subless.Services.Services
         private string GetPartnerEmailTemplate()
         {
             var fileName = "Subless.Services.Assets.CreatorReceipt.html";
+            var assembly = Assembly.GetExecutingAssembly();
+            var stream = assembly.GetManifestResourceStream(fileName);
+            StreamReader reader = new StreamReader(stream);
+            return reader.ReadToEnd();
+        }
+
+        private string GetRolloverEmailTemplate()
+        {
+            var fileName = "Subless.Services.Assets.RolloverReceipt.html";
             var assembly = Assembly.GetExecutingAssembly();
             var stream = assembly.GetManifestResourceStream(fileName);
             StreamReader reader = new StreamReader(stream);
@@ -199,6 +245,19 @@ namespace Subless.Services.Services
             partnerEmail = partnerEmail.Replace(TotalPaymentKey, paymentAuditLog.Payment.ToString(specifier, culture), StringComparison.Ordinal);
             partnerEmail = partnerEmail.Replace(PayPalFeesKey, paymentAuditLog.Fees.ToString(specifier, culture), StringComparison.Ordinal);
             return partnerEmail;
+        }
+
+        private string GenerateEmailBodyForRolloverPatron(string template, double payment, DateTimeOffset PaymentPeriodStart, DateTimeOffset PaymentPeriodEnd)
+        {
+            var month = $"{PaymentPeriodStart.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}";
+            var patronEmail = template.Replace(MonthKey, month, StringComparison.Ordinal);
+            patronEmail = patronEmail.Replace(SiteLinkKey, authSettings.Domain, StringComparison.Ordinal);
+            patronEmail = patronEmail.Replace(LogoUrl, authSettings.Domain + "/dist/assets/SublessLogo.png", StringComparison.Ordinal);
+            var specifier = "C";
+            var culture = CultureInfo.CreateSpecificCulture("en-US");
+            patronEmail = patronEmail.Replace(TotalPaymentKey, payment.ToString(specifier, culture), StringComparison.Ordinal);
+            patronEmail = patronEmail.Replace(RolloverKey, payment.ToString(specifier, culture), StringComparison.Ordinal);
+            return patronEmail;
         }
 
         private List<string> GetPaymentItems(List<Payment> payments)

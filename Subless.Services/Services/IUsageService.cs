@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Subless.Models;
 
 namespace Subless.Services.Services

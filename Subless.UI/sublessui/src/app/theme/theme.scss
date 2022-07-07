@@ -444,11 +444,17 @@ $subless-app-theme: mat.define-light-theme((color: (primary: $subless-app-primar
 .darkBackground {
     @extend .subless-background;
     background-color: map.get($md-backgroundpurple, 500);
+    display: flex;
+    justify-content: center;
+    align-items: center
 }
 
 .lightBackground {
     @extend .subless-background;
     background-color: map.get($md-backgroundwhite, 500);
+    display: flex;
+    justify-content: center;
+    align-items: center
 }
 
 // @mixin mix-ripple-theme($subless-app-theme) {

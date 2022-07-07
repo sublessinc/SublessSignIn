@@ -1,4 +1,5 @@
 import logging
+import time
 
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
@@ -28,8 +29,16 @@ class AccountSettingsPage(NavbarPage):
         WebDriverWait(self.driver, 10).until(
             EC.presence_of_element_located((By.CSS_SELECTOR, AccountSettingsLocators.confirm_button_selector)))
         self.confirm_button.click()
-        # wait for redirect
-        WebDriverWait(self.driver, 10).until(lambda driver: 'register-payment' in driver.current_url)
+        # wait for redirect to cancellation form
+        time.sleep(2)
+        handles = self.driver.window_handles
+        self.driver.switch_to.window(handles[1])
+        # assert we're seeing the cancellation form
+        WebDriverWait(self.driver, 10).until(lambda driver: 'google' in driver.current_url)
+        self.driver.close()
+        self.driver.switch_to.window(handles[0])
+        # switch back to main window
+        WebDriverWait(self.driver, 10).until(lambda driver: 'login' in driver.current_url)
         return LoginPage(self.driver)
 
 class AccountSettingsLocators:

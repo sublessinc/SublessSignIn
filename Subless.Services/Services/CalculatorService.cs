@@ -1,9 +1,12 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using StackExchange.Profiling;
+using Subless.Data;
 using Subless.Models;
 
 namespace Subless.Services.Services
@@ -22,6 +25,7 @@ namespace Subless.Services.Services
         private readonly IPaymentLogsService _paymentLogsService;
         private readonly ILoggerFactory _loggerFactory;
         private readonly IUserService userService;
+        private readonly ICalculatorQueueRepository _calculatorQueueRepository;
         private readonly ILogger _logger;
 
         public CalculatorService(
@@ -31,6 +35,7 @@ namespace Subless.Services.Services
             IPartnerService partnerService,
             IPaymentLogsService paymentLogsService,
             IUserService userService,
+            ICalculatorQueueRepository calculatorQueueRepository,
             IOptions<StripeConfig> stripeOptions,
             ILoggerFactory loggerFactory)
         {
@@ -41,6 +46,7 @@ namespace Subless.Services.Services
             _paymentLogsService = paymentLogsService ?? throw new ArgumentNullException(nameof(paymentLogsService));
             _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
             this.userService = userService ?? throw new ArgumentNullException(nameof(userService));
+            _calculatorQueueRepository = calculatorQueueRepository;
             _logger = _loggerFactory.CreateLogger<CalculatorService>();
             SublessPayPalId = stripeOptions.Value.SublessPayPalId ?? throw new ArgumentNullException(nameof(stripeOptions));
         }
@@ -82,7 +88,12 @@ namespace Subless.Services.Services
                     var user = userService.GetUser(payer.UserId);
                     if (!hits.Any())
                     {
-                        calculatorResult.IdleCustomerStripeIds.Add(user.StripeCustomerId);
+                        calculatorResult.IdleCustomerRollovers.Add(
+                            new IdleCustomerRollover() {
+                                CognitoId = user.CognitoId,
+                                CustomerId = user.StripeCustomerId,
+                                Payment = Math.Round(payer.Payment/100, CurrencyPrecision, MidpointRounding.ToZero)
+                            });
                         continue;
                     }
                     // group all visits to payee
@@ -319,6 +330,35 @@ namespace Subless.Services.Services
                 payout.Payment = payout.Revenue / 1.02;
                 payout.Fees = payout.Revenue - payout.Payment;
             }
+        }
+
+        public Guid QueueCalculation(DateTimeOffset startDate, DateTimeOffset endDate)
+        {
+            return _calculatorQueueRepository.QueueCalculation(startDate, endDate);
+        }
+
+        public void ExecutedQueuedCalculation()
+        {
+            var calculation = _calculatorQueueRepository.DequeueCalculation();
+            if (calculation != null)
+            {
+                _logger.LogInformation($"Executing queued calculation {calculation.Id}");
+                var result = CaculatePayoutsOverRange(calculation.PeriodStart, calculation.PeriodEnd);
+                calculation.Result = JsonConvert.SerializeObject(result);
+                _calculatorQueueRepository.CompleteCalculation(calculation);
+                _logger.LogInformation($"Completed queued calculation {calculation.Id}");
+            }
+        }
+
+        public CalculatorResult GetQueuedResult(Guid id)
+        {
+            var calculation = _calculatorQueueRepository.GetQueuedCalcuation(id);
+            if (calculation != null)
+            {
+                return JsonConvert.DeserializeObject<CalculatorResult>(calculation.Result);
+            }
+            return null;
+
         }
     }
 }

@@ -1,10 +1,12 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Web;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Subless.Models;
 using Subless.Services.Extensions;
 using Subless.Services.Services;
@@ -69,7 +71,7 @@ namespace SublessSignIn.Controllers
             await cognitoService.DeleteCognitoUser(user.CognitoId);
         }
 
-        [HttpGet()]
+            [HttpGet()]
         public ActionResult<UserViewModel> GetUser()
         {
             var cognitoId = userService.GetUserClaim(HttpContext.User);

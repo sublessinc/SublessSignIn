@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -72,7 +72,36 @@ namespace SublessSignIn.Controllers
             end = end.ToUniversalTime();
             _paymentService.ExecutePayments(start, end, selectedUserIds);
             return Ok();
+        }
 
+        [HttpPost("QueueCalculator")]
+        public ActionResult QueueCalculation(
+            [FromQuery] DateTimeOffset start,
+            [FromQuery] DateTimeOffset end)
+        {
+            start = start.ToUniversalTime();
+            end = end.ToUniversalTime();
+            var id = _calculatorService.QueueCalculation(start, end);
+            return Ok(id);
+        }
+
+        [HttpPost("QueuePayment")]
+        public ActionResult QueuePayment(
+            [FromQuery] DateTimeOffset start,
+            [FromQuery] DateTimeOffset end)
+        {
+            start = start.ToUniversalTime();
+            end = end.ToUniversalTime();
+            var id = _paymentService.QueuePayment(start, end);
+            return Ok(id);
+        }
+
+        [HttpGet("GetQueuedCalculation")]
+        public ActionResult GetQueuedResult(
+            [FromQuery] Guid id)
+        {
+            var result = _calculatorService.GetQueuedResult(id);
+            return Ok(result);
         }
     }
 }

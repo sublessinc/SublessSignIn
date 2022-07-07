@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -35,6 +35,7 @@ namespace SublessSignIn
             AuthSettingsConfiguration.RegisterAuthSettingsConfig(services, AuthSettings);
             StripeConfiguration.RegisterStripeConfig(services);
             CalculatorSettingsConfiguration.RegisterCalculatorConfig(services);
+            GeneralConfiguration.RegisterGeneralConfig(services);
             services = new BearerAuth().AddBearerAuthServices(services, AuthSettings);
             services.AddTransient<IHealthCheck, HealthCheck>();
             services.AddTransient<IVersion, FileVersion>();

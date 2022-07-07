@@ -118,6 +118,11 @@ export class AuthorizationService {
     }));
   }
 
+  redirectToSurvey() {
+    window.open("https://forms.gle/5pxP9gpM9AW83yHy9", "_blank");
+    window.location.href = "/bff/logout"
+  }
+
   redirectToLogout() {
     window.location.href = "/bff/logout";
   }

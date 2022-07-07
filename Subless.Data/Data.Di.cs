@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
@@ -22,6 +22,7 @@ namespace Subless.Data
             services.AddTransient<IPartnerRepository, Repository>();
             services.AddTransient<IHitRepository, Repository>();
             services.AddTransient<IUsageRepository, Repository>();
+            services.AddTransient<ICalculatorQueueRepository, Repository>();
             services.AddDbContext<Repository>(options => options.UseNpgsql(dbCreds.GetDatabaseConnection()));
 
             return services;

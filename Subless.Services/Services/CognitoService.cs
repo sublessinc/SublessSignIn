@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Amazon;
@@ -41,14 +41,35 @@ namespace Subless.Services.Services
             });
         }
 
-        public async Task<string> GetCognitoUserEmail(string cognitoUserId)
+        public async Task<string?> GetCognitoUserEmail(string cognitoUserId)
         {
-            var user = await _client.AdminGetUserAsync(new AdminGetUserRequest()
+            try
             {
-                Username = cognitoUserId,
-                UserPoolId = PoolId
-            });
-            return user.UserAttributes.Single(x => x.Name == "email").Value;
+                var user = await _client.AdminGetUserAsync(new AdminGetUserRequest()
+                {
+                    Username = cognitoUserId,
+                    UserPoolId = PoolId
+                });
+                if (user.UserAttributes.Any(x => x.Name == "email"))
+                {
+                    return user.UserAttributes.Single(x => x.Name == "email")?.Value;
+                }
+                return null;
+            }
+            catch (AggregateException e)
+            {
+                if (!e.InnerExceptions.Any(x=> x is UserNotFoundException))
+                {
+                    throw;
+                }
+                return null;
+            }
+            catch (UserNotFoundException e)
+            {
+                return null;
+            }
+            
+            
         }
 
         protected virtual void Dispose(bool disposing)

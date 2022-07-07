@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Subless.Data;
 using Subless.Models;
 
 namespace Subless.Services.Services
@@ -19,6 +20,7 @@ namespace Subless.Services.Services
         private readonly IFileStorageService _s3Service;
         private readonly IPaymentEmailService emailService;
         private readonly ICalculatorService _calculatorService;
+        private readonly ICalculatorQueueRepository _calculationQueueRepository;
         private readonly ILogger _logger;
 
         public PaymentService(
@@ -28,6 +30,7 @@ namespace Subless.Services.Services
             IOptions<StripeConfig> stripeOptions,
             IPaymentEmailService emailService,
             ICalculatorService calculatorService,
+            ICalculatorQueueRepository calculationQueueRepository,
             ILoggerFactory loggerFactory)
         {
             if (stripeOptions is null)
@@ -41,6 +44,7 @@ namespace Subless.Services.Services
             _s3Service = s3Service ?? throw new ArgumentNullException(nameof(s3Service));
             this.emailService = emailService ?? throw new ArgumentNullException(nameof(emailService));
             _calculatorService = calculatorService ?? throw new ArgumentNullException(nameof(calculatorService));
+            _calculationQueueRepository = calculationQueueRepository;
             _logger = _loggerFactory.CreateLogger<PaymentService>();
             SublessPayPalId = stripeOptions.Value.SublessPayPalId ?? throw new ArgumentNullException(nameof(stripeOptions));
         }
@@ -55,9 +59,10 @@ namespace Subless.Services.Services
             }
 
             // rollover idle customers
-            foreach (var idleCustomerId in calculatorResult.IdleCustomerStripeIds)
+            foreach (var idleCustomer in calculatorResult.IdleCustomerRollovers)
             {
-                _stripeService.RolloverPaymentForIdleCustomer(idleCustomerId);
+                _stripeService.RolloverPaymentForIdleCustomer(idleCustomer.CustomerId);
+                emailService.SendPatronRolloverReceiptEmail(idleCustomer.CognitoId, idleCustomer.Payment, startDate, endDate);
             }
             // send emails
             foreach (var payer in calculatorResult.PaymentsPerPayer)
@@ -76,7 +81,6 @@ namespace Subless.Services.Services
                 {
                     emailService.SendPartnerReceiptEmail(payee.TargetId, payee, startDate, endDate);
                 }
-
             }
             // record to database
             SaveMasterList(calculatorResult.AllPayouts);
@@ -97,6 +101,25 @@ namespace Subless.Services.Services
                 DateSent = DateTime.UtcNow,
                 Amount = 0
             }});
+        }
+
+
+        public Guid QueuePayment(DateTimeOffset startDate, DateTimeOffset endDate)
+        {
+            return _calculationQueueRepository.QueuePayment(startDate, endDate);
+        }
+
+        public void ExecutedQueuedPayment()
+        {
+            var payment = _calculationQueueRepository.DequeuePayment();
+            if (payment != null)
+            {
+                _logger.LogInformation($"Executing queued payment {payment.Id}");
+                ExecutePayments(payment.PeriodStart, payment.PeriodEnd);
+                _calculationQueueRepository.CompletePayment(payment);
+                _logger.LogInformation($"Completed queued payment {payment.Id}");
+
+            }
         }
 
         private void SaveMasterList(List<PaymentAuditLog> masterPayoutList)

@@ -12,6 +12,7 @@ export class UserService {
 
   constructor(private httpClient: HttpClient,
     private dateFormatterService: DateFormatter) { }
+
   deleteUser(): Observable<boolean> {
     return this.httpClient.delete<boolean>("/api/User/");
   }
