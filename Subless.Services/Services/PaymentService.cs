@@ -59,9 +59,10 @@ namespace Subless.Services.Services
             }
 
             // rollover idle customers
-            foreach (var idleCustomerId in calculatorResult.IdleCustomerStripeIds)
+            foreach (var idleCustomer in calculatorResult.IdleCustomerRollovers)
             {
-                _stripeService.RolloverPaymentForIdleCustomer(idleCustomerId);
+                _stripeService.RolloverPaymentForIdleCustomer(idleCustomer.CustomerId);
+                emailService.SendPatronRolloverReceiptEmail(idleCustomer.CognitoId, idleCustomer.Payment, startDate, endDate);
             }
             // send emails
             foreach (var payer in calculatorResult.PaymentsPerPayer)
@@ -80,7 +81,6 @@ namespace Subless.Services.Services
                 {
                     emailService.SendPartnerReceiptEmail(payee.TargetId, payee, startDate, endDate);
                 }
-
             }
             // record to database
             SaveMasterList(calculatorResult.AllPayouts);

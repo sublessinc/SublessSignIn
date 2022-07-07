@@ -207,7 +207,7 @@ namespace Subless.Services.Services
 
             foreach (var sub in subscriptions)
             {
-                if (sub.Status == "active")
+                if (sub.Status == "active" && sub.CancelAtPeriodEnd == false)
                 {
                     foreach (var item in sub.Items)
                     {
@@ -397,12 +397,11 @@ namespace Subless.Services.Services
             }
             foreach (var sub in subs)
             {
-                var cancelOptions = new SubscriptionCancelOptions
-                {
-                    InvoiceNow = false,
-                    Prorate = true,
-                };
-                _stripeApiWrapperService.SubscriptionService.Cancel(sub.Id, cancelOptions);
+                _stripeApiWrapperService.SubscriptionService.Update(sub.Id,
+                    new SubscriptionUpdateOptions()
+                    {
+                        CancelAtPeriodEnd = true
+                    });
             }
             return true;
         }

@@ -96,5 +96,5 @@ def test_paying_user_can_cancel_plan(web_driver, paying_user, params):
     account_settings = plan_select.navigate_to_account_settings()
     # THEN: I should have the ability to cancel that plan
     login_page = account_settings.cancel_subscription()
-    # AND: I should be prompted to pay
-    assert "register-payment" in web_driver.current_url
+    # AND: I should be prompted to login
+    assert "login" in web_driver.current_url
