@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -141,8 +141,32 @@ namespace Subless.Services.Services
             var prices = GetPrices().ToList();
             //Stripe keeps the price in cents.
             var dollarAmountInCents = dollarAmount * 100;
+            if (!prices.Any(x => x.UnitAmount == dollarAmountInCents))
+            {
+                CreatePriceByDollarAmount(dollarAmount);
+                prices = GetPrices().ToList();
+            }
             var price = prices.Where(x => x.UnitAmount == dollarAmountInCents).Single();
+            return price?.Id;
+        }
 
+        private string CreatePriceByDollarAmount(long dollarAmount)
+        {
+            var price = _stripeApiWrapperService.PriceService.Create(new PriceCreateOptions()
+            {
+                Active = true,
+                BillingScheme = "per_unit",
+                Currency = "usd",
+                Product = _stripeConfig.Value.CustomBudgetId,
+                Recurring = new PriceRecurringOptions
+                {
+                    Interval = "month",
+                    IntervalCount = 1,
+                    UsageType = "licensed"
+                },
+                TaxBehavior = "unspecified",
+                UnitAmount = dollarAmount * 100,
+            });
             return price?.Id;
         }
 

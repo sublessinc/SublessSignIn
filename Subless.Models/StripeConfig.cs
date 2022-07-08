@@ -1,4 +1,4 @@
-namespace Subless.Models
+﻿namespace Subless.Models
 {
     public class StripeConfig
     {
@@ -8,5 +8,6 @@ namespace Subless.Models
 
         public string Domain { get; set; }
         public string SublessPayPalId { get; set; }
+        public string CustomBudgetId { get; set; }
     }
 }
