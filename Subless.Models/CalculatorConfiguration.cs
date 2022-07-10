@@ -1,4 +1,4 @@
-﻿namespace Subless.PayoutCalculator
+namespace Subless.PayoutCalculator
 {
     public class CalculatorConfiguration
     {

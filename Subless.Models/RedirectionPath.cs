@@ -1,4 +1,4 @@
-﻿namespace Subless.Models
+namespace Subless.Models
 {
     public enum RedirectionPath
     {

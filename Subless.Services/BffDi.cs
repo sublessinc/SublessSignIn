@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using Duende.Bff;
 using Duende.Bff.EntityFramework;
 using Microsoft.AspNetCore.Authentication.Cookies;

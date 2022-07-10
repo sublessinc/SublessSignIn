@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
@@ -38,10 +38,10 @@ namespace SublessSignIn.AuthServices
                     // Samesite has to be none to support hit tracking
                     options.Cookie.SameSite = SameSiteMode.None;
                     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+                    options.Cookie.MaxAge = TimeSpan.FromDays(14);
                 })
                 .AddOpenIdConnect("oidc", options =>
                 {
-
 
                 });
             services.AddSingleton<IConfigureOptions<OpenIdConnectOptions>, OpenIdConnectOptionsHandler>();
