@@ -103,33 +103,33 @@
 .price-picker {
     @extend body-font;
     border-style: hidden;
-}
-
-.customPriceToggle {
-    max-width: 5em;
+    font-family: "DM Sans";
 }
 
 .customPrice {
-    max-width: 2em;
+    // max-width: 2em;
+    text-align: right;
+    font-family: "DM Sans";
 
+}
+
+.customPriceWrapper {
+    font-family: "DM Sans";
+}
+
+.customBudget {
+    font-size: large;
+    font-size: 28px;
+    line-height: 32px;
+    font-weight: 400;
 }
 
 .alert {
     color: red;
     font-weight: bold;
+    width: inherit;
 }
 
-/* Chrome, Safari, Edge, Opera */
-input::-webkit-outer-spin-button,
-input::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-}
-
-/* Firefox */
-input[type=number] {
-    -moz-appearance: textfield;
-}
 
 @mixin mix-app-theme($subless-app-theme) {
     .mat-button-toggle {
