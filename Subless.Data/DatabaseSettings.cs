@@ -1,4 +1,4 @@
-﻿namespace Subless.Data
+namespace Subless.Data
 {
     public class DatabaseSettings
     {
