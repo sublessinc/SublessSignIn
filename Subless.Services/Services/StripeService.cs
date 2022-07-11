@@ -231,25 +231,22 @@ namespace Subless.Services.Services
 
             foreach (var sub in subscriptions)
             {
-                if (sub.Status == "active" && sub.CancelAtPeriodEnd == false)
+                foreach (var item in sub.Items)
                 {
-                    foreach (var item in sub.Items)
-                    {
-                        prices.Add(item.Price);
-                    }
+                    prices.Add(item.Price);
                 }
             }
 
             return prices;
         }
 
-        private StripeList<Subscription> GetSubscriptions(string stripeCustomerId)
+        private IEnumerable<Subscription> GetSubscriptions(string stripeCustomerId)
         {
             var customer = _stripeApiWrapperService.CustomerService.Get(stripeCustomerId);
             var subscriptions = _stripeApiWrapperService.SubscriptionService.List(new SubscriptionListOptions()
             {
                 Customer = customer.Id
-            });
+            }).Where(sub => sub.Status== "active" && sub.CancelAtPeriodEnd == false);
             return subscriptions;
         }
 

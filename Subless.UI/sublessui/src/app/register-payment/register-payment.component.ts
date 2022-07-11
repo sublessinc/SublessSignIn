@@ -9,6 +9,7 @@ import { IStripeRedirect } from '../models/IStripeRedirect';
 import { CheckoutService } from '../services/checkout.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Subscription } from 'rxjs';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 declare var Stripe: any;
 
 @Component({
@@ -20,19 +21,19 @@ export class RegisterPaymentComponent implements OnInit, OnDestroy {
   private stripe: any;
   private settings!: ICheckoutSettings;
   public backgroundClass: string = "lightBackground";
-  public priceChosen: string | null = null;
+  public priceChosen: string = "10";
   public currentPlan: string | null = null;
   private subs: Subscription[] = [];
   @ViewChild('customPrice') customPrice: ElementRef | null = null;
   @ViewChild('customPriceToggle') customPriceToggle: MatButtonToggle | null = null;
-
   constructor(
     private checkoutService: CheckoutService,
     private elementRef: ElementRef,
     private changeDetector: ChangeDetectorRef,
     private router: Router,
-    private _snackBar: MatSnackBar
-  ) { }
+    private _snackBar: MatSnackBar,
+  ) {
+  }
   ngOnInit(): void {
     this.getCheckoutSettings();
     if (this.router.url.startsWith("/register-payment")) {
