@@ -62,7 +62,7 @@ namespace SublessSignIn.Controllers
             }
 
             var userBudget = req.DesiredPrice;
-            if (userBudget < 5 || userBudget >= int.MaxValue)
+            if (userBudget < 5 || userBudget >= 500)
             {
                 return BadRequest("Invalid budget amount");
             }

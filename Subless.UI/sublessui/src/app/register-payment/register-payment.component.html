@@ -12,9 +12,11 @@
             <div *ngIf="customPrice.invalid && (customPrice.dirty || customPrice.touched)" class="alert">
 
                 <div *ngIf="customPrice.errors?.['min']">
-                    Unfortunately, we cannot support budgets lower than $5 due to processing fees.
+                    Unfortunately, we cannot currently support budgets lower than $5 due to processing fees.
                 </div>
-
+                <div *ngIf="customPrice.errors?.['max']">
+                    Unfortunately, we cannot currently support budgets higher than $500.
+                </div>
             </div>
 
             <mat-card-content class="name">Set your budget</mat-card-content>
@@ -28,7 +30,7 @@
                 <mat-button-toggle class="customPriceToggle form-control" #customPriceToggle
                     value="{{customPrice?.value}}">$
                     <input matInput type="number" (keydown)="setCustomValue()" (blur)="setCustomValue()"
-                        (change)="setCustomValue()" min="5" [(ngModel)]="priceChosen" #customPrice="ngModel"
+                        (change)="setCustomValue()" min="5" max="500" [(ngModel)]="priceChosen" #customPrice="ngModel"
                         name="customPrice" class="customPrice" placeholder="?" id="customPrice">
                 </mat-button-toggle>
             </mat-button-toggle-group>
