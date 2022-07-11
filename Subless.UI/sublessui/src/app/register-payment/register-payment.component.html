@@ -6,17 +6,38 @@
         <div>This budget will be split between all the subless creators you visit.</div>
         <div>Find out more <a href="https://www.subless.com/faq">at our FAQ</a>.</div>
     </div>
-    <mat-card class="price-card">
+
+    <mat-card class="price-card form-group">
         <mat-card-content class="price-picker">
             <mat-card-content class="name">Set your budget</mat-card-content>
+            <mat-card-content class="customBudget form-control">
+                <span matPrefix>$&nbsp;</span>
+                <mat-form-field class="customPriceWrapper">
+                    <input matInput class="mat-input-element" type="number" (keydown)="setCustomValue()"
+                        (blur)="setCustomValue()" (change)="setCustomValue()" min="5" max="500"
+                        [(ngModel)]="priceChosen" #customPrice="ngModel" name="customPrice" class="customPrice"
+                        id="customPrice">
+                </mat-form-field>
+                <span matSuffix>.00</span>
+            </mat-card-content>
 
-            <input *ngIf="false" matInput class="price-input">
-            <mat-button-toggle-group [(ngModel)]="priceChosen" class="price-picker" name="pricePicker"
+            <mat-button-toggle-group [(ngModel)]="priceChosen" class="price-picker form-control" name="pricePicker"
                 aria-label="pricePicker">
                 <mat-button-toggle value="5">$5</mat-button-toggle>
                 <mat-button-toggle value="10">$10</mat-button-toggle>
                 <mat-button-toggle value="15">$15</mat-button-toggle>
             </mat-button-toggle-group>
+        </mat-card-content>
+        <mat-card-content>
+            <div *ngIf="customPrice.invalid && (customPrice.dirty || customPrice.touched)" class="alert">
+
+                <div *ngIf="customPrice.errors?.['min']">
+                    Unfortunately, we cannot currently support budgets lower than $5 due to processing fees.
+                </div>
+                <div *ngIf="customPrice.errors?.['max']">
+                    Unfortunately, we cannot currently support budgets higher than $500.
+                </div>
+            </div>
         </mat-card-content>
         <mat-card-content *ngIf="currentPlan">Your current plan is ${{currentPlan}} per month</mat-card-content>
 
@@ -27,8 +48,9 @@
         <mat-card-content class="plan-details">&#10004; Cancel anytime</mat-card-content>
         <mat-card-content class="plan-details">&#10004; Browse till the end of the month after cancelling
         </mat-card-content>
-        <button id="selectPlan" mat-button [disabled]="priceChosen === null" class="select-plan"
+        <button id="selectPlan" mat-button [disabled]="priceChosen === null || customPrice.invalid" class="select-plan"
             (click)='redirectToCheckout()'>Select
             This Budget</button>
     </mat-card>
+
 </div>
