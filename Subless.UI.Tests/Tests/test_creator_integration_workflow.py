@@ -51,4 +51,29 @@ def test_creator_hit(web_driver, subless_activated_creator_user, paying_user, pa
     assert int(after_hit_count)-int(before_hit_count) == 1
 
 
+def test_creator_cant_self_deal(web_driver, subless_activated_creator_user, params):
+    # WHEN a creator with a set number of hits is visited by a patron
+    # Wait for creator cache to refresh
+    time.sleep(15)
+    creator_mailbox = get_or_create_inbox(CreatorInbox)
+    from PageObjectModels.LoginPage import LoginPage
+    # Login creator
+    login_page = LoginPage(web_driver).open()
+    creator_dashboard = login_page.sign_in(creator_mailbox.email_address, DefaultPassword)
+    before_hit_count = creator_dashboard.get_hit_count()
+    change_plan_page = creator_dashboard.navigate_to_change_plan()
+    signup_page = change_plan_page.change_plan_10()
+    patron_dashboard = signup_page.SignUpForStripe()
+    assert "profile" in web_driver.current_url
+    # get current hits
+    from PageObjectModels.TestSite.TestSite_HomePage import TestSite_HomePage
+    test_site = TestSite_HomePage(web_driver).open()
+    test_site.click_profile()
+    # Wait for hit to process
+    time.sleep(2)
+    # THEN the creator's hit count should not by one, because that would be self dealing
+    creator_dashboard.open()
+    after_hit_count = creator_dashboard.get_hit_count()
+    assert int(after_hit_count)-int(before_hit_count) == 0
+
 
