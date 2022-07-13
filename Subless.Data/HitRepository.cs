@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
@@ -17,31 +17,37 @@ namespace Subless.Data
             SaveChanges();
         }
 
-        public IQueryable<Hit> GetValidHitsByDate(DateTimeOffset startDate, DateTimeOffset endDate, string cognitoId)
+        public IQueryable<Hit> GetValidHitsByDate(DateTimeOffset startDate, DateTimeOffset endDate, string cognitoId, Guid? creatorId)
         {
-            return Hits.Where(hit => hit.CognitoId == cognitoId
+            var hits = Hits.Where(hit => hit.CognitoId == cognitoId
             && hit.CreatorId != Guid.Empty
             && hit.TimeStamp > startDate
-            && hit.TimeStamp <= endDate);
+            && hit.TimeStamp <= endDate
+            && hit.CreatorId != creatorId);
+            return hits;
         }
 
-        public IQueryable<Hit> GetCreatorHitsByDate(DateTimeOffset startDate, DateTimeOffset endDate, Guid creatorId)
+        public IQueryable<Hit> GetCreatorHitsByDate(DateTimeOffset startDate, DateTimeOffset endDate, Guid creatorId, string cognitoId)
         {
-            return Hits.Where(hit => hit.CreatorId == creatorId
+            var hits = Hits.Where(hit => hit.CreatorId == creatorId
             && hit.TimeStamp > startDate
-            && hit.TimeStamp <= endDate);
+            && hit.TimeStamp <= endDate
+            && hit.CognitoId != cognitoId);
+            return hits;
         }
 
-        public IQueryable<Hit> GetPartnerHitsByDate(DateTimeOffset startDate, DateTimeOffset endDate, Guid partnerId)
+        public IQueryable<Hit> GetPartnerHitsByDate(DateTimeOffset startDate, DateTimeOffset endDate, Guid partnerId, string cognitoId)
         {
-            return Hits.Where(hit => hit.PartnerId == partnerId
+            var hits = Hits.Where(hit => hit.PartnerId == partnerId
             && hit.TimeStamp > startDate
-            && hit.TimeStamp <= endDate);
+            && hit.TimeStamp <= endDate
+            && hit.CognitoId != cognitoId);
+            return hits;
         }
 
-        public UserStats GetUserStats(DateTimeOffset startDate, DateTimeOffset endDate, string cognitoId)
+        public UserStats GetUserStats(DateTimeOffset startDate, DateTimeOffset endDate, string cognitoId, Guid? creatorId)
         {
-            var hits = GetValidHitsByDate(startDate, endDate, cognitoId);
+            var hits = GetValidHitsByDate(startDate, endDate, cognitoId, creatorId);
             var distinctCreators = hits.Select(x => x.CreatorId).Distinct();
             return new UserStats
             {
@@ -51,12 +57,11 @@ namespace Subless.Data
                 PeriodEnd = endDate,
                 PeriodStart = startDate
             };
-
         }
 
-        public CreatorStats GetCreatorStats(DateTimeOffset startDate, DateTimeOffset endDate, Guid creatorId)
+        public CreatorStats GetCreatorStats(DateTimeOffset startDate, DateTimeOffset endDate, Guid creatorId, string cognitoId)
         {
-            var hits = GetCreatorHitsByDate(startDate, endDate, creatorId);
+            var hits = GetCreatorHitsByDate(startDate, endDate, creatorId, cognitoId);
 
             return new CreatorStats
             {
@@ -68,9 +73,9 @@ namespace Subless.Data
             };
         }
 
-        public PartnerStats GetPartnerStats(DateTimeOffset startDate, DateTimeOffset endDate, Guid partnerId)
+        public PartnerStats GetPartnerStats(DateTimeOffset startDate, DateTimeOffset endDate, Guid partnerId, string cognitoId)
         {
-            var hits = GetPartnerHitsByDate(startDate, endDate, partnerId);
+            var hits = GetPartnerHitsByDate(startDate, endDate, partnerId, cognitoId);
             var distinctCreators = hits.Select(x => x.CreatorId).Distinct();
 
             return new PartnerStats()
@@ -83,9 +88,9 @@ namespace Subless.Data
             };
         }
 
-        public List<HitView> GetRecentCreatorContent(Guid creatorId)
+        public List<HitView> GetRecentCreatorContent(Guid creatorId, string cognitoId)
         {
-            return Hits.Where(x => x.CreatorId == creatorId)
+            return Hits.Where(x => x.CreatorId == creatorId && x.CognitoId != cognitoId)
                 .OrderByDescending(x => x.TimeStamp)
                 .Select(x =>
                 new HitView
@@ -98,9 +103,9 @@ namespace Subless.Data
                 .ToList();
         }
 
-        public List<ContentHitCount> GetTopCreatorContent(Guid creatorId)
+        public List<ContentHitCount> GetTopCreatorContent(Guid creatorId, string cognitoId)
         {
-            return Hits.Where(x => x.CreatorId == creatorId)
+            return Hits.Where(x => x.CreatorId == creatorId && x.CognitoId != cognitoId)
                 .GroupBy(x => x.Uri)
                 .Select(g =>
                 new ContentHitCount

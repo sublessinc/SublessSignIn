@@ -1,4 +1,4 @@
-using Stripe;
+﻿using Stripe;
 
 namespace Subless.Services.Services
 {
@@ -14,5 +14,6 @@ namespace Subless.Services.Services
         RefundService RefundService { get; }
         Stripe.Checkout.SessionService SessionService { get; }
         SubscriptionService SubscriptionService { get; }
+        ProductService ProductService { get; }
     }
 }

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -141,8 +141,32 @@ namespace Subless.Services.Services
             var prices = GetPrices().ToList();
             //Stripe keeps the price in cents.
             var dollarAmountInCents = dollarAmount * 100;
+            if (!prices.Any(x => x.UnitAmount == dollarAmountInCents))
+            {
+                CreatePriceByDollarAmount(dollarAmount);
+                prices = GetPrices().ToList();
+            }
             var price = prices.Where(x => x.UnitAmount == dollarAmountInCents).Single();
+            return price?.Id;
+        }
 
+        private string CreatePriceByDollarAmount(long dollarAmount)
+        {
+            var price = _stripeApiWrapperService.PriceService.Create(new PriceCreateOptions()
+            {
+                Active = true,
+                BillingScheme = "per_unit",
+                Currency = "usd",
+                Product = _stripeConfig.Value.CustomBudgetId,
+                Recurring = new PriceRecurringOptions
+                {
+                    Interval = "month",
+                    IntervalCount = 1,
+                    UsageType = "licensed"
+                },
+                TaxBehavior = "unspecified",
+                UnitAmount = dollarAmount * 100,
+            });
             return price?.Id;
         }
 
@@ -207,25 +231,22 @@ namespace Subless.Services.Services
 
             foreach (var sub in subscriptions)
             {
-                if (sub.Status == "active" && sub.CancelAtPeriodEnd == false)
+                foreach (var item in sub.Items)
                 {
-                    foreach (var item in sub.Items)
-                    {
-                        prices.Add(item.Price);
-                    }
+                    prices.Add(item.Price);
                 }
             }
 
             return prices;
         }
 
-        private StripeList<Subscription> GetSubscriptions(string stripeCustomerId)
+        private IEnumerable<Subscription> GetSubscriptions(string stripeCustomerId)
         {
             var customer = _stripeApiWrapperService.CustomerService.Get(stripeCustomerId);
             var subscriptions = _stripeApiWrapperService.SubscriptionService.List(new SubscriptionListOptions()
             {
                 Customer = customer.Id
-            });
+            }).Where(sub => sub.Status== "active" && sub.CancelAtPeriodEnd == false);
             return subscriptions;
         }
 

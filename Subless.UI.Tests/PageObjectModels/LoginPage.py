@@ -78,6 +78,8 @@ class LoginPage(BasePage):
         self.google_login_button.click()
 
     def sign_in(self, username, password):
+        WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.ID, LoginLocators.email_textbox_id)))
+
         logger.info(f'attempting to sign in')
         logger.info(f'sending {username} to un field')
         self.email_textbox.send_keys(username)
