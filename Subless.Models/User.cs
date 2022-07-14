@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
@@ -14,6 +14,7 @@ namespace Subless.Models
         public string StripeSessionId { get; set; }
         public string StripeCustomerId { get; set; }
         public bool AcceptedTerms { get; set; }
+        public bool WelcomeEmailSent { get; set; }
         public DateTimeOffset CreateDate { get; set; }
         public ICollection<Creator> Creators { get; set; }
         [ForeignKey("Admin")]

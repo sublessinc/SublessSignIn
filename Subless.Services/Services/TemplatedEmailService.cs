@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -12,7 +12,7 @@ using Subless.PayoutCalculator;
 
 namespace Subless.Services.Services
 {
-    public class PaymentEmailService : IPaymentEmailService
+    public class TemplatedEmailService : ITemplatedEmailService
     {
         public const string MonthKey = "{{month}}"; // March, 2022
         public const string IndividualPaymentTemplate = "            <tr style='padding: 10px;padding-bottom: 20px;'><td>{{creatorname}}</td><td style='text-align: right;'>{{creatorpayment}}</td></tr>";
@@ -35,7 +35,7 @@ namespace Subless.Services.Services
         private readonly ILogger logger;
         private readonly IEmailService _emailSerivce;
 
-        public PaymentEmailService(
+        public TemplatedEmailService(
             IOptions<CalculatorConfiguration> options,
             IEmailService emailService,
             ICognitoService cognitoService,
@@ -64,7 +64,7 @@ namespace Subless.Services.Services
             _partnerService = partnerService ?? throw new ArgumentNullException(nameof(partnerService));
             _userService = userService ?? throw new ArgumentNullException(nameof(userService));
             _emailSerivce = emailService ?? throw new ArgumentNullException(nameof(emailService));
-            logger = loggerFactory.CreateLogger<PaymentEmailService>();
+            logger = loggerFactory.CreateLogger<TemplatedEmailService>();
         }
 
         public void SendReceiptEmail(List<Payment> payments, string cognitoId, DateTimeOffset PaymentPeriodStart, DateTimeOffset PaymentPeriodEnd)
@@ -125,6 +125,21 @@ namespace Subless.Services.Services
             emailTask.Wait();
         }
 
+        public void SendWelcomeEmail(string cognitoId)
+        {
+            var usertask = Task.Run(() => cognitoService.GetCognitoUserEmail(cognitoId));
+            usertask.Wait();
+            if (usertask.Result == null)
+            {
+                logger.LogInformation($"No email present for cognitoid {cognitoId}");
+                return;
+            }
+            var body = GetWelcomeEmail();
+            var emailTask = Task.Run(() => _emailSerivce.SendEmail(body, usertask.Result, "Welcome to subless!"));
+            emailTask.Wait();
+            _userService.WelcomeSent(cognitoId);
+        }
+
         private string GetEmailFromUserId(Guid userId)
         {
             var user = _userService.GetUser(userId);
@@ -164,6 +179,15 @@ namespace Subless.Services.Services
         {
             var template = GetRolloverEmailTemplate();
             return GenerateEmailBodyForRolloverPatron(template, payment, PaymentPeriodStart, PaymentPeriodEnd);
+        }
+
+        private string GetWelcomeEmail()
+        {
+            var fileName = "Subless.Services.Assets.Welcome.html";
+            var assembly = Assembly.GetExecutingAssembly();
+            var stream = assembly.GetManifestResourceStream(fileName);
+            StreamReader reader = new StreamReader(stream);
+            return reader.ReadToEnd();
         }
 
         private string GetEmailTemplate()

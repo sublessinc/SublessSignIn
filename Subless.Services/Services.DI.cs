@@ -38,7 +38,7 @@ namespace Subless.Services
             services.AddTransient<IPaymentService, PaymentService>();
             services.AddTransient<IFileStorageService, S3Service>();
             services.AddTransient<AwsCredWrapper, AwsCredWrapper>();
-            services.AddTransient<IPaymentEmailService, PaymentEmailService>();
+            services.AddTransient<ITemplatedEmailService, TemplatedEmailService>();
             services.AddTransient<IStripeApiWrapperService, StripeApiWrapperService>();
             services.AddMemoryCache();
             services.AddHttpClient();
