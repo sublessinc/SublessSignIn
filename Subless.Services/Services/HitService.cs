@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -90,55 +90,54 @@ namespace Subless.Services.Services
 
         public IEnumerable<Hit> GetHitsByDate(DateTimeOffset startDate, DateTimeOffset endDate, Guid userId)
         {
-            var user = _userService.GetUser(userId);
+            var user = _userService.GetUserWithRelationships(userId);
             _logger.LogDebug($"Getting hits for range {startDate} to {endDate}");
-            var hits = hitRepository.GetValidHitsByDate(startDate, endDate, user.CognitoId).ToList();
+            var hits = hitRepository.GetValidHitsByDate(startDate, endDate, user.CognitoId, user.Creators.FirstOrDefault()?.Id).ToList();
             var creators = _creatorService.FilterInactiveCreators(hits.Select(x => x.CreatorId));
             return hits.Where(x => creators.Contains(x.CreatorId));
         }
 
         public UserStats GetUserStats(DateTimeOffset startDate, DateTimeOffset endDate, Guid userId)
         {
-            var user = _userService.GetUser(userId);
+            var user = _userService.GetUserWithRelationships(userId);
             _logger.LogDebug($"Getting hits for range {startDate} to {endDate}");
-            return hitRepository.GetUserStats(startDate, endDate, user.CognitoId);
+            return hitRepository.GetUserStats(startDate, endDate, user.CognitoId, user.Creators.FirstOrDefault()?.Id);
         }
 
-        public IEnumerable<Hit> GetCreatorHitsByDate(
-            DateTimeOffset startDate, DateTimeOffset endDate, Guid creatorId)
+        public CreatorStats GetCreatorStats(DateTimeOffset startDate, DateTimeOffset endDate, Guid creatorId, string cognitoId)
         {
             _logger.LogDebug($"Getting hits for range {startDate} to {endDate}");
-            return hitRepository.GetCreatorHitsByDate(startDate, endDate, creatorId);
-        }
-
-        public CreatorStats GetCreatorStats(DateTimeOffset startDate, DateTimeOffset endDate, Guid creatorId)
-        {
-            _logger.LogDebug($"Getting hits for range {startDate} to {endDate}");
-            return hitRepository.GetCreatorStats(startDate, endDate, creatorId);
+            return hitRepository.GetCreatorStats(startDate, endDate, creatorId, cognitoId);
         }
 
         public PartnerStats GetPartnerStats(
-    DateTimeOffset startDate, DateTimeOffset endDate, Guid partnerId)
+    DateTimeOffset startDate, DateTimeOffset endDate, Guid partnerId, string cognitoId)
         {
             _logger.LogDebug($"Getting hits for range {startDate} to {endDate}");
-            return hitRepository.GetPartnerStats(startDate, endDate, partnerId);
+            return hitRepository.GetPartnerStats(startDate, endDate, partnerId, cognitoId);
         }
 
         public IEnumerable<Hit> GetPartnerHitsByDate(
-    DateTimeOffset startDate, DateTimeOffset endDate, Guid partnerId)
+    DateTimeOffset startDate, DateTimeOffset endDate, Guid partnerId, string cognitoId)
         {
             _logger.LogDebug($"Getting hits for range {startDate} to {endDate}");
-            return hitRepository.GetPartnerHitsByDate(startDate, endDate, partnerId);
+            return hitRepository.GetPartnerHitsByDate(startDate, endDate, partnerId, cognitoId);
         }
 
-        public IEnumerable<HitView> GetRecentCrecatorContent(Guid creatorId)
+        public IEnumerable<Hit> FilterOutCreator(IEnumerable<Hit> hits, Guid creatorId)
         {
-            return hitRepository.GetRecentCreatorContent(creatorId);
+            return hits.Where(x=>x.CreatorId != creatorId);
         }
 
-        public IEnumerable<ContentHitCount> GetTopCreatorContent(Guid creatorId)
+
+        public IEnumerable<HitView> GetRecentCrecatorContent(Guid creatorId, string cognitoId)
         {
-            return hitRepository.GetTopCreatorContent(creatorId);
+            return hitRepository.GetRecentCreatorContent(creatorId, cognitoId);
+        }
+
+        public IEnumerable<ContentHitCount> GetTopCreatorContent(Guid creatorId, string cognitoId)
+        {
+            return hitRepository.GetTopCreatorContent(creatorId, cognitoId);
         }
 
         public Guid? GetCreatorFromPartnerAndUri(Uri uri, Partner partner)

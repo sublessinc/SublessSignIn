@@ -46,6 +46,7 @@ npm install
 Run back end
 
 ```bash
+cd ../../
 dotnet run --project SublessSignIn/SublessSignIn.csproj
 ```
 
