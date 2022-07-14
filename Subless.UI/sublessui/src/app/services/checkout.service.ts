@@ -22,7 +22,7 @@ export class CheckoutService {
 
   createCheckoutSession(price: number | null): Observable<ISessionResponse> {
     return this.httpClient.post<ISessionResponse>("/api/Checkout/create-checkout-session", {
-      priceId: price
+      desiredPrice: price
     });
   }
 

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
@@ -61,7 +61,11 @@ namespace SublessSignIn.Controllers
                 return Unauthorized();
             }
 
-            var userBudget = req.PriceId;
+            var userBudget = req.DesiredPrice;
+            if (userBudget < 5 || userBudget >= 500)
+            {
+                return BadRequest("Invalid budget amount");
+            }
             try
             {
                 var session = await _stripeService.CreateCheckoutSession((long)userBudget, cognitoId);

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -120,14 +120,14 @@ namespace SublessSignIn.Controllers
                     {
                         paymentDate = DateTimeOffset.UtcNow.AddMonths(-1);
                     }
-                    hitsThisMonth = hitService.GetCreatorStats(paymentDate, DateTimeOffset.UtcNow, creator.Id);
-                    hitsLastMonth = hitService.GetCreatorStats(paymentDate.AddMonths(-1), paymentDate, creator.Id);
+                    hitsThisMonth = hitService.GetCreatorStats(paymentDate, DateTimeOffset.UtcNow, creator.Id, cognitoId);
+                    hitsLastMonth = hitService.GetCreatorStats(paymentDate.AddMonths(-1), paymentDate, creator.Id, cognitoId);
                     // END DEPRECATED
                 }
                 else
                 {
-                    hitsThisMonth = hitService.GetCreatorStats(lastPayment.PaymentPeriodEnd, DateTimeOffset.UtcNow, creator.Id);
-                    hitsLastMonth = hitService.GetCreatorStats(lastPayment.PaymentPeriodStart, lastPayment.PaymentPeriodEnd, creator.Id);
+                    hitsThisMonth = hitService.GetCreatorStats(lastPayment.PaymentPeriodEnd, DateTimeOffset.UtcNow, creator.Id, cognitoId);
+                    hitsLastMonth = hitService.GetCreatorStats(lastPayment.PaymentPeriodStart, lastPayment.PaymentPeriodEnd, creator.Id, cognitoId);
                 }
                 if (creator.UserId != null)
                 {
@@ -202,7 +202,7 @@ namespace SublessSignIn.Controllers
             try
             {
                 var creator = _creatorService.GetCreatorByCognitoid(cognitoId);
-                return Ok(hitService.GetRecentCrecatorContent(creator.Id));
+                return Ok(hitService.GetRecentCrecatorContent(creator.Id, cognitoId));
             }
             catch (UnauthorizedAccessException e)
             {
@@ -223,7 +223,7 @@ namespace SublessSignIn.Controllers
             try
             {
                 var creator = _creatorService.GetCreatorByCognitoid(cognitoId);
-                return Ok(hitService.GetTopCreatorContent(creator.Id));
+                return Ok(hitService.GetTopCreatorContent(creator.Id, cognitoId));
             }
             catch (UnauthorizedAccessException e)
             {

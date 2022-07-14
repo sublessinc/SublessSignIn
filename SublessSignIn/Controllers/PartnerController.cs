@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -268,14 +268,14 @@ namespace SublessSignIn.Controllers
                     {
                         paymentDate = DateTimeOffset.UtcNow.AddMonths(-1);
                     }
-                    hitsThisMonth = hitService.GetPartnerStats(paymentDate, DateTimeOffset.UtcNow, partner.Id);
-                    hitsLastMonth = hitService.GetPartnerStats(paymentDate.AddMonths(-1), paymentDate, partner.Id);
+                    hitsThisMonth = hitService.GetPartnerStats(paymentDate, DateTimeOffset.UtcNow, partner.Id, cognitoId);
+                    hitsLastMonth = hitService.GetPartnerStats(paymentDate.AddMonths(-1), paymentDate, partner.Id, cognitoId);
                     // END DEPRECATED
                 }
                 else
                 {
-                    hitsThisMonth = hitService.GetPartnerStats(lastPayment.PaymentPeriodEnd, DateTimeOffset.UtcNow, partner.Id);
-                    hitsLastMonth = hitService.GetPartnerStats(lastPayment.PaymentPeriodStart, lastPayment.PaymentPeriodEnd, partner.Id);
+                    hitsThisMonth = hitService.GetPartnerStats(lastPayment.PaymentPeriodEnd, DateTimeOffset.UtcNow, partner.Id, cognitoId);
+                    hitsLastMonth = hitService.GetPartnerStats(lastPayment.PaymentPeriodStart, lastPayment.PaymentPeriodEnd, partner.Id, cognitoId);
                 }
 
                 _usageService.SaveUsage(UsageType.PartnerStats, user.Id);

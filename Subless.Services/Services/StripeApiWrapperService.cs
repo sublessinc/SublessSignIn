@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -24,6 +24,7 @@ namespace Subless.Services.Services
         private readonly Stripe.BillingPortal.SessionService billingSessionService;
         private readonly ChargeService chargeService;
         private readonly RefundService refundService;
+        private readonly ProductService productService;
 
         public SubscriptionService SubscriptionService => subscriptionService;
 
@@ -45,6 +46,8 @@ namespace Subless.Services.Services
 
         public RefundService RefundService => refundService;
 
+        public ProductService ProductService => productService;
+
         public StripeApiWrapperService(IOptions<StripeConfig> stripeConfig)
         {
             _stripeConfig = stripeConfig;
@@ -59,6 +62,7 @@ namespace Subless.Services.Services
             billingSessionService = new Stripe.BillingPortal.SessionService(_client);
             chargeService = new ChargeService(_client);
             refundService = new RefundService(_client);
+            productService = new ProductService(_client);
         }
     }
 }
