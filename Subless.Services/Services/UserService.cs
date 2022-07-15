@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
@@ -59,6 +59,13 @@ namespace Subless.Services.Services
         {
             var user = GetUserByCognitoId(cognitoId);
             user.StripeCustomerId = stripeId;
+            _userRepo.UpdateUser(user);
+        }
+
+        public void WelcomeSent(string cognitoId)
+        {
+            var user = GetUserByCognitoId(cognitoId);
+            user.WelcomeEmailSent = true;
             _userRepo.UpdateUser(user);
         }
 
