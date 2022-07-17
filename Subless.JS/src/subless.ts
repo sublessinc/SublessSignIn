@@ -124,7 +124,11 @@ export class Subless implements SublessInterface {
     */
     private getBanner(): [string, string] {
         const banner = Math.floor(Math.random() * 4) + 1;
-        return [sublessUri + "/dist/assets/banner" + banner + ".png", "https://www.subless.com/patron"];
+        const img = `${sublessUri}/dist/assets/banner${banner}.png`;
+        if (banner == 3) {
+            return [img, `https://www.subless.com/hf-creator-instructions?utm_campaign=banner${banner}`];
+        }
+        return [img, `https://www.subless.com/patron?utm_campaign=banner${banner}`];
     }
 
     /** Fades in an element
