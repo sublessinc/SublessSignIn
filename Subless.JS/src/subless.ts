@@ -11,6 +11,7 @@ interface SublessInterface {
     subless_hit(): Promise<void>; // eslint-disable-line camelcase
     sublessLogout(): Promise<void>;
     sublessShowLogo(): Promise<void>;
+    sublessShowBanner(): Promise<void>;
 }
 
 interface SublessSettings {
@@ -102,6 +103,31 @@ export class Subless implements SublessInterface {
         img.id = "sublessHitIndicator";
         document.body.appendChild(img);
         this.fadeInAndOut(img);
+    }
+
+    /** Inserts banner ad into the page */
+    async sublessShowBanner(): Promise<void> {
+        const bannerDiv = document.getElementById("sublessBanner");
+        const link = document.createElement("a");
+        const img = document.createElement("img");
+        const urls = this.getBanner();
+        // img.style.position = "absolute";
+        // img.style.bottom = "0";
+        // img.style.right = "0";
+        // img.style.width = "5%";
+        img.src = urls[0];
+        img.id = "sublessBannerImage";
+        link.href = urls[1];
+        link.id = "sublessBannerLink";
+        link.appendChild(img);
+        bannerDiv.appendChild(link);
+    }
+
+    /** Gets a random banner ad and corresponding link
+     * @return {[string, string]}tuple of image and target URI
+    */
+    private getBanner(): [string, string] {
+        return [sublessUri + "/dist/assets/banner1.png", "https://www.subless.com/patron"];
     }
 
     /** Fades in an element
