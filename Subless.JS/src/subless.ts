@@ -111,10 +111,6 @@ export class Subless implements SublessInterface {
         const link = document.createElement("a");
         const img = document.createElement("img");
         const urls = this.getBanner();
-        // img.style.position = "absolute";
-        // img.style.bottom = "0";
-        // img.style.right = "0";
-        // img.style.width = "5%";
         img.src = urls[0];
         img.id = "sublessBannerImage";
         link.href = urls[1];
@@ -127,7 +123,8 @@ export class Subless implements SublessInterface {
      * @return {[string, string]}tuple of image and target URI
     */
     private getBanner(): [string, string] {
-        return [sublessUri + "/dist/assets/banner1.png", "https://www.subless.com/patron"];
+        const banner = Math.floor(Math.random() * 4) + 1;
+        return [sublessUri + "/dist/assets/banner" + banner + ".png", "https://www.subless.com/patron"];
     }
 
     /** Fades in an element
