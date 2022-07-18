@@ -77,7 +77,8 @@ namespace Subless.Services.Services
             var options = new SubscriptionUpdateOptions
             {
                 CancelAtPeriodEnd = false,
-                ProrationBehavior = "create_prorations",
+                // This should immediately bill the difference between the two billing cycles
+                ProrationBehavior = "always_invoice",
                 Items = items,
             };
             _stripeApiWrapperService.SubscriptionService.Update(subscription.Id, options);

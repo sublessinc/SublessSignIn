@@ -2,10 +2,9 @@ import { ContentObserver } from '@angular/cdk/observers';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatButtonToggle, ToggleType } from '@angular/material/button-toggle';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { ICheckoutSettings } from '../models/ICheckoutSettings';
 import { ISessionResponse } from '../models/ISessionResponse';
-import { IStripeRedirect } from '../models/IStripeRedirect';
 import { CheckoutService } from '../services/checkout.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Subscription } from 'rxjs';
@@ -25,7 +24,6 @@ export class RegisterPaymentComponent implements OnInit, OnDestroy {
   public currentPlan: string | null = null;
   private subs: Subscription[] = [];
   @ViewChild('customPrice') customPrice: ElementRef | null = null;
-  @ViewChild('customPriceToggle') customPriceToggle: MatButtonToggle | null = null;
   constructor(
     private checkoutService: CheckoutService,
     private elementRef: ElementRef,
@@ -67,15 +65,12 @@ export class RegisterPaymentComponent implements OnInit, OnDestroy {
   }
 
   pickPrice() {
+    this.customPrice?.nativeElement
     this.changeDetector.detectChanges();
-    console.warn(this.priceChosen);
   }
 
   public setCustomValue() {
-    if (this.customPriceToggle) {
-      this.customPriceToggle.checked = true;
-      this.changeDetector.detectChanges();
-    }
+    this.changeDetector.detectChanges();
   }
 
 
