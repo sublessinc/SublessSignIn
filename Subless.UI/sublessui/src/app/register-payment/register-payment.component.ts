@@ -22,11 +22,11 @@ export class RegisterPaymentComponent implements OnInit, OnDestroy {
   public backgroundClass: string = "lightBackground";
   public priceChosen: string = "10";
   public currentPlan: string | null = null;
+  public budgetDifference: number | null = null;
   private subs: Subscription[] = [];
   @ViewChild('customPrice') customPrice: ElementRef | null = null;
   constructor(
     private checkoutService: CheckoutService,
-    private elementRef: ElementRef,
     private changeDetector: ChangeDetectorRef,
     private router: Router,
     private _snackBar: MatSnackBar,
@@ -64,10 +64,6 @@ export class RegisterPaymentComponent implements OnInit, OnDestroy {
     }));
   }
 
-  pickPrice() {
-    this.customPrice?.nativeElement
-    this.changeDetector.detectChanges();
-  }
 
   public setCustomValue() {
     this.changeDetector.detectChanges();

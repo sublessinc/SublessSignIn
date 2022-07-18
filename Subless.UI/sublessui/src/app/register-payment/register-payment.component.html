@@ -21,8 +21,8 @@
                 <span matSuffix>.00</span>
             </mat-card-content>
 
-            <mat-button-toggle-group [(ngModel)]="priceChosen" class="price-picker form-control" name="pricePicker"
-                aria-label="pricePicker">
+            <mat-button-toggle-group (change)="setCustomValue()" [(ngModel)]="priceChosen"
+                class="price-picker form-control" name="pricePicker" aria-label="pricePicker">
                 <mat-button-toggle value="5">$5</mat-button-toggle>
                 <mat-button-toggle value="10">$10</mat-button-toggle>
                 <mat-button-toggle value="15">$15</mat-button-toggle>
@@ -40,7 +40,8 @@
             </div>
         </mat-card-content>
         <mat-card-content *ngIf="currentPlan">Your current plan is ${{currentPlan}} per month</mat-card-content>
-        <mat-card-content class="alert" *ngIf="currentPlan">Plan changes will be prorated and billed immediately
+        <mat-card-content class="alert" *ngIf="currentPlan">Plan changes take effect at the beginning of your next
+            billing cycle
         </mat-card-content>
         <mat-card-content class="plan-details">&#10004; Split among the creators you
             view</mat-card-content>
