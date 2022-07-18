@@ -7,7 +7,8 @@ import pytest
 import simplejson
 
 from EmailLib import MailSlurp
-from EmailLib.MailSlurp import PatronInbox
+from EmailLib.MailSlurp import PatronInbox, receive_email
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger()
 
@@ -69,11 +70,14 @@ def create_subless_account(web_driver):
     attempt_to_delete_user(web_driver, mailbox)
 
     # create
-    return create_user(web_driver, mailbox)
+    id, cookie = create_user(web_driver, mailbox)
+    return id, cookie, mailbox
 
 def create_paid_subless_account(web_driver):
     from PageObjectModels.PlanSelectionPage import PlanSelectionPage
-    id, cookie = create_subless_account(web_driver)
+    from EmailLib.MailSlurp import get_or_create_inbox
+
+    id, cookie, mailbox = create_subless_account(web_driver)
     plan_selection_page = PlanSelectionPage(web_driver)
 
     # WHEN: I select a plan
@@ -81,6 +85,7 @@ def create_paid_subless_account(web_driver):
 
     # THEN: I should be taken to the stripe page
     dashboard = stripe_signup_page.SignUpForStripe()
+    welcome_email = receive_email(inbox_id=mailbox.id)
     return id, cookie
 
 def create_unactivated_creator_User(web_driver, mailbox):

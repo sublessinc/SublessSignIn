@@ -21,5 +21,6 @@ namespace Subless.Services.Services
         string GetUserClaim(ClaimsPrincipal user);
         void DemoteUser(Guid id);
         User GetUserWithRelationships(Guid id);
+        void WelcomeSent(string cognitoId);
     }
 }
