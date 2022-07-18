@@ -63,7 +63,7 @@ def user_data():
 @pytest.fixture
 def subless_account(mailslurp_inbox, firefox_driver, ):
     logging.info("Creating subless account")
-    id, cookie = create_subless_account(firefox_driver)
+    id, cookie, mailbox = create_subless_account(firefox_driver)
     yield id, cookie
 
     # HACK: delete user
