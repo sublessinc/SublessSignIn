@@ -77,7 +77,8 @@ namespace Subless.Services.Services
             var options = new SubscriptionUpdateOptions
             {
                 CancelAtPeriodEnd = false,
-                ProrationBehavior = "create_prorations",
+                // This should defer plan changes to the beginning of next month
+                ProrationBehavior = "none",
                 Items = items,
             };
             _stripeApiWrapperService.SubscriptionService.Update(subscription.Id, options);

@@ -18,7 +18,7 @@ namespace Subless.Services.Services
         private readonly IPaymentLogsService _paymentLogsService;
         private readonly ILoggerFactory _loggerFactory;
         private readonly IFileStorageService _s3Service;
-        private readonly IPaymentEmailService emailService;
+        private readonly ITemplatedEmailService emailService;
         private readonly ICalculatorService _calculatorService;
         private readonly ICalculatorQueueRepository _calculationQueueRepository;
         private readonly ILogger _logger;
@@ -28,7 +28,7 @@ namespace Subless.Services.Services
             IPaymentLogsService paymentLogsService,
             IFileStorageService s3Service,
             IOptions<StripeConfig> stripeOptions,
-            IPaymentEmailService emailService,
+            ITemplatedEmailService emailService,
             ICalculatorService calculatorService,
             ICalculatorQueueRepository calculationQueueRepository,
             ILoggerFactory loggerFactory)
