@@ -123,12 +123,12 @@ export class Subless implements SublessInterface {
      * @return {[string, string]}tuple of image and target URI
     */
     private getBanner(): [string, string] {
-        const banner = Math.floor(Math.random() * 4) + 1;
-        const img = `${sublessUri}/dist/assets/banner${banner}.png`;
-        if (banner == 3) {
-            return [img, `https://www.subless.com/hf-creator-instructions?utm_campaign=banner${banner}`];
+        const message = Math.floor(Math.random() * 4) + 1;
+        const img = `${sublessUri}/dist/assets/message${message}.png`;
+        if (message == 3) {
+            return [img, `https://www.subless.com/hf-creator-instructions?utm_campaign=message${message}`];
         }
-        return [img, `https://www.subless.com/patron?utm_campaign=banner${banner}`];
+        return [img, `https://www.subless.com/patron?utm_campaign=message${message}`];
     }
 
     /** Fades in an element
