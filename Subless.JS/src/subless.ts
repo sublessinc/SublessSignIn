@@ -107,14 +107,14 @@ export class Subless implements SublessInterface {
 
     /** Inserts banner ad into the page */
     async sublessShowBanner(): Promise<void> {
-        const bannerDiv = document.getElementById("sublessBanner");
+        const bannerDiv = document.getElementById("sublessMessage");
         const link = document.createElement("a");
         const img = document.createElement("img");
         const urls = this.getBanner();
         img.src = urls[0];
-        img.id = "sublessBannerImage";
+        img.id = "sublessMessageImage";
         link.href = urls[1];
-        link.id = "sublessBannerLink";
+        link.id = "sublessMessageLink";
         link.appendChild(img);
         bannerDiv.appendChild(link);
     }
