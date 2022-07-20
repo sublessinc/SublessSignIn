@@ -107,29 +107,29 @@ export class Subless implements SublessInterface {
 
     /** Inserts banner ad into the page */
     async sublessShowBanner(): Promise<void> {
-        const bannerDiv = document.getElementById("sublessMessage");
+        const messageDiv = document.getElementById("sublessMessage");
         const link = document.createElement("a");
         const img = document.createElement("img");
-        const urls = this.getBanner();
+        const urls = this.getmessage();
         img.src = urls[0];
         img.id = "sublessMessageImage";
         img.style.maxHeight = "90px";
         link.href = urls[1];
         link.id = "sublessMessageLink";
         link.appendChild(img);
-        bannerDiv.appendChild(link);
+        messageDiv.appendChild(link);
     }
 
-    /** Gets a random banner ad and corresponding link
+    /** Gets a random message ad and corresponding link
      * @return {[string, string]}tuple of image and target URI
     */
-    private getBanner(): [string, string] {
-        const banner = Math.floor(Math.random() * 4) + 1;
-        const img = `${sublessUri}/dist/assets/banner${banner}.png`;
-        if (banner == 3) {
-            return [img, `https://www.subless.com/hf-creator-instructions?utm_campaign=banner${banner}`];
+    private getmessage(): [string, string] {
+        const message = Math.floor(Math.random() * 4) + 1;
+        const img = `${sublessUri}/dist/assets/message${message}.png`;
+        if (message == 3) {
+            return [img, `https://www.subless.com/hf-creator-instructions?utm_campaign=message${message}`];
         }
-        return [img, `https://www.subless.com/patron?utm_campaign=banner${banner}`];
+        return [img, `https://www.subless.com/patron?utm_campaign=message${message}`];
     }
 
     /** Fades in an element
