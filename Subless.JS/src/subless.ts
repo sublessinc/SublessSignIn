@@ -113,6 +113,7 @@ export class Subless implements SublessInterface {
         const urls = this.getBanner();
         img.src = urls[0];
         img.id = "sublessMessageImage";
+        img.style.maxHeight = "90px";
         link.href = urls[1];
         link.id = "sublessMessageLink";
         link.appendChild(img);
