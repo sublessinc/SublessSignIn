@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Subless.Models;
+using Subless.Services;
 using Subless.Services.Extensions;
 using Subless.Services.Services;
 using SublessSignIn.Models;
@@ -58,6 +59,18 @@ namespace SublessSignIn.Controllers
         public async Task DeleteUser()
         {
             var cognitoId = userService.GetUserClaim(HttpContext.User);
+            await Delete(cognitoId);
+        }
+
+        [TypeFilter(typeof(AdminAuthorizationFilter))]
+        [HttpDelete("{cognitoId}")]
+        public async Task DeleteUser(string cognitoId)
+        {
+            await Delete(cognitoId);
+        }
+
+        private async Task Delete(string cognitoId)
+        {
             stripeService.CancelSubscription(cognitoId);
             var user = userService.GetUserByCognitoId(cognitoId);
             if (user.Creators.Any())
@@ -71,7 +84,7 @@ namespace SublessSignIn.Controllers
             await cognitoService.DeleteCognitoUser(user.CognitoId);
         }
 
-            [HttpGet()]
+        [HttpGet()]
         public ActionResult<UserViewModel> GetUser()
         {
             var cognitoId = userService.GetUserClaim(HttpContext.User);
