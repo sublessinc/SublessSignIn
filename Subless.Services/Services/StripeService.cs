@@ -247,7 +247,7 @@ namespace Subless.Services.Services
             var subscriptions = _stripeApiWrapperService.SubscriptionService.List(new SubscriptionListOptions()
             {
                 Customer = customer.Id
-            }).Where(sub => sub.Status== "active" && sub.CancelAtPeriodEnd == false);
+            }).Where(sub => sub.Status == "active" && sub.CancelAtPeriodEnd == false);
             return subscriptions;
         }
 
@@ -405,7 +405,7 @@ namespace Subless.Services.Services
         }
         public bool CancelSubscription(string cognitoId)
         {
-            
+
             var user = _userService.GetUserByCognitoId(cognitoId);
             if (string.IsNullOrWhiteSpace(user.StripeCustomerId))
             {

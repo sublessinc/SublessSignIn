@@ -1,4 +1,4 @@
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace SublessSignIn
 {
@@ -10,17 +10,17 @@ namespace SublessSignIn
         {
             try
             {
-                this.version = System.IO.File.ReadAllText(@"version.txt");
+                version = System.IO.File.ReadAllText(@"version.txt");
             }
             catch
             {
-                this.version = "";
+                version = "";
             }
         }
 
         public async Task<string> GetVersion()
         {
-            return await Task.FromResult(this.version);
+            return await Task.FromResult(version);
         }
     }
 }

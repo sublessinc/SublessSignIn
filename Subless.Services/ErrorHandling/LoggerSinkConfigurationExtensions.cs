@@ -1,6 +1,7 @@
 ﻿using System;
 using Serilog;
 using Serilog.Configuration;
+using Serilog.Events;
 
 namespace Subless.Services.ErrorHandling
 {
@@ -10,10 +11,9 @@ namespace Subless.Services.ErrorHandling
             this LoggerSinkConfiguration lsc,
             Action<LoggerSinkConfiguration> writeTo)
         {
-            return LoggerSinkConfiguration.Wrap(
-                lsc,
-                wrapped => new LogSuppressionWrapper(wrapped),
-                writeTo);
+
+            return LoggerSinkConfiguration.Wrap(lsc, sink =>
+                new LogSuppressionWrapper(sink), writeTo, LevelAlias.Minimum, null);
         }
     }
 }

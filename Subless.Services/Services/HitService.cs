@@ -126,7 +126,7 @@ namespace Subless.Services.Services
 
         public IEnumerable<Hit> FilterOutCreator(IEnumerable<Hit> hits, Guid creatorId)
         {
-            return hits.Where(x=>x.CreatorId != creatorId);
+            return hits.Where(x => x.CreatorId != creatorId);
         }
 
 

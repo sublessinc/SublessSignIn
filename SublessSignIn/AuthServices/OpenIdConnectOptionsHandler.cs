@@ -23,7 +23,7 @@ namespace SublessSignIn.AuthServices
 
             this.userService = userService ?? throw new ArgumentNullException(nameof(userService));
             this.stripeService = stripeService ?? throw new ArgumentNullException(nameof(stripeService));
-            this.AuthSettings = authSettingsOptions.Value;
+            AuthSettings = authSettingsOptions.Value;
         }
 
         public void Configure(string name, OpenIdConnectOptions options)

@@ -18,7 +18,7 @@ namespace Subless.Services.Services
             .Enrich.FromLogContext()
             .MinimumLevel.ControlledBy(GetLogLevelSwitch())
             .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
-            .WriteTo.SuppressionFilter(x=> x.Console());
+            .WriteTo.SuppressionFilter(x => x.Console());
             return log;
         }
 

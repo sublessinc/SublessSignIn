@@ -1,11 +1,11 @@
-using System;
+﻿using System;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Subless.Models;
 
 namespace Subless.Data
 {
-    public partial class Repository :  DbContext,  ICalculatorQueueRepository
+    public partial class Repository : DbContext, ICalculatorQueueRepository
     {
         internal DbSet<CalculatorExecution> CalculatorExecutions { get; set; }
         internal DbSet<PaymentExecution> PaymentExecutions { get; set; }
@@ -25,7 +25,7 @@ namespace Subless.Data
 
         public CalculatorExecution DequeueCalculation()
         {
-            var calculation = CalculatorExecutions.Where(x=> x.IsProcessing == false && x.IsCompleted == false).OrderBy(x=>x.DateQueued).FirstOrDefault();
+            var calculation = CalculatorExecutions.Where(x => x.IsProcessing == false && x.IsCompleted == false).OrderBy(x => x.DateQueued).FirstOrDefault();
             if (calculation == null)
             {
                 return null;
@@ -67,7 +67,7 @@ namespace Subless.Data
             payment.IsProcessing = true;
             PaymentExecutions.Update(payment);
             SaveChanges();
-            return payment;            
+            return payment;
         }
 
         public void CompletePayment(PaymentExecution payment)
