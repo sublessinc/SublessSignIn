@@ -67,6 +67,14 @@ namespace SublessSignIn.Controllers
             await Delete(cognitoId);
         }
 
+        [TypeFilter(typeof(AdminAuthorizationFilter))]
+        [HttpDelete("byemail")]
+        public async Task DeleteUserByEmail([FromQuery] string email)
+        {
+            var cognitoId = await cognitoService.GetCongitoUserByEmail(email);
+            await Delete(cognitoId);
+        }
+
         private async Task Delete(string cognitoId)
         {
             stripeService.CancelSubscription(cognitoId);

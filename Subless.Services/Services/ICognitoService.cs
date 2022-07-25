@@ -1,4 +1,4 @@
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace Subless.Services.Services
 {
@@ -6,5 +6,6 @@ namespace Subless.Services.Services
     {
         Task DeleteCognitoUser(string cognitoUserId);
         Task<string?> GetCognitoUserEmail(string cognitoUserId);
+        Task<string> GetCongitoUserByEmail(string email);
     }
 }
