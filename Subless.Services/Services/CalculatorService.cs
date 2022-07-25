@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
@@ -89,10 +88,11 @@ namespace Subless.Services.Services
                     if (!hits.Any())
                     {
                         calculatorResult.IdleCustomerRollovers.Add(
-                            new IdleCustomerRollover() {
+                            new IdleCustomerRollover()
+                            {
                                 CognitoId = user.CognitoId,
                                 CustomerId = user.StripeCustomerId,
-                                Payment = Math.Round(payer.Payment/100, CurrencyPrecision, MidpointRounding.ToZero)
+                                Payment = Math.Round(payer.Payment / 100, CurrencyPrecision, MidpointRounding.ToZero)
                             });
                         continue;
                     }

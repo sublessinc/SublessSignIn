@@ -1,6 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
 using Subless.PayoutCalculator;
-using System.Globalization;
 
 namespace Subless.Configuration
 {

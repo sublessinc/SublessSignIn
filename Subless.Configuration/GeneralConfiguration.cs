@@ -9,7 +9,7 @@ namespace Subless.Configuration
         {
             services.Configure<GeneralConfig>(options =>
             {
-                options.Environment= Environment.GetEnvironmentVariable("EnvironmentName") ?? throw new ArgumentNullException("EnvironmentName");
+                options.Environment = Environment.GetEnvironmentVariable("EnvironmentName") ?? throw new ArgumentNullException("EnvironmentName");
             });
             return services;
         }

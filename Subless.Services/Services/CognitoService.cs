@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Amazon;
@@ -58,18 +58,18 @@ namespace Subless.Services.Services
             }
             catch (AggregateException e)
             {
-                if (!e.InnerExceptions.Any(x=> x is UserNotFoundException))
+                if (!e.InnerExceptions.Any(x => x is UserNotFoundException))
                 {
                     throw;
                 }
                 return null;
             }
-            catch (UserNotFoundException e)
+            catch (UserNotFoundException)
             {
                 return null;
             }
-            
-            
+
+
         }
 
         protected virtual void Dispose(bool disposing)

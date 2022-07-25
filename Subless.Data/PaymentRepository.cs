@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
@@ -39,7 +39,7 @@ namespace Subless.Data
                 return null;
             }
             var lastLog = PaymentAuditLogs.OrderByDescending(x => x.PaymentPeriodEnd).FirstOrDefault();
-            return new Tuple<DateTimeOffset, DateTimeOffset> (lastLog.PaymentPeriodStart, lastLog.PaymentPeriodEnd);
+            return new Tuple<DateTimeOffset, DateTimeOffset>(lastLog.PaymentPeriodStart, lastLog.PaymentPeriodEnd);
         }
 
         public PaymentAuditLog GetLastPayment(Guid TargetId)
@@ -52,7 +52,7 @@ namespace Subless.Data
         }
 
         public IEnumerable<PaymentAuditLog> GetAllPaymentsToUser(Guid targetId)
-        {          
+        {
             return PaymentAuditLogs.Where(x => x.TargetId == targetId).OrderByDescending(x => x.PaymentPeriodEnd);
         }
 

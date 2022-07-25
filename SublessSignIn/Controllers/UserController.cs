@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Subless.Models;
 using Subless.Services;
 using Subless.Services.Extensions;
@@ -135,7 +133,7 @@ namespace SublessSignIn.Controllers
         [AllowAnonymous]
         public ActionResult<bool> GetLoggedIn()
         {
-            if (!this.HttpContext.User.Identity.IsAuthenticated)
+            if (!HttpContext.User.Identity.IsAuthenticated)
             {
                 return Ok(false);
             }

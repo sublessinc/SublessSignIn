@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json;
-
-namespace Subless.Models
+﻿namespace Subless.Models
 {
     public class CreateCheckoutSessionRequest
     {
