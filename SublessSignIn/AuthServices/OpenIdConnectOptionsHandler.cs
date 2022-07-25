@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Http;
@@ -39,11 +39,9 @@ namespace SublessSignIn.AuthServices
 
             //These need to be lax in order to handle both remote logins and the first-hop SSL configuration on the ECS cluster
             options.CorrelationCookie.SameSite = SameSiteMode.Lax;
-            //MS Said this only expires to stop build up of dead cookies
-            options.CorrelationCookie.Expiration = TimeSpan.FromDays(7);
+            options.CorrelationCookie.Expiration = TimeSpan.FromMinutes(15);
             options.NonceCookie.SameSite = SameSiteMode.Lax;
-            //MS Said this only expires to stop build up of dead cookies
-            options.NonceCookie.Expiration = TimeSpan.FromDays(7);
+            options.NonceCookie.Expiration = TimeSpan.FromMinutes(15);
             options.GetClaimsFromUserInfoEndpoint = true;
             options.RequireHttpsMetadata = true;
             options.Events = new OpenIdConnectEvents()
