@@ -407,7 +407,7 @@ namespace Subless.Services.Services
         {
 
             var user = _userService.GetUserByCognitoId(cognitoId);
-            if (string.IsNullOrWhiteSpace(user.StripeCustomerId))
+            if (string.IsNullOrWhiteSpace(user?.StripeCustomerId))
             {
                 return false;
             }
