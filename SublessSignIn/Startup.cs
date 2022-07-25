@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -11,6 +11,7 @@ using Subless.Configuration;
 using Subless.Data;
 using Subless.Models;
 using Subless.Services;
+using Subless.Services.ErrorHandling;
 using SublessSignIn.AuthServices;
 
 namespace SublessSignIn
