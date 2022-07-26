@@ -159,8 +159,8 @@ namespace SublessSignIn.Controllers
                 var creator = _creatorService.GetCreatorByCognitoid(cognitoId);
                 var stats = _creatorService.GetStatsForCreator(creator);
 
-                MemoryStream ms = new MemoryStream();
-                StreamWriter sw = new StreamWriter(ms);
+                var ms = new MemoryStream();
+                var sw = new StreamWriter(ms);
                 using (var csv = new CsvWriter(sw, CultureInfo.InvariantCulture))
                 {
                     csv.WriteHeader<MonthlyPaymentStats>();
@@ -168,7 +168,7 @@ namespace SublessSignIn.Controllers
                     csv.WriteRecords(stats);
                     csv.Flush();
                     ms.Seek(0, SeekOrigin.Begin);
-                    StreamReader reader = new StreamReader(ms);
+                    var reader = new StreamReader(ms);
                     return reader.ReadToEnd();
                 }
 

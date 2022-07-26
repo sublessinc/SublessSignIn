@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mail;
@@ -142,14 +142,14 @@ namespace Subless.Services.Services
             foreach (var payment in paymentAuditLogs)
             {
                 paymentStats.Add(new MonthlyPaymentStats()
-                    {
-                        MonthStart = payment.PaymentPeriodStart,
-                        Revenue = payment.Revenue,
-                        PaymentProcessorFees = payment.Fees,
-                        Payment = payment.Payment,
-                        MonthEnd = payment.PaymentPeriodEnd
-                    });
-                
+                {
+                    MonthStart = payment.PaymentPeriodStart,
+                    Revenue = payment.Revenue,
+                    PaymentProcessorFees = payment.Fees,
+                    Payment = payment.Payment,
+                    MonthEnd = payment.PaymentPeriodEnd
+                });
+
             }
             return paymentStats.OrderBy(x => x.MonthStart);
         }

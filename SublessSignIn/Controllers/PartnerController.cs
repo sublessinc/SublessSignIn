@@ -190,7 +190,7 @@ namespace SublessSignIn.Controllers
         [Authorize]
         public ActionResult<PartnerResponse> GetPartner()
         {
-            var userClaim = _userService.GetUserClaim(this.User);
+            var userClaim = _userService.GetUserClaim(User);
             var user = _userService.GetUserByCognitoId(userClaim);
             var partner = _partnerService.GetPartnerByAdminId(user.Id);
             if (partner == null)
@@ -204,7 +204,7 @@ namespace SublessSignIn.Controllers
         [Authorize]
         public ActionResult<PartnerResponse> UpdateOwnPartner([FromBody] PartnerWriteModel partner)
         {
-            var userClaim = _userService.GetUserClaim(this.User);
+            var userClaim = _userService.GetUserClaim(User);
             var user = _userService.GetUserByCognitoId(userClaim);
             if (user == null || !user.Partners.Any() || !user.Partners.Any(x => partner.Id == x.Id))
             {
@@ -219,7 +219,7 @@ namespace SublessSignIn.Controllers
         [Authorize]
         public async Task<ActionResult<PartnerResponse>> WebhookTest()
         {
-            var userClaim = _userService.GetUserClaim(this.User);
+            var userClaim = _userService.GetUserClaim(User);
             var user = _userService.GetUserByCognitoId(userClaim);
             var partner = _partnerService.GetPartnerByAdminId(user.Id);
             if (partner == null)

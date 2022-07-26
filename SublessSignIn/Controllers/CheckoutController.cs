@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -22,7 +21,7 @@ namespace SublessSignIn.Controllers
         private readonly IUserService _userService;
         private readonly IStripeService _stripeService;
         private readonly ILogger<CheckoutController> _logger;
-        public CheckoutController(ILoggerFactory loggerFactory, IOptions<StripeConfig> stripeConfig,  IUserService userService, IStripeService stripeService)
+        public CheckoutController(ILoggerFactory loggerFactory, IOptions<StripeConfig> stripeConfig, IUserService userService, IStripeService stripeService)
         {
             _stripeConfig = stripeConfig ?? throw new ArgumentNullException(nameof(stripeConfig));
             _ = stripeConfig.Value.PublishableKey ?? throw new ArgumentNullException(nameof(stripeConfig));

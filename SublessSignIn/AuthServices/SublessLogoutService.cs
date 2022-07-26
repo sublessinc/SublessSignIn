@@ -31,7 +31,7 @@ namespace SublessSignIn
             if (result.Succeeded && result.Principal.Identity.IsAuthenticated)
             {
                 var userSessionId = result.Principal.FindFirst(JwtClaimTypes.SessionId)?.Value;
-                if (!String.IsNullOrWhiteSpace(userSessionId))
+                if (!string.IsNullOrWhiteSpace(userSessionId))
                 {
                     var passedSessionId = context.Request.Query[JwtClaimTypes.SessionId].FirstOrDefault();
                     // for an authenticated user, if they have a sesison id claim,

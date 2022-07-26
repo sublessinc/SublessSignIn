@@ -22,7 +22,7 @@ namespace Subless.Services
             authSettings.IdentityServerLicenseKey = Environment.GetEnvironmentVariable("IdentityServerLicenseKey") ?? "";
             var json = Environment.GetEnvironmentVariable("dbCreds") ?? throw new ArgumentNullException("dbCreds");
             var dbCreds = JsonConvert.DeserializeObject<DbCreds>(json);
-            authSettings.SessionStoreConnString = dbCreds.GetDatabaseConnection();
+            authSettings.SessionStoreConnString = dbCreds?.GetDatabaseConnection();
             if (!authSettings.Domain.EndsWith('/'))
             {
                 authSettings.Domain += '/';

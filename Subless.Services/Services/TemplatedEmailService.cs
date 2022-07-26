@@ -186,7 +186,7 @@ namespace Subless.Services.Services
             var fileName = "Subless.Services.Assets.Welcome.html";
             var assembly = Assembly.GetExecutingAssembly();
             var stream = assembly.GetManifestResourceStream(fileName);
-            StreamReader reader = new StreamReader(stream);
+            var reader = new StreamReader(stream);
             return reader.ReadToEnd();
         }
 
@@ -195,7 +195,7 @@ namespace Subless.Services.Services
             var fileName = "Subless.Services.Assets.Receipt.html";
             var assembly = Assembly.GetExecutingAssembly();
             var stream = assembly.GetManifestResourceStream(fileName);
-            StreamReader reader = new StreamReader(stream);
+            var reader = new StreamReader(stream);
             return reader.ReadToEnd();
         }
 
@@ -204,7 +204,7 @@ namespace Subless.Services.Services
             var fileName = "Subless.Services.Assets.CreatorReceipt.html";
             var assembly = Assembly.GetExecutingAssembly();
             var stream = assembly.GetManifestResourceStream(fileName);
-            StreamReader reader = new StreamReader(stream);
+            var reader = new StreamReader(stream);
             return reader.ReadToEnd();
         }
 
@@ -213,7 +213,7 @@ namespace Subless.Services.Services
             var fileName = "Subless.Services.Assets.CreatorReceipt.html";
             var assembly = Assembly.GetExecutingAssembly();
             var stream = assembly.GetManifestResourceStream(fileName);
-            StreamReader reader = new StreamReader(stream);
+            var reader = new StreamReader(stream);
             return reader.ReadToEnd();
         }
 
@@ -222,7 +222,7 @@ namespace Subless.Services.Services
             var fileName = "Subless.Services.Assets.RolloverReceipt.html";
             var assembly = Assembly.GetExecutingAssembly();
             var stream = assembly.GetManifestResourceStream(fileName);
-            StreamReader reader = new StreamReader(stream);
+            var reader = new StreamReader(stream);
             return reader.ReadToEnd();
         }
 
@@ -233,7 +233,7 @@ namespace Subless.Services.Services
             var userEmail = template.Replace(MonthKey, month, StringComparison.Ordinal);
             userEmail = userEmail.Replace(SiteLinkKey, authSettings.Domain, StringComparison.Ordinal);
             userEmail = userEmail.Replace(LogoUrl, authSettings.Domain + "/dist/assets/SublessLogo.png", StringComparison.Ordinal);
-            userEmail = userEmail.Replace(PaymentsKey, String.Join("\n", GetPaymentItems(payments)), StringComparison.Ordinal);
+            userEmail = userEmail.Replace(PaymentsKey, string.Join("\n", GetPaymentItems(payments)), StringComparison.Ordinal);
             var specifier = "C";
             var culture = CultureInfo.CreateSpecificCulture("en-US");
             var total = payments.Sum(x => x.Amount / 100);
@@ -286,8 +286,8 @@ namespace Subless.Services.Services
 
         private List<string> GetPaymentItems(List<Payment> payments)
         {
-            List<string> formattedPayments = new List<string>();
-            foreach (Payment payment in payments)
+            var formattedPayments = new List<string>();
+            foreach (var payment in payments)
             {
                 var individualPayment = IndividualPaymentTemplate.Replace(CreatorNameKey, payment.Payee.Name, StringComparison.Ordinal);
                 var specifier = "C";
