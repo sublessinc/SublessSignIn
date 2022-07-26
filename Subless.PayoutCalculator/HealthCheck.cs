@@ -25,7 +25,7 @@ namespace Subless.PayoutCalculator
             var db = userRepository.CanAccessDatabase();
             var stripe = stripeService.CanAccessStripe();
             var s3 = fileStorageService.CanAccessS3();
-            return (await db && await s3 && await stripe);
+            return await db && await s3 && await stripe;
         }
     }
 }

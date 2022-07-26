@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -23,8 +23,8 @@ namespace Subless.Services
 #pragma warning disable CA1019 // The loggerfactory is not stored, so we do not need to expose it.
         public AdminAuthorizationFilter(IUserService userService, ILoggerFactory loggerFactory)
         {
-            this._userService = userService ?? throw new ArgumentNullException(nameof(userService));
-            this.logger = loggerFactory?.CreateLogger<AdminAuthorizationFilter>() ?? throw new ArgumentNullException(nameof(loggerFactory));
+            _userService = userService ?? throw new ArgumentNullException(nameof(userService));
+            logger = loggerFactory?.CreateLogger<AdminAuthorizationFilter>() ?? throw new ArgumentNullException(nameof(loggerFactory));
         }
 
         public void OnAuthorization(AuthorizationFilterContext context)

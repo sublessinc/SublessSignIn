@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using Microsoft.Extensions.DependencyInjection;
 using Subless.Models;
 using Subless.Services.Extensions;
@@ -19,7 +19,7 @@ namespace Subless.Services
             });
             services.Configure<FeatureConfig>(options =>
             {
-                options.HitPopupEnabled = bool.TryParse(Environment.GetEnvironmentVariable("HitPopupEnabled"), out bool popupEnabled) ? popupEnabled : false;
+                options.HitPopupEnabled = bool.TryParse(Environment.GetEnvironmentVariable("HitPopupEnabled"), out var popupEnabled) ? popupEnabled : false;
             });
 
             services.AddTransient<IAdministrationService, AdministrationService>();

@@ -1,11 +1,11 @@
-using System;
+﻿using System;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
-namespace SublessSignIn
+namespace Subless.Services.ErrorHandling
 {
     public class ExceptionHandlingMiddleware
     {
@@ -45,14 +45,14 @@ namespace SublessSignIn
             if (ex is BadHttpRequestException && context.Request.Path.Value.Contains("Hit", StringComparison.InvariantCultureIgnoreCase))
             {
                 _logger.LogWarning(ex, "Exception occurred when processing a hit");
-                context.Response.StatusCode = 400;                
+                context.Response.StatusCode = 400;
                 return context.Response.WriteAsync("Hit could not be processed");
             }
 
             // Redirect to login if login session has timed out
             if (ex.Message == "An error was encountered while handling the remote login." ||
-                (ex.Message == "Exception occurred while processing message."
-                    && ex.InnerException.Message.Contains("IDX21324: The 'nonce' has expired", StringComparison.InvariantCultureIgnoreCase)))
+                ex.Message == "Exception occurred while processing message."
+                    && ex.InnerException.Message.Contains("IDX21324: The 'nonce' has expired", StringComparison.InvariantCultureIgnoreCase))
             {
                 _logger.LogWarning(ex, "Timeout exception during login");
                 context.Response.StatusCode = 302;
@@ -63,7 +63,7 @@ namespace SublessSignIn
             else
             {
                 _logger.LogError(ex, "Unhandled exception encountered");
-                var errorMessage = JsonConvert.SerializeObject(new { Message = ex.Message, Code = "GE" });
+                var errorMessage = JsonConvert.SerializeObject(new { ex.Message, Code = "GE" });
                 context.Response.ContentType = "application/json";
                 context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
                 return context.Response.WriteAsync(errorMessage);

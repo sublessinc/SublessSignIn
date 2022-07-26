@@ -20,7 +20,7 @@ namespace Subless.Data
             }
 
             _options = options ?? throw new ArgumentNullException(nameof(options));
-            this.logger = loggerFactory.CreateLogger<Repository>();
+            logger = loggerFactory.CreateLogger<Repository>();
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

@@ -17,7 +17,7 @@ namespace Subless.Services.Services
 
         public AuthService(IUserRepository userRepository, IUserService userService, IStripeService stripeService, ICreatorService creatorService, ITemplatedEmailService templatedEmailService)
         {
-            this._userRepo = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
+            _userRepo = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
             this.userService = userService ?? throw new ArgumentNullException(nameof(userService));
             this.stripeService = stripeService ?? throw new ArgumentNullException(nameof(stripeService));
             this.creatorService = creatorService ?? throw new ArgumentNullException(nameof(creatorService));
@@ -32,7 +32,7 @@ namespace Subless.Services.Services
                 user = userService.CreateUserByCognitoId(cognitoId);
             }
 
-            if (activationCode != null && Guid.TryParse(activationCode, out Guid code) && (user.Creators == null || !user.Creators.Any() || user.Creators.Any(x => !x.Active)))
+            if (activationCode != null && Guid.TryParse(activationCode, out var code) && (user.Creators == null || !user.Creators.Any() || user.Creators.Any(x => !x.Active)))
             {
                 await creatorService.ActivateCreator(user.Id, code, email);
                 user = userService.GetUserWithRelationships(user.Id);
@@ -46,7 +46,7 @@ namespace Subless.Services.Services
                 };
             }
 
-            if ((user.Creators != null && user.Creators.Any(x => string.IsNullOrWhiteSpace(x.PayPalId))))
+            if (user.Creators != null && user.Creators.Any(x => string.IsNullOrWhiteSpace(x.PayPalId)))
             {
                 return new Redirection()
                 {

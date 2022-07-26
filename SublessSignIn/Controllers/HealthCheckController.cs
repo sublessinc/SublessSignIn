@@ -16,14 +16,14 @@ namespace SublessSignIn.Controllers
         public HealthCheckController(IHealthCheck healthCheck, ILoggerFactory loggerFactory)
         {
             this.healthCheck = healthCheck ?? throw new ArgumentNullException(nameof(healthCheck));
-            this.logger = loggerFactory?.CreateLogger<IHealthCheck>() ?? throw new ArgumentNullException(nameof(loggerFactory));
+            logger = loggerFactory?.CreateLogger<IHealthCheck>() ?? throw new ArgumentNullException(nameof(loggerFactory));
         }
 
         [HttpGet]
         [AllowAnonymous]
         public async Task<ActionResult<bool>> IsHealthy()
         {
-            bool isHealthy = false;
+            var isHealthy = false;
             try
             {
                 isHealthy = await healthCheck.IsHealthy();

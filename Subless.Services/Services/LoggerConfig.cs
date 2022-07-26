@@ -1,8 +1,8 @@
-using System;
+﻿using System;
 using Serilog;
 using Serilog.Core;
 using Serilog.Events;
-
+using Subless.Services.ErrorHandling;
 namespace Subless.Services.Services
 {
     public static class LoggerConfig
@@ -18,7 +18,7 @@ namespace Subless.Services.Services
             .Enrich.FromLogContext()
             .MinimumLevel.ControlledBy(GetLogLevelSwitch())
             .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
-            .WriteTo.Console();
+            .WriteTo.SuppressionFilter(x => x.Console());
             return log;
         }
 
