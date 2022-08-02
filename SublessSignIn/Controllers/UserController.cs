@@ -140,7 +140,7 @@ namespace SublessSignIn.Controllers
         [EnableCors("Unrestricted")]
         [AllowAnonymous]
         public ActionResult<bool> GetLoggedIn()
-        {
+        {            
             if (!HttpContext.User.Identity.IsAuthenticated)
             {
                 return Ok(false);
@@ -152,6 +152,31 @@ namespace SublessSignIn.Controllers
                 return Ok(true);
             }
             return Ok(false);
+        }
+
+        //todo: consider other names
+        [HttpGet("loggedInRenewal")]
+        [EnableCors("Unrestricted")]
+        [AllowAnonymous]
+        public ActionResult<LoggedInEnum> GetLoggedInRenewal()
+        {
+            if (!HttpContext.User.Identity.IsAuthenticated)
+            {
+                return Ok(LoggedInEnum.NotLoggedIn);
+            }
+            var cognitoId = userService.GetUserClaim(HttpContext.User);
+            var user = userService.GetUserByCognitoId(cognitoId);
+            if (user == null)
+            {                
+                return Ok(LoggedInEnum.NotLoggedIn);
+            }
+            if (HttpContext.Items.TryGetValue("ExpiresUTC", out var expirationDate)
+                && expirationDate is DateTimeOffset
+                && (DateTimeOffset)expirationDate < DateTime.UtcNow.AddDays(1))
+            {
+                return Ok(LoggedInEnum.ShouldRenew);
+            }
+            return Ok(LoggedInEnum.LoggedIn);
         }
 
         [HttpPut("terms")]

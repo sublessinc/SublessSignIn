@@ -36,6 +36,7 @@ import { RecentActivityComponent } from './recent-activity/recent-activity.compo
 import { TopContentComponent } from './top-content/top-content.component';
 import { DateFormatter } from './services/dateformatter.service';
 import { PartnerstatsComponent } from './partnerstats/partnerstats.component';
+import { SessionRenewComponent } from './session-renew/session-renew.component';
 
 @NgModule({
   declarations: [
@@ -62,7 +63,8 @@ import { PartnerstatsComponent } from './partnerstats/partnerstats.component';
     PartnerTermsComponent,
     RecentActivityComponent,
     TopContentComponent,
-    PartnerstatsComponent
+    PartnerstatsComponent,
+    SessionRenewComponent
   ],
   imports: [
     ThemeModule,

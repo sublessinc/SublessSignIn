@@ -1,4 +1,6 @@
-using System;
+﻿using System;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
@@ -38,7 +40,11 @@ namespace SublessSignIn.AuthServices
                     // Samesite has to be none to support hit tracking
                     options.Cookie.SameSite = SameSiteMode.None;
                     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-                    options.Cookie.MaxAge = TimeSpan.FromDays(14);
+
+                    // TODO this is only for testing purposes, these should be 2weeks
+                    options.Cookie.MaxAge = TimeSpan.FromSeconds(14);
+                    options.ExpireTimeSpan = TimeSpan.FromSeconds(15);
+                    options.Events.OnValidatePrincipal = AddTokenExpirationData;
                 })
                 .AddOpenIdConnect("oidc", options =>
                 {
@@ -61,6 +67,15 @@ namespace SublessSignIn.AuthServices
                 .PersistKeysToDbContext<KeyStorageContext>();
 
             return services;
+        }
+
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+#pragma warning disable CA1822 // Mark members as static
+        private static async Task AddTokenExpirationData(CookieValidatePrincipalContext context)
+#pragma warning restore CA1822 // Mark members as static
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
+        {
+            context.Request.HttpContext.Items.Add("ExpiresUTC", context.Properties.ExpiresUtc);
         }
 
     }
