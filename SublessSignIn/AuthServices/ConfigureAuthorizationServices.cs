@@ -71,7 +71,7 @@ namespace SublessSignIn.AuthServices
 
         {
             context.Request.HttpContext.Items.Add("ExpiresUTC", context.Properties.ExpiresUtc);
-            return Task.CompletedTask;  
+            return Task.CompletedTask;
         }
 
     }

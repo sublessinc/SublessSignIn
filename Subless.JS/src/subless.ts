@@ -75,7 +75,7 @@ export class Subless implements SublessInterface {
         }
     }
 
-    /** Opens a new tab to renew your token */
+    /** Starts a redirect chain to renew your session cookie */
     async renewLogin() {
         const path = window.location.href;
         window.location.href = sublessUri + "/renew?return_uri=" + path;
@@ -83,7 +83,7 @@ export class Subless implements SublessInterface {
 
     /** Gets the current state of the login */
     async sublessGetLoginState(): Promise<number> {
-        return await fetch(sublessUri + "/api/user/loggedInRenewal", {
+        return await fetch(sublessUri + "/api/user/loginStatus", {
             method: "Get",
             headers: {
                 "Content-Type": "application/json",
