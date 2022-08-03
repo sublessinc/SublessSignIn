@@ -155,6 +155,30 @@ namespace SublessSignIn.Controllers
             return Ok(false);
         }
 
+        [HttpGet("loginStatus")]
+        [EnableCors("Unrestricted")]
+        [AllowAnonymous]
+        public ActionResult<LoggedInEnum> GetLoggedInRenewal()
+        {
+            if (!HttpContext.User.Identity.IsAuthenticated)
+            {
+                return Ok(LoggedInEnum.NotLoggedIn);
+            }
+            var cognitoId = userService.GetUserClaim(HttpContext.User);
+            var user = userService.GetUserByCognitoId(cognitoId);
+            if (user == null)
+            {
+                return Ok(LoggedInEnum.NotLoggedIn);
+            }
+            if (HttpContext.Items.TryGetValue("ExpiresUTC", out var expirationDate)
+                && expirationDate is DateTimeOffset
+                && (DateTimeOffset)expirationDate < DateTime.UtcNow.AddDays(3))
+            {
+                return Ok(LoggedInEnum.ShouldRenew);
+            }
+            return Ok(LoggedInEnum.LoggedIn);
+        }
+
         [HttpPut("terms")]
         public ActionResult AcceptTerms()
         {

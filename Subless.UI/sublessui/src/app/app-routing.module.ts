@@ -13,6 +13,7 @@ import { PartnerprofileComponent } from './partnerprofile/partnerprofile.compone
 import { PayoutsettingsComponent } from './payoutsettings/payoutsettings.component';
 import { RegisterPaymentComponent } from './register-payment/register-payment.component';
 import { AuthGuard } from './services/auth.guard';
+import { SessionRenewComponent } from './session-renew/session-renew.component';
 import { StopNavGuard } from './stop-nav.guard';
 import { TermsComponent } from './terms/terms.component';
 import { UserprofileComponent } from './userprofile/userprofile.component';
@@ -34,9 +35,8 @@ const routes: Routes = [
   { path: 'logged-out', component: LoggedOutComponent },
   { path: 'terms', component: TermsComponent },
   { path: 'creator-terms', component: CreatorTermsComponent },
-  { path: 'partner-terms', component: PartnerTermsComponent }
-
-
+  { path: 'partner-terms', component: PartnerTermsComponent },
+  { path: 'renew', component: SessionRenewComponent }
 ];
 
 @NgModule({

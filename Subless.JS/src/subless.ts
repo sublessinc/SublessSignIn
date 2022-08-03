@@ -62,7 +62,28 @@ export class Subless implements SublessInterface {
 
     /** Check whether a user who had loaded this page is logged into a Subless account. */
     async subless_LoggedIn(): Promise<boolean> { // eslint-disable-line camelcase
-        return await fetch(sublessUri + "/api/user/loggedin", {
+        const result = await this.sublessGetLoginState();
+        if (result == 0) {
+            return false;
+        }
+        if (result == 1) {
+            return true;
+        }
+        if (result == 2) {
+            await this.renewLogin();
+            return true;
+        }
+    }
+
+    /** Starts a redirect chain to renew your session cookie */
+    async renewLogin() {
+        const path = window.location.href;
+        window.location.href = sublessUri + "/renew?return_uri=" + path;
+    }
+
+    /** Gets the current state of the login */
+    async sublessGetLoginState(): Promise<number> {
+        return await fetch(sublessUri + "/api/user/loginStatus", {
             method: "Get",
             headers: {
                 "Content-Type": "application/json",

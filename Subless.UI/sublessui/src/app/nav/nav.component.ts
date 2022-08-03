@@ -76,7 +76,8 @@ export class NavComponent implements OnInit, OnDestroy {
       && !this.router.url.startsWith("/payout-setup")
       && !this.router.url.startsWith("/terms")
       && !this.router.url.startsWith("/creator-terms")
-      && !this.router.url.startsWith("/partner-terms");
+      && !this.router.url.startsWith("/partner-terms")
+      && !this.router.url.startsWith("/renew");
   }
 
   returnToStripe() {
