@@ -10,27 +10,28 @@ using Stripe;
 using Stripe.Checkout;
 using Subless.Models;
 
-namespace Subless.Services.Services
+namespace Subless.Services.Services.SublessStripe
 {
     public class StripeService : IStripeService
     {
         private readonly IOptions<StripeConfig> _stripeConfig;
         private readonly IUserService _userService;
-        private readonly IStripeApiWrapperService _stripeApiWrapperService;
+        private readonly IStripeApiWrapperServiceFactory _stripeApiWrapperServiceFactory;
         private readonly ILogger _logger;
 
-        public StripeService(IOptions<StripeConfig> stripeConfig, IUserService userService, IStripeApiWrapperService stripeApiWrapperService, ILoggerFactory loggerFactory)
+        public StripeService(IOptions<StripeConfig> stripeConfig, IUserService userService, IStripeApiWrapperServiceFactory stripeApiWrapperServiceFactory, ILoggerFactory loggerFactory)
         {
             _stripeConfig = stripeConfig ?? throw new ArgumentNullException(nameof(stripeConfig));
             _userService = userService ?? throw new ArgumentNullException(nameof(userService));
-            _stripeApiWrapperService = stripeApiWrapperService ?? throw new ArgumentNullException(nameof(stripeApiWrapperService));
+            _stripeApiWrapperServiceFactory = stripeApiWrapperServiceFactory ?? throw new ArgumentNullException(nameof(stripeApiWrapperServiceFactory));
             _logger = loggerFactory?.CreateLogger<StripeService>() ?? throw new ArgumentNullException(nameof(loggerFactory));
 
         }
 
         public async Task<bool> CanAccessStripe()
         {
-            var list = _stripeApiWrapperService.CustomerService.List(new CustomerListOptions()
+            using var serviceFactory = new StripeApiWrapperServiceFactory();
+            var list = await serviceFactory.Get().CustomerService.ListAsync(new CustomerListOptions()
             {
                 Limit = 1
             });
@@ -64,6 +65,7 @@ namespace Subless.Services.Services
 
         private void UpgradeCustomer(string customer, string cognitoId, string priceId)
         {
+            using var serviceFactory = new StripeApiWrapperServiceFactory();
             var subs = GetSubscriptions(customer);
             var subscription = subs.Single();
 
@@ -81,11 +83,12 @@ namespace Subless.Services.Services
                 ProrationBehavior = "none",
                 Items = items,
             };
-            _stripeApiWrapperService.SubscriptionService.Update(subscription.Id, options);
+            serviceFactory.Get().SubscriptionService.Update(subscription.Id, options);
         }
 
         private async Task<CreateCheckoutSessionResponse> NewSubscription(User user, string priceId)
         {
+            using var serviceFactory = new StripeApiWrapperServiceFactory();
             if (user.StripeCustomerId == null)
             {
                 user.StripeCustomerId = CreateCustomer(user.CognitoId).Id;
@@ -110,7 +113,7 @@ namespace Subless.Services.Services
                 },
             };
             options.AddExtraParam("allow_promotion_codes", "true");
-            var session = await _stripeApiWrapperService.SessionService.CreateAsync(options);
+            var session = await serviceFactory.Get().SessionService.CreateAsync(options);
             _userService.AddStripeSessionId(user.CognitoId, session.Id);
             return new CreateCheckoutSessionResponse
             {
@@ -120,11 +123,12 @@ namespace Subless.Services.Services
 
         public Customer CreateCustomer(string cognitoId)
         {
+            using var serviceFactory = new StripeApiWrapperServiceFactory();
             var customerDetails = new CustomerCreateOptions
             {
                 Description = cognitoId
             };
-            var customer = _stripeApiWrapperService.CustomerService.Create(customerDetails);
+            var customer = serviceFactory.Get().CustomerService.Create(customerDetails);
             _userService.AddStripeCustomerId(cognitoId, customer.Id);
             return customer;
         }
@@ -254,7 +258,7 @@ namespace Subless.Services.Services
         public async Task<Stripe.BillingPortal.Session> GetCustomerPortalLink(string cognitoId)
         {
             // TODO: Switch this to loading the session ID based on the cognito user id
-            // For demonstration purposes, we're using the Checkout session to retrieve the customer ID. 
+            // For demonstration purposes, we're using the Checkout session to retrieve the customer ID.
             // Typically this is stored alongside the authenticated user in your database.
             var checkoutSessionId = _userService.GetStripeIdFromCognitoId(cognitoId);
             var checkoutSession = await _stripeApiWrapperService.SessionService.GetAsync(checkoutSessionId);

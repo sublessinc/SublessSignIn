@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Subless.Models;
 using Subless.Services.Extensions;
 using Subless.Services.Services;
+using Subless.Services.Services.SublessStripe;
 
 namespace Subless.Services
 {
@@ -39,9 +40,10 @@ namespace Subless.Services
             services.AddTransient<IFileStorageService, S3Service>();
             services.AddTransient<AwsCredWrapper, AwsCredWrapper>();
             services.AddTransient<ITemplatedEmailService, TemplatedEmailService>();
-            services.AddTransient<IStripeApiWrapperService, StripeApiWrapperService>();
+            services.AddTransient<IStripeApiWrapperServiceFactory, StripeApiWrapperServiceFactory>();
             services.AddMemoryCache();
             services.AddHttpClient();
+
             return services;
         }
     }

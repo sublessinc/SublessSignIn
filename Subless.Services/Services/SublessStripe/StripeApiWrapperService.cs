@@ -4,7 +4,7 @@ using Stripe;
 using Stripe.Checkout;
 using Subless.Models;
 
-namespace Subless.Services.Services
+namespace Subless.Services.Services.SublessStripe
 {
     public class StripeApiWrapperService : IStripeApiWrapperService
     {
@@ -44,7 +44,7 @@ namespace Subless.Services.Services
 
         public ProductService ProductService => productService;
 
-        public StripeApiWrapperService(IOptions<StripeConfig> stripeConfig)
+        internal StripeApiWrapperService(IOptions<StripeConfig> stripeConfig)
         {
             _stripeConfig = stripeConfig;
             _client = new StripeClient(_stripeConfig.Value.SecretKey ?? throw new ArgumentNullException(nameof(_stripeConfig.Value.SecretKey)));
