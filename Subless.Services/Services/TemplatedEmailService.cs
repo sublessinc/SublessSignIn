@@ -140,6 +140,20 @@ namespace Subless.Services.Services
             _userService.WelcomeSent(cognitoId);
         }
 
+        public void SendIdleEmail(string cognitoId)
+        {
+            var usertask = Task.Run(() => cognitoService.GetCognitoUserEmail(cognitoId));
+            usertask.Wait();
+            if (usertask.Result == null)
+            {
+                logger.LogInformation($"No email present for cognitoid {cognitoId}");
+                return;
+            }
+            var body = GetIdleEmail();
+            var emailTask = Task.Run(() => _emailSerivce.SendEmail(body, usertask.Result, "Your subless account has been idle this month!"));
+            emailTask.Wait();
+        }
+
         private string GetEmailFromUserId(Guid userId)
         {
             var user = _userService.GetUser(userId);
@@ -183,45 +197,37 @@ namespace Subless.Services.Services
 
         private string GetWelcomeEmail()
         {
-            var fileName = "Subless.Services.Assets.Welcome.html";
-            var assembly = Assembly.GetExecutingAssembly();
-            var stream = assembly.GetManifestResourceStream(fileName);
-            var reader = new StreamReader(stream);
-            return reader.ReadToEnd();
+            return ReadTemplate("Subless.Services.Assets.Welcome.html");
         }
 
+        public string GetIdleEmail()
+        {
+            return ReadTemplate("Subless.Services.Assets.Idle.html");
+        }
         private string GetEmailTemplate()
         {
-            var fileName = "Subless.Services.Assets.Receipt.html";
-            var assembly = Assembly.GetExecutingAssembly();
-            var stream = assembly.GetManifestResourceStream(fileName);
-            var reader = new StreamReader(stream);
-            return reader.ReadToEnd();
+            return ReadTemplate("Subless.Services.Assets.Receipt.html");
         }
 
         private string GetCreatorEmailTemplate()
         {
-            var fileName = "Subless.Services.Assets.CreatorReceipt.html";
-            var assembly = Assembly.GetExecutingAssembly();
-            var stream = assembly.GetManifestResourceStream(fileName);
-            var reader = new StreamReader(stream);
-            return reader.ReadToEnd();
+            return ReadTemplate("Subless.Services.Assets.CreatorReceipt.html");
         }
 
         private string GetPartnerEmailTemplate()
         {
-            var fileName = "Subless.Services.Assets.CreatorReceipt.html";
-            var assembly = Assembly.GetExecutingAssembly();
-            var stream = assembly.GetManifestResourceStream(fileName);
-            var reader = new StreamReader(stream);
-            return reader.ReadToEnd();
+            return ReadTemplate("Subless.Services.Assets.CreatorReceipt.html");
         }
 
         private string GetRolloverEmailTemplate()
         {
-            var fileName = "Subless.Services.Assets.RolloverReceipt.html";
+            return ReadTemplate("Subless.Services.Assets.RolloverReceipt.html");
+        }
+
+        private string ReadTemplate(string templateName)
+        {
             var assembly = Assembly.GetExecutingAssembly();
-            var stream = assembly.GetManifestResourceStream(fileName);
+            var stream = assembly.GetManifestResourceStream(templateName);
             var reader = new StreamReader(stream);
             return reader.ReadToEnd();
         }

@@ -7,6 +7,8 @@ namespace Subless.Services.Services
     {
         void ExecutedQueuedPayment();
         void ExecutePayments(DateTimeOffset startDate, DateTimeOffset endDate, List<Guid> selectedUserIds = null);
+        void ExecuteQueuedIdleEmail();
+        void QueueIdleEmail(DateTimeOffset start, DateTimeOffset end);
         Guid QueuePayment(DateTimeOffset startDate, DateTimeOffset endDate);
         void SaveFirstPayment();
     }

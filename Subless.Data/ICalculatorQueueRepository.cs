@@ -12,5 +12,8 @@ namespace Subless.Data
         Guid QueueCalculation(DateTimeOffset start, DateTimeOffset end);
         Guid QueuePayment(DateTimeOffset start, DateTimeOffset end);
         CalculatorExecution GetQueuedCalcuation(Guid id);
+        IdleEmailExecution DequeueIdleEmails();
+        void QueueIdleEmails(DateTimeOffset startDate, DateTimeOffset endDate);
+        void CompleteIdleEmails(IdleEmailExecution payment);
     }
 }
