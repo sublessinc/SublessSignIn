@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 
 namespace Subless.Models
 {
@@ -15,5 +15,6 @@ namespace Subless.Models
         UserStats = 0,
         CreatorStats = 1,
         PartnerStats = 2,
+        Visit = 3,
     }
 }

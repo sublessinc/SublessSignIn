@@ -149,6 +149,7 @@ namespace SublessSignIn.Controllers
             var user = userService.GetUserByCognitoId(cognitoId);
             if (user != null)
             {
+                _usageService.SaveUsage(UsageType.Visit, user.Id);
                 return Ok(true);
             }
             return Ok(false);
