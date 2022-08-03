@@ -67,13 +67,11 @@ namespace SublessSignIn.AuthServices
             return services;
         }
 
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-#pragma warning disable CA1822 // Mark members as static
-        private static async Task AddTokenExpirationData(CookieValidatePrincipalContext context)
-#pragma warning restore CA1822 // Mark members as static
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
+        private static Task AddTokenExpirationData(CookieValidatePrincipalContext context)
+
         {
             context.Request.HttpContext.Items.Add("ExpiresUTC", context.Properties.ExpiresUtc);
+            return Task.CompletedTask;  
         }
 
     }
