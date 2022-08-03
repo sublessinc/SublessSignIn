@@ -149,8 +149,8 @@ namespace Subless.Services.Services
                 logger.LogInformation($"No email present for cognitoid {cognitoId}");
                 return;
             }
-            var body = GetIdleEmail();
-            var emailTask = Task.Run(() => _emailSerivce.SendEmail(body, usertask.Result, "Your subless account has been idle this month!"));
+            var body = GenerateEmailBodyForIdleEmail(GetIdleEmail());
+            var emailTask = Task.Run(() => _emailSerivce.SendEmail(body, usertask.Result, "Your subless budget isn't going to any creators this month!"));
             emailTask.Wait();
         }
 
@@ -230,6 +230,13 @@ namespace Subless.Services.Services
             var stream = assembly.GetManifestResourceStream(templateName);
             var reader = new StreamReader(stream);
             return reader.ReadToEnd();
+        }
+
+        private string GenerateEmailBodyForIdleEmail(string template)
+        {
+            var email = template.Replace(SiteLinkKey, authSettings.Domain, StringComparison.Ordinal);
+            return email.Replace(LogoUrl, authSettings.Domain + "/dist/assets/SublessLogo.png", StringComparison.Ordinal);
+
         }
 
         private string GenerateEmailBodyForUser(string template, List<Payment> payments, DateTimeOffset PaymentPeriodStart, DateTimeOffset PaymentPeriodEnd)

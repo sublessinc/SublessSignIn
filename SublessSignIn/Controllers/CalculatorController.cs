@@ -104,9 +104,11 @@ namespace SublessSignIn.Controllers
             return Ok(result);
         }
 
-        [HttpGet("EmailIdleCreators")]
+        [HttpPost("EmailIdleCreators")]
         public ActionResult EmailIdleCreators(DateTimeOffset start, DateTimeOffset end)
         {
+            start = start.ToUniversalTime();
+            end = end.ToUniversalTime();
             _paymentService.QueueIdleEmail(start, end);
             return Ok();
         }
