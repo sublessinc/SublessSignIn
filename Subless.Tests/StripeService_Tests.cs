@@ -147,29 +147,40 @@ namespace Subless.Tests
                     .BuildServiceProvider();
                 var factory = serviceProvider.GetService<ILoggerFactory>();
                 var stripeWrapper = new Mock<IStripeApiWrapperService>();
+               
                 var invoiceService = new Mock<InvoiceService>();
                 var invoices = new StripeList<Invoice>() { Data = testInvoices ?? new List<Invoice>() };
                 invoiceService.SetupSequence(x => x.List(It.IsAny<InvoiceListOptions>(), null))
                     .Returns(invoices)
                     .Returns(new StripeList<Invoice>() { Data = new List<Invoice>() }); // Need two returns in sequence to account for paging
                 stripeWrapper.Setup(x => x.InvoiceService).Returns(invoiceSerivceMock?.Object ?? invoiceService.Object);
+               
                 var userService = new Mock<IUserService>();
                 userService.Setup(x => x.GetUsersFromStripeIds(It.IsAny<IEnumerable<string>>())).Returns(users ?? new List<User>());
+                
                 var refundService = new Mock<RefundService>();
                 refundService.Setup(x => x.List(It.IsAny<RefundListOptions>(), null))
                     .Returns(new StripeList<Refund> { Data = refunds ?? new List<Refund>() });
                 stripeWrapper.Setup(x => x.RefundService).Returns(refundService.Object);
+                
                 var chargeService = new Mock<ChargeService>();
                 chargeService.Setup(x => x.List(It.IsAny<ChargeListOptions>(), null))
                     .Returns(new StripeList<Charge> { Data = charges ?? new List<Charge>() });
                 chargeService.Setup(x => x.Get(It.IsAny<string>(), null, null))
                 .Returns(charges?.First());
                 stripeWrapper.Setup(x => x.ChargeService).Returns(chargeService.Object);
+                
                 var balanceTransactionService = new Mock<BalanceTransactionService>();
                 balanceTransactionService.Setup(x => x.Get(It.IsAny<string>(), null, null))
                     .Returns(balanceTransaction);
                 stripeWrapper.Setup(x => x.BalanceTransactionService).Returns(balanceTransactionService.Object);
-                var sut = new StripeService(Options.Create(new Models.StripeConfig()), userService.Object, stripeWrapper.Object, factory);
+
+                var stripeApiWrapperServiceFactory = new Mock<IStripeApiWrapperServiceFactory>();
+                stripeApiWrapperServiceFactory
+                    .Setup(o => o.Get())
+                    .Returns(stripeWrapper.Object);
+               
+                var sut = new StripeService(Options.Create(new Models.StripeConfig()), userService.Object, stripeApiWrapperServiceFactory.Object, factory);
                 return sut;
             }
         }

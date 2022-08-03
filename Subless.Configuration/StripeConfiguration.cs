@@ -1,5 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Subless.Models;
+using Subless.Services.Services.SublessStripe;
 
 namespace Subless.Configuration
 {
@@ -20,6 +22,9 @@ namespace Subless.Configuration
                 options.SublessPayPalId = Environment.GetEnvironmentVariable("PayPalId");
                 options.CustomBudgetId = Environment.GetEnvironmentVariable("CustomBudgetId");
             });
+
+            var serviceProvider = services.BuildServiceProvider();
+            StripeApiWrapperServiceFactory.StripeConfig = serviceProvider.GetService<IOptions<StripeConfig>>();
             return services;
         }
     }
