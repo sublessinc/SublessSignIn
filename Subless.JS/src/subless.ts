@@ -77,7 +77,8 @@ export class Subless implements SublessInterface {
 
     /** Opens a new tab to renew your token */
     async renewLogin() {
-        window.open(sublessUri + "/renew", "_blank");
+        const path = window.location.href;
+        window.location.href = sublessUri + "/renew?return_uri=" + path;
     }
 
     /** Gets the current state of the login */

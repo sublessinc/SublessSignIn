@@ -172,7 +172,7 @@ namespace SublessSignIn.Controllers
             }
             if (HttpContext.Items.TryGetValue("ExpiresUTC", out var expirationDate)
                 && expirationDate is DateTimeOffset
-                && (DateTimeOffset)expirationDate < DateTime.UtcNow.AddDays(1))
+                && (DateTimeOffset)expirationDate < DateTime.UtcNow.AddDays(3))
             {
                 return Ok(LoggedInEnum.ShouldRenew);
             }

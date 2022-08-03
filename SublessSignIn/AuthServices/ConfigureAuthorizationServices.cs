@@ -41,9 +41,7 @@ namespace SublessSignIn.AuthServices
                     options.Cookie.SameSite = SameSiteMode.None;
                     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
 
-                    // TODO this is only for testing purposes, these should be 2weeks
-                    options.Cookie.MaxAge = TimeSpan.FromSeconds(14);
-                    options.ExpireTimeSpan = TimeSpan.FromSeconds(15);
+                    options.Cookie.MaxAge = TimeSpan.FromDays(14);
                     options.Events.OnValidatePrincipal = AddTokenExpirationData;
                 })
                 .AddOpenIdConnect("oidc", options =>

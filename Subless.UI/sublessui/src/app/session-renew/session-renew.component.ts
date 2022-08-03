@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-session-renew',
@@ -7,10 +8,11 @@ import { Component, OnInit } from '@angular/core';
 })
 export class SessionRenewComponent implements OnInit {
 
-  constructor() { }
+  constructor(private route: ActivatedRoute) { }
 
   ngOnInit(): void {
-    window.close();
+    const path = this.route.snapshot.queryParams['return_uri']
+    window.location.href = path;
   }
 
 }
