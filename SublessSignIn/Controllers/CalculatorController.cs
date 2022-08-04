@@ -104,8 +104,8 @@ namespace SublessSignIn.Controllers
             return Ok(result);
         }
 
-        [HttpPost("EmailIdleCreators")]
-        public ActionResult EmailIdleCreators(DateTimeOffset start, DateTimeOffset end)
+        [HttpPost("EmailIdlePatrons")]
+        public ActionResult EmailIdlePatrons(DateTimeOffset start, DateTimeOffset end)
         {
             start = start.ToUniversalTime();
             end = end.ToUniversalTime();
