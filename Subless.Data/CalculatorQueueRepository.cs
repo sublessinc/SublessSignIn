@@ -9,6 +9,7 @@ namespace Subless.Data
     {
         internal DbSet<CalculatorExecution> CalculatorExecutions { get; set; }
         internal DbSet<PaymentExecution> PaymentExecutions { get; set; }
+        internal DbSet<IdleEmailExecution> IdleEmailExecutions { get; set; }
 
         public Guid QueueCalculation(DateTimeOffset start, DateTimeOffset end)
         {
@@ -81,6 +82,39 @@ namespace Subless.Data
         public CalculatorExecution GetQueuedCalcuation(Guid id)
         {
             return CalculatorExecutions.SingleOrDefault(x => x.Id == id && x.IsCompleted);
+        }
+
+        public void QueueIdleEmails(DateTimeOffset startDate, DateTimeOffset endDate)
+        {
+            var emails = new IdleEmailExecution
+            {
+                PeriodStart = startDate,
+                PeriodEnd = endDate,
+                DateQueued = DateTime.UtcNow,
+            };
+            IdleEmailExecutions.Add(emails);
+            SaveChanges();
+        }
+
+        public IdleEmailExecution DequeueIdleEmails()
+        {
+            var emails = IdleEmailExecutions.Where(x => x.IsProcessing == false && x.IsCompleted == false).OrderBy(x => x.DateQueued).FirstOrDefault();
+            if (emails == null)
+            {
+                return null;
+            }
+            emails.IsProcessing = true;
+            IdleEmailExecutions.Update(emails);
+            SaveChanges();
+            return emails;
+        }
+
+        public void CompleteIdleEmails(IdleEmailExecution email)
+        {
+            email.DateExecuted = DateTime.UtcNow;
+            email.IsCompleted = true;
+            IdleEmailExecutions.Update(email);
+            SaveChanges();
         }
     }
 }
