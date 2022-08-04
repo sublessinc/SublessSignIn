@@ -109,11 +109,11 @@ namespace Subless.Data
             return emails;
         }
 
-        public void CompleteIdleEmails(IdleEmailExecution payment)
+        public void CompleteIdleEmails(IdleEmailExecution email)
         {
-            payment.DateExecuted = DateTime.UtcNow;
-            payment.IsCompleted = true;
-            IdleEmailExecutions.Update(payment);
+            email.DateExecuted = DateTime.UtcNow;
+            email.IsCompleted = true;
+            IdleEmailExecutions.Update(email);
             SaveChanges();
         }
     }
