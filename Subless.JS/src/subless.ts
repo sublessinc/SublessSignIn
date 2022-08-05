@@ -181,7 +181,7 @@ export class Subless implements SublessInterface {
 
     /** A method that can be used to log a user out from Subless */
     async sublessLogout() {
-        window.location.href = sublessUri + "/bff/logout?returnUrl=" + clientBaseUri;
+        window.open(sublessUri + "/bff/logout?returnUrl=" + clientBaseUri, "_blank");
     }
 }
 
