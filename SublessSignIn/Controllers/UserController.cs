@@ -139,6 +139,8 @@ namespace SublessSignIn.Controllers
         [HttpGet("loggedIn")]
         [EnableCors("Unrestricted")]
         [AllowAnonymous]
+        [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
+
         public ActionResult<bool> GetLoggedIn()
         {
             if (!HttpContext.User.Identity.IsAuthenticated)
@@ -158,6 +160,8 @@ namespace SublessSignIn.Controllers
         [HttpGet("loginStatus")]
         [EnableCors("Unrestricted")]
         [AllowAnonymous]
+        [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
+
         public ActionResult<LoggedInEnum> GetLoggedInRenewal()
         {
             if (!HttpContext.User.Identity.IsAuthenticated)
