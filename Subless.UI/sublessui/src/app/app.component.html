@@ -1,2 +1,6 @@
-<!-- <router-outlet id='routeroutlet'></router-outlet> -->
-<app-nav></app-nav>
+<ng-container *ngIf="loading$ | async">
+    <app-loading></app-loading>
+</ng-container>
+
+<app-nav [hidden]="(loading$ | async)">
+</app-nav>

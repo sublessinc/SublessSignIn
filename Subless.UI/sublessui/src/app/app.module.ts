@@ -38,6 +38,8 @@ import { DateFormatter } from './services/dateformatter.service';
 import { PartnerstatsComponent } from './partnerstats/partnerstats.component';
 import { SessionRenewComponent } from './session-renew/session-renew.component';
 import { CookieModule } from 'ngx-cookie';
+import { LoadingComponent } from './loading/loading.component';
+import { NetworkInterceptor } from './services/network.interceptor';
 
 @NgModule({
   declarations: [
@@ -65,7 +67,8 @@ import { CookieModule } from 'ngx-cookie';
     RecentActivityComponent,
     TopContentComponent,
     PartnerstatsComponent,
-    SessionRenewComponent
+    SessionRenewComponent,
+    LoadingComponent
   ],
   imports: [
     ThemeModule,
@@ -79,6 +82,7 @@ import { CookieModule } from 'ngx-cookie';
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: UnauthorizedInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
+    { provide: HTTP_INTERCEPTORS, useClass: NetworkInterceptor, multi: true },
     { provide: ErrorHandler, useClass: GlobalerrorhandlerService },
     StopNavGuard
   ],
