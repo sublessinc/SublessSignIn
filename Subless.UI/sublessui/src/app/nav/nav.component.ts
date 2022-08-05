@@ -1,6 +1,8 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatDrawer } from '@angular/material/sidenav';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { NavigationEnd, Router } from '@angular/router';
+import { CookieService } from 'ngx-cookie';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { IStripeRedirect } from '../models/IStripeRedirect';
@@ -27,7 +29,9 @@ export class NavComponent implements OnInit, OnDestroy {
   constructor(
     private authService: AuthorizationService,
     private checkoutService: CheckoutService,
-    private router: Router
+    private router: Router,
+    private cookieService: CookieService,
+    private _snackBar: MatSnackBar
 
   ) { }
 
@@ -37,6 +41,7 @@ export class NavComponent implements OnInit, OnDestroy {
         this.user = routes.includes(2);
         this.creator = routes.includes(3);
         this.partner = routes.includes(4);
+        this.promptRedirectIfCookiePresent();
       }
     }));
     if (window.innerWidth <= 700) {
@@ -93,6 +98,22 @@ export class NavComponent implements OnInit, OnDestroy {
         });
       }
     }));
+  }
+
+  promptRedirectIfCookiePresent() {
+    const redirect = this.cookieService.get("returnUri");
+    if (redirect && this.user) {
+
+      const snackBarRef = this._snackBar.open(`Your account setup is complete, would you like to return to ${redirect}?`, "Take me back", {
+        duration: 5000,
+      })
+
+      snackBarRef.onAction().subscribe(() => {
+        this.cookieService.remove("returnUri");
+        window.location.href = redirect;
+      });
+
+    }
   }
 
   logout() {
