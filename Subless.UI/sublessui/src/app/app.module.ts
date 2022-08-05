@@ -37,6 +37,7 @@ import { TopContentComponent } from './top-content/top-content.component';
 import { DateFormatter } from './services/dateformatter.service';
 import { PartnerstatsComponent } from './partnerstats/partnerstats.component';
 import { SessionRenewComponent } from './session-renew/session-renew.component';
+import { CookieModule } from 'ngx-cookie';
 
 @NgModule({
   declarations: [
@@ -73,6 +74,7 @@ import { SessionRenewComponent } from './session-renew/session-renew.component';
     HttpClientModule,
     ReactiveFormsModule,
     FormsModule,
+    CookieModule.withOptions()
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: UnauthorizedInterceptor, multi: true },
