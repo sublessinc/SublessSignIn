@@ -13,6 +13,7 @@ import { PartnerprofileComponent } from './partnerprofile/partnerprofile.compone
 import { PayoutsettingsComponent } from './payoutsettings/payoutsettings.component';
 import { RegisterPaymentComponent } from './register-payment/register-payment.component';
 import { AuthGuard } from './services/auth.guard';
+import { SessionRenewComponent } from './session-renew/session-renew.component';
 import { StopNavGuard } from './stop-nav.guard';
 import { TermsComponent } from './terms/terms.component';
 import { UserprofileComponent } from './userprofile/userprofile.component';
@@ -27,16 +28,15 @@ const routes: Routes = [
   { path: 'payout-settings', component: PayoutsettingsComponent, canActivate: [AuthGuard] },
   { path: 'integration', component: IntegrationtestComponent, canActivate: [AuthGuard] },
   { path: 'partner-profile', component: PartnerprofileComponent, canActivate: [AuthGuard] },
-  { path: 'error', component: ErrorPageComponent },
+  { path: 'error/:code', component: ErrorPageComponent },
   { path: 'payout-setup', component: PayoutsettingsComponent, canActivate: [AuthGuard], canDeactivate: [StopNavGuard] },
   { path: 'id', component: IdComponent, canActivate: [AuthGuard] },
   { path: 'login', component: LoginComponent },
   { path: 'logged-out', component: LoggedOutComponent },
   { path: 'terms', component: TermsComponent },
   { path: 'creator-terms', component: CreatorTermsComponent },
-  { path: 'partner-terms', component: PartnerTermsComponent }
-
-
+  { path: 'partner-terms', component: PartnerTermsComponent },
+  { path: 'renew', component: SessionRenewComponent }
 ];
 
 @NgModule({

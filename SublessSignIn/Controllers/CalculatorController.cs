@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -102,6 +102,15 @@ namespace SublessSignIn.Controllers
         {
             var result = _calculatorService.GetQueuedResult(id);
             return Ok(result);
+        }
+
+        [HttpPost("EmailIdlePatrons")]
+        public ActionResult EmailIdlePatrons(DateTimeOffset start, DateTimeOffset end)
+        {
+            start = start.ToUniversalTime();
+            end = end.ToUniversalTime();
+            _paymentService.QueueIdleEmail(start, end);
+            return Ok();
         }
     }
 }

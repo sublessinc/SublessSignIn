@@ -1,4 +1,6 @@
-using System;
+﻿using System;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
@@ -38,7 +40,9 @@ namespace SublessSignIn.AuthServices
                     // Samesite has to be none to support hit tracking
                     options.Cookie.SameSite = SameSiteMode.None;
                     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+
                     options.Cookie.MaxAge = TimeSpan.FromDays(14);
+                    options.Events.OnValidatePrincipal = AddTokenExpirationData;
                 })
                 .AddOpenIdConnect("oidc", options =>
                 {
@@ -61,6 +65,13 @@ namespace SublessSignIn.AuthServices
                 .PersistKeysToDbContext<KeyStorageContext>();
 
             return services;
+        }
+
+        private static Task AddTokenExpirationData(CookieValidatePrincipalContext context)
+
+        {
+            context.Request.HttpContext.Items.Add("ExpiresUTC", context.Properties.ExpiresUtc);
+            return Task.CompletedTask;
         }
 
     }

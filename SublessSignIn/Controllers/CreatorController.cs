@@ -131,7 +131,7 @@ namespace SublessSignIn.Controllers
                 }
                 if (creator.UserId != null)
                 {
-                    _usageService.SaveUsage(UsageType.UserStats, (Guid)creator.UserId);
+                    _usageService.SaveUsage(UsageType.CreatorStats, (Guid)creator.UserId);
                 }
                 return Ok(new HistoricalStats<CreatorStats>
                 {

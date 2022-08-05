@@ -1,4 +1,4 @@
-
+﻿
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -57,11 +57,19 @@ namespace SublessSignIn.Controllers
             {
                 return Unauthorized();
             }
-            return await authorizationService.LoginWorkflow(cognitoId, Activation, HttpContext.User.FindFirst("email").Value);
+            try
+            {
+                return await authorizationService.LoginWorkflow(cognitoId, Activation, HttpContext.User.FindFirst("email").Value);
+            }
+            catch (CreatorActivationExpiredException)
+            {
+                return new StatusCodeResult(410); // gone
+            }
         }
 
         [Authorize]
         [HttpGet("routes")]
+        [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
         public ActionResult<IEnumerable<RedirectionPath>> Routes()
         {
             var cognitoId = _userService.GetUserClaim(HttpContext.User);

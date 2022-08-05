@@ -139,6 +139,8 @@ namespace SublessSignIn.Controllers
         [HttpGet("loggedIn")]
         [EnableCors("Unrestricted")]
         [AllowAnonymous]
+        [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
+
         public ActionResult<bool> GetLoggedIn()
         {
             if (!HttpContext.User.Identity.IsAuthenticated)
@@ -149,9 +151,36 @@ namespace SublessSignIn.Controllers
             var user = userService.GetUserByCognitoId(cognitoId);
             if (user != null)
             {
+                _usageService.SaveUsage(UsageType.Visit, user.Id);
                 return Ok(true);
             }
             return Ok(false);
+        }
+
+        [HttpGet("loginStatus")]
+        [EnableCors("Unrestricted")]
+        [AllowAnonymous]
+        [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
+
+        public ActionResult<LoggedInEnum> GetLoggedInRenewal()
+        {
+            if (!HttpContext.User.Identity.IsAuthenticated)
+            {
+                return Ok(LoggedInEnum.NotLoggedIn);
+            }
+            var cognitoId = userService.GetUserClaim(HttpContext.User);
+            var user = userService.GetUserByCognitoId(cognitoId);
+            if (user == null)
+            {
+                return Ok(LoggedInEnum.NotLoggedIn);
+            }
+            if (HttpContext.Items.TryGetValue("ExpiresUTC", out var expirationDate)
+                && expirationDate is DateTimeOffset
+                && (DateTimeOffset)expirationDate < DateTime.UtcNow.AddDays(3))
+            {
+                return Ok(LoggedInEnum.ShouldRenew);
+            }
+            return Ok(LoggedInEnum.LoggedIn);
         }
 
         [HttpPut("terms")]
