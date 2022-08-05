@@ -104,7 +104,7 @@ export class NavComponent implements OnInit, OnDestroy {
     const redirect = this.cookieService.get("returnUri");
     if (redirect && this.user) {
 
-      const snackBarRef = this._snackBar.open(`Your account setup is complete, return to ${redirect}?`, "Take me back", {
+      const snackBarRef = this._snackBar.open(`Your account setup is complete, would you like to return to ${redirect}?`, "Take me back", {
         duration: 5000,
       })
 
