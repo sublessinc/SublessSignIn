@@ -13,13 +13,15 @@ public interface IStripeApiWrapperServiceFactory
 public sealed class StripeApiWrapperServiceFactory : IStripeApiWrapperServiceFactory, IDisposable
 {
     private const int MaxCount = 10;
-    private static SemaphoreSlim _pool = new(0, MaxCount);
+    private static SemaphoreSlim _pool = new(MaxCount);
 
     public static IOptions<StripeConfig> StripeConfig { get; set; }
 
     public StripeApiWrapperServiceFactory()
     {
+        Console.WriteLine("Requesting...");
         _pool.Wait();
+        Console.WriteLine("Got one. Current count: " + (MaxCount - _pool.CurrentCount));
     }
 
     public IStripeApiWrapperService Get()
@@ -30,5 +32,6 @@ public sealed class StripeApiWrapperServiceFactory : IStripeApiWrapperServiceFac
     public void Dispose()
     {
         _pool.Release();
+        Console.WriteLine("Released. Current count: " + (MaxCount - _pool.CurrentCount));
     }
 }
