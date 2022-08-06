@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -119,6 +119,25 @@ namespace Subless.Services.Services
                 _calculationQueueRepository.CompletePayment(payment);
                 _logger.LogInformation($"Completed queued payment {payment.Id}");
 
+            }
+        }
+
+        public void QueueIdleEmail(DateTimeOffset start, DateTimeOffset end)
+        {
+            _calculationQueueRepository.QueueIdleEmails(start, end);
+        }
+
+        public void ExecuteQueuedIdleEmail()
+        {
+            var emails = _calculationQueueRepository.DequeueIdleEmails();
+            if (emails != null)
+            {
+                var calculatorResult = _calculatorService.CaculatePayoutsOverRange(emails.PeriodStart, emails.PeriodEnd);
+                foreach (var idle in calculatorResult.IdleCustomerRollovers)
+                {
+                    emailService.SendIdleEmail(idle.CognitoId);
+                }
+                _calculationQueueRepository.CompleteIdleEmails(emails);
             }
         }
 

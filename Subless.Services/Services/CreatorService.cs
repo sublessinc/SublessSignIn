@@ -48,9 +48,13 @@ namespace Subless.Services.Services
         public async Task ActivateCreator(Guid userId, Guid activationCode, string email)
         {
             var creator = creatorRepository.GetCreatorByActivationCode(activationCode);
-            if (creator == null || creator.ActivationExpiration < DateTimeOffset.UtcNow)
+            if (creator == null)
             {
                 throw new UnauthorizedAccessException("Activation code is invalid or expired");
+            }
+            if (creator.ActivationExpiration < DateTimeOffset.UtcNow)
+            {
+                throw new CreatorActivationExpiredException();
             }
             creator.ActivationCode = null;
             creator.Active = true;
