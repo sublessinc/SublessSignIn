@@ -5,11 +5,6 @@ using Subless.Models;
 
 namespace Subless.Services.Services.SublessStripe;
 
-public interface IStripeApiWrapperServiceFactory
-{
-    IStripeApiWrapperService Get();
-}
-
 public sealed class StripeApiWrapperServiceFactory : IStripeApiWrapperServiceFactory, IDisposable
 {
     private const int MaxCount = 10;
