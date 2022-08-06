@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using Subless.Models;
 
@@ -7,27 +8,24 @@ namespace Subless.Services.Services.SublessStripe;
 
 public interface IStripeApiWrapperServiceFactory
 {
-    IStripeApiWrapperService Get();
+    Task<IStripeApiWrapperService> GetAsync();
+    void Release();
 }
 
-public sealed class StripeApiWrapperServiceFactory : IStripeApiWrapperServiceFactory, IDisposable
+public sealed class StripeApiWrapperServiceFactory : IStripeApiWrapperServiceFactory
 {
     private const int MaxCount = 10;
     private static SemaphoreSlim _pool = new(0, MaxCount);
 
     public static IOptions<StripeConfig> StripeConfig { get; set; }
 
-    public StripeApiWrapperServiceFactory()
+    public async Task<IStripeApiWrapperService> GetAsync()
     {
-        _pool.Wait();
-    }
-
-    public IStripeApiWrapperService Get()
-    {
+        await _pool.WaitAsync();
         return new StripeApiWrapperService(StripeConfig);
     }
 
-    public void Dispose()
+    public void Release()
     {
         _pool.Release();
     }

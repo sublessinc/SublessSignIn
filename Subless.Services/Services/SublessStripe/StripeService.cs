@@ -19,7 +19,11 @@ namespace Subless.Services.Services.SublessStripe
         private readonly IStripeApiWrapperServiceFactory _stripeApiWrapperServiceFactory;
         private readonly ILogger _logger;
 
-        public StripeService(IOptions<StripeConfig> stripeConfig, IUserService userService, IStripeApiWrapperServiceFactory stripeApiWrapperServiceFactory, ILoggerFactory loggerFactory)
+        public StripeService(
+            IOptions<StripeConfig> stripeConfig,
+            IUserService userService,
+            IStripeApiWrapperServiceFactory stripeApiWrapperServiceFactory,
+            ILoggerFactory loggerFactory)
         {
             _stripeConfig = stripeConfig ?? throw new ArgumentNullException(nameof(stripeConfig));
             _userService = userService ?? throw new ArgumentNullException(nameof(userService));
@@ -28,13 +32,21 @@ namespace Subless.Services.Services.SublessStripe
 
         }
 
+        private void Release()
+        {
+            _stripeApiWrapperServiceFactory.Release();
+        }
+
         public async Task<bool> CanAccessStripe()
         {
-            using var serviceFactory = new StripeApiWrapperServiceFactory();
-            var list = await serviceFactory.Get().CustomerService.ListAsync(new CustomerListOptions()
+            var service = await _stripeApiWrapperServiceFactory.GetAsync();
+            var list = service.CustomerService.ListAsync(new CustomerListOptions()
             {
                 Limit = 1
             });
+
+            Release();
+
             if (list != null)
             {
                 return true;
@@ -44,7 +56,7 @@ namespace Subless.Services.Services.SublessStripe
 
         public async Task<CreateCheckoutSessionResponse> CreateCheckoutSession(long userBudget, string cognitoId)
         {
-            var priceId = GetPriceIDByDollarAmount(userBudget);
+            var priceId = await GetPriceIDByDollarAmount(userBudget);
             if (priceId == null)
             {
                 _logger.LogCritical($"Price not found for budget of {userBudget}.");
@@ -54,19 +66,19 @@ namespace Subless.Services.Services.SublessStripe
             var user = _userService.GetUserByCognitoId(cognitoId);
             var customer = user.StripeCustomerId;
 
-            if (!CustomerHasPaid(cognitoId))
+            if (!await CustomerHasPaid(cognitoId))
             {
                 return await NewSubscription(user, priceId);
             }
-            UpgradeCustomer(customer, cognitoId, priceId);
+            await UpgradeCustomer(customer, cognitoId, priceId);
             return null;
 
         }
 
-        private void UpgradeCustomer(string customer, string cognitoId, string priceId)
+        private async Task UpgradeCustomer(string customer, string cognitoId, string priceId)
         {
-            using var serviceFactory = new StripeApiWrapperServiceFactory();
-            var subs = GetSubscriptions(customer);
+            var service = await _stripeApiWrapperServiceFactory.GetAsync();
+            var subs = await GetSubscriptions(customer);
             var subscription = subs.Single();
 
             var items = new List<SubscriptionItemOptions> {
@@ -83,15 +95,16 @@ namespace Subless.Services.Services.SublessStripe
                 ProrationBehavior = "none",
                 Items = items,
             };
-            serviceFactory.Get().SubscriptionService.Update(subscription.Id, options);
+            service.SubscriptionService.Update(subscription.Id, options);
+            Release();
         }
 
         private async Task<CreateCheckoutSessionResponse> NewSubscription(User user, string priceId)
         {
-            using var serviceFactory = new StripeApiWrapperServiceFactory();
+            var service = await _stripeApiWrapperServiceFactory.GetAsync();
             if (user.StripeCustomerId == null)
             {
-                user.StripeCustomerId = CreateCustomer(user.CognitoId).Id;
+                user.StripeCustomerId = (await CreateCustomer(user.CognitoId)).Id;
             }
             var options = new SessionCreateOptions
             {
@@ -113,53 +126,62 @@ namespace Subless.Services.Services.SublessStripe
                 },
             };
             options.AddExtraParam("allow_promotion_codes", "true");
-            var session = await serviceFactory.Get().SessionService.CreateAsync(options);
+            var session = await service.SessionService.CreateAsync(options);
             _userService.AddStripeSessionId(user.CognitoId, session.Id);
+
+            Release();
+
             return new CreateCheckoutSessionResponse
             {
                 SessionId = session.Id,
             };
         }
 
-        public Customer CreateCustomer(string cognitoId)
+        public async Task<Customer> CreateCustomer(string cognitoId)
         {
-            using var serviceFactory = new StripeApiWrapperServiceFactory();
+            var service = await _stripeApiWrapperServiceFactory.GetAsync();
             var customerDetails = new CustomerCreateOptions
             {
                 Description = cognitoId
             };
-            var customer = serviceFactory.Get().CustomerService.Create(customerDetails);
+            var customer = service.CustomerService.Create(customerDetails);
             _userService.AddStripeCustomerId(cognitoId, customer.Id);
+
+            Release();
+
             return customer;
         }
 
-        private StripeList<Price> GetPrices()
+        private async Task<StripeList<Price>> GetPrices()
         {
-            using var serviceFactory = new StripeApiWrapperServiceFactory();
+            var service = await _stripeApiWrapperServiceFactory.GetAsync();
             //TODO: productoptions should filter to only susbcription plans
             var productOptions = new PriceListOptions();
-            var prices = serviceFactory.Get().PriceService.List(productOptions);
+            var prices = service.PriceService.List(productOptions);
+
+            Release();
+
             return prices;
         }
 
-        private string GetPriceIDByDollarAmount(long dollarAmount)
+        private async Task<string> GetPriceIDByDollarAmount(long dollarAmount)
         {
-            var prices = GetPrices().ToList();
+            var prices = (await GetPrices()).ToList();
             //Stripe keeps the price in cents.
             var dollarAmountInCents = dollarAmount * 100;
             if (!prices.Any(x => x.UnitAmount == dollarAmountInCents))
             {
                 CreatePriceByDollarAmount(dollarAmount);
-                prices = GetPrices().ToList();
+                prices = (await GetPrices()).ToList();
             }
             var price = prices.Where(x => x.UnitAmount == dollarAmountInCents).Single();
             return price?.Id;
         }
 
-        private string CreatePriceByDollarAmount(long dollarAmount)
+        private async Task<string> CreatePriceByDollarAmount(long dollarAmount)
         {
-            using var serviceFactory = new StripeApiWrapperServiceFactory();
-            var price = serviceFactory.Get().PriceService.Create(new PriceCreateOptions()
+            var service = await _stripeApiWrapperServiceFactory.GetAsync();
+            var price = service.PriceService.Create(new PriceCreateOptions()
             {
                 Active = true,
                 BillingScheme = "per_unit",
@@ -174,26 +196,29 @@ namespace Subless.Services.Services.SublessStripe
                 TaxBehavior = "unspecified",
                 UnitAmount = dollarAmount * 100,
             });
+
+            Release();
+
             return price?.Id;
         }
 
-        public void RolloverPaymentForIdleCustomer(string customerId)
+        public async Task RolloverPaymentForIdleCustomer(string customerId)
         {
             _logger.LogInformation($"Rolling over payment for idle customer {customerId}");
-            var activeSubs = GetSubscriptions(customerId);
+            var activeSubs = await GetSubscriptions(customerId);
             if (!activeSubs.Any())
             {
                 _logger.LogInformation("Customer {custId} cancelled their sub before we could rollover their payment", customerId);
                 return;
             }
             var sub = activeSubs.First(); //TODO figure out which sub to choose
-            var coupon = CreateOneTimeCoupon();
-            ApplyCouponToSubscription(coupon, sub);
+            var coupon = await CreateOneTimeCoupon();
+            await ApplyCouponToSubscription(coupon, sub);
         }
 
-        private Coupon CreateOneTimeCoupon()
+        private async Task<Coupon> CreateOneTimeCoupon()
         {
-            using var serviceFactory = new StripeApiWrapperServiceFactory();
+            var service = await _stripeApiWrapperServiceFactory.GetAsync();
             var options = new CouponCreateOptions
             {
                 Duration = "once",
@@ -201,33 +226,40 @@ namespace Subless.Services.Services.SublessStripe
                 PercentOff = 100,
                 MaxRedemptions = 1
             };
-            return serviceFactory.Get().CouponService.Create(options);
+            var result = service.CouponService.Create(options);
+
+            Release();
+
+            return result;
 
         }
 
-        private Subscription ApplyCouponToSubscription(Coupon coupon, Subscription sub)
+        private async Task<Subscription> ApplyCouponToSubscription(Coupon coupon, Subscription sub)
         {
-            using var serviceFactory = new StripeApiWrapperServiceFactory();
+            var service = await _stripeApiWrapperServiceFactory.GetAsync();
             var updateOptions = new SubscriptionUpdateOptions()
             {
                 Coupon = coupon.Id,
             };
-            return serviceFactory.Get().SubscriptionService.Update(sub.Id, updateOptions);
+            var result = service.SubscriptionService.Update(sub.Id, updateOptions);
+
+            Release();
+
+            return result;
         }
 
-        public bool CustomerHasPaid(string cognitoId)
+        public async Task<bool> CustomerHasPaid(string cognitoId)
         {
-
-            var activePrices = GetActiveSubscriptionPriceId(cognitoId);
-            var allPrices = GetPrices();
+            var activePrices = await GetActiveSubscriptionPriceId(cognitoId);
+            var allPrices = await GetPrices();
             return allPrices.Any(x => activePrices.Contains(x.Id));
         }
-        private List<string> GetActiveSubscriptionPriceId(string cognitoId)
+        private async Task<List<string>> GetActiveSubscriptionPriceId(string cognitoId)
         {
-            return GetActiveSubscriptionPrice(cognitoId).Select(x => x.Id).ToList();
+            return (await GetActiveSubscriptionPrice(cognitoId)).Select(x => x.Id).ToList();
         }
 
-        public List<Price> GetActiveSubscriptionPrice(string cognitoId)
+        public async Task<List<Price>> GetActiveSubscriptionPrice(string cognitoId)
         {
             var prices = new List<Price>();
             var user = _userService.GetUserByCognitoId(cognitoId);
@@ -236,7 +268,7 @@ namespace Subless.Services.Services.SublessStripe
                 return prices;
             }
 
-            var subscriptions = GetSubscriptions(user.StripeCustomerId);
+            var subscriptions = await GetSubscriptions(user.StripeCustomerId);
 
             foreach (var sub in subscriptions)
             {
@@ -249,22 +281,23 @@ namespace Subless.Services.Services.SublessStripe
             return prices;
         }
 
-        private IEnumerable<Subscription> GetSubscriptions(string stripeCustomerId)
+        private async Task<IEnumerable<Subscription>> GetSubscriptions(string stripeCustomerId)
         {
-            using var serviceFactory = new StripeApiWrapperServiceFactory();
-            var service = serviceFactory.Get();
+            var service = await _stripeApiWrapperServiceFactory.GetAsync();
             var customer = service.CustomerService.Get(stripeCustomerId);
             var subscriptions = service.SubscriptionService.List(new SubscriptionListOptions()
             {
                 Customer = customer.Id
             }).Where(sub => sub.Status == "active" && sub.CancelAtPeriodEnd == false);
+
+            Release();
+
             return subscriptions;
         }
 
         public async Task<Stripe.BillingPortal.Session> GetCustomerPortalLink(string cognitoId)
         {
-            using var serviceFactory = new StripeApiWrapperServiceFactory();
-            var service = serviceFactory.Get();
+            var service = await _stripeApiWrapperServiceFactory.GetAsync();
             // TODO: Switch this to loading the session ID based on the cognito user id
             // For demonstration purposes, we're using the Checkout session to retrieve the customer ID.
             // Typically this is stored alongside the authenticated user in your database.
@@ -280,16 +313,20 @@ namespace Subless.Services.Services.SublessStripe
                 Customer = checkoutSession.CustomerId,
                 ReturnUrl = $"{returnUrl}/user-profile",
             };
-            return await service.BillingSessionService.CreateAsync(options);
+            var result = await service.BillingSessionService.CreateAsync(options);
+            Release();
+            return result;
         }
 
         public async Task<Session> GetSession(string sessionId)
         {
-            using var serviceFactory = new StripeApiWrapperServiceFactory();
-            return await serviceFactory.Get().SessionService.GetAsync(sessionId);
+            var service = await _stripeApiWrapperServiceFactory.GetAsync();
+            var result = await service.SessionService.GetAsync(sessionId);
+            Release();
+            return result;
         }
 
-        public IEnumerable<Payer> GetPayersForRange(DateTimeOffset startDate, DateTimeOffset endDate)
+        public async Task<IEnumerable<Payer>> GetPayersForRange(DateTimeOffset startDate, DateTimeOffset endDate)
         {
             var utcutcStartDate = new DateTime(startDate.ToUniversalTime().Ticks, DateTimeKind.Utc);
             var utcutcEndDate = new DateTime(endDate.ToUniversalTime().Ticks, DateTimeKind.Utc);
@@ -298,7 +335,7 @@ namespace Subless.Services.Services.SublessStripe
             List<Invoice> invoices;
             using (MiniProfiler.Current.Step("Get invoices"))
             {
-                invoices = GetInvoiceInRage(utcutcStartDate, utcutcEndDate);
+                invoices = await GetInvoiceInRage(utcutcStartDate, utcutcEndDate);
 
             }
             var cusomterIds = invoices.Select(invoice => invoice.CustomerId);
@@ -306,22 +343,21 @@ namespace Subless.Services.Services.SublessStripe
             var payers = new ConcurrentBag<Payer>();
             using (MiniProfiler.Current.Step("Per-payer data retrieval"))
             {
-                Parallel.ForEach(invoices, invoice =>
-                {
-                    var payer = ProcessPayer(invoice, users);
-                    if (payer != null)
-                    {
-                        payers.Add(payer);
-                    }
-                });
+                // Parallel.ForEach(invoices, invoice =>
+                // {
+                //     var payer = await ProcessPayer(invoice, users);
+                //     if (payer != null)
+                //     {
+                //         payers.Add(payer);
+                //     }
+                // });
             }
             return payers.ToList();
         }
 
-        private Payer ProcessPayer(Invoice invoice, IEnumerable<User> users)
+        private async Task<Payer> ProcessPayer(Invoice invoice, IEnumerable<User> users)
         {
-            using var serviceFactory = new StripeApiWrapperServiceFactory();
-            var service = serviceFactory.Get();
+            var service = await _stripeApiWrapperServiceFactory.GetAsync();
 
             _logger.LogDebug($"Invoice {invoice.Id} found for date {invoice.Created}");
             var user = users.FirstOrDefault(x => x.StripeCustomerId == invoice.CustomerId);
@@ -373,6 +409,8 @@ namespace Subless.Services.Services.SublessStripe
                     payment = invoice.Subtotal;
                 }
 
+                Release();
+
                 return new Payer
                 {
                     UserId = users.Single(x => x.StripeCustomerId == invoice.CustomerId).Id,
@@ -381,13 +419,15 @@ namespace Subless.Services.Services.SublessStripe
                     Fees = fees
                 };
             }
+
+            Release();
+
             return null;
         }
 
-        private List<Invoice> GetInvoiceInRage(DateTime startDate, DateTime endDate)
+        private async Task<List<Invoice>> GetInvoiceInRage(DateTime startDate, DateTime endDate)
         {
-            using var serviceFactory = new StripeApiWrapperServiceFactory();
-            var service = serviceFactory.Get();
+            var service = await _stripeApiWrapperServiceFactory.GetAsync();
             var invoices = new List<Invoice>();
             var filters = new InvoiceListOptions()
             {
@@ -418,13 +458,14 @@ namespace Subless.Services.Services.SublessStripe
                 nextSet = service.InvoiceService.List(filters);
                 invoices.AddRange(nextSet);
             }
+
+            Release();
             return invoices;
 
         }
-        public bool CancelSubscription(string cognitoId)
+        public async Task<bool> CancelSubscription(string cognitoId)
         {
-            using var serviceFactory = new StripeApiWrapperServiceFactory();
-            var service = serviceFactory.Get();
+            var service = await _stripeApiWrapperServiceFactory.GetAsync();
 
             var user = _userService.GetUserByCognitoId(cognitoId);
             if (string.IsNullOrWhiteSpace(user?.StripeCustomerId))
@@ -445,6 +486,8 @@ namespace Subless.Services.Services.SublessStripe
                         CancelAtPeriodEnd = true
                     });
             }
+
+            Release();
             return true;
         }
     }

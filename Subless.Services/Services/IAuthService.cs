@@ -6,7 +6,7 @@ namespace Subless.Services.Services
 {
     public interface IAuthService
     {
-        IEnumerable<RedirectionPath> GetAllowedPaths(string cognitoId);
+        Task<IEnumerable<RedirectionPath>> GetAllowedPaths(string cognitoId);
         Task<Redirection> LoginWorkflow(string cognitoId, string activationCode, string email);
     }
 }

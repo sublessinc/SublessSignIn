@@ -177,7 +177,7 @@ namespace Subless.Tests
 
                 var stripeApiWrapperServiceFactory = new Mock<IStripeApiWrapperServiceFactory>();
                 stripeApiWrapperServiceFactory
-                    .Setup(o => o.Get())
+                    .Setup(o => o.GetAsync())
                     .Returns(stripeWrapper.Object);
                
                 var sut = new StripeService(Options.Create(new Models.StripeConfig()), userService.Object, stripeApiWrapperServiceFactory.Object, factory);

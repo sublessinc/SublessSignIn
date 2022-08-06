@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
@@ -52,7 +53,7 @@ namespace Subless.Services.Services
         }
 
 
-        public CalculatorResult CaculatePayoutsOverRange(DateTimeOffset startDate, DateTimeOffset endDate, List<Guid> selectedUserIds = null)
+        public async Task<CalculatorResult> CaculatePayoutsOverRange(DateTimeOffset startDate, DateTimeOffset endDate, List<Guid> selectedUserIds = null)
         {
             var calculatorResult = new CalculatorResult();
             calculatorResult.EmailSent = false;
@@ -60,7 +61,7 @@ namespace Subless.Services.Services
             IEnumerable<Payer> payers;
             using (MiniProfiler.Current.Step("Get payers"))
             {
-                payers = GetPayments(startDate, endDate);
+                payers = await GetPayments(startDate, endDate);
             }
             if (!payers.Any())
             {
@@ -152,10 +153,10 @@ namespace Subless.Services.Services
             return validHits;
         }
 
-        private IEnumerable<Payer> GetPayments(DateTimeOffset startDate, DateTimeOffset endDate)
+        private async Task<IEnumerable<Payer>> GetPayments(DateTimeOffset startDate, DateTimeOffset endDate)
         {
             _logger.LogDebug($"Searching in range {startDate} to end date {endDate}");
-            var payers = _stripeService.GetPayersForRange(startDate, endDate);
+            var payers = await _stripeService.GetPayersForRange(startDate, endDate);
             return payers;
         }
 

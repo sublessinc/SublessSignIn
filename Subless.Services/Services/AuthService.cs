@@ -76,7 +76,7 @@ namespace Subless.Services.Services
                     RedirectionPath = RedirectionPath.Terms
                 };
             }
-            var hasPaid = stripeService.CustomerHasPaid(cognitoId);
+            var hasPaid = await stripeService.CustomerHasPaid(cognitoId);
             if (!hasPaid)
             {
                 return new Redirection()
@@ -97,11 +97,11 @@ namespace Subless.Services.Services
             };
         }
 
-        public IEnumerable<RedirectionPath> GetAllowedPaths(string cognitoId)
+        public async Task<IEnumerable<RedirectionPath>> GetAllowedPaths(string cognitoId)
         {
             var paths = new List<RedirectionPath>();
             var user = _userRepo.GetUserByCognitoId(cognitoId);
-            var hasPaid = stripeService.CustomerHasPaid(cognitoId);
+            var hasPaid = await stripeService.CustomerHasPaid(cognitoId);
             if (hasPaid && !user.WelcomeEmailSent)
             {
                 _templatedEmailService.SendWelcomeEmail(user.CognitoId);

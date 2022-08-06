@@ -68,7 +68,7 @@ namespace SublessSignIn.AuthServices
             options.Events.OnUserInformationReceived = async context =>
             {
                 var cognitoId = userService.GetUserClaim(context.Principal);
-                if (!stripeService.CustomerHasPaid(cognitoId))
+                if (!await stripeService.CustomerHasPaid(cognitoId))
                 {
                     context.Response.Cookies.Append("returnUri", context.Properties.RedirectUri, new CookieOptions()
                     {
