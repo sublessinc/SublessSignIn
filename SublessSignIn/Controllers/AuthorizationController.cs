@@ -69,6 +69,7 @@ namespace SublessSignIn.Controllers
 
         [Authorize]
         [HttpGet("routes")]
+        [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
         public ActionResult<IEnumerable<RedirectionPath>> Routes()
         {
             var cognitoId = _userService.GetUserClaim(HttpContext.User);

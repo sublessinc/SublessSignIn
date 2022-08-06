@@ -8,9 +8,7 @@ import {
 } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
-import { Router } from '@angular/router';
 import { AuthorizationService } from './authorization.service';
-import { sublessCookiePresent } from './cookie.service';
 
 @Injectable()
 export class UnauthorizedInterceptor implements HttpInterceptor, OnDestroy {
@@ -29,9 +27,6 @@ export class UnauthorizedInterceptor implements HttpInterceptor, OnDestroy {
                     if (err instanceof HttpErrorResponse) {
                         if (err.status !== 401) {
                             return;
-                        }
-                        if (sublessCookiePresent()) {
-                            this.authService.redirectToLogout();
                         }
                         this.authService.getLoginLink();
                     }

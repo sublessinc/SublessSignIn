@@ -70,6 +70,10 @@ namespace SublessSignIn.AuthServices
                 var cognitoId = userService.GetUserClaim(context.Principal);
                 if (!stripeService.CustomerHasPaid(cognitoId))
                 {
+                    context.Response.Cookies.Append("returnUri", context.Properties.RedirectUri, new CookieOptions()
+                    {
+                        MaxAge = TimeSpan.FromMinutes(15)
+                    });
                     context.Properties.RedirectUri = "/";
                 }
             };

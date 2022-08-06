@@ -35,13 +35,17 @@ def test_paying_user_can_logout_of_test_site(web_driver, paying_user, params):
     # WHEN: I log out of a partner
     test_site = TestSite_HomePage(web_driver)
     test_site.open()
+    handles = web_driver.window_handles
     test_site.click_logout()
-    time.sleep(3)
-    logging.info("Waiting test site to load, and login check to run")
-
-
+    post_logout_handles = web_driver.window_handles
+    assert len(post_logout_handles) - len(handles) == 1 #should have opened a new tab
+    web_driver.switch_to.window(post_logout_handles[1])
     # THEN: I should see a login page
+
     assert "login" in web_driver.current_url
+
+    web_driver.close()
+    web_driver.switch_to.window(handles[0])
 
 def test_paying_user_hit_pushed(web_driver, subless_activated_creator_user, paying_user, params):
     # WHEN: I visit creator

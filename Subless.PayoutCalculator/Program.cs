@@ -70,6 +70,7 @@ namespace PayoutCalculator
                     var paymentService = scope.ServiceProvider.GetRequiredService<IPaymentService>();
                     calculatorService.ExecutedQueuedCalculation();
                     paymentService.ExecutedQueuedPayment();
+                    paymentService.ExecuteQueuedIdleEmail();
                     Thread.Sleep(1000 * 10);
                 }
             }
