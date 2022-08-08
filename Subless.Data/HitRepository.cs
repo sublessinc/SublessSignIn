@@ -118,5 +118,35 @@ namespace Subless.Data
                 .Take(5)
                 .ToList();
         }
+
+        public List<HitView> GetRecentPatronContent(string cognitoId, Guid? creatorId)
+        {
+            return Hits.Where(x => x.CognitoId == cognitoId && x.CreatorId!=creatorId && x.CreatorId!=Guid.Empty)
+                .OrderByDescending(x => x.TimeStamp)
+                .Select(x =>
+                new HitView
+                {
+                    Content = x.Uri,
+                    Title = x.Uri.Segments.Length > 1 ? x.Uri.Segments.Last() : x.Uri.Host,
+                    Timestamp = x.TimeStamp.DateTime
+                })
+                .Take(5)
+                .ToList();
+        }
+
+        public List<CreatorHitCount> GetTopPatronContent(string cognitoId, Guid? creatorId)
+        {
+            return Hits.Where(x => x.CognitoId == cognitoId && x.CreatorId != creatorId)
+                .GroupBy(x => x.CreatorId)
+                .Select(g =>
+                new CreatorHitCount
+                {                    
+                    CreatorId = g.Key,
+                    Hits = g.Count()
+                })
+                .OrderByDescending(x => x.Hits)
+                .Take(5)
+                .ToList();            
+        }
     }
 }

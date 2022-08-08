@@ -130,7 +130,7 @@ namespace Subless.Services.Services
         }
 
 
-        public IEnumerable<HitView> GetRecentCrecatorContent(Guid creatorId, string cognitoId)
+        public IEnumerable<HitView> GetRecentCreatorContent(Guid creatorId, string cognitoId)
         {
             return hitRepository.GetRecentCreatorContent(creatorId, cognitoId);
         }
@@ -138,6 +138,23 @@ namespace Subless.Services.Services
         public IEnumerable<ContentHitCount> GetTopCreatorContent(Guid creatorId, string cognitoId)
         {
             return hitRepository.GetTopCreatorContent(creatorId, cognitoId);
+        }
+
+        public IEnumerable<HitView> GetRecentPatronContent(string cognitoId)
+        {
+            var creatorId = _creatorService.GetCreatorOrDefaultByCognitoid(cognitoId)?.Id;
+            return hitRepository.GetRecentPatronContent(cognitoId, creatorId);
+        }
+
+        public IEnumerable<CreatorHitCount> GetTopPatronContent(string cognitoId)
+        {
+            var creatorId = _creatorService.GetCreatorOrDefaultByCognitoid(cognitoId)?.Id;
+            var hits = hitRepository.GetTopPatronContent(cognitoId, creatorId);
+            return hits.Select(x =>
+            {
+                x.CreatorName = _creatorService.GetCreator(x.CreatorId).Username;
+                return x;
+            });
         }
 
         public Guid? GetCreatorFromPartnerAndUri(Uri uri, Partner partner)

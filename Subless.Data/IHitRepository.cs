@@ -17,5 +17,7 @@ namespace Subless.Data
         void SaveHit(Hit hit);
         List<ContentHitCount> GetTopCreatorContent(Guid creatorId, string cognitoId);
         List<HitView> GetRecentCreatorContent(Guid creatorId, string cognitoId);
+        List<HitView> GetRecentPatronContent(string cognitoId, Guid? creatorId);
+        List<CreatorHitCount> GetTopPatronContent(string cognitoId, Guid? creatorId);
     }
 }

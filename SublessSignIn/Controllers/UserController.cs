@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -181,6 +182,45 @@ namespace SublessSignIn.Controllers
                 return Ok(LoggedInEnum.ShouldRenew);
             }
             return Ok(LoggedInEnum.LoggedIn);
+        }
+
+        [HttpGet("RecentFeed")]
+        public ActionResult<IEnumerable<HitView>> RecentFeed()
+        {
+            var cognitoId = userService.GetUserClaim(HttpContext.User);
+            if (cognitoId == null)
+            {
+                return Unauthorized();
+            }
+            try
+            {
+                return Ok(hitService.GetRecentPatronContent(cognitoId));
+            }
+            catch (UnauthorizedAccessException e)
+            {
+                _logger.LogWarning(e, "Unauthorized user attempted to get creator stats");
+
+                return Unauthorized();
+            }
+        }
+
+        [HttpGet("TopFeed")]
+        public ActionResult<IEnumerable<CreatorHitCount>> TopFeed()
+        {
+            var cognitoId = userService.GetUserClaim(HttpContext.User);
+            if (cognitoId == null)
+            {
+                return Unauthorized();
+            }
+            try
+            {
+                return Ok(hitService.GetTopPatronContent(cognitoId).Select(x=> new CreatorHitCount { CreatorName= x.CreatorName, Hits= x.Hits}));
+            }
+            catch (UnauthorizedAccessException e)
+            {
+                _logger.LogWarning(e, "Unauthorized user attempted to get creator stats");
+                return Unauthorized();
+            }
         }
 
         [HttpPut("terms")]
