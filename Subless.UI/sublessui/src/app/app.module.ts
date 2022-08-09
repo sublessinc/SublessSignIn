@@ -34,7 +34,6 @@ import { CreatorTermsComponent } from './creator-terms/creator-terms.component';
 import { PartnerTermsComponent } from './partner-terms/partner-terms.component';
 import { RecentActivityComponent } from './recent-activity/recent-activity.component';
 import { TopContentComponent } from './top-content/top-content.component';
-import { DateFormatter } from './services/dateformatter.service';
 import { PartnerstatsComponent } from './partnerstats/partnerstats.component';
 import { SessionRenewComponent } from './session-renew/session-renew.component';
 import { CookieModule } from 'ngx-cookie';
