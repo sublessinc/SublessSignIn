@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Amazon;
@@ -41,6 +41,21 @@ namespace Subless.Services.Services
             });
         }
 
+        public async Task<string?> GetCongitoUserByEmail(string email)
+        {
+            if (email is null)
+            {
+                throw new ArgumentNullException(nameof(email));
+            }
+
+            var response = await _client.ListUsersAsync(new ListUsersRequest()
+            {
+                Filter = $"email=\"{email}\"",
+                UserPoolId = PoolId
+            });
+            return response.Users.Single().Username;
+        }
+
         public async Task<string?> GetCognitoUserEmail(string cognitoUserId)
         {
             try
@@ -58,18 +73,16 @@ namespace Subless.Services.Services
             }
             catch (AggregateException e)
             {
-                if (!e.InnerExceptions.Any(x=> x is UserNotFoundException))
+                if (!e.InnerExceptions.Any(x => x is UserNotFoundException))
                 {
                     throw;
                 }
                 return null;
             }
-            catch (UserNotFoundException e)
+            catch (UserNotFoundException)
             {
                 return null;
             }
-            
-            
         }
 
         protected virtual void Dispose(bool disposing)

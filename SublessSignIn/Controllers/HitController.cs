@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using System.Threading.Tasks;
 using System.Web;
@@ -33,7 +33,7 @@ namespace SublessSignIn.Controllers
         {
             try
             {
-                bool validHit = false;
+                var validHit = false;
                 using (var reader = new StreamReader(Request.Body))
                 {
                     var body = await reader.ReadToEndAsync();
@@ -47,7 +47,7 @@ namespace SublessSignIn.Controllers
                             $"QueryString: {HttpUtility.UrlEncode(Request.QueryString.Value)}");
                         return BadRequest("No url included in hit");
                     }
-                    if (!Uri.TryCreate(body, UriKind.RelativeOrAbsolute, out Uri hitSource))
+                    if (!Uri.TryCreate(body, UriKind.RelativeOrAbsolute, out var hitSource))
                     {
                         return BadRequest("Could not read source url");
                     }
@@ -85,7 +85,7 @@ namespace SublessSignIn.Controllers
                        $"QueryString: {HttpUtility.UrlEncode(Request.QueryString.Value)}");
                     return BadRequest("No url included in hit");
                 }
-                if (!Uri.TryCreate(body, UriKind.RelativeOrAbsolute, out Uri hitSource))
+                if (!Uri.TryCreate(body, UriKind.RelativeOrAbsolute, out var hitSource))
                 {
                     return BadRequest("Could not read source url");
                 }

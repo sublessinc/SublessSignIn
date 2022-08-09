@@ -194,6 +194,10 @@ csharp_preserve_single_line_blocks = true
 csharp_preserve_single_line_statements = true
 
 ## Naming conventions
+
+# CS8632: The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+dotnet_diagnostic.CS8632.severity = none
+
 [*.{cs,vb}]
 
 # Non-private static fields are PascalCase
@@ -519,3 +523,4 @@ dotnet_diagnostic.MA0097.severity = error    # MA0097: A class that implements I
 dotnet_diagnostic.MA0098.severity = suggestion # MA0098: Use indexer instead of extension methods
 dotnet_diagnostic.MA0099.severity = error    # MA0099: Use Explicit enum value instead of 0
 MA0053.public_class_should_be_sealed = false
+end_of_line = lf

@@ -83,14 +83,18 @@ def get_queued_result( cookie, id):
 
     response = requests.request("GET", url, headers=headers, data=payload)
     print(f'Calculator returned code: {response.status_code} - {response.reason} - {response.text}')
-    return json.loads(response.content)
+    return response.content
 
 def queue_and_wait_for_results( cookie, start, end):
     id = queue_calculation(cookie, start, end)
     result = None
     while not result:
         time.sleep(10)
-        result = get_queued_result(cookie, id)
+        response = get_queued_result(cookie, id)
+        try:
+            result = json.loads(response)
+        except:
+            print("waiting...")
     return result
 
 def queue_payout( cookie, start, end):

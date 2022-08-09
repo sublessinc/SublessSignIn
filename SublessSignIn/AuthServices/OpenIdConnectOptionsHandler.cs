@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Http;
@@ -23,7 +23,7 @@ namespace SublessSignIn.AuthServices
 
             this.userService = userService ?? throw new ArgumentNullException(nameof(userService));
             this.stripeService = stripeService ?? throw new ArgumentNullException(nameof(stripeService));
-            this.AuthSettings = authSettingsOptions.Value;
+            AuthSettings = authSettingsOptions.Value;
         }
 
         public void Configure(string name, OpenIdConnectOptions options)
@@ -39,11 +39,9 @@ namespace SublessSignIn.AuthServices
 
             //These need to be lax in order to handle both remote logins and the first-hop SSL configuration on the ECS cluster
             options.CorrelationCookie.SameSite = SameSiteMode.Lax;
-            //MS Said this only expires to stop build up of dead cookies
-            options.CorrelationCookie.Expiration = TimeSpan.FromDays(7);
+            options.CorrelationCookie.Expiration = TimeSpan.FromHours(15);
             options.NonceCookie.SameSite = SameSiteMode.Lax;
-            //MS Said this only expires to stop build up of dead cookies
-            options.NonceCookie.Expiration = TimeSpan.FromDays(7);
+            options.NonceCookie.Expiration = TimeSpan.FromHours(15);
             options.GetClaimsFromUserInfoEndpoint = true;
             options.RequireHttpsMetadata = true;
             options.Events = new OpenIdConnectEvents()
@@ -71,6 +69,10 @@ namespace SublessSignIn.AuthServices
                 var cognitoId = userService.GetUserClaim(context.Principal);
                 if (!stripeService.CustomerHasPaid(cognitoId))
                 {
+                    context.Response.Cookies.Append("returnUri", context.Properties.RedirectUri, new CookieOptions()
+                    {
+                        MaxAge = TimeSpan.FromMinutes(15)
+                    });
                     context.Properties.RedirectUri = "/";
                 }
             };

@@ -818,7 +818,7 @@ namespace Subless.Tests
                 new Mock<IPaymentLogsService>().Object,
                 s3Service?.Object ?? new Mock<IFileStorageService>().Object,
                 CreateOptions(),
-                new Mock<IPaymentEmailService>().Object,
+                new Mock<ITemplatedEmailService>().Object,
                 calculatorService,
                 new Mock<ICalculatorQueueRepository>().Object,
                 mockLoggerFactory.Object

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,13 +13,15 @@ namespace Subless.Services.Services
         private readonly IUserService userService;
         private readonly IStripeService stripeService;
         private readonly ICreatorService creatorService;
+        private readonly ITemplatedEmailService _templatedEmailService;
 
-        public AuthService(IUserRepository userRepository, IUserService userService, IStripeService stripeService, ICreatorService creatorService)
+        public AuthService(IUserRepository userRepository, IUserService userService, IStripeService stripeService, ICreatorService creatorService, ITemplatedEmailService templatedEmailService)
         {
-            this._userRepo = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
-            this.userService = userService;
-            this.stripeService = stripeService;
+            _userRepo = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
+            this.userService = userService ?? throw new ArgumentNullException(nameof(userService));
+            this.stripeService = stripeService ?? throw new ArgumentNullException(nameof(stripeService));
             this.creatorService = creatorService ?? throw new ArgumentNullException(nameof(creatorService));
+            _templatedEmailService = templatedEmailService ?? throw new ArgumentNullException(nameof(templatedEmailService));
         }
 
         public async Task<Redirection> LoginWorkflow(string cognitoId, string activationCode, string email)
@@ -30,7 +32,7 @@ namespace Subless.Services.Services
                 user = userService.CreateUserByCognitoId(cognitoId);
             }
 
-            if (activationCode != null && Guid.TryParse(activationCode, out Guid code) && (user.Creators == null || !user.Creators.Any() || user.Creators.Any(x => !x.Active)))
+            if (activationCode != null && Guid.TryParse(activationCode, out var code) && (user.Creators == null || !user.Creators.Any() || user.Creators.Any(x => !x.Active)))
             {
                 await creatorService.ActivateCreator(user.Id, code, email);
                 user = userService.GetUserWithRelationships(user.Id);
@@ -44,7 +46,7 @@ namespace Subless.Services.Services
                 };
             }
 
-            if ((user.Creators != null && user.Creators.Any(x => string.IsNullOrWhiteSpace(x.PayPalId))))
+            if (user.Creators != null && user.Creators.Any(x => string.IsNullOrWhiteSpace(x.PayPalId)))
             {
                 return new Redirection()
                 {
@@ -73,12 +75,18 @@ namespace Subless.Services.Services
                     RedirectionPath = RedirectionPath.Terms
                 };
             }
-            if (!stripeService.CustomerHasPaid(cognitoId))
+            var hasPaid = stripeService.CustomerHasPaid(cognitoId);
+            if (!hasPaid)
             {
                 return new Redirection()
                 {
                     RedirectionPath = RedirectionPath.Payment
                 };
+            }
+
+            if (hasPaid && !user.WelcomeEmailSent)
+            {
+                _templatedEmailService.SendWelcomeEmail(user.CognitoId);
             }
 
             return new Redirection()
@@ -93,6 +101,11 @@ namespace Subless.Services.Services
             var paths = new List<RedirectionPath>();
             var user = _userRepo.GetUserByCognitoId(cognitoId);
             var hasPaid = stripeService.CustomerHasPaid(cognitoId);
+            if (hasPaid && !user.WelcomeEmailSent)
+            {
+                _templatedEmailService.SendWelcomeEmail(user.CognitoId);
+            }
+
             if (user != null && hasPaid)
             {
                 paths.Add(RedirectionPath.Profile);

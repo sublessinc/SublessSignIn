@@ -57,7 +57,7 @@ namespace Subless.Data
 
         public IEnumerable<Uri> GetPartnerUris()
         {
-            List<Uri> uris = new List<Uri>();
+            var uris = new List<Uri>();
             foreach (var partner in Partners)
             {
                 if (partner.Sites != null)

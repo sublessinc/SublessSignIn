@@ -6,9 +6,11 @@
 
   <ItemGroup>
     <None Remove="Assets\CreatorReceipt.html" />
+    <None Remove="Assets\Idle.html" />
     <None Remove="Assets\PartnerReceipt.html" />
     <None Remove="Assets\Receipt.html" />
     <None Remove="Assets\RolloverReceipt.html" />
+    <None Remove="Assets\Welcome.html" />
     <None Remove="Resources\Receipt.html" />
   </ItemGroup>
 
@@ -17,6 +19,12 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
     <EmbeddedResource Include="Assets\CreatorReceipt.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Assets\Idle.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Assets\Welcome.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
     <EmbeddedResource Include="Assets\RolloverReceipt.html">
@@ -35,10 +43,10 @@
 
   <ItemGroup>
     <PackageReference Include="Amazon.Extensions.CognitoAuthentication" Version="2.2.2" />
-    <PackageReference Include="AWSSDK.CognitoIdentity" Version="3.7.0.139" />
-    <PackageReference Include="AWSSDK.CognitoIdentityProvider" Version="3.7.2.3" />
-    <PackageReference Include="AWSSDK.S3" Version="3.7.8.11" />
-    <PackageReference Include="AWSSDK.SimpleEmail" Version="3.7.0.139" />
+    <PackageReference Include="AWSSDK.CognitoIdentity" Version="3.7.0.184" />
+    <PackageReference Include="AWSSDK.CognitoIdentityProvider" Version="3.7.4.17" />
+    <PackageReference Include="AWSSDK.S3" Version="3.7.9.30" />
+    <PackageReference Include="AWSSDK.SimpleEmail" Version="3.7.0.184" />
     <PackageReference Include="CsvHelper" Version="27.2.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="6.0.3" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" />

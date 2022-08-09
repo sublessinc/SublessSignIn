@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -12,7 +12,7 @@ using Subless.PayoutCalculator;
 
 namespace Subless.Services.Services
 {
-    public class PaymentEmailService : IPaymentEmailService
+    public class TemplatedEmailService : ITemplatedEmailService
     {
         public const string MonthKey = "{{month}}"; // March, 2022
         public const string IndividualPaymentTemplate = "            <tr style='padding: 10px;padding-bottom: 20px;'><td>{{creatorname}}</td><td style='text-align: right;'>{{creatorpayment}}</td></tr>";
@@ -35,7 +35,7 @@ namespace Subless.Services.Services
         private readonly ILogger logger;
         private readonly IEmailService _emailSerivce;
 
-        public PaymentEmailService(
+        public TemplatedEmailService(
             IOptions<CalculatorConfiguration> options,
             IEmailService emailService,
             ICognitoService cognitoService,
@@ -64,7 +64,7 @@ namespace Subless.Services.Services
             _partnerService = partnerService ?? throw new ArgumentNullException(nameof(partnerService));
             _userService = userService ?? throw new ArgumentNullException(nameof(userService));
             _emailSerivce = emailService ?? throw new ArgumentNullException(nameof(emailService));
-            logger = loggerFactory.CreateLogger<PaymentEmailService>();
+            logger = loggerFactory.CreateLogger<TemplatedEmailService>();
         }
 
         public void SendReceiptEmail(List<Payment> payments, string cognitoId, DateTimeOffset PaymentPeriodStart, DateTimeOffset PaymentPeriodEnd)
@@ -125,6 +125,35 @@ namespace Subless.Services.Services
             emailTask.Wait();
         }
 
+        public void SendWelcomeEmail(string cognitoId)
+        {
+            var usertask = Task.Run(() => cognitoService.GetCognitoUserEmail(cognitoId));
+            usertask.Wait();
+            if (usertask.Result == null)
+            {
+                logger.LogInformation($"No email present for cognitoid {cognitoId}");
+                return;
+            }
+            var body = GetWelcomeEmail();
+            var emailTask = Task.Run(() => _emailSerivce.SendEmail(body, usertask.Result, "Welcome to subless!"));
+            emailTask.Wait();
+            _userService.WelcomeSent(cognitoId);
+        }
+
+        public void SendIdleEmail(string cognitoId)
+        {
+            var usertask = Task.Run(() => cognitoService.GetCognitoUserEmail(cognitoId));
+            usertask.Wait();
+            if (usertask.Result == null)
+            {
+                logger.LogInformation($"No email present for cognitoid {cognitoId}");
+                return;
+            }
+            var body = GenerateEmailBodyForIdleEmail(GetIdleEmail());
+            var emailTask = Task.Run(() => _emailSerivce.SendEmail(body, usertask.Result, "Your subless budget isn't going to any creators this month!"));
+            emailTask.Wait();
+        }
+
         private string GetEmailFromUserId(Guid userId)
         {
             var user = _userService.GetUser(userId);
@@ -166,40 +195,48 @@ namespace Subless.Services.Services
             return GenerateEmailBodyForRolloverPatron(template, payment, PaymentPeriodStart, PaymentPeriodEnd);
         }
 
+        private string GetWelcomeEmail()
+        {
+            return ReadTemplate("Subless.Services.Assets.Welcome.html");
+        }
+
+        public string GetIdleEmail()
+        {
+            return ReadTemplate("Subless.Services.Assets.Idle.html");
+        }
         private string GetEmailTemplate()
         {
-            var fileName = "Subless.Services.Assets.Receipt.html";
-            var assembly = Assembly.GetExecutingAssembly();
-            var stream = assembly.GetManifestResourceStream(fileName);
-            StreamReader reader = new StreamReader(stream);
-            return reader.ReadToEnd();
+            return ReadTemplate("Subless.Services.Assets.Receipt.html");
         }
 
         private string GetCreatorEmailTemplate()
         {
-            var fileName = "Subless.Services.Assets.CreatorReceipt.html";
-            var assembly = Assembly.GetExecutingAssembly();
-            var stream = assembly.GetManifestResourceStream(fileName);
-            StreamReader reader = new StreamReader(stream);
-            return reader.ReadToEnd();
+            return ReadTemplate("Subless.Services.Assets.CreatorReceipt.html");
         }
 
         private string GetPartnerEmailTemplate()
         {
-            var fileName = "Subless.Services.Assets.CreatorReceipt.html";
-            var assembly = Assembly.GetExecutingAssembly();
-            var stream = assembly.GetManifestResourceStream(fileName);
-            StreamReader reader = new StreamReader(stream);
-            return reader.ReadToEnd();
+            return ReadTemplate("Subless.Services.Assets.CreatorReceipt.html");
         }
 
         private string GetRolloverEmailTemplate()
         {
-            var fileName = "Subless.Services.Assets.RolloverReceipt.html";
+            return ReadTemplate("Subless.Services.Assets.RolloverReceipt.html");
+        }
+
+        private string ReadTemplate(string templateName)
+        {
             var assembly = Assembly.GetExecutingAssembly();
-            var stream = assembly.GetManifestResourceStream(fileName);
-            StreamReader reader = new StreamReader(stream);
+            var stream = assembly.GetManifestResourceStream(templateName);
+            var reader = new StreamReader(stream);
             return reader.ReadToEnd();
+        }
+
+        private string GenerateEmailBodyForIdleEmail(string template)
+        {
+            var email = template.Replace(SiteLinkKey, authSettings.Domain, StringComparison.Ordinal);
+            return email.Replace(LogoUrl, authSettings.Domain + "/dist/assets/SublessLogo.png", StringComparison.Ordinal);
+
         }
 
         private string GenerateEmailBodyForUser(string template, List<Payment> payments, DateTimeOffset PaymentPeriodStart, DateTimeOffset PaymentPeriodEnd)
@@ -209,7 +246,7 @@ namespace Subless.Services.Services
             var userEmail = template.Replace(MonthKey, month, StringComparison.Ordinal);
             userEmail = userEmail.Replace(SiteLinkKey, authSettings.Domain, StringComparison.Ordinal);
             userEmail = userEmail.Replace(LogoUrl, authSettings.Domain + "/dist/assets/SublessLogo.png", StringComparison.Ordinal);
-            userEmail = userEmail.Replace(PaymentsKey, String.Join("\n", GetPaymentItems(payments)), StringComparison.Ordinal);
+            userEmail = userEmail.Replace(PaymentsKey, string.Join("\n", GetPaymentItems(payments)), StringComparison.Ordinal);
             var specifier = "C";
             var culture = CultureInfo.CreateSpecificCulture("en-US");
             var total = payments.Sum(x => x.Amount / 100);
@@ -262,8 +299,8 @@ namespace Subless.Services.Services
 
         private List<string> GetPaymentItems(List<Payment> payments)
         {
-            List<string> formattedPayments = new List<string>();
-            foreach (Payment payment in payments)
+            var formattedPayments = new List<string>();
+            foreach (var payment in payments)
             {
                 var individualPayment = IndividualPaymentTemplate.Replace(CreatorNameKey, payment.Payee.Name, StringComparison.Ordinal);
                 var specifier = "C";

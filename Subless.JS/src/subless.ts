@@ -11,6 +11,7 @@ interface SublessInterface {
     subless_hit(): Promise<void>; // eslint-disable-line camelcase
     sublessLogout(): Promise<void>;
     sublessShowLogo(): Promise<void>;
+    sublessShowBanner(): Promise<void>;
 }
 
 interface SublessSettings {
@@ -61,7 +62,28 @@ export class Subless implements SublessInterface {
 
     /** Check whether a user who had loaded this page is logged into a Subless account. */
     async subless_LoggedIn(): Promise<boolean> { // eslint-disable-line camelcase
-        return await fetch(sublessUri + "/api/user/loggedin", {
+        const result = await this.sublessGetLoginState();
+        if (result == 0) {
+            return false;
+        }
+        if (result == 1) {
+            return true;
+        }
+        if (result == 2) {
+            await this.renewLogin();
+            return true;
+        }
+    }
+
+    /** Starts a redirect chain to renew your session cookie */
+    async renewLogin() {
+        const path = window.location.href;
+        window.location.href = sublessUri + "/renew?return_uri=" + path;
+    }
+
+    /** Gets the current state of the login */
+    async sublessGetLoginState(): Promise<number> {
+        return await fetch(sublessUri + "/api/user/loginStatus", {
             method: "Get",
             headers: {
                 "Content-Type": "application/json",
@@ -104,6 +126,33 @@ export class Subless implements SublessInterface {
         this.fadeInAndOut(img);
     }
 
+    /** Inserts banner ad into the page */
+    async sublessShowBanner(): Promise<void> {
+        const messageDiv = document.getElementById("sublessMessage");
+        const link = document.createElement("a");
+        const img = document.createElement("img");
+        const urls = this.getmessage();
+        img.src = urls[0];
+        img.id = "sublessMessageImage";
+        img.style.maxHeight = "90px";
+        link.href = urls[1];
+        link.id = "sublessMessageLink";
+        link.appendChild(img);
+        messageDiv.appendChild(link);
+    }
+
+    /** Gets a random message ad and corresponding link
+     * @return {[string, string]}tuple of image and target URI
+    */
+    private getmessage(): [string, string] {
+        const message = Math.floor(Math.random() * 4) + 1;
+        const img = `${sublessUri}/dist/assets/message${message}.png`;
+        if (message == 3) {
+            return [img, `https://www.subless.com/hf-creator-instructions?utm_campaign=message${message}`];
+        }
+        return [img, `https://www.subless.com/patron?utm_campaign=message${message}`];
+    }
+
     /** Fades in an element
      * @param {HTMLElement} el element to fade
     */
@@ -132,7 +181,7 @@ export class Subless implements SublessInterface {
 
     /** A method that can be used to log a user out from Subless */
     async sublessLogout() {
-        window.location.href = sublessUri + "/bff/logout?returnUrl=" + clientBaseUri;
+        window.open(sublessUri + "/bff/logout?returnUrl=" + clientBaseUri, "_blank");
     }
 }
 

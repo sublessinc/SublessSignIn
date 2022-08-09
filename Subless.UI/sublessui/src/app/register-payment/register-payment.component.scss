@@ -2,6 +2,18 @@
 @use '@angular/material' as mat;
 @import "../theme/theme";
 
+a:link {
+  color: map-get($md-pinkhighlight, 500);
+  background-color: transparent;
+  text-decoration: underline;
+}
+
+a:visited {
+  color: map-get($md-subtitlegrey, 500);
+  background-color: transparent;
+  text-decoration: underline;
+}
+
 .title {
     @extend h1-font;
 
@@ -85,6 +97,13 @@
     height: 10px;
     background-size: cover;
 
+}
+
+.creator-redirect {
+    @extend h3-font;
+    text-align: center;
+    align-self: center;
+    color:map-get($map: $md-pinkhighlight, $key: 500)
 }
 
 .plan-details {

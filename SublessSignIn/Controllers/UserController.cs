@@ -1,13 +1,12 @@
-using System;
+﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Subless.Models;
+using Subless.Services;
 using Subless.Services.Extensions;
 using Subless.Services.Services;
 using SublessSignIn.Models;
@@ -58,6 +57,26 @@ namespace SublessSignIn.Controllers
         public async Task DeleteUser()
         {
             var cognitoId = userService.GetUserClaim(HttpContext.User);
+            await Delete(cognitoId);
+        }
+
+        [TypeFilter(typeof(AdminAuthorizationFilter))]
+        [HttpDelete("{cognitoId}")]
+        public async Task DeleteUser(string cognitoId)
+        {
+            await Delete(cognitoId);
+        }
+
+        [TypeFilter(typeof(AdminAuthorizationFilter))]
+        [HttpDelete("byemail")]
+        public async Task DeleteUserByEmail([FromQuery] string email)
+        {
+            var cognitoId = await cognitoService.GetCongitoUserByEmail(email);
+            await Delete(cognitoId);
+        }
+
+        private async Task Delete(string cognitoId)
+        {
             stripeService.CancelSubscription(cognitoId);
             var user = userService.GetUserByCognitoId(cognitoId);
             if (user.Creators.Any())
@@ -71,7 +90,7 @@ namespace SublessSignIn.Controllers
             await cognitoService.DeleteCognitoUser(user.CognitoId);
         }
 
-            [HttpGet()]
+        [HttpGet()]
         public ActionResult<UserViewModel> GetUser()
         {
             var cognitoId = userService.GetUserClaim(HttpContext.User);
@@ -120,9 +139,11 @@ namespace SublessSignIn.Controllers
         [HttpGet("loggedIn")]
         [EnableCors("Unrestricted")]
         [AllowAnonymous]
+        [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
+
         public ActionResult<bool> GetLoggedIn()
         {
-            if (!this.HttpContext.User.Identity.IsAuthenticated)
+            if (!HttpContext.User.Identity.IsAuthenticated)
             {
                 return Ok(false);
             }
@@ -130,9 +151,36 @@ namespace SublessSignIn.Controllers
             var user = userService.GetUserByCognitoId(cognitoId);
             if (user != null)
             {
+                _usageService.SaveUsage(UsageType.Visit, user.Id);
                 return Ok(true);
             }
             return Ok(false);
+        }
+
+        [HttpGet("loginStatus")]
+        [EnableCors("Unrestricted")]
+        [AllowAnonymous]
+        [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
+
+        public ActionResult<LoggedInEnum> GetLoggedInRenewal()
+        {
+            if (!HttpContext.User.Identity.IsAuthenticated)
+            {
+                return Ok(LoggedInEnum.NotLoggedIn);
+            }
+            var cognitoId = userService.GetUserClaim(HttpContext.User);
+            var user = userService.GetUserByCognitoId(cognitoId);
+            if (user == null)
+            {
+                return Ok(LoggedInEnum.NotLoggedIn);
+            }
+            if (HttpContext.Items.TryGetValue("ExpiresUTC", out var expirationDate)
+                && expirationDate is DateTimeOffset
+                && (DateTimeOffset)expirationDate < DateTime.UtcNow.AddDays(3))
+            {
+                return Ok(LoggedInEnum.ShouldRenew);
+            }
+            return Ok(LoggedInEnum.LoggedIn);
         }
 
         [HttpPut("terms")]

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,14 +19,14 @@ namespace PayoutCalculator
         public static Microsoft.Extensions.Logging.ILogger logger;
         private async static Task Main(string[] args)
         {
-            using IHost host = CreateHostBuilder(args).Build();
+            using var host = CreateHostBuilder(args).Build();
             using (var scope = host.Services.CreateScope())
             {
                 // initialize configuration
                 logger = scope.ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<Program>();
                 try
                 {
-                    string version = System.IO.File.ReadAllText(@"version.txt");
+                    var version = System.IO.File.ReadAllText(@"version.txt");
                     logger.LogInformation("Version: " + version);
                 }
                 catch (Exception e)
@@ -69,6 +69,7 @@ namespace PayoutCalculator
                     var paymentService = scope.ServiceProvider.GetRequiredService<IPaymentService>();
                     calculatorService.ExecutedQueuedCalculation();
                     paymentService.ExecutedQueuedPayment();
+                    paymentService.ExecuteQueuedIdleEmail();
                     Thread.Sleep(1000 * 10);
                 }
             }

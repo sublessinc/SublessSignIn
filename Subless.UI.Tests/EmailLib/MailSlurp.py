@@ -67,7 +67,7 @@ def receive_email(inbox_name='', inbox_id=''):
 
     with mailslurp_client.ApiClient(configuration) as api_client:
         if not inbox_id:
-            inbox_id = get_or_create_inbox(inbox_name)
+            inbox_id = get_or_create_inbox(inbox_name).id
 
         try:
             # wait for email

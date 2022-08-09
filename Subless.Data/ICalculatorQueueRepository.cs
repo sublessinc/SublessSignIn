@@ -1,8 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Subless.Models;
 
 namespace Subless.Data
@@ -16,5 +12,8 @@ namespace Subless.Data
         Guid QueueCalculation(DateTimeOffset start, DateTimeOffset end);
         Guid QueuePayment(DateTimeOffset start, DateTimeOffset end);
         CalculatorExecution GetQueuedCalcuation(Guid id);
+        IdleEmailExecution DequeueIdleEmails();
+        void QueueIdleEmails(DateTimeOffset startDate, DateTimeOffset endDate);
+        void CompleteIdleEmails(IdleEmailExecution payment);
     }
 }

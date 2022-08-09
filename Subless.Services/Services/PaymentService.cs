@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -18,7 +18,7 @@ namespace Subless.Services.Services
         private readonly IPaymentLogsService _paymentLogsService;
         private readonly ILoggerFactory _loggerFactory;
         private readonly IFileStorageService _s3Service;
-        private readonly IPaymentEmailService emailService;
+        private readonly ITemplatedEmailService emailService;
         private readonly ICalculatorService _calculatorService;
         private readonly ICalculatorQueueRepository _calculationQueueRepository;
         private readonly ILogger _logger;
@@ -28,7 +28,7 @@ namespace Subless.Services.Services
             IPaymentLogsService paymentLogsService,
             IFileStorageService s3Service,
             IOptions<StripeConfig> stripeOptions,
-            IPaymentEmailService emailService,
+            ITemplatedEmailService emailService,
             ICalculatorService calculatorService,
             ICalculatorQueueRepository calculationQueueRepository,
             ILoggerFactory loggerFactory)
@@ -119,6 +119,25 @@ namespace Subless.Services.Services
                 _calculationQueueRepository.CompletePayment(payment);
                 _logger.LogInformation($"Completed queued payment {payment.Id}");
 
+            }
+        }
+
+        public void QueueIdleEmail(DateTimeOffset start, DateTimeOffset end)
+        {
+            _calculationQueueRepository.QueueIdleEmails(start, end);
+        }
+
+        public void ExecuteQueuedIdleEmail()
+        {
+            var emails = _calculationQueueRepository.DequeueIdleEmails();
+            if (emails != null)
+            {
+                var calculatorResult = _calculatorService.CaculatePayoutsOverRange(emails.PeriodStart, emails.PeriodEnd);
+                foreach (var idle in calculatorResult.IdleCustomerRollovers)
+                {
+                    emailService.SendIdleEmail(idle.CognitoId);
+                }
+                _calculationQueueRepository.CompleteIdleEmails(emails);
             }
         }
 

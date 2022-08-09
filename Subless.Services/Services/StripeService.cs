@@ -77,7 +77,8 @@ namespace Subless.Services.Services
             var options = new SubscriptionUpdateOptions
             {
                 CancelAtPeriodEnd = false,
-                ProrationBehavior = "create_prorations",
+                // This should defer plan changes to the beginning of next month
+                ProrationBehavior = "none",
                 Items = items,
             };
             _stripeApiWrapperService.SubscriptionService.Update(subscription.Id, options);
@@ -246,7 +247,7 @@ namespace Subless.Services.Services
             var subscriptions = _stripeApiWrapperService.SubscriptionService.List(new SubscriptionListOptions()
             {
                 Customer = customer.Id
-            }).Where(sub => sub.Status== "active" && sub.CancelAtPeriodEnd == false);
+            }).Where(sub => sub.Status == "active" && sub.CancelAtPeriodEnd == false);
             return subscriptions;
         }
 
@@ -404,9 +405,9 @@ namespace Subless.Services.Services
         }
         public bool CancelSubscription(string cognitoId)
         {
-            
+
             var user = _userService.GetUserByCognitoId(cognitoId);
-            if (string.IsNullOrWhiteSpace(user.StripeCustomerId))
+            if (string.IsNullOrWhiteSpace(user?.StripeCustomerId))
             {
                 return false;
             }

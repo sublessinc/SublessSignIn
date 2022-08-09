@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mail;
@@ -48,9 +48,13 @@ namespace Subless.Services.Services
         public async Task ActivateCreator(Guid userId, Guid activationCode, string email)
         {
             var creator = creatorRepository.GetCreatorByActivationCode(activationCode);
-            if (creator == null || creator.ActivationExpiration < DateTimeOffset.UtcNow)
+            if (creator == null)
             {
                 throw new UnauthorizedAccessException("Activation code is invalid or expired");
+            }
+            if (creator.ActivationExpiration < DateTimeOffset.UtcNow)
+            {
+                throw new CreatorActivationExpiredException();
             }
             creator.ActivationCode = null;
             creator.Active = true;
@@ -142,14 +146,14 @@ namespace Subless.Services.Services
             foreach (var payment in paymentAuditLogs)
             {
                 paymentStats.Add(new MonthlyPaymentStats()
-                    {
-                        MonthStart = payment.PaymentPeriodStart,
-                        Revenue = payment.Revenue,
-                        PaymentProcessorFees = payment.Fees,
-                        Payment = payment.Payment,
-                        MonthEnd = payment.PaymentPeriodEnd
-                    });
-                
+                {
+                    MonthStart = payment.PaymentPeriodStart,
+                    Revenue = payment.Revenue,
+                    PaymentProcessorFees = payment.Fees,
+                    Payment = payment.Payment,
+                    MonthEnd = payment.PaymentPeriodEnd
+                });
+
             }
             return paymentStats.OrderBy(x => x.MonthStart);
         }

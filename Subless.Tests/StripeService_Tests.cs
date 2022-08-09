@@ -8,8 +8,6 @@ using Subless.Services.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Subless.Tests
@@ -49,14 +47,14 @@ namespace Subless.Tests
         {
             var stripeId = "stripeId";
             var chargeId = "chargeId";
-            var invoices = new List<Invoice>() { new Invoice() { CustomerId = stripeId, ChargeId = chargeId} };
-            var charge = new Charge() { Id = chargeId,  Amount = 1000 };
+            var invoices = new List<Invoice>() { new Invoice() { CustomerId = stripeId, ChargeId = chargeId } };
+            var charge = new Charge() { Id = chargeId, Amount = 1000 };
             var refund = new Refund() { ChargeId = chargeId, Amount = 1000 };
             var users = new List<User>() { new User() { StripeCustomerId = stripeId, Id = Guid.NewGuid() } };
             var sut = StripeServiceBuilder.BuildStripeService(
-                invoices, 
-                users, 
-                new List<Refund> { refund} , 
+                invoices,
+                users,
+                new List<Refund> { refund },
                 new List<Charge> { charge },
                 new BalanceTransaction());
             var payers = sut.GetPayersForRange(new DateTimeOffset(), new DateTimeOffset());
@@ -77,7 +75,7 @@ namespace Subless.Tests
                 users,
                 new List<Refund> { },
                 new List<Charge> { charge },
-                new BalanceTransaction(){ Fee = 97 });
+                new BalanceTransaction() { Fee = 97 });
             var payers = sut.GetPayersForRange(new DateTimeOffset(), new DateTimeOffset());
             Assert.Single(payers);
             Assert.Equal(users.Single().Id, payers.Single().UserId);
@@ -110,12 +108,12 @@ namespace Subless.Tests
             var stripeId = "stripeId";
             var chargeId = "chargeId";
             var invoiceService = new Mock<InvoiceService>();
-            var invoices = new StripeList<Invoice>() { Data = new List<Invoice>() { new Invoice() { CustomerId = stripeId, ChargeId = chargeId } }};
+            var invoices = new StripeList<Invoice>() { Data = new List<Invoice>() { new Invoice() { CustomerId = stripeId, ChargeId = chargeId } } };
             var invoices2 = new StripeList<Invoice>() { Data = new List<Invoice>() { new Invoice() { CustomerId = stripeId, ChargeId = chargeId } } };
             invoiceService.SetupSequence(x => x.List(It.IsAny<InvoiceListOptions>(), null))
                 .Returns(invoices)
                 .Returns(invoices2)
-                .Returns(new StripeList<Invoice>() { Data = new List<Invoice>() }); 
+                .Returns(new StripeList<Invoice>() { Data = new List<Invoice>() });
             var charge = new Charge() { Id = chargeId, Amount = 1000 };
             var users = new List<User>() { new User() { StripeCustomerId = stripeId, Id = Guid.NewGuid() } };
             var sut = StripeServiceBuilder.BuildStripeService(
@@ -129,7 +127,7 @@ namespace Subless.Tests
             Assert.Equal(2, payers.Count());
         }
 
-        public static class StripeServiceBuilder 
+        public static class StripeServiceBuilder
         {
             public static StripeService BuildStripeService(
                 List<Invoice> testInvoices = null,
