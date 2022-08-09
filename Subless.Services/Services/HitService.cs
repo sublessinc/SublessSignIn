@@ -146,10 +146,10 @@ namespace Subless.Services.Services
             return hitRepository.GetRecentPatronContent(cognitoId, creatorId);
         }
 
-        public IEnumerable<CreatorHitCount> GetTopPatronContent(string cognitoId)
+        public IEnumerable<CreatorHitCount> GetTopPatronContent(DateTimeOffset startDate, DateTimeOffset endDate, string cognitoId)
         {
             var creatorId = _creatorService.GetCreatorOrDefaultByCognitoid(cognitoId)?.Id;
-            var hits = hitRepository.GetTopPatronContent(cognitoId, creatorId);
+            var hits = hitRepository.GetTopPatronContent(startDate, endDate, cognitoId, creatorId);
             return hits.Select(x =>
             {
                 x.CreatorName = _creatorService.GetCreator(x.CreatorId).Username;

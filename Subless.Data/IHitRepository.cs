@@ -18,6 +18,6 @@ namespace Subless.Data
         List<ContentHitCount> GetTopCreatorContent(Guid creatorId, string cognitoId);
         List<HitView> GetRecentCreatorContent(Guid creatorId, string cognitoId);
         List<HitView> GetRecentPatronContent(string cognitoId, Guid? creatorId);
-        List<CreatorHitCount> GetTopPatronContent(string cognitoId, Guid? creatorId);
+        List<CreatorHitCount> GetTopPatronContent(DateTimeOffset startDate, DateTimeOffset endDate, string cognitoId, Guid? creatorId);
     }
 }

@@ -16,7 +16,7 @@ namespace Subless.Services.Services
         IEnumerable<ContentHitCount> GetTopCreatorContent(Guid creatorId, string cognitoId);
         IEnumerable<HitView> GetRecentCreatorContent(Guid creatorId, string cognitoId);
         IEnumerable<Hit> FilterOutCreator(IEnumerable<Hit> hits, Guid creatorId);
-        IEnumerable<CreatorHitCount> GetTopPatronContent(string cognitoId);
+        IEnumerable<CreatorHitCount> GetTopPatronContent(DateTimeOffset startDate, DateTimeOffset endDate, string cognitoId);
         IEnumerable<HitView> GetRecentPatronContent(string cognitoId);
     }
 }

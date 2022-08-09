@@ -214,7 +214,9 @@ namespace SublessSignIn.Controllers
             }
             try
             {
-                return Ok(hitService.GetTopPatronContent(cognitoId).Select(x=> new CreatorHitCount { CreatorName= x.CreatorName, Hits= x.Hits}));
+                var paymentDate = paymentLogsService.GetLastPaymentDate();
+                return Ok(hitService.GetTopPatronContent(paymentDate, DateTimeOffset.UtcNow, cognitoId)
+                    .Select(x=> new CreatorHitCount { CreatorName= x.CreatorName, Hits= x.Hits}));
             }
             catch (UnauthorizedAccessException e)
             {
