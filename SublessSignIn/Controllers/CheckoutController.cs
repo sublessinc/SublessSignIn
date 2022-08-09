@@ -134,7 +134,7 @@ namespace SublessSignIn.Controllers
             }
             var plan = _stripeService.GetActiveSubscriptionPrice(cognitoId);
             if (plan == null || !plan.Any())
-            {
+            { 
                 return Ok(null);
             }
             return Ok(plan.Single().UnitAmount / 100);

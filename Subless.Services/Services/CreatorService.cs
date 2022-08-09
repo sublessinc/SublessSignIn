@@ -66,12 +66,22 @@ namespace Subless.Services.Services
 
         public Creator GetCreatorByCognitoid(string cognitoId)
         {
-            var creators = _userRepository.GetCreatorsByCognitoId(cognitoId);
-            if (creators == null || !creators.Any(x => x.Active))
+            var creator = GetCreatorOrDefaultByCognitoid(cognitoId);
+            if (creator == null)
             {
                 throw new UnauthorizedAccessException();
             }
             // TODO: One creator for now.
+            return creator;
+        }
+
+        public Creator? GetCreatorOrDefaultByCognitoid(string cognitoId)
+        {
+            var creators = _userRepository.GetCreatorsByCognitoId(cognitoId);
+            if (creators == null || !creators.Any(x => x.Active))
+            {
+                return null;
+            }
             return creators.First();
         }
 

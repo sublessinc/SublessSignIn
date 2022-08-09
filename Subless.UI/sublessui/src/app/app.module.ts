@@ -37,6 +37,8 @@ import { TopContentComponent } from './top-content/top-content.component';
 import { PartnerstatsComponent } from './partnerstats/partnerstats.component';
 import { SessionRenewComponent } from './session-renew/session-renew.component';
 import { CookieModule } from 'ngx-cookie';
+import { UserTopContentComponent } from './user-top-content/user-top-content.component';
+import { UserRecentActivityComponent } from './user-recent-activity/user-recent-activity.component';
 
 @NgModule({
   declarations: [
@@ -64,7 +66,9 @@ import { CookieModule } from 'ngx-cookie';
     RecentActivityComponent,
     TopContentComponent,
     PartnerstatsComponent,
-    SessionRenewComponent
+    SessionRenewComponent,
+    UserTopContentComponent,
+    UserRecentActivityComponent
   ],
   imports: [
     ThemeModule,
