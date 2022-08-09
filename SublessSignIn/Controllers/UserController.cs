@@ -198,7 +198,7 @@ namespace SublessSignIn.Controllers
             }
             catch (UnauthorizedAccessException e)
             {
-                _logger.LogWarning(e, "Unauthorized user attempted to get creator stats");
+                _logger.LogWarning(e, "Unauthorized user attempted to get user stats");
 
                 return Unauthorized();
             }
@@ -220,7 +220,7 @@ namespace SublessSignIn.Controllers
             }
             catch (UnauthorizedAccessException e)
             {
-                _logger.LogWarning(e, "Unauthorized user attempted to get creator stats");
+                _logger.LogWarning(e, "Unauthorized user attempted to get user stats");
                 return Unauthorized();
             }
         }
