@@ -46,7 +46,7 @@ namespace SublessSignIn.Controllers
                     level = LogLevel.Information;
                     break;                
             }
-            logger.Log(level, log.Message);
+            logger.Log(level, $"FrontEnd - {log.Message}");
 
         }
     }
