@@ -3,6 +3,7 @@ import { IStat } from '../models/IStat';
 import { StatsService } from '../services/stats.service';
 import * as fileSaver from 'file-saver';
 import { Subscription } from 'rxjs';
+import { NGXLogger } from 'ngx-logger';
 
 @Component({
   selector: 'app-creatorstats',
@@ -14,7 +15,7 @@ export class CreatorstatsComponent implements OnDestroy {
   dates: Date[] = [];
   private subs: Subscription[] = [];
 
-  constructor(private statsService: StatsService) { }
+  constructor(private statsService: StatsService, private logger: NGXLogger) { }
 
   ngOnDestroy(): void {
     this.subs.forEach((item: Subscription) => { item.unsubscribe(); })
@@ -29,7 +30,7 @@ export class CreatorstatsComponent implements OnDestroy {
         const url = window.URL.createObjectURL(blob);
         fileSaver.saveAs(blob, 'payout-history.csv');
       })),
-      (error: any) => console.log('Error downloading the file'),
-      () => console.info('File downloaded successfully');
+      (error: any) => this.logger.info('Error downloading the file'),
+      () => this.logger.info('File downloaded successfully');
   }
 }
