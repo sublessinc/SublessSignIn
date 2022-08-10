@@ -39,6 +39,7 @@ import { SessionRenewComponent } from './session-renew/session-renew.component';
 import { CookieModule } from 'ngx-cookie';
 import { UserTopContentComponent } from './user-top-content/user-top-content.component';
 import { UserRecentActivityComponent } from './user-recent-activity/user-recent-activity.component';
+import { LoggerModule, NgxLoggerLevel } from 'ngx-logger';
 
 @NgModule({
   declarations: [
@@ -77,7 +78,12 @@ import { UserRecentActivityComponent } from './user-recent-activity/user-recent-
     HttpClientModule,
     ReactiveFormsModule,
     FormsModule,
-    CookieModule.withOptions()
+    CookieModule.withOptions(),
+    LoggerModule.forRoot({
+      serverLoggingUrl: '/api/logs',
+      level: NgxLoggerLevel.DEBUG,
+      serverLogLevel: NgxLoggerLevel.ERROR
+    }),
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: UnauthorizedInterceptor, multi: true },
