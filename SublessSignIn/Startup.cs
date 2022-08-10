@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.FeatureManagement;
 using Microsoft.OpenApi.Models;
 using Subless.Configuration;
 using Subless.Data;
@@ -20,14 +22,12 @@ namespace SublessSignIn
     {
         public Startup(IConfiguration configuration)
         {
-            Configuration = configuration;
             AuthSettings = AuthSettingsConfiguration.GetAuthSettings();
 
         }
 
 
         public AuthSettings AuthSettings { get; set; }
-        public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -43,7 +43,7 @@ namespace SublessSignIn
             services.AddBffServices(AuthSettings);
             services.RegisterAuthDi(AuthSettings);
             services.AddMiniProfiler().AddEntityFramework();
-
+            services.AddFeatureManagement();
             DataDi.RegisterDataDi(services);
 
             services.AddCors(o => o.AddPolicy(CorsPolicyAccessor.UnrestrictedPolicy, builder =>

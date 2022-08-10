@@ -1,11 +1,13 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.FeatureManagement.Mvc;
 using Subless.Models;
 
 namespace SublessSignIn.Controllers
 {
 
+    [FeatureGate(FeatureFlags.OpenLogger)]
     [ApiController]
     [Route("api/[controller]")]
     public class LogsController : ControllerBase
