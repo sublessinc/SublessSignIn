@@ -41,17 +41,20 @@ public class StripeApiWrapperServiceFactory_Tests
 
         // Note: (SemaphoreSlim)Pool.CurrentCount reflects the total number of available slots, such that no allocations results in 
         // value returned reflecting the max available resources.
-        // No instances - count is zero
+        // No instances - count is max (no allocations)
         Assert.Equal(StripeApiWrapperServiceFactory.MaxCount, StripeApiWrapperServiceFactory.Pool.CurrentCount);
         
+        // Allocate 10 - count is 0 (empty)
         var (firstBatchToken, firstBatchTasks) = CreateNInstancesAndReturnToken(StripeApiWrapperServiceFactory.MaxCount);
         Thread.Sleep(500);
         Assert.Equal(0, StripeApiWrapperServiceFactory.Pool.CurrentCount);
 
+        // Allocate 10 - count is 0 (empty) - nothing to allocate
         var (secondBatchToken, secondBatchTasks) = CreateNInstancesAndReturnToken(StripeApiWrapperServiceFactory.MaxCount);
         Thread.Sleep(500);
         Assert.Equal(0, StripeApiWrapperServiceFactory.Pool.CurrentCount);
 
+        // Cancel all tasks so that all resources free up - count is max (no allocations)
         firstBatchToken.Cancel();
         secondBatchToken.Cancel();
         Thread.Sleep(500);
@@ -59,5 +62,16 @@ public class StripeApiWrapperServiceFactory_Tests
         
         Assert.True(firstBatchTasks.All(t => t.IsCompleted));
         Assert.True(secondBatchTasks.All(t => t.IsCompleted));
+        
+        // Allocate 1 - count is 9 (1 allocation)
+        var (thirdBatch, thirdBatchTasks) = CreateNInstancesAndReturnToken(1);
+        Thread.Sleep(500);
+        Assert.Equal(StripeApiWrapperServiceFactory.MaxCount - 1, StripeApiWrapperServiceFactory.Pool.CurrentCount);
+        
+        // Cancel the 1 task
+        thirdBatch.Cancel();
+        Thread.Sleep(500);
+        Assert.Equal(StripeApiWrapperServiceFactory.MaxCount, StripeApiWrapperServiceFactory.Pool.CurrentCount);
+        Assert.True(thirdBatchTasks.All(t => t.IsCompleted));
     }
 }
