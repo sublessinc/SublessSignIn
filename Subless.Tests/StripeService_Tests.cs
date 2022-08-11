@@ -8,6 +8,7 @@ using Subless.Services.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Subless.Services.Services.SublessStripe;
 using Xunit;
 
@@ -175,13 +176,41 @@ namespace Subless.Tests
                     .Returns(balanceTransaction);
                 stripeWrapper.Setup(x => x.BalanceTransactionService).Returns(balanceTransactionService.Object);
 
-                var stripeApiWrapperServiceFactory = new Mock<IStripeApiWrapperServiceFactory>();
-                stripeApiWrapperServiceFactory
-                    .Setup(o => o.Get())
-                    .Returns(stripeWrapper.Object);
-               
-                var sut = new StripeService(Options.Create(new Models.StripeConfig()), userService.Object, stripeApiWrapperServiceFactory.Object, factory);
+                var sut = new StripeService(
+                    Options.Create(new Models.StripeConfig()), 
+                    userService.Object, 
+                    new TestStripApiWrapperServiceFactory(stripeWrapper.Object), 
+                    factory);
                 return sut;
+            }
+        }
+
+        public class TestStripApiWrapperServiceFactory : IStripeApiWrapperServiceFactory
+        {
+            private readonly IStripeApiWrapperService _api;
+
+            public TestStripApiWrapperServiceFactory(IStripeApiWrapperService api)
+            {
+                _api = api;
+            }
+            public void Execute(Action<IStripeApiWrapperService> action)
+            {
+                action(_api);
+            }
+
+            public T Execute<T>(Func<IStripeApiWrapperService, T> action)
+            {
+                return action(_api);
+            }
+
+            public async Task ExecuteAsync(Func<IStripeApiWrapperService, Task> action)
+            {
+                await action(_api);
+            }
+
+            public async Task<T> ExecuteAsync<T>(Func<IStripeApiWrapperService, Task<T>> action)
+            {
+                return await action(_api);
             }
         }
     }

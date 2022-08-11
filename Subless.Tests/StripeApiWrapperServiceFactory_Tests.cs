@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using Subless.Services.Services.SublessStripe;
 using Xunit;
 
@@ -13,6 +14,9 @@ public class StripeApiWrapperServiceFactory_Tests
     [Fact]
     public void Factory_OnlyAllows_MaxCountInstances()
     {
+        var options = Options.Create(new Models.StripeConfig());
+        options.Value.SecretKey = "anything";
+        var factory = new StripeApiWrapperServiceFactory(options);
         StripeApiWrapperServiceFactory.MaxCount = 10;
         
         (CancellationTokenSource, List<Task>) CreateNInstancesAndReturnToken(int count)
@@ -23,8 +27,11 @@ public class StripeApiWrapperServiceFactory_Tests
             {
                 var task = Task.Run(() =>
                 {
-                    using var factory = new StripeApiWrapperServiceFactory();
-                    WaitHandle.WaitAny(new[] { cancellationToken.Token.WaitHandle });
+                    factory.ExecuteAsync(async api =>
+                    {
+                        WaitHandle.WaitAny(new[] {cancellationToken.Token.WaitHandle});
+                    });
+                    
                 }, cancellationToken.Token);
                 tasks.Add(task);
             }
@@ -35,7 +42,7 @@ public class StripeApiWrapperServiceFactory_Tests
         // No instances - count is zero
         Assert.Equal(StripeApiWrapperServiceFactory.MaxCount, StripeApiWrapperServiceFactory.Pool.CurrentCount);
         
-        var (firstBatchToken, firstBatchTasks) = CreateNInstancesAndReturnToken(StripeApiWrapperServiceFactory.Pool.CurrentCount);
+        var (firstBatchToken, firstBatchTasks) = CreateNInstancesAndReturnToken(StripeApiWrapperServiceFactory.MaxCount);
         Thread.Sleep(500);
         Assert.Equal(0, StripeApiWrapperServiceFactory.Pool.CurrentCount);
 

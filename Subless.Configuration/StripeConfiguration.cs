@@ -23,8 +23,6 @@ namespace Subless.Configuration
                 options.CustomBudgetId = Environment.GetEnvironmentVariable("CustomBudgetId");
             });
 
-            var serviceProvider = services.BuildServiceProvider();
-            StripeApiWrapperServiceFactory.StripeConfig = serviceProvider.GetService<IOptions<StripeConfig>>();
             return services;
         }
     }
