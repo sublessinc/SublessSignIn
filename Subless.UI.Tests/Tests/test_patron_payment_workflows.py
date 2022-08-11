@@ -98,3 +98,14 @@ def test_paying_user_can_cancel_plan(web_driver, paying_user, params):
     login_page = account_settings.cancel_subscription()
     # AND: I should be prompted to login
     assert "login" in web_driver.current_url
+
+def test_paying_user_can_delete_account(web_driver, paying_user, params):
+    # WHEN: I sign up and pay for an account
+    dashboard = PatronDashboardPage(web_driver)
+    assert "subless" in web_driver.title
+    assert 'profile' in web_driver.current_url
+    account_settings = dashboard.navigate_to_account_settings()
+    # THEN: I should have the ability to cancel that plan
+    login_page = account_settings.delete_account()
+    # AND: I should be prompted to login
+    assert "login" in web_driver.current_url

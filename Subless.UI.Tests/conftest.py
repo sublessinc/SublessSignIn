@@ -141,7 +141,7 @@ def subless_activated_creator_user(firefox_driver):
 
 @pytest.fixture
 def subless_god_account(user_data, firefox_driver):
-    id, cookie = login_as_god_user(firefox_driver)
+    id, cookie, page = login_as_god_user(firefox_driver)
     yield id, cookie
 
 
