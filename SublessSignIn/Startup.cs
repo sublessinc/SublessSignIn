@@ -12,19 +12,23 @@ using Subless.Data;
 using Subless.Models;
 using Subless.Services;
 using Subless.Services.ErrorHandling;
+using Subless.Services.Services.SublessStripe;
 using SublessSignIn.AuthServices;
 
 namespace SublessSignIn
 {
     public class Startup
     {
+        private const int DefaultStripeApiWrapperServiceFactoryMaxPoolCount = 2;
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
             AuthSettings = AuthSettingsConfiguration.GetAuthSettings();
+            StripeApiWrapperServiceFactory.MaxCount = int.TryParse(configuration["StripeApiWrapperServiceFactoryMaxPoolCount"], out var maxCount) ?
+                maxCount :
+                DefaultStripeApiWrapperServiceFactoryMaxPoolCount;
 
         }
-
 
         public AuthSettings AuthSettings { get; set; }
         public IConfiguration Configuration { get; }

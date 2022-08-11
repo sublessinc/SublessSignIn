@@ -1,0 +1,54 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Subless.Services.Services.SublessStripe;
+using Xunit;
+
+namespace Subless.Tests;
+
+public class StripeApiWrapperServiceFactory_Tests
+{
+    [Fact]
+    public void Factory_OnlyAllows_MaxCountInstances()
+    {
+        StripeApiWrapperServiceFactory.MaxCount = 10;
+        
+        (CancellationTokenSource, List<Task>) CreateNInstancesAndReturnToken(int count)
+        {
+            var tasks = new List<Task>();
+            var cancellationToken = new CancellationTokenSource();
+            for (var i = 0; i < count; i++)
+            {
+                var task = Task.Run(() =>
+                {
+                    using var factory = new StripeApiWrapperServiceFactory();
+                    WaitHandle.WaitAny(new[] { cancellationToken.Token.WaitHandle });
+                }, cancellationToken.Token);
+                tasks.Add(task);
+            }
+
+            return (cancellationToken, tasks);
+        }
+
+        // No instances - count is zero
+        Assert.Equal(StripeApiWrapperServiceFactory.MaxCount, StripeApiWrapperServiceFactory.Pool.CurrentCount);
+        
+        var (firstBatchToken, firstBatchTasks) = CreateNInstancesAndReturnToken(StripeApiWrapperServiceFactory.Pool.CurrentCount);
+        Thread.Sleep(500);
+        Assert.Equal(0, StripeApiWrapperServiceFactory.Pool.CurrentCount);
+
+        var (secondBatchToken, secondBatchTasks) = CreateNInstancesAndReturnToken(StripeApiWrapperServiceFactory.MaxCount);
+        Thread.Sleep(500);
+        Assert.Equal(0, StripeApiWrapperServiceFactory.Pool.CurrentCount);
+
+        firstBatchToken.Cancel();
+        secondBatchToken.Cancel();
+        Thread.Sleep(500);
+        Assert.Equal(StripeApiWrapperServiceFactory.MaxCount, StripeApiWrapperServiceFactory.Pool.CurrentCount);
+        
+        Assert.True(firstBatchTasks.All(t => t.IsCompleted));
+        Assert.True(secondBatchTasks.All(t => t.IsCompleted));
+    }
+}
