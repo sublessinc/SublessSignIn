@@ -39,6 +39,8 @@ public class StripeApiWrapperServiceFactory_Tests
             return (cancellationToken, tasks);
         }
 
+        // Note: (SemaphoreSlim)Pool.CurrentCount reflects the total number of available slots, such that no allocations results in 
+        // value returned reflecting the max available resources.
         // No instances - count is zero
         Assert.Equal(StripeApiWrapperServiceFactory.MaxCount, StripeApiWrapperServiceFactory.Pool.CurrentCount);
         
