@@ -87,7 +87,7 @@ def create_paid_subless_account(web_driver):
     # THEN: I should be taken to the stripe page
     dashboard = stripe_signup_page.SignUpForStripe()
     welcome_email = receive_email(inbox_id=mailbox.id)
-    return id, cookie
+    return id, cookie, mailbox
 
 def create_unactivated_creator_User(web_driver, mailbox):
     from UsersLib.Users import create_from_login_page
@@ -123,8 +123,6 @@ def attempt_to_delete_user(firefox_driver, mailbox):
         if 'terms' in firefox_driver.current_url:
             plan_selection_page = resultpage.accept_terms()
         dashboard = PatronDashboardPage(firefox_driver)
-        assert "subless" in firefox_driver.title
-        assert 'profile' in firefox_driver.current_url
         account_settings = dashboard.navigate_to_account_settings()
         # THEN: I should have the ability to cancel that plan
         login_page = account_settings.delete_account()
