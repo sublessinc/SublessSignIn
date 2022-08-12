@@ -12,6 +12,12 @@ namespace Subless.Tests;
 public class StripeApiWrapperServiceFactory_Tests
 {
     [Fact]
+    public void Factory_WithExceptionsInAction_ReleasesAndSurvives()
+    {
+        
+    }
+    
+    [Fact]
     public void Factory_OnlyAllows_MaxCountInstances()
     {
         var options = Options.Create(new Models.StripeConfig());

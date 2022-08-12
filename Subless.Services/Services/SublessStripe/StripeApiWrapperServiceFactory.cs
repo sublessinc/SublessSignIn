@@ -8,10 +8,8 @@ namespace Subless.Services.Services.SublessStripe;
 
 public sealed class StripeApiWrapperServiceFactory : IStripeApiWrapperServiceFactory
 {
-    public static int MaxCount { get; set; }
-
+    private int _timeoutSeconds = 10 * 1000;
     private static SemaphoreSlim _pool;
-    // ms: ideally not public but made so for unit testing purposes to confirm the behavior
     public static SemaphoreSlim Pool
     {
         get
@@ -20,40 +18,65 @@ public sealed class StripeApiWrapperServiceFactory : IStripeApiWrapperServiceFac
         }
     }
 
+    public static int MaxCount { get; set; }
+
     private readonly IOptions<StripeConfig> _stripeConfig;
 
     public StripeApiWrapperServiceFactory(IOptions<StripeConfig> stripeConfig)
     {
         _stripeConfig = stripeConfig;
+        MaxCount = stripeConfig.Value.MaxInstanceCount;
     }
 
     public void Execute(Action<IStripeApiWrapperService> action)
     {
-        Pool.Wait();
-        action(new StripeApiWrapperService(_stripeConfig));
-        Pool.Release();
+        try
+        {
+            Pool.Wait(_timeoutSeconds);
+            action(new StripeApiWrapperService(_stripeConfig));
+        }
+        finally
+        {
+            Pool.Release();
+        }
     }
 
     public T Execute<T>(Func<IStripeApiWrapperService, T> action)
     {
-        Pool.Wait();
-        var result = action(new StripeApiWrapperService(_stripeConfig));
-        Pool.Release();
-        return result;
+        try
+        {
+            Pool.Wait(_timeoutSeconds);
+            return action(new StripeApiWrapperService(_stripeConfig));
+        }
+        finally
+        {
+            Pool.Release();
+        }
     }
 
     public async Task ExecuteAsync(Func<IStripeApiWrapperService, Task> action)
     {
-        await Pool.WaitAsync();
-        await action(new StripeApiWrapperService(_stripeConfig));
-        Pool.Release();
+        try
+        {
+            await Pool.WaitAsync(_timeoutSeconds);
+            await action(new StripeApiWrapperService(_stripeConfig));
+        }
+        finally
+        {
+            Pool.Release();
+        }
     }
 
     public async Task<T> ExecuteAsync<T>(Func<IStripeApiWrapperService, Task<T>> action)
     {
-        await Pool.WaitAsync();
-        var result = await action(new StripeApiWrapperService(_stripeConfig));
-        Pool.Release();
-        return result;
+        try
+        {
+            await Pool.WaitAsync(_timeoutSeconds);
+            return await action(new StripeApiWrapperService(_stripeConfig));
+        }
+        finally
+        {
+            Pool.Release();
+        }
     }
 }

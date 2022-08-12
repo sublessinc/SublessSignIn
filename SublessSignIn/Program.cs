@@ -14,7 +14,6 @@ namespace SublessSignIn
     {
         public static void Main(string[] args)
         {
-
             Log.Logger = LoggerConfig.GetLogger();
             Log.Logger.Information("Subless bootstrapping...");
 

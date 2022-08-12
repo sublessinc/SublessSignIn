@@ -21,6 +21,9 @@ namespace Subless.Configuration
                 }
                 options.SublessPayPalId = Environment.GetEnvironmentVariable("PayPalId");
                 options.CustomBudgetId = Environment.GetEnvironmentVariable("CustomBudgetId");
+
+                var maxInstanceCountString =  Environment.GetEnvironmentVariable("MaxInstanceCount") ?? throw new ArgumentNullException("MaxInstanceCount");
+                options.MaxInstanceCount = int.Parse(maxInstanceCountString);
             });
 
             return services;
