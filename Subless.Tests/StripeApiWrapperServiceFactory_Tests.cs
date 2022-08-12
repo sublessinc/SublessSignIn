@@ -12,16 +12,12 @@ namespace Subless.Tests;
 public class StripeApiWrapperServiceFactory_Tests
 {
     [Fact]
-    public void Factory_WithExceptionsInAction_ReleasesAndSurvives()
-    {
-        
-    }
-    
-    [Fact]
     public void Factory_OnlyAllows_MaxCountInstances()
     {
         var options = Options.Create(new Models.StripeConfig());
         options.Value.SecretKey = "anything";
+        options.Value.MaxInstanceCount = 10;
+        
         var factory = new StripeApiWrapperServiceFactory(options);
         StripeApiWrapperServiceFactory.MaxCount = 10;
         
@@ -79,5 +75,40 @@ public class StripeApiWrapperServiceFactory_Tests
         Thread.Sleep(500);
         Assert.Equal(StripeApiWrapperServiceFactory.MaxCount, StripeApiWrapperServiceFactory.Pool.CurrentCount);
         Assert.True(thirdBatchTasks.All(t => t.IsCompleted));
+    }
+
+    [Fact]
+    public void Factory_WithExceptionsInAction_ReleasesAndSurvives()
+    {
+        var options = Options.Create(new Models.StripeConfig());
+        options.Value.SecretKey = "anything";
+        options.Value.MaxInstanceCount = 2;
+        
+        var factory = new StripeApiWrapperServiceFactory(options);
+        (CancellationTokenSource, List<Task>) CreateNInstancesAndReturnToken(int count)
+        {
+            var tasks = new List<Task>();
+            var cancellationToken = new CancellationTokenSource();
+            for (var i = 0; i < count; i++)
+            {
+                var task = Task.Run(() =>
+                {
+                    factory.ExecuteAsync(async api =>
+                    {
+                        throw new Exception();
+                    });
+                    
+                }, cancellationToken.Token);
+                tasks.Add(task);
+            }
+
+            return (cancellationToken, tasks);
+        }
+        
+        Assert.Equal(StripeApiWrapperServiceFactory.MaxCount, StripeApiWrapperServiceFactory.Pool.CurrentCount);
+        var (token, tasks) = CreateNInstancesAndReturnToken(StripeApiWrapperServiceFactory.MaxCount);
+        Thread.Sleep(1000);
+        Assert.Equal(StripeApiWrapperServiceFactory.MaxCount, StripeApiWrapperServiceFactory.Pool.CurrentCount);
+        Assert.True(tasks.All(t => t.IsCompleted));
     }
 }
