@@ -1,4 +1,6 @@
 import logging
+import time
+
 from selenium.webdriver.support import expected_conditions as EC
 
 from selenium.webdriver.common.by import By
@@ -53,8 +55,10 @@ class NavbarPage(BasePage):
     def navigate_to_account_settings(self):
         from .AccountSettingsPage import AccountSettingsPage
         logger.info(f'Navigating to change plan')
+        time.sleep(1)
         WebDriverWait(self.driver, 10).until(lambda driver: 'subless' in driver.current_url)
         WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, NavbarPageLocators.account_settings_selector)))
+        WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable((By.CSS_SELECTOR, NavbarPageLocators.account_settings_selector)))
         logger.info(self.__class__.__name__)
         self.account_settings_button.click()
 

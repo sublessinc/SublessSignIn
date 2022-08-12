@@ -140,4 +140,4 @@ def login_as_god_user(firefox_driver):
     login_page.sign_in(Keys.god_email, Keys.god_password)
 
     id, cookie = get_user_id_and_cookie(firefox_driver)
-    return id, cookie
+    return id, cookie, login_page
