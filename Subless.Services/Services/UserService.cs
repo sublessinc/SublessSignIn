@@ -138,6 +138,11 @@ namespace Subless.Services.Services
             }
         }
 
+        public IEnumerable<string> GetAllCognitoIds()
+        {
+            return _userRepo.GetAllCognitoIds();
+        }
+
         public void AcceptTerms(string cognitoId)
         {
             var user = _userRepo.GetUserByCognitoId(cognitoId);

@@ -223,6 +223,10 @@ namespace Subless.Services.Services
             }
 
             var subs = GetSubscriptions(user.StripeCustomerId);
+            if (!subs.Any())
+            { 
+                return false; 
+            }
             var activePrices = GetPricesFromSubscriptions(subs);
             var allPrices = GetPrices();
             var isPaying = allPrices.Any(x => activePrices.Any(y => x.Id == y.Id));

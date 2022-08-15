@@ -124,7 +124,10 @@ namespace Subless.Data
             return Users.Any(x => x.CognitoId == cognitoId && x.IsAdmin);
         }
 
-
+        public IEnumerable<string> GetAllCognitoIds()
+        {
+            return Users.Select(x => x.CognitoId);
+        }
 
     }
 }
