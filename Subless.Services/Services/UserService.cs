@@ -144,5 +144,10 @@ namespace Subless.Services.Services
             user.AcceptedTerms = true;
             _userRepo.UpdateUser(user);
         }
+
+        public void CachePaymentStatus(string cognitoId, bool isPaying, long? activeSubscriptionPrice, DateTimeOffset? subStartDate)
+        {
+            _userRepo.CachePaymentStatus(cognitoId, isPaying, activeSubscriptionPrice, subStartDate);
+        }
     }
 }

@@ -13,6 +13,9 @@ namespace Subless.Models
         public string CognitoId { get; set; }
         public string StripeSessionId { get; set; }
         public string StripeCustomerId { get; set; }
+        public DateTimeOffset? Replica_SubcriptionDate { get; set; }
+        public bool Replica_IsPaying { get; set; }
+        public long? Replica_Subscription { get; set; }
         public bool AcceptedTerms { get; set; }
         public bool WelcomeEmailSent { get; set; }
         public DateTimeOffset CreateDate { get; set; }

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using Subless.Models;
@@ -22,5 +22,6 @@ namespace Subless.Services.Services
         void DemoteUser(Guid id);
         User GetUserWithRelationships(Guid id);
         void WelcomeSent(string cognitoId);
+        void CachePaymentStatus(string cognitoId, bool isPaying, long? activeSubscriptionPrice, DateTimeOffset? subStartDate);
     }
 }

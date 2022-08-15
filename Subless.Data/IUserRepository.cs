@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Subless.Models;
@@ -8,6 +8,7 @@ namespace Subless.Data
     public interface IUserRepository
     {
         Guid AddUser(User user);
+        void CachePaymentStatus(string cognitoId, bool isPaying, long? activeSubscriptionPrice, DateTimeOffset? subStartDate);
         Task<bool> CanAccessDatabase();
         void DeleteUser(User user);
         Guid? GetAdminKey();

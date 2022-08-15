@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -5,8 +7,6 @@ using Moq;
 using Subless.Data;
 using Subless.Models;
 using Subless.Services.Services;
-using System;
-using System.Collections.Generic;
 using Xunit;
 
 namespace Subless.Tests

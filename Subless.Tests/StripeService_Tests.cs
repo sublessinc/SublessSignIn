@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -5,9 +8,6 @@ using Moq;
 using Stripe;
 using Subless.Models;
 using Subless.Services.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Xunit;
 
 namespace Subless.Tests

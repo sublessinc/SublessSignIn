@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.FeatureManagement.Mvc;
 using Subless.Models;
@@ -21,7 +20,8 @@ namespace SublessSignIn.Controllers
         public void Log(FrontEndLog log)
         {
             LogLevel level;
-            switch (log.Level) {
+            switch (log.Level)
+            {
                 case 0:
                     level = LogLevel.Trace;
                     break;
@@ -44,7 +44,7 @@ namespace SublessSignIn.Controllers
                     break;
                 default:
                     level = LogLevel.Information;
-                    break;                
+                    break;
             }
             logger.Log(level, $"FrontEnd - {log.Message}");
 
