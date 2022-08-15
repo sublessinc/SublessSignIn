@@ -21,7 +21,7 @@ def test_payout_calculation(web_driver, subless_activated_creator_user, paying_u
     # THEN the creator's hit count should increase by one
     logging.info("Waiting for hit to push")
     time.sleep(2)
-    id, cookie = login_as_god_user(web_driver)
+    id, cookie, page = login_as_god_user(web_driver)
     endTime = datetime.utcnow()
     calculator_result = get_payout_calculation(cookie, startTime, endTime)
     allThePaymentsInTheResults = list(x['payment'] for x in calculator_result['allPayouts'])
@@ -51,7 +51,7 @@ def test_payout_emails(web_driver, subless_activated_creator_user, paying_user, 
     # THEN the creator's hit count should increase by one
     logging.info("Waiting for hit to push")
     time.sleep(2)
-    id, cookie = login_as_god_user(web_driver)
+    id, cookie, page = login_as_god_user(web_driver)
     endTime = datetime.utcnow()
     execute_payout(cookie, startTime, endTime)
     patron_receipt = receive_email(inbox_id=patron_mailbox.id)
@@ -75,7 +75,7 @@ def test_payout_calculation_via_queue(web_driver, subless_activated_creator_user
     # THEN the creator's hit count should increase by one
     logging.info("Waiting for hit to push")
     time.sleep(2)
-    id, cookie = login_as_god_user(web_driver)
+    id, cookie, page = login_as_god_user(web_driver)
     endTime = datetime.utcnow()
     calculator_result = queue_and_wait_for_results(cookie, startTime, endTime)
     allThePaymentsInTheResults = list(x['payment'] for x in calculator_result['allPayouts'])
@@ -107,7 +107,7 @@ def test_queued_payout_emails(web_driver, subless_activated_creator_user, paying
     # THEN the creator's hit count should increase by one
     logging.info("Waiting for hit to push")
     time.sleep(2)
-    id, cookie = login_as_god_user(web_driver)
+    id, cookie, page = login_as_god_user(web_driver)
     endTime = datetime.utcnow()
     queue_payout(cookie, startTime, endTime)
     patron_receipt = receive_email(inbox_id=patron_mailbox.id)

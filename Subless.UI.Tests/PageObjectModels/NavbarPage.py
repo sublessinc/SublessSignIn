@@ -1,4 +1,6 @@
 import logging
+import time
+
 from selenium.webdriver.support import expected_conditions as EC
 
 from selenium.webdriver.common.by import By
@@ -21,7 +23,7 @@ class NavbarPage(BasePage):
 
     @property
     def account_settings_button(self):
-        return self.driver.find_element_by_id(NavbarPageLocators.account_settings_id)
+        return self.driver.find_element_by_css_selector(NavbarPageLocators.account_settings_selector)
 
     def __init__(self, driver):
         self.driver = driver
@@ -53,8 +55,10 @@ class NavbarPage(BasePage):
     def navigate_to_account_settings(self):
         from .AccountSettingsPage import AccountSettingsPage
         logger.info(f'Navigating to change plan')
+        time.sleep(1)
         WebDriverWait(self.driver, 10).until(lambda driver: 'subless' in driver.current_url)
-        WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.ID, NavbarPageLocators.account_settings_id)))
+        WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, NavbarPageLocators.account_settings_selector)))
+        WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable((By.CSS_SELECTOR, NavbarPageLocators.account_settings_selector)))
         logger.info(self.__class__.__name__)
         self.account_settings_button.click()
 
@@ -69,4 +73,4 @@ class NavbarPageLocators:
     payout_id = "payout"
     change_plan_id = "plan"
     integration_settings_id = "integration"
-    account_settings_id = "account"
+    account_settings_selector = "#account, #account-settings2"
