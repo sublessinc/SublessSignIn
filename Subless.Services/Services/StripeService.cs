@@ -217,7 +217,7 @@ namespace Subless.Services.Services
         public bool CachePaymentStatus(string cognitoId)
         {
             var user = _userService.GetUserByCognitoId(cognitoId);
-            if (user.StripeCustomerId == null)
+            if (user?.StripeCustomerId == null)
             {
                 return false;
             }
