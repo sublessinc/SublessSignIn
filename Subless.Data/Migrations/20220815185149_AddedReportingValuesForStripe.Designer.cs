@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Subless.Data;
@@ -11,9 +12,10 @@ using Subless.Data;
 namespace Subless.Data.Migrations
 {
     [DbContext(typeof(Repository))]
-    partial class UserRepositoryModelSnapshot : ModelSnapshot
+    [Migration("20220815185149_AddedReportingValuesForStripe")]
+    partial class AddedReportingValuesForStripe
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -369,26 +371,6 @@ namespace Subless.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Configurations");
-                });
-
-            modelBuilder.Entity("Subless.Models.StripeSync", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTimeOffset>("DateQueued")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("IsCompleted")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsProcessing")
-                        .HasColumnType("boolean");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("StripeSyncs");
                 });
 
             modelBuilder.Entity("Subless.Models.SublessUserSession", b =>

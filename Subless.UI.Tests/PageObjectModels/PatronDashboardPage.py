@@ -42,5 +42,5 @@ class PatronDashboardPage(NavbarPage):
 class PatronDashboardLocators:
     manage_billing_button_xpath = '//*[@id="bodyWrapper"]/div[2]/div/div[2]/button'
     user_profile_button_id = 'user'
-    hit_count_selector = '#root > mat-sidenav-content > app-userprofile > div > mat-card:nth-child(1) > div.statText > mat-card-content.mat-card-content.numberText'
+    hit_count_selector = 'mat-card.mat-card:nth-child(1) > div:nth-child(2) > mat-card-content:nth-child(2)'
 

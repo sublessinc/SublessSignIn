@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Subless.Data;
 using Subless.Models;
+using Subless.Services.Services.SublessStripe;
 
 namespace Subless.Services.Services
 {
@@ -21,6 +22,7 @@ namespace Subless.Services.Services
         private readonly ITemplatedEmailService emailService;
         private readonly ICalculatorService _calculatorService;
         private readonly ICalculatorQueueRepository _calculationQueueRepository;
+        private readonly IUserService _userService;
         private readonly ILogger _logger;
 
         public PaymentService(
@@ -31,6 +33,7 @@ namespace Subless.Services.Services
             ITemplatedEmailService emailService,
             ICalculatorService calculatorService,
             ICalculatorQueueRepository calculationQueueRepository,
+            IUserService userService,
             ILoggerFactory loggerFactory)
         {
             if (stripeOptions is null)
@@ -45,6 +48,7 @@ namespace Subless.Services.Services
             this.emailService = emailService ?? throw new ArgumentNullException(nameof(emailService));
             _calculatorService = calculatorService ?? throw new ArgumentNullException(nameof(calculatorService));
             _calculationQueueRepository = calculationQueueRepository;
+            this._userService = userService;
             _logger = _loggerFactory.CreateLogger<PaymentService>();
             SublessPayPalId = stripeOptions.Value.SublessPayPalId ?? throw new ArgumentNullException(nameof(stripeOptions));
         }
@@ -109,6 +113,11 @@ namespace Subless.Services.Services
             return _calculationQueueRepository.QueuePayment(startDate, endDate);
         }
 
+        public void QueueStripeSync()
+        {
+            _calculationQueueRepository.QueueStripeSync();
+        }
+
         public void ExecutedQueuedPayment()
         {
             var payment = _calculationQueueRepository.DequeuePayment();
@@ -139,6 +148,20 @@ namespace Subless.Services.Services
                 }
                 _calculationQueueRepository.CompleteIdleEmails(emails);
             }
+        }
+
+        public void ExecuteStripeSync()
+        {
+            var sync = _calculationQueueRepository.DequeueStripeSync();
+            if (sync != null)
+            {
+                foreach(var id in _userService.GetAllCognitoIds())
+                {
+                    _stripeService.CachePaymentStatus(id);
+                }
+                _calculationQueueRepository.CompletsStripeSync(sync);
+            }
+
         }
 
         private void SaveMasterList(List<PaymentAuditLog> masterPayoutList)

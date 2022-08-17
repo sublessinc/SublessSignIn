@@ -8,6 +8,7 @@ using Microsoft.Extensions.Options;
 using Stripe;
 using Subless.Models;
 using Subless.Services.Services;
+using Subless.Services.Services.SublessStripe;
 using SublessSignIn.Models;
 
 namespace SublessSignIn.Controllers
@@ -47,10 +48,10 @@ namespace SublessSignIn.Controllers
         }
 
         /// <summary>
-        /// Asks stripe server to create a new transaction, 
+        /// Asks stripe server to create a new transaction,
         /// and then provides the frontend with a link to that transaction checkout
         /// </summary>
-        /// 
+        ///
         [HttpPost("create-checkout-session")]
         public async Task<IActionResult> CreateCheckoutSession([FromBody] CreateCheckoutSessionRequest req)
         {
@@ -134,7 +135,7 @@ namespace SublessSignIn.Controllers
             }
             var plan = _stripeService.GetActiveSubscriptionPrice(cognitoId);
             if (plan == null || !plan.Any())
-            { 
+            {
                 return Ok(null);
             }
             return Ok(plan.Single().UnitAmount / 100);

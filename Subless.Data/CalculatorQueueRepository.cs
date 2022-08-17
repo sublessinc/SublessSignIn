@@ -10,6 +10,7 @@ namespace Subless.Data
         internal DbSet<CalculatorExecution> CalculatorExecutions { get; set; }
         internal DbSet<PaymentExecution> PaymentExecutions { get; set; }
         internal DbSet<IdleEmailExecution> IdleEmailExecutions { get; set; }
+        internal DbSet<StripeSync> StripeSyncs { get; set; }
 
         public Guid QueueCalculation(DateTimeOffset start, DateTimeOffset end)
         {
@@ -114,6 +115,31 @@ namespace Subless.Data
             email.DateExecuted = DateTime.UtcNow;
             email.IsCompleted = true;
             IdleEmailExecutions.Update(email);
+            SaveChanges();
+        }
+        public void QueueStripeSync()
+        {
+            StripeSyncs.Add(new StripeSync { DateQueued = DateTimeOffset.UtcNow, IsCompleted = false, IsProcessing = false});
+            SaveChanges();
+        }
+
+        public StripeSync DequeueStripeSync()
+        {
+            var sync = StripeSyncs.Where(x => x.IsProcessing == false && x.IsCompleted == false).OrderBy(x => x.DateQueued).FirstOrDefault();
+            if (sync == null)
+            {
+                return null;
+            }
+            sync.IsProcessing = true;
+            StripeSyncs.Update(sync);
+            SaveChanges();
+            return sync;
+        }
+
+        public void CompletsStripeSync(StripeSync sync)
+        {
+            sync.IsCompleted = true;
+            StripeSyncs.Update(sync);
             SaveChanges();
         }
     }

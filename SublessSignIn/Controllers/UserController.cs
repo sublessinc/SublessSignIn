@@ -10,6 +10,7 @@ using Subless.Models;
 using Subless.Services;
 using Subless.Services.Extensions;
 using Subless.Services.Services;
+using Subless.Services.Services.SublessStripe;
 using SublessSignIn.Models;
 
 
@@ -216,7 +217,7 @@ namespace SublessSignIn.Controllers
             {
                 var paymentDate = paymentLogsService.GetLastPaymentDate();
                 return Ok(hitService.GetTopPatronContent(paymentDate, DateTimeOffset.UtcNow, cognitoId)
-                    .Select(x=> new CreatorHitCount { CreatorName= x.CreatorName, Hits= x.Hits}));
+                    .Select(x => new CreatorHitCount { CreatorName = x.CreatorName, Hits = x.Hits }));
             }
             catch (UnauthorizedAccessException e)
             {

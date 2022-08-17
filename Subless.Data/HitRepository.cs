@@ -154,13 +154,13 @@ namespace Subless.Data
                 .GroupBy(x => x.CreatorId)
                 .Select(g =>
                 new CreatorHitCount
-                {                    
+                {
                     CreatorId = g.Key,
-                    Hits = (int)Math.Floor(100*(decimal)g.Count() / totalHits),
+                    Hits = (int)Math.Floor(100 * (decimal)g.Count() / totalHits),
                 })
                 .OrderByDescending(x => x.Hits)
                 .Take(5)
-                .ToList();            
+                .ToList();
         }
     }
 }

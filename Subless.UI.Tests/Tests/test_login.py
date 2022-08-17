@@ -4,6 +4,7 @@ import os
 
 from EmailLib import MailSlurp
 #from Fixtures.drivers import *
+from Keys.Keys import Keys
 from PageObjectModels.LoginPage import LoginPage
 import logging
 
@@ -19,7 +20,7 @@ def test_admin_un_pass_login(web_driver, params):
 
     # WHEN: I enter my username and password and click 'sign in'
     plan_selection_page = login_page.sign_in(
-        '2d4550ca-4173-423c-851a-52cfd7d01ddb@mailslurp.com', params['password'])
+        Keys.god_email, Keys.god_password)
 
     # THEN: I should be taken to the plan selection page
     assert "subless" in web_driver.title

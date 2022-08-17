@@ -152,7 +152,7 @@ namespace Subless.Services.Services
             var hits = hitRepository.GetTopPatronContent(startDate, endDate, cognitoId, creatorId);
             return hits.Select(x =>
             {
-                x.CreatorName = _creatorService.GetCreator(x.CreatorId).Username;
+                x.CreatorName = _creatorService.GetCreator(x.CreatorId)?.Username ?? "Deleted Creator";
                 return x;
             });
         }

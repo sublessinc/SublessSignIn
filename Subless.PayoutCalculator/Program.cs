@@ -11,6 +11,7 @@ using Subless.Data;
 using Subless.PayoutCalculator;
 using Subless.Services;
 using Subless.Services.Services;
+using Subless.Services.Services.SublessStripe;
 
 namespace PayoutCalculator
 {
@@ -70,6 +71,7 @@ namespace PayoutCalculator
                     calculatorService.ExecutedQueuedCalculation();
                     paymentService.ExecutedQueuedPayment();
                     paymentService.ExecuteQueuedIdleEmail();
+                    paymentService.ExecuteStripeSync();
                     Thread.Sleep(1000 * 10);
                 }
             }
