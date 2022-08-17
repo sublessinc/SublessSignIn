@@ -112,5 +112,12 @@ namespace SublessSignIn.Controllers
             _paymentService.QueueIdleEmail(start, end);
             return Ok();
         }
+
+        [HttpPost("QueueStripeSync")]
+        public ActionResult QueueStripeSync()
+        {
+            _paymentService.QueueStripeSync();
+            return Ok();
+        }
     }
 }

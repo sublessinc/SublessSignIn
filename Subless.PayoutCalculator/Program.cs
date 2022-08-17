@@ -71,6 +71,7 @@ namespace PayoutCalculator
                     calculatorService.ExecutedQueuedCalculation();
                     paymentService.ExecutedQueuedPayment();
                     paymentService.ExecuteQueuedIdleEmail();
+                    paymentService.ExecuteStripeSync();
                     Thread.Sleep(1000 * 10);
                 }
             }

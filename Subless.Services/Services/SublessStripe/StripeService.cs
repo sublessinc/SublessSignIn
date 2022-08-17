@@ -215,11 +215,31 @@ namespace Subless.Services.Services.SublessStripe
 
         public bool CustomerHasPaid(string cognitoId)
         {
-
             var activePrices = GetActiveSubscriptionPriceId(cognitoId);
             var allPrices = GetPrices();
             return allPrices.Any(x => activePrices.Contains(x.Id));
         }
+
+        public bool CachePaymentStatus(string cognitoId)
+        {
+            var user = _userService.GetUserByCognitoId(cognitoId);
+            if (user?.StripeCustomerId == null)
+            {
+                return false;
+            }
+
+            var subs = GetSubscriptions(user.StripeCustomerId);
+            if (!subs.Any())
+            { 
+                return false; 
+            }
+            var activePrices = GetPricesFromSubscriptions(subs);
+            var allPrices = GetPrices();
+            var isPaying = allPrices.Any(x => activePrices.Any(y => x.Id == y.Id));
+            _userService.CachePaymentStatus(cognitoId, isPaying, activePrices.FirstOrDefault().UnitAmount, subs.First().Created.ToUniversalTime());
+            return isPaying;
+        }
+
         private List<string> GetActiveSubscriptionPriceId(string cognitoId)
         {
             return GetActiveSubscriptionPrice(cognitoId).Select(x => x.Id).ToList();
@@ -235,6 +255,13 @@ namespace Subless.Services.Services.SublessStripe
             }
 
             var subscriptions = GetSubscriptions(user.StripeCustomerId);
+            return GetPricesFromSubscriptions(subscriptions);
+
+        }
+
+        private List<Price> GetPricesFromSubscriptions(IEnumerable<Subscription> subscriptions)
+        {
+            var prices = new List<Price>();
 
             foreach (var sub in subscriptions)
             {

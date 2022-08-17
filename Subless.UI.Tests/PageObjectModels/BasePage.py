@@ -12,14 +12,15 @@ logger = logging.getLogger()
 class BasePage(object):
     @property
     def logout_button(self):
-        return self.driver.find_element_by_id(BasePageLocators.logout_button_id)
+        return self.driver.find_element_by_css_selector(BasePageLocators.logout_button_selector)
 
     def __init__(self, driver):
         self.driver = driver
 
     def logout(self):
         logger.info(f'Logging Out')
-        WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.ID, BasePageLocators.logout_button_id)))
+        WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, BasePageLocators.logout_button_selector)))
+
         logger.info(self.__class__.__name__)
         self.logout_button.click()
 
@@ -27,5 +28,14 @@ class BasePage(object):
         WebDriverWait(self.driver, 10).until(lambda driver: 'login' in driver.current_url)
 
 
+def check_exists_by_id(id, driver):
+    from selenium.common.exceptions import NoSuchElementException
+    try:
+        driver.find_element_by_id(id)
+    except NoSuchElementException:
+        return False
+    return True
+
+
 class BasePageLocators:
-    logout_button_id = 'logout'
+    logout_button_selector = '#logout, #logout2'

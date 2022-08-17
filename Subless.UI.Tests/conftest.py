@@ -76,10 +76,10 @@ def subless_account(mailslurp_inbox, firefox_driver, ):
 @pytest.fixture
 def paying_user(firefox_driver):
     logging.info("Creating paid account")
-    id, cookie = create_paid_subless_account(firefox_driver)
+    id, cookie, mailbox = create_paid_subless_account(firefox_driver)
     yield id, cookie
     logging.info("Deleting subless account")
-    attempt_to_delete_user(firefox_driver, mailslurp_inbox)
+    attempt_to_delete_user(firefox_driver, mailbox)
 
 
 # this is technically also a fixture!
@@ -142,7 +142,7 @@ def subless_activated_creator_user(firefox_driver):
 
 @pytest.fixture
 def subless_god_account(user_data, firefox_driver):
-    id, cookie = login_as_god_user(firefox_driver)
+    id, cookie, page = login_as_god_user(firefox_driver)
     yield id, cookie
 
 

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Subless.Models;
@@ -18,5 +18,6 @@ namespace Subless.Services.Services
         Task UnlinkCreator(string cognitoId, Guid id);
         Task<Creator> UpdateCreator(string cognitoId, Creator creator);
         void AcceptTerms(string cognitoId);
+        Creator? GetCreatorOrDefaultByCognitoid(string cognitoId);
     }
 }

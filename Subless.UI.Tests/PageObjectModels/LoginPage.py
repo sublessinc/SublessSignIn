@@ -8,6 +8,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from PageObjectModels.BasePage import BasePage, BasePageLocators
 from PageObjectModels.CreatorDashboardPage import CreatorDashboardPage
 from PageObjectModels.PatronDashboardPage import PatronDashboardPage
+from PageObjectModels.PayoutSetupPage import PayoutSetupPage
 from PageObjectModels.PlanSelectionPage import PlanSelectionPage
 from selenium.webdriver.common.by import By
 
@@ -109,6 +110,9 @@ class LoginPage(BasePage):
 
         elif 'terms' in self.driver.current_url:
             return TermsPage(self.driver)
+
+        elif 'payout-setup' in self.driver.current_url:
+            return PayoutSetupPage(self.driver)
 
         else:
             raise Exception('Unable to detect redirect page post-login')

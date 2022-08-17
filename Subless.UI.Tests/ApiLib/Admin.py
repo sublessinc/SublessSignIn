@@ -108,3 +108,15 @@ def queue_payout( cookie, start, end):
     response = requests.request("POST", url, headers=headers, data=payload)
 
     print(f'Calculator returned code: {response.status_code} - {response.reason} - {response.text}')
+
+def delete_user(cookie, email):
+    url = f'https://{os.environ["environment"]}.subless.com//api/User/byemail?email={email}'
+
+    payload = {}
+    headers = {
+        'Cookie': f'subless={cookie}'
+    }
+
+    response = requests.request("DELETE", url, headers=headers)
+
+    print(f'Deletion returned code: {response.status_code} - {response.reason} - {response.text}')

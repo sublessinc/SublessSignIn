@@ -88,6 +88,15 @@ namespace Subless.Data
             SaveChanges();
         }
 
+        public void CachePaymentStatus(string cognitoId, bool isPaying, long? activeSubscriptionPrice, DateTimeOffset? subStartDate)
+        {
+            var user = Users.Single(x => x.CognitoId == cognitoId);
+            user.Replica_IsPaying = isPaying;
+            user.Replica_Subscription = activeSubscriptionPrice;
+            user.Replica_SubcriptionDate = subStartDate;
+            Users.Update(user);
+            SaveChanges();
+        }
 
 
         public Guid? GetAdminKey()
@@ -115,7 +124,10 @@ namespace Subless.Data
             return Users.Any(x => x.CognitoId == cognitoId && x.IsAdmin);
         }
 
-
+        public IEnumerable<string> GetAllCognitoIds()
+        {
+            return Users.Select(x => x.CognitoId);
+        }
 
     }
 }

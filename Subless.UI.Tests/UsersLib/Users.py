@@ -8,6 +8,7 @@ import simplejson
 
 from EmailLib import MailSlurp
 from EmailLib.MailSlurp import PatronInbox, receive_email
+from PageObjectModels.PatronDashboardPage import PatronDashboardPage
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger()
@@ -86,7 +87,7 @@ def create_paid_subless_account(web_driver):
     # THEN: I should be taken to the stripe page
     dashboard = stripe_signup_page.SignUpForStripe()
     welcome_email = receive_email(inbox_id=mailbox.id)
-    return id, cookie
+    return id, cookie, mailbox
 
 def create_unactivated_creator_User(web_driver, mailbox):
     from UsersLib.Users import create_from_login_page
@@ -121,13 +122,12 @@ def attempt_to_delete_user(firefox_driver, mailbox):
         resultpage = login.sign_in(mailbox.email_address, DefaultPassword)
         if 'terms' in firefox_driver.current_url:
             plan_selection_page = resultpage.accept_terms()
-        id, cookie = get_user_id_and_cookie(firefox_driver)
-        User.delete_user(cookie)
-        logging.info("Waiting for AWS to complete deletion")
-        time.sleep(5)
-        logging.info("Opening login page to allow cookie clearing")
-        login = LoginPage(firefox_driver).open()
-        time.sleep(5)
+        dashboard = PatronDashboardPage(firefox_driver)
+        account_settings = dashboard.navigate_to_account_settings()
+        # THEN: I should have the ability to cancel that plan
+        login_page = account_settings.delete_account()
+        # AND: I should be prompted to login
+        assert "login" in firefox_driver.current_url
     except BaseException as err:  # awful.
         return
 
@@ -140,4 +140,4 @@ def login_as_god_user(firefox_driver):
     login_page.sign_in(Keys.god_email, Keys.god_password)
 
     id, cookie = get_user_id_and_cookie(firefox_driver)
-    return id, cookie
+    return id, cookie, login_page

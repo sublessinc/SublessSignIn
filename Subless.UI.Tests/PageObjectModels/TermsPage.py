@@ -1,4 +1,5 @@
 import logging
+import time
 
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
@@ -25,6 +26,7 @@ class TermsPage(BasePage):
         logger.info(f'accepting terms')
         WebDriverWait(self.driver, 10).until(
             EC.element_to_be_clickable((By.CSS_SELECTOR, TermsLocators.accept_selector)))
+        time.sleep(1)
         self.accept_terms_button.click()
         WebDriverWait(self.driver, 10).until(lambda driver: 'terms' not in driver.current_url)
         return PlanSelectionPage(self.driver)

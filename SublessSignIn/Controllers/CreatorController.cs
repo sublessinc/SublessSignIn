@@ -202,7 +202,7 @@ namespace SublessSignIn.Controllers
             try
             {
                 var creator = _creatorService.GetCreatorByCognitoid(cognitoId);
-                return Ok(hitService.GetRecentCrecatorContent(creator.Id, cognitoId));
+                return Ok(hitService.GetRecentCreatorContent(creator.Id, cognitoId));
             }
             catch (UnauthorizedAccessException e)
             {
