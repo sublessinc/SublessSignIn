@@ -4,6 +4,7 @@ charset-normalizer==2.0.10
 colorama==0.4.4
 configparser==5.2.0
 crayons==0.4.0
+grequests==0.6.0
 idna==3.3
 importlib-metadata==4.8.3
 iniconfig==1.1.1

@@ -9,5 +9,6 @@
         public string Domain { get; set; }
         public string SublessPayPalId { get; set; }
         public string CustomBudgetId { get; set; }
+        public int MaxInstanceCount { get; set; }
     }
 }

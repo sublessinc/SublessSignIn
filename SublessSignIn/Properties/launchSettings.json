@@ -41,6 +41,7 @@
         "RunOnStart": "false",
         "EnvironmentName": "local",
         "CustomBudgetId": "prod_M1NGEYYi1ipii6",
+        "MaxInstanceCount": "10"
         "FeatureManagement__OpenLogger": true
       },
       "dotnetRunMessages": "true",
