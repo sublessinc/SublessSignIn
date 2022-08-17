@@ -15,5 +15,8 @@ namespace Subless.Data
         IdleEmailExecution DequeueIdleEmails();
         void QueueIdleEmails(DateTimeOffset startDate, DateTimeOffset endDate);
         void CompleteIdleEmails(IdleEmailExecution payment);
+        void CompletsStripeSync(StripeSync sync);
+        StripeSync DequeueStripeSync();
+        void QueueStripeSync();
     }
 }

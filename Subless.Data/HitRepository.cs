@@ -118,5 +118,49 @@ namespace Subless.Data
                 .Take(5)
                 .ToList();
         }
+
+        public List<HitView> GetRecentPatronContent(string cognitoId, Guid? creatorId)
+        {
+            return Hits.Where(x =>
+            x.CognitoId == cognitoId &&
+            x.CreatorId != creatorId &&
+            x.CreatorId != Guid.Empty)
+                .OrderByDescending(x => x.TimeStamp)
+                .Select(x =>
+                new HitView
+                {
+                    Content = x.Uri,
+                    Title = x.Uri.Segments.Length > 1 ? x.Uri.Segments.Last() : x.Uri.Host,
+                    Timestamp = x.TimeStamp.DateTime
+                })
+                .Take(5)
+                .ToList();
+        }
+
+        public List<CreatorHitCount> GetTopPatronContent(DateTimeOffset startDate, DateTimeOffset endDate, string cognitoId, Guid? creatorId)
+        {
+            var totalHits = Hits.Where(x =>
+            x.CognitoId == cognitoId &&
+            x.CreatorId != creatorId &&
+            x.CreatorId != Guid.Empty &&
+            x.TimeStamp > startDate &&
+            x.TimeStamp < endDate).Count();
+            return Hits.Where(x =>
+            x.CognitoId == cognitoId &&
+            x.CreatorId != creatorId &&
+            x.CreatorId != Guid.Empty &&
+            x.TimeStamp > startDate &&
+            x.TimeStamp < endDate)
+                .GroupBy(x => x.CreatorId)
+                .Select(g =>
+                new CreatorHitCount
+                {
+                    CreatorId = g.Key,
+                    Hits = (int)Math.Floor(100 * (decimal)g.Count() / totalHits),
+                })
+                .OrderByDescending(x => x.Hits)
+                .Take(5)
+                .ToList();
+        }
     }
 }

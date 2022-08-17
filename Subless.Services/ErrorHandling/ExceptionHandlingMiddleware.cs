@@ -60,6 +60,12 @@ namespace Subless.Services.ErrorHandling
                 return context.Response.WriteAsync("Timeout encountered during login");
             }
 
+            if (ex is BadHttpRequestException && ex.Message == "Unexpected end of request content.")
+            {
+                _logger.LogWarning(ex, "Partial request received");
+                context.Response.StatusCode = 400;
+                return context.Response.WriteAsync("Partial request received");
+            }
             else
             {
                 _logger.LogError(ex, "Unhandled exception encountered");

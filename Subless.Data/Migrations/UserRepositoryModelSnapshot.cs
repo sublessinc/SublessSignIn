@@ -371,6 +371,26 @@ namespace Subless.Data.Migrations
                     b.ToTable("Configurations");
                 });
 
+            modelBuilder.Entity("Subless.Models.StripeSync", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("DateQueued")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsCompleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsProcessing")
+                        .HasColumnType("boolean");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("StripeSyncs");
+                });
+
             modelBuilder.Entity("Subless.Models.SublessUserSession", b =>
                 {
                     b.Property<long>("Id")
@@ -448,6 +468,15 @@ namespace Subless.Data.Migrations
 
                     b.Property<bool>("IsAdmin")
                         .HasColumnType("boolean");
+
+                    b.Property<bool>("Replica_IsPaying")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTimeOffset?>("Replica_SubcriptionDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long?>("Replica_Subscription")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("StripeCustomerId")
                         .HasColumnType("text");

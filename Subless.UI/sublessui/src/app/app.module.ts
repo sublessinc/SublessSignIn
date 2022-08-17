@@ -34,10 +34,12 @@ import { CreatorTermsComponent } from './creator-terms/creator-terms.component';
 import { PartnerTermsComponent } from './partner-terms/partner-terms.component';
 import { RecentActivityComponent } from './recent-activity/recent-activity.component';
 import { TopContentComponent } from './top-content/top-content.component';
-import { DateFormatter } from './services/dateformatter.service';
 import { PartnerstatsComponent } from './partnerstats/partnerstats.component';
 import { SessionRenewComponent } from './session-renew/session-renew.component';
 import { CookieModule } from 'ngx-cookie';
+import { UserTopContentComponent } from './user-top-content/user-top-content.component';
+import { UserRecentActivityComponent } from './user-recent-activity/user-recent-activity.component';
+import { LoggerModule, NgxLoggerLevel } from 'ngx-logger';
 
 @NgModule({
   declarations: [
@@ -65,7 +67,9 @@ import { CookieModule } from 'ngx-cookie';
     RecentActivityComponent,
     TopContentComponent,
     PartnerstatsComponent,
-    SessionRenewComponent
+    SessionRenewComponent,
+    UserTopContentComponent,
+    UserRecentActivityComponent
   ],
   imports: [
     ThemeModule,
@@ -74,7 +78,12 @@ import { CookieModule } from 'ngx-cookie';
     HttpClientModule,
     ReactiveFormsModule,
     FormsModule,
-    CookieModule.withOptions()
+    CookieModule.withOptions(),
+    LoggerModule.forRoot({
+      serverLoggingUrl: '/api/logs',
+      level: NgxLoggerLevel.DEBUG,
+      serverLogLevel: NgxLoggerLevel.ERROR
+    }),
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: UnauthorizedInterceptor, multi: true },

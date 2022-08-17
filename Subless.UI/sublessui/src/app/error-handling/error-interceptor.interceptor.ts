@@ -9,11 +9,12 @@ import {
 import { Observable } from 'rxjs';
 import { Router } from '@angular/router';
 import { tap } from 'rxjs/operators';
+import { NGXLogger } from 'ngx-logger';
 
 @Injectable()
 export class ErrorInterceptor implements HttpInterceptor {
 
-  constructor(private router: Router) { }
+  constructor(private router: Router, private logger: NGXLogger) { }
 
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     return next.handle(request)
@@ -23,8 +24,8 @@ export class ErrorInterceptor implements HttpInterceptor {
             if (err.status !== 500 && err.status !== 102 && err.status !== 504) {
               return;
             }
-            console.warn("Error: " + err.status);
-            console.warn("Message: " + err.message);
+            this.logger.warn("Error: " + err.status);
+            this.logger.warn("Message: " + err.message);
             this.router.navigate(['error']);
           }
         }));
