@@ -31,7 +31,8 @@ export class NavComponent implements OnInit, OnDestroy {
     private checkoutService: CheckoutService,
     private router: Router,
     private cookieService: CookieService,
-    private _snackBar: MatSnackBar
+    private _snackBar: MatSnackBar,
+
 
   ) { }
 
@@ -42,6 +43,7 @@ export class NavComponent implements OnInit, OnDestroy {
         this.creator = routes.includes(3);
         this.partner = routes.includes(4);
         this.promptRedirectIfCookiePresent();
+        this.hideLoader();
       }
     }));
     if (window.innerWidth <= 700) {
@@ -83,6 +85,13 @@ export class NavComponent implements OnInit, OnDestroy {
       && !this.router.url.startsWith("/creator-terms")
       && !this.router.url.startsWith("/partner-terms")
       && !this.router.url.startsWith("/renew");
+  }
+
+  hideLoader() {
+    const loader = document.getElementById("loadingContainer");
+    if (loader && loader?.style.display !== "none") {
+      loader.style.display = "none";
+    }
   }
 
   returnToStripe() {

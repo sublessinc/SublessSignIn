@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Subless.Data;
 using Subless.Models;
+using Subless.Services.Services.SublessStripe;
 
 namespace Subless.Services.Services
 {
@@ -26,6 +27,8 @@ namespace Subless.Services.Services
 
         public async Task<Redirection> LoginWorkflow(string cognitoId, string activationCode, string email)
         {
+            var hasPaid = stripeService.CachePaymentStatus(cognitoId);
+
             var user = _userRepo.GetUserByCognitoId(cognitoId);
             if (user == null)
             {
@@ -75,7 +78,6 @@ namespace Subless.Services.Services
                     RedirectionPath = RedirectionPath.Terms
                 };
             }
-            var hasPaid = stripeService.CustomerHasPaid(cognitoId);
             if (!hasPaid)
             {
                 return new Redirection()

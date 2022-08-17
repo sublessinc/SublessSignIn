@@ -1,0 +1,22 @@
+<div *ngIf="topHits.length>0" class="recentFeed">
+    <div class="header">Most Visited Creators</div>
+    <mat-card class="card">
+        <div>
+            <mat-card-content class="hitList">
+                <div *ngFor="let hit of topHits; let i = index" class="hit">
+                    <div class="content bold">
+                        <div class="number">
+                            {{i+1}}
+                        </div>
+                        <img class="icon" src="https://img.hentai-foundry.com/themes/Dark/favicon.ico">
+                        <div>{{hit.creatorName}}</div>
+                    </div>
+                    <div class=" views">
+                        <div class="bold">{{hit.hits}}</div>
+                        <div class="faint"> % of all hits</div>
+                    </div>
+                </div>
+            </mat-card-content>
+        </div>
+    </mat-card>
+</div>

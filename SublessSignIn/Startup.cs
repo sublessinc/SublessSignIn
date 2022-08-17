@@ -6,28 +6,31 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.FeatureManagement;
 using Microsoft.OpenApi.Models;
 using Subless.Configuration;
 using Subless.Data;
 using Subless.Models;
 using Subless.Services;
 using Subless.Services.ErrorHandling;
+using Subless.Services.Services.SublessStripe;
 using SublessSignIn.AuthServices;
 
 namespace SublessSignIn
 {
     public class Startup
     {
+        private const int DefaultStripeApiWrapperServiceFactoryMaxPoolCount = 2;
         public Startup(IConfiguration configuration)
         {
-            Configuration = configuration;
             AuthSettings = AuthSettingsConfiguration.GetAuthSettings();
+            StripeApiWrapperServiceFactory.MaxCount = int.TryParse(configuration["StripeApiWrapperServiceFactoryMaxPoolCount"], out var maxCount) ?
+                maxCount :
+                DefaultStripeApiWrapperServiceFactoryMaxPoolCount;
 
         }
 
-
         public AuthSettings AuthSettings { get; set; }
-        public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -43,7 +46,7 @@ namespace SublessSignIn
             services.AddBffServices(AuthSettings);
             services.RegisterAuthDi(AuthSettings);
             services.AddMiniProfiler().AddEntityFramework();
-
+            services.AddFeatureManagement();
             DataDi.RegisterDataDi(services);
 
             services.AddCors(o => o.AddPolicy(CorsPolicyAccessor.UnrestrictedPolicy, builder =>
