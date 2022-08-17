@@ -4,7 +4,8 @@ import json
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger()
 
-url = "https://dev.subless.com/api/Checkout/create-checkout-session"
+test_url = "https://dev.subless.com/api/Checkout/create-checkout-session"
+
 
 def test_concurrent_api_calls_do_not_error(subless_god_account):
     # this library must be loaded before the requests library, which is done in conftest.py
@@ -16,14 +17,16 @@ def test_concurrent_api_calls_do_not_error(subless_god_account):
     payload = json.dumps({
         "desiredPrice": "10"
     })
-    reqs = []
-    # create 200 identical requests
-    for i in range(1000):
-        reqs.append(grequests.request("POST", url, headers=headers, data=payload))
+
+    # create 1000 identical requests
+    urls = []
+    for i in range(20):
+        urls.append(test_url)
+    reqs = (grequests.post(url, headers=headers, data=payload) for url in urls)
 
     # execute the requests 100 at a time
-    for resp in grequests.imap(reqs, size=100):
-        print(resp)
-        assert resp.status_code == 200, f'Expected 200, got {resp.status_code}'
+    captured_status_codes = []
+    for resp in grequests.imap(reqs, size=5):
+        captured_status_codes.append(resp.status_code)
 
-
+    assert all([status_code == 200 for status_code in captured_status_codes])
