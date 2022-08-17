@@ -18,13 +18,13 @@ def test_concurrent_api_calls_do_not_error(subless_god_account):
         "desiredPrice": "10"
     })
 
-    # create 1000 identical requests
+    # create many identical requests
     urls = []
     for i in range(20):
         urls.append(test_url)
     reqs = (grequests.post(url, headers=headers, data=payload) for url in urls)
 
-    # execute the requests 100 at a time
+    # execute the requests in batches of SIZE
     captured_status_codes = []
     for resp in grequests.imap(reqs, size=5):
         captured_status_codes.append(resp.status_code)
