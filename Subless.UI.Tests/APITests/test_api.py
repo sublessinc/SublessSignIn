@@ -5,9 +5,9 @@ from ApiLib.Admin import get_user_capabilities
 from EmailLib import MailSlurp
 
 
-def test_set_admin_privs(subless_account):
-    print(subless_account)
-    assert 1 == 2
+@pytest.mark.skip("not yet implemented")
+def test_set_admin_privs():
+    pass
 
 @pytest.mark.skip("not yet implemented")
 def test_set_creator_privs():
