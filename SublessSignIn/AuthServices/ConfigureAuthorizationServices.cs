@@ -29,7 +29,7 @@ namespace SublessSignIn.AuthServices
             // configure server-side authentication and session management
             services.AddAuthentication(options =>
             {
-                options.DefaultScheme = "cookie";
+                options.DefaultScheme = "extendCookie";
                 options.DefaultChallengeScheme = "oidc";
                 options.DefaultSignOutScheme = "oidc";
             })
@@ -43,6 +43,21 @@ namespace SublessSignIn.AuthServices
 
                     options.Cookie.MaxAge = TimeSpan.FromDays(14);
                     options.Events.OnValidatePrincipal = AddTokenExpirationData;
+                    
+                })
+                .AddCookie("extendCookie", options =>
+                {
+                    // host prefixed cookie name
+                    options.Cookie.Name = "sublessRemote";
+                    // Samesite has to be none to support hit tracking
+                    options.Cookie.SameSite = SameSiteMode.None;
+                    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+
+                    options.Cookie.MaxAge = TimeSpan.FromDays(60);
+                    options.Events.OnValidatePrincipal = AddTokenExpirationData;
+                    options.ForwardDefault = "cookie";
+                    //options.ForwardChallenge = "oidc";
+                    //options.ForwardSignOut = "oidc";
                 })
                 .AddOpenIdConnect("oidc", options =>
                 {
