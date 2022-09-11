@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace Subless.Models
@@ -14,5 +15,6 @@ namespace Subless.Models
         public List<PaymentAuditLog> AllPayouts { get; set; }
         public Dictionary<string, List<Payment>> PaymentsPerPayer { get; set; }
         public List<IdleCustomerRollover> IdleCustomerRollovers { get; set; }
+        public IEnumerable<PaymentAuditLog> UnvisitedCreators { get; set; }
     }
 }

@@ -129,6 +129,7 @@ namespace Subless.Services.Services
                     AddPayeesToMasterList(calculatorResult.AllPayouts, payees, startDate, endDate);
                 }
                 DeductPaypalFees(calculatorResult.AllPayouts);
+                calculatorResult.UnvisitedCreators = GetUnvistedCreators(calculatorResult.AllPayouts.Select(x => x.TargetId), startDate, endDate);
                 // stripe sends payments in cents, paypal expects payouts in dollars
                 ConvertCentsToDollars(calculatorResult.AllPayouts);
                 // make sure we're not sending inappropriate fractions
@@ -169,6 +170,28 @@ namespace Subless.Services.Services
             }
         }
 
+        private IEnumerable<PaymentAuditLog> GetUnvistedCreators(IEnumerable<Guid> visitedCreatorIds, DateTimeOffset start, DateTimeOffset end)
+        {
+            var creators = _creatorService.GetActiveCreators(visitedCreatorIds);
+            var unvisited = new List<PaymentAuditLog>();
+            foreach (var creator in creators)
+            {
+                unvisited.Add(new PaymentAuditLog()
+                {
+                    Payment = 0,
+                    PayeeType = PayeeType.Creator,
+                    DatePaid = DateTime.UtcNow,
+                    PaymentPeriodEnd = end,
+                    PaymentPeriodStart = start,
+                    Fees = 0,
+                    PayPalId = creator.PayPalId,
+                    Revenue = 0,
+                    TargetId = creator.Id
+                });                
+            }
+            return unvisited;
+        }
+             
         private Payee GetSublessPayment(double Payment, double sublessFraction)
         {
             return new Payee

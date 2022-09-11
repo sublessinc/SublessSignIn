@@ -22,7 +22,8 @@
         "Logging__LogLevel__Default": "Debug",
         "appClientId": "3pfcge04qtbqj11h32tr09ndu2",
         "issuerUrl": "https://devpayidp.auth.us-east-2.amazoncognito.com",
-        "EnvironmentName": "local"
+        "EnvironmentName": "local",
+        "MaxInstanceCount": "10"
       }
     }
   }
