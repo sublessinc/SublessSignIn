@@ -69,7 +69,7 @@ namespace Subless.Services.Services.SublessStripe
 
         private void UpgradeCustomer(string customer, string cognitoId, string priceId)
         {
-            var subs = GetSubscriptions(customer);
+            var subs = GetActiveSubscriptions(customer);
             var subscription = subs.Single();
 
             var items = new List<SubscriptionItemOptions> {
@@ -180,7 +180,7 @@ namespace Subless.Services.Services.SublessStripe
         public void RolloverPaymentForIdleCustomer(string customerId)
         {
             _logger.LogInformation($"Rolling over payment for idle customer {customerId}");
-            var activeSubs = GetSubscriptions(customerId);
+            var activeSubs = GetActiveSubscriptions(customerId);
             if (!activeSubs.Any())
             {
                 _logger.LogInformation("Customer {custId} cancelled their sub before we could rollover their payment", customerId);
@@ -228,9 +228,10 @@ namespace Subless.Services.Services.SublessStripe
                 return false;
             }
 
-            var subs = GetSubscriptions(user.StripeCustomerId);
+            var subs = GetAllSubscriptions(user.StripeCustomerId);
             if (!subs.Any())
-            { 
+            {
+                _userService.CachePaymentStatus(cognitoId, false, null, null);
                 return false; 
             }
             var activePrices = GetPricesFromSubscriptions(subs);
@@ -254,7 +255,7 @@ namespace Subless.Services.Services.SublessStripe
                 return prices;
             }
 
-            var subscriptions = GetSubscriptions(user.StripeCustomerId);
+            var subscriptions = GetActiveSubscriptions(user.StripeCustomerId);
             return GetPricesFromSubscriptions(subscriptions);
 
         }
@@ -274,7 +275,7 @@ namespace Subless.Services.Services.SublessStripe
             return prices;
         }
 
-        private IEnumerable<Subscription> GetSubscriptions(string stripeCustomerId)
+        private IEnumerable<Subscription> GetActiveSubscriptions(string stripeCustomerId)
         {
             return _stripeApiWrapperServiceFactory.Execute(api =>
             {
@@ -283,6 +284,20 @@ namespace Subless.Services.Services.SublessStripe
                 {
                     Customer = customer.Id
                 }).Where(sub => sub.Status == "active" && sub.CancelAtPeriodEnd == false);
+                return subscriptions;
+            });
+
+        }
+
+        private IEnumerable<Subscription> GetAllSubscriptions(string stripeCustomerId)
+        {
+            return _stripeApiWrapperServiceFactory.Execute(api =>
+            {
+                var customer = api.CustomerService.Get(stripeCustomerId);
+                var subscriptions = api.SubscriptionService.List(new SubscriptionListOptions()
+                {
+                    Customer = customer.Id
+                });
                 return subscriptions;
             });
 

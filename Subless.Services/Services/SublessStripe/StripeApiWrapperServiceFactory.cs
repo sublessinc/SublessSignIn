@@ -6,16 +6,17 @@ using Subless.Models;
 
 namespace Subless.Services.Services.SublessStripe;
 
-public sealed class StripeApiWrapperServiceFactory : IStripeApiWrapperServiceFactory
+public class StripeApiWrapperServiceFactory : IStripeApiWrapperServiceFactory
 {
-    private int _timeoutSeconds = 10 * 1000;
+    private const int TimeoutSeconds = 10 * 1000;
     private static SemaphoreSlim _pool;
-    public static SemaphoreSlim Pool
+    protected static SemaphoreSlim Pool
     {
         get
         {
             return _pool ??= new SemaphoreSlim(MaxCount);
         }
+        set => _pool = value;
     }
 
     public static int MaxCount { get; set; }
@@ -32,7 +33,7 @@ public sealed class StripeApiWrapperServiceFactory : IStripeApiWrapperServiceFac
     {
         try
         {
-            Pool.Wait(_timeoutSeconds);
+            Pool.Wait(TimeoutSeconds);
             action(new StripeApiWrapperService(_stripeConfig));
         }
         finally
@@ -45,7 +46,7 @@ public sealed class StripeApiWrapperServiceFactory : IStripeApiWrapperServiceFac
     {
         try
         {
-            Pool.Wait(_timeoutSeconds);
+            Pool.Wait(TimeoutSeconds);
             return action(new StripeApiWrapperService(_stripeConfig));
         }
         finally
@@ -58,7 +59,7 @@ public sealed class StripeApiWrapperServiceFactory : IStripeApiWrapperServiceFac
     {
         try
         {
-            await Pool.WaitAsync(_timeoutSeconds);
+            await Pool.WaitAsync(TimeoutSeconds);
             await action(new StripeApiWrapperService(_stripeConfig));
         }
         finally
@@ -71,7 +72,7 @@ public sealed class StripeApiWrapperServiceFactory : IStripeApiWrapperServiceFac
     {
         try
         {
-            await Pool.WaitAsync(_timeoutSeconds);
+            await Pool.WaitAsync(TimeoutSeconds);
             return await action(new StripeApiWrapperService(_stripeConfig));
         }
         finally
