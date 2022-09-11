@@ -27,6 +27,8 @@ def test_concurrent_api_calls_do_not_error(subless_god_account):
     # execute the requests in batches of SIZE
     captured_status_codes = []
     for resp in grequests.imap(reqs, size=20):
+        if (resp.status_code!=200):
+            logger.error(f"Request failed {resp.status_code} : {resp}")
         captured_status_codes.append(resp.status_code)
 
     assert all([status_code == 200 for status_code in captured_status_codes])
