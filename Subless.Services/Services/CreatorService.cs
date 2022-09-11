@@ -95,6 +95,10 @@ namespace Subless.Services.Services
             return creatorRepository.GetCreatorsByPartnerId(partnerId);
         }
 
+        public IEnumerable<Creator> GetActiveCreators(IEnumerable<Guid> excludeCreators)
+        {
+            return creatorRepository.GetActiveCreators(excludeCreators);
+        }
         public Creator GetCachedCreatorFromPartnerAndUsername(string username, Guid partnerId)
         {
             var key = username + partnerId;
