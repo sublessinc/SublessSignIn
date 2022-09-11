@@ -825,7 +825,8 @@ namespace Subless.Tests
                 calculatorService,
                 new Mock<ICalculatorQueueRepository>().Object,
                 BaseUserService().Object,
-                mockLoggerFactory.Object);
+                mockLoggerFactory.Object
+                );
         }
 
         private CalculatorService CalculatorServiceBuilder(
@@ -865,9 +866,9 @@ namespace Subless.Tests
 
         private Mock<IUserService> BaseUserService()
         {
-            var baseUserService = new Mock<IUserService>();
-            baseUserService.Setup(o => o.GetUser(It.IsAny<Guid>())).Returns<Guid>((id) => new User { CognitoId = "cognito" });
-            return baseUserService;
+            var baseUserSerivce = new Mock<IUserService>();
+            baseUserSerivce.Setup(x => x.GetUser(It.IsAny<Guid>())).Returns(new User() { CognitoId = "cognito" });
+            return baseUserSerivce;
         }
 
         private IOptions<StripeConfig> CreateOptions()
