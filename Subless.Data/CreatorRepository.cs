@@ -66,6 +66,14 @@ namespace Subless.Data
             }
         }
 
-
+        public IEnumerable<Creator> GetActiveCreators(IEnumerable<Guid> excludedCreators = null)
+        {
+            var expression = Creators.Where(x => x.Active == true && x.PayPalId != null && x.AcceptedTerms == true);
+            if (excludedCreators != null)
+            {
+                expression = expression.Where(x => !excludedCreators.Contains(x.Id));
+            }
+            return expression;
+        }
     }
 }

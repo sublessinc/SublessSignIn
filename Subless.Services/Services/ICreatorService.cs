@@ -19,5 +19,6 @@ namespace Subless.Services.Services
         Task<Creator> UpdateCreator(string cognitoId, Creator creator);
         void AcceptTerms(string cognitoId);
         Creator? GetCreatorOrDefaultByCognitoid(string cognitoId);
+        IEnumerable<Creator> GetActiveCreators(IEnumerable<Guid> excludeCreators);
     }
 }
