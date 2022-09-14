@@ -66,7 +66,7 @@ namespace SublessSignIn.Controllers
         [HttpDelete("{cognitoId}")]
         public async Task DeleteUser(string cognitoId)
         {
-            await Delete(cognitoId);
+            await Delete(cognitoId, force: true);
         }
 
         [TypeFilter(typeof(AdminAuthorizationFilter))]
@@ -74,12 +74,19 @@ namespace SublessSignIn.Controllers
         public async Task DeleteUserByEmail([FromQuery] string email)
         {
             var cognitoId = await cognitoService.GetCongitoUserByEmail(email);
-            await Delete(cognitoId);
+            await Delete(cognitoId, force: true);
         }
 
-        private async Task Delete(string cognitoId)
+        private async Task Delete(string cognitoId, bool force = false)
         {
-            stripeService.CancelSubscription(cognitoId);
+            if (force)
+            {
+                stripeService.ForceCancelSubscription(cognitoId);
+            }
+            else
+            {
+                stripeService.CancelSubscription(cognitoId);
+            }
             var user = userService.GetUserByCognitoId(cognitoId);
             if (user.Creators.Any())
             {

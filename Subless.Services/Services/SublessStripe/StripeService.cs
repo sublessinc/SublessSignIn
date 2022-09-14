@@ -222,23 +222,32 @@ namespace Subless.Services.Services.SublessStripe
 
         public bool CachePaymentStatus(string cognitoId)
         {
-            var user = _userService.GetUserByCognitoId(cognitoId);
-            if (user?.StripeCustomerId == null)
+            try
             {
+                var user = _userService.GetUserByCognitoId(cognitoId);
+                if (user?.StripeCustomerId == null)
+                {
+                    return false;
+                }
+
+                var subs = GetAllSubscriptions(user.StripeCustomerId);
+                if (!subs.Any())
+                {
+                    _userService.CachePaymentStatus(cognitoId, false, null, null);
+                    return false;
+                }
+                var activePrices = GetPricesFromSubscriptions(subs);
+                var allPrices = GetPrices();
+                var isPaying = allPrices.Any(x => activePrices.Any(y => x.Id == y.Id));
+                _userService.CachePaymentStatus(cognitoId, isPaying, activePrices.FirstOrDefault().UnitAmount, subs.First().Created.ToUniversalTime());
+                return isPaying;
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Could not sync stripe data for user {cognitoId}");
                 return false;
             }
-
-            var subs = GetAllSubscriptions(user.StripeCustomerId);
-            if (!subs.Any())
-            {
-                _userService.CachePaymentStatus(cognitoId, false, null, null);
-                return false; 
-            }
-            var activePrices = GetPricesFromSubscriptions(subs);
-            var allPrices = GetPrices();
-            var isPaying = allPrices.Any(x => activePrices.Any(y => x.Id == y.Id));
-            _userService.CachePaymentStatus(cognitoId, isPaying, activePrices.FirstOrDefault().UnitAmount, subs.First().Created.ToUniversalTime());
-            return isPaying;
         }
 
         private List<string> GetActiveSubscriptionPriceId(string cognitoId)
@@ -458,6 +467,7 @@ namespace Subless.Services.Services.SublessStripe
         }
         public bool CancelSubscription(string cognitoId)
         {
+
             var user = _userService.GetUserByCognitoId(cognitoId);
             if (string.IsNullOrWhiteSpace(user?.StripeCustomerId))
             {
@@ -476,10 +486,23 @@ namespace Subless.Services.Services.SublessStripe
                 foreach (var sub in subs)
                 {
                     api.SubscriptionService.Update(sub.Id,
-                        new SubscriptionUpdateOptions() {CancelAtPeriodEnd = true});
+                        new SubscriptionUpdateOptions() { CancelAtPeriodEnd = true });
                 }
             });
             return true;
+        }
+
+        public bool ForceCancelSubscription(string cognitoId)
+        {
+            try
+            {
+                return CancelSubscription(cognitoId);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, $"Failed to cancel for user {cognitoId}");
+                return false;
+            }
         }
     }
 }
