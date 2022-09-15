@@ -81,7 +81,7 @@ namespace SublessSignIn.Controllers
         {
             if (force)
             {
-                stripeService.ForceCancelSubscription(cognitoId);
+                stripeService.TryCancelSubscription(cognitoId);
             }
             else
             {

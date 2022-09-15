@@ -492,7 +492,7 @@ namespace Subless.Services.Services.SublessStripe
             return true;
         }
 
-        public bool ForceCancelSubscription(string cognitoId)
+        public bool TryCancelSubscription(string cognitoId)
         {
             try
             {
