@@ -29,21 +29,25 @@
         <table style="width: 100%; border-collapse: collapse;">
             <tr style="padding: 10px; border-color: black; border-bottom-width: 1px; border-bottom-style: solid; font-weight: 700;">
                 <td>Creator</td>
+                <td>Message</td>
                 <td style="text-align: right;">Payment</td>
             </tr>
 
             {{payments}}
-            
+
             <tr style="border-color: black; border-top-width: 1px; border-top-style: solid;  padding-top: 20px; padding: 10px;">
                 <td>Stripe Fees</td>
+                <td></td>
                 <td style="text-align: right;">{{stripefee}}</td>
             </tr>
             <tr style="padding: 10px; padding-bottom: 20px;">
                 <td>Taxes</td>
+                <td></td>
                 <td style="text-align: right;">$0.00</td>
             </tr>
             <tr style="border-color: black; border-top-width: 1px; border-top-style: solid; padding-top: 20px; padding: 10px; ">
                 <td>Total Payment</td>
+                <td></td>
                 <td style="text-align: right;">{{totalpayment}}</td>
             </tr>
         </table>

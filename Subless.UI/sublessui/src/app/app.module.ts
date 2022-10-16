@@ -40,6 +40,7 @@ import { CookieModule } from 'ngx-cookie';
 import { UserTopContentComponent } from './user-top-content/user-top-content.component';
 import { UserRecentActivityComponent } from './user-recent-activity/user-recent-activity.component';
 import { LoggerModule, NgxLoggerLevel } from 'ngx-logger';
+import { CreatorMessageComponent } from './creator-message/creator-message.component';
 
 @NgModule({
   declarations: [
@@ -69,7 +70,8 @@ import { LoggerModule, NgxLoggerLevel } from 'ngx-logger';
     PartnerstatsComponent,
     SessionRenewComponent,
     UserTopContentComponent,
-    UserRecentActivityComponent
+    UserRecentActivityComponent,
+    CreatorMessageComponent
   ],
   imports: [
     ThemeModule,

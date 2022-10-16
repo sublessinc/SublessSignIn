@@ -1,0 +1,19 @@
+<mat-card class="card">
+    <form (ngSubmit)="onMessageSubmit()" #messageForm="ngForm">
+        <mat-card-title class="title">Receipt Thank-You Message</mat-card-title>
+        <mat-card-content class="text">Leave a thank-you message for your patrons!
+        </mat-card-content>
+        <mat-card-content class="text">It'll show up on their monthly receipt, next to your name and how much they gave
+            you.
+        </mat-card-content>
+        <mat-card-content>
+            <mat-form-field class="paypalid">
+                <input matInput #payPalId="ngModel" required type="text" name="payPalId" [(ngModel)]="message"
+                    placeholder="Enter your message here!">
+
+            </mat-form-field>
+        </mat-card-content>
+        <mat-card-content><button class="submit" [disabled]="!messageForm.form.valid" type="submit" mat-button>
+                Submit</button></mat-card-content>
+    </form>
+</mat-card>

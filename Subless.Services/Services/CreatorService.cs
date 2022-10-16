@@ -64,6 +64,16 @@ namespace Subless.Services.Services
             await FireCreatorActivationWebhook(creator, false);
         }
 
+        public CreatorMessage GetCreatorMessage(Guid creatorId)
+        {
+            return creatorRepository.GetMessageForCreator(creatorId);
+        }
+
+        public CreatorMessage SetCreatorMessage(Guid creatorId, string message)
+        {
+            return creatorRepository.SetCreatorMessage(new CreatorMessage { CreateDate = DateTimeOffset.UtcNow, CreatorId = creatorId, Message = message, IsActive = true });
+        }
+
         public Creator GetCreatorByCognitoid(string cognitoId)
         {
             var creator = GetCreatorOrDefaultByCognitoid(cognitoId);

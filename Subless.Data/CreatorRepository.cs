@@ -9,11 +9,30 @@ namespace Subless.Data
     public partial class Repository : DbContext, ICreatorRepository
     {
         internal DbSet<Creator> Creators { get; set; }
+        internal DbSet<CreatorMessage> CreatorMessages { get; set; }
 
         public void DeleteCreator(Creator creator)
         {
             Creators.Remove(creator);
             SaveChanges();
+        }
+
+        public CreatorMessage GetMessageForCreator(Guid creatorId)
+        {
+            return CreatorMessages.FirstOrDefault(x => x.CreatorId == creatorId && x.IsActive == true);
+        }
+
+        public CreatorMessage SetCreatorMessage(CreatorMessage message)
+        {
+            var oldMessages = CreatorMessages.Where(x=> x.CreatorId == message.CreatorId);
+            foreach (var oldMessage in oldMessages)
+            {
+                oldMessage.IsActive = false;
+            }
+            CreatorMessages.UpdateRange(oldMessages);
+            CreatorMessages.Add(message);
+            SaveChanges();
+            return message;
         }
 
         public Creator GetCreatorByActivationCode(Guid code)
