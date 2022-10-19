@@ -41,7 +41,9 @@ import { UserTopContentComponent } from './user-top-content/user-top-content.com
 import { UserRecentActivityComponent } from './user-recent-activity/user-recent-activity.component';
 import { LoggerModule, NgxLoggerLevel } from 'ngx-logger';
 import { CreatorMessageComponent } from './creator-message/creator-message.component';
-
+import { FroalaEditorModule, FroalaViewModule } from 'angular-froala-wysiwyg';
+import 'froala-editor/js/plugins/link.min.js';
+import 'froala-editor/js/plugins/char_counter.min.js';
 @NgModule({
   declarations: [
     AppComponent,
@@ -86,6 +88,8 @@ import { CreatorMessageComponent } from './creator-message/creator-message.compo
       level: NgxLoggerLevel.DEBUG,
       serverLogLevel: NgxLoggerLevel.ERROR
     }),
+    FroalaEditorModule.forRoot(),
+    FroalaViewModule.forRoot()
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: UnauthorizedInterceptor, multi: true },
