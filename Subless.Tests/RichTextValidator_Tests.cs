@@ -36,12 +36,41 @@ namespace Subless.Tests
         }
 
         [Theory]
+        [InlineData("<p>Thanks for Donating to Jon! <a href=\"https://www.paypal.com/user?u=3342350\">My patreon</a></p>")]
         [InlineData("<p>Thanks for Donating to Jon! <a href=\"https://www.patreon.com/user?u=3342350\">My patreon</a></p>")]
+        [InlineData("<p>Thanks for Donating to Jon! <a href=\"https://twitter.com/user?u=3342350\">My patreon</a></p>")]
+        [InlineData("<p>Thanks for Donating to Jon! <a href=\"https://linktr.ee/user?u=3342350\">My patreon</a></p>")]
+        [InlineData("<p>Thanks for Donating to Jon! <a href=\"https://www.subscribestar.com/user?u=3342350\">My patreon</a></p>")]
+        [InlineData("<p>Thanks for Donating to Jon! <a href=\"https://ko-fi.com/user?u=3342350\">My patreon</a></p>")]
+        [InlineData("<p>Thanks for donating! Check out <a href=\"https://www.patreon.com/user?u=3342350\">my patreon</a> for \" co</p>")]
         [InlineData("Thanks for Donating to Jon!")]
         public void RichTextValidator_WithValidInput_PreservesInput(string input)
         {
             var result = RichTextValidator.SanitizeInput(input);
             Assert.Equal(input, result);
+        }
+
+        [Theory]
+        [InlineData("<p>Thanks for Donating to Jon! <a href=\"https://www.notpatreon.com/user?u=3342350\">My patreon</a></p>")]
+        [InlineData("<p>Thanks for Donating to Jon! <a href=\"https://fake.patreon.com/user?u=3342350\">My patreon</a></p>")]
+        [InlineData("<p>Thanks for Donating to Jon! <a href=\"https://www.pareon.com/user?u=3342350\">My patreon</a></p>")]
+        [InlineData("<p>Thanks for Donating to Jon! <a href=\"https://www.patreon.org/user?u=3342350\">My patreon</a></p>")]
+        [InlineData("<p>Thanks for Donating to Jon! <a href=\"https://ww.patreon.com/user?u=3342350\">My patreon</a></p>")]
+        public void RichTextValidator_WithInvalidLink_ThrowsError(string input)
+        {
+            try
+            {
+                var result = RichTextValidator.SanitizeInput(input);
+                Assert.NotEqual(input, result);
+            }
+            catch (NotSupportedException ex)
+            {
+                Assert.True(true, "Exception not thrown on xss input");
+            }
+            catch (AccessViolationException ex)
+            {
+                Assert.True(true, "Exception not thrown on xss input");
+            }
         }
     }
 

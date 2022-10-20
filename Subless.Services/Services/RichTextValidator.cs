@@ -20,14 +20,14 @@ namespace Subless.Services.Services
             return Sanitize(message);
         }
 
-        private static string[] BannedCharacters = new[] { ";", "[", "]", "%", "&", };
+        private static string[] BannedCharacters = new[] { ";", "[", "]", "%", "&", "javascript", "\\\\", "-script", "(", ")", "\\" };
         private static string[] WhitelisedLinks = new[] {"https://www.patreon.com",
-    "https://www.paypal.com",
-    "https://www.subscribestar.com",
-    "https://ko-fi.com",
-    "https://twitter.com",
-    "https://www.hentai-foundry.com",
-    "https://linktr.ee"};
+        "https://www.paypal.com",
+        "https://www.subscribestar.com",
+        "https://ko-fi.com",
+        "https://twitter.com",
+        "https://www.hentai-foundry.com",
+        "https://linktr.ee"};
 
         private static bool MessageValid(string message)
         {
