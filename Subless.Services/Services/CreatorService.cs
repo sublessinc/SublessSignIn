@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mail;
 using System.Threading.Tasks;
+using System.Web;
+using Ganss.Xss;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Subless.Data;
@@ -71,6 +73,7 @@ namespace Subless.Services.Services
 
         public CreatorMessage SetCreatorMessage(Guid creatorId, string message)
         {
+
             return creatorRepository.SetCreatorMessage(new CreatorMessage { CreateDate = DateTimeOffset.UtcNow, CreatorId = creatorId, Message = message, IsActive = true });
         }
 
