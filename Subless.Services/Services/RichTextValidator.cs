@@ -1,4 +1,5 @@
 ﻿using Ganss.Xss;
+using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,15 +15,24 @@ namespace Subless.Services.Services
         {
             if (!MessageValid(message))
             {
-                throw new AccessViolationException($"XSS detected in input {HttpUtility.UrlEncode(message)} ");
+                throw new AccessViolationException($"Problem with message {HttpUtility.UrlEncode(message)} ");
             }
             return Sanitize(message);
         }
 
+        private static string[] BannedCharacters = new[] { ";", "[", "]", "%", "&", };
+        private static string[] WhitelisedLinks = new[] {"https://www.patreon.com",
+    "https://www.paypal.com",
+    "https://www.subscribestar.com",
+    "https://ko-fi.com",
+    "https://twitter.com",
+    "https://www.hentai-foundry.com",
+    "https://linktr.ee"};
+
         private static bool MessageValid(string message)
         {
             if (message.Length > 1000) { return false; }
-            HtmlAgilityPack.HtmlDocument doc = new HtmlAgilityPack.HtmlDocument();
+            HtmlDocument doc = new HtmlAgilityPack.HtmlDocument();
             doc.LoadHtml(message);
 
             if (doc.DocumentNode.Descendants()
@@ -30,11 +40,33 @@ namespace Subless.Services.Services
             {
                 return false;
             }
+            if (!LinksInWhiteList(doc))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        private static bool LinksInWhiteList(HtmlDocument doc)
+        {
+            var linkElements = doc.DocumentNode.Descendants().Where(x => x.Name == "a");
+            foreach (var linkElement in linkElements)
+            {
+                if (linkElement.Attributes.Where(x => x.Name == "href").Any(linkAttribute => !WhitelisedLinks.Any(whiteListed => linkAttribute.Value.StartsWith(whiteListed))))
+                {
+                    return false;
+                }
+            }
             return true;
         }
 
         private static string Sanitize(string message)
         {
+            foreach (string c in BannedCharacters)
+            {
+                message = message.Replace(c, string.Empty);
+            }
             var sanitizer = new HtmlSanitizer();
             return sanitizer.Sanitize(message);
         }

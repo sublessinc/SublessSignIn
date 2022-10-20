@@ -25,12 +25,26 @@ namespace Subless.Tests
                 var result = RichTextValidator.SanitizeInput(input);
                 Assert.NotEqual(input, result);
             }
+            catch (NotSupportedException ex)
+            {
+                Assert.True(true, "Exception not thrown on xss input");
+            }
             catch (AccessViolationException ex)
             {
                 Assert.True(true, "Exception not thrown on xss input");
             }
         }
+
+        [Theory]
+        [InlineData("<p>Thanks for Donating to Jon! <a href=\"https://www.patreon.com/user?u=3342350\">My patreon</a></p>")]
+        [InlineData("Thanks for Donating to Jon!")]
+        public void RichTextValidator_WithValidInput_PreservesInput(string input)
+        {
+            var result = RichTextValidator.SanitizeInput(input);
+            Assert.Equal(input, result);
+        }
     }
+
 
     public class FileDataAttribute : DataAttribute
     {

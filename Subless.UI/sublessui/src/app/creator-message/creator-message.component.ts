@@ -39,7 +39,7 @@ export class CreatorMessageComponent implements OnInit {
   }
 
   onMessageSubmit(): void {
-    if (this.checkLinks()) {
+    if (this.checkMessage()) {
       this.subs.push(this.creatorService.setCreatorMessage(this.message).subscribe({
         next: (message: ICreatorMessage) => {
           if (message) {
@@ -53,19 +53,26 @@ export class CreatorMessageComponent implements OnInit {
       }));
     }
   }
-  re = new RegExp("href=[\"']([^'\"]*)")
+  re = new RegExp("href=[\"']([^'\"]*)");
   public validLinks = ["https://www.patreon.com",
     "https://www.paypal.com",
     "https://www.subscribestar.com",
     "https://ko-fi.com",
     "https://twitter.com",
     "https://www.hentai-foundry.com",
-    "https://linktr.ee"]
+    "https://linktr.ee"];
 
-  checkLinks(): boolean {
+  public bannedCharacters = [';', '[', ']', '%',];
+
+  checkMessage(): boolean {
+    if (this.bannedCharacters.some(character => this.message.includes(character))) {
+      this.form.controls["messageControl"].setErrors({ 'BannedCharacter': true });
+      return false;
+    }
     if (!this.message.includes("</a>")) {
       return true;
     }
+
     const links = this.message.match(this.re)?.filter(link => !link.startsWith("href="));
     if (links) {
       for (const link of links) {
