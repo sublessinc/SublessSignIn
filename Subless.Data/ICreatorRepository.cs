@@ -18,5 +18,6 @@ namespace Subless.Data
         IEnumerable<Creator> GetActiveCreators(IEnumerable<Guid> excludedCreators = null);
         CreatorMessage GetMessageForCreator(Guid creatorId);
         CreatorMessage SetCreatorMessage(CreatorMessage message);
+        void InvalidateCreatorMessages(Guid creatorId);
     }
 }
