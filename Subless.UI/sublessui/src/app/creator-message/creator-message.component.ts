@@ -50,7 +50,7 @@ export class CreatorMessageComponent implements OnInit {
   }
 
   public onChange(event: any) {
-    this.message = event;
+    this.message = event.replace("&nbsp;", " ");
     this.checkMessage();
   }
   onMessageSubmit(): void {
@@ -80,7 +80,7 @@ export class CreatorMessageComponent implements OnInit {
     "https://www.hentai-foundry.com",
     "https://linktr.ee"];
 
-  public bannedCharacters = [';', '[', ']', '%', "(", ")", "\\"];
+  public bannedCharacters = ['[', ']', '%', "(", ")", "\\"];
 
   checkMessage(): boolean {
     if (this.bannedCharacters.some(character => this.message.includes(character))) {
