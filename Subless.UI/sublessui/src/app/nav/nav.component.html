@@ -7,16 +7,16 @@
 
     <mat-nav-list>
       <a mat-list-item id="creator" *ngIf="creator" [routerLinkActive]="['is-active']" routerLink='/creator-profile'>
-        <img matListAvatar class="avatar" src="../../assets/img/profile.svg">
-        <div>Creator Profile</div>
+        <img matListAvatar class="avatar" src="../../assets/img/chart.svg">
+        <div>Creator Dashboard</div>
       </a>
       <a mat-list-item id="partner" *ngIf="partner" [routerLinkActive]="['is-active']" routerLink='/partner-profile'>
-        <img matListAvatar class="avatar" src="../../assets/img/profile.svg">
-        <div>Partner Profile</div>
+        <img matListAvatar class="avatar" src="../../assets/img/chart.svg">
+        <div>Partner Dashboard</div>
       </a>
       <a mat-list-item id="user" *ngIf="user" [routerLinkActive]="['is-active']" routerLink='/user-profile'> <img
-          matListAvatar class="avatar" src="../../assets/img/profile.svg">
-        <div>Subscriber Profile</div>
+          matListAvatar class="avatar" src="../../assets/img/chart.svg">
+        <div>Patron Dashboard</div>
       </a>
       <a mat-list-item id="billing" *ngIf="user" (click)="returnToStripe()">
         <img matListAvatar class="avatar" src="../../assets/img/billing.svg">
@@ -26,6 +26,10 @@
         routerLink='/payout-settings'>
         <img matListAvatar class="avatar" src="../../assets/img/billing.svg">
         <div>Payout Settings</div>
+      </a>
+      <a mat-list-item id="payout" *ngIf="creator" [routerLinkActive]="['is-active']" routerLink='/creator-message'>
+        <img matListAvatar class="avatar" src="../../assets/img/profile.svg">
+        <div>Creator Profile</div>
       </a>
       <a mat-list-item id="plan" [routerLinkActive]="['is-active']" routerLink="/change-plan">
         <img matListAvatar class="avatar" src="../../assets/img/plan.svg">

@@ -15,7 +15,7 @@ namespace Subless.Services.Services
     public class TemplatedEmailService : ITemplatedEmailService
     {
         public const string MonthKey = "{{month}}"; // March, 2022
-        public const string IndividualPaymentTemplate = "            <tr style='padding: 10px;padding-bottom: 20px;'><td>{{creatorname}}</td><td style='text-align: right;'>{{creatorpayment}}</td></tr>";
+        public const string IndividualPaymentTemplate = "<tr style='padding: 10px;padding-bottom: 20px;'>                <td>{{creatorname}}</td>                <td>{{creatorMessage}}</td>                <td style='text-align: right;'>{{creatorpayment}}</td>            </tr>";
         public const string PaymentsKey = "{{payments}}"; // list of the above
         public const string CreatorNameKey = "{{creatorname}}"; // CreatorUserName
         public const string CreatorPaymentKey = "{{creatorpayment}}"; //$50.00
@@ -24,7 +24,7 @@ namespace Subless.Services.Services
         public const string StripeFeeKey = "{{stripefee}}"; //$0.10
         public const string SiteLinkKey = "{{sitelink}}"; // https://pay.subless.com
         public const string LogoUrl = "{{logourl}}"; //https://pay.subless.com/SublessLogo.svg
-
+        public const string CreatorMessageKey = "{{creatorMessage}}";
         public const string PayPalFeesKey = "{{paypalfees}}";
 
         public readonly CalculatorConfiguration authSettings;
@@ -241,6 +241,7 @@ namespace Subless.Services.Services
 
         private string GenerateEmailBodyForUser(string template, List<Payment> payments, DateTimeOffset PaymentPeriodStart, DateTimeOffset PaymentPeriodEnd)
         {
+            
             var month = $"{PaymentPeriodStart.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}";
             var fees = payments.First().Payer.Fees / 100;
             var userEmail = template.Replace(MonthKey, month, StringComparison.Ordinal);
@@ -299,10 +300,29 @@ namespace Subless.Services.Services
 
         private List<string> GetPaymentItems(List<Payment> payments)
         {
+
             var formattedPayments = new List<string>();
             foreach (var payment in payments)
             {
                 var individualPayment = IndividualPaymentTemplate.Replace(CreatorNameKey, payment.Payee.Name, StringComparison.Ordinal);
+
+                if (payment.Payee.PayeeType == PayeeType.Creator)
+                { 
+                    var message = _creatorService.GetCreatorMessage(payment.Payee.TargetId);
+                    if (message != null && !string.IsNullOrWhiteSpace(message.Message))
+                    {
+                        individualPayment = individualPayment.Replace(CreatorMessageKey, message.Message, StringComparison.Ordinal);
+                    }
+                    else
+                    {
+                        individualPayment = individualPayment.Replace(CreatorMessageKey, String.Empty, StringComparison.Ordinal);
+                    }
+                }
+                else
+                {
+                    individualPayment = individualPayment.Replace(CreatorMessageKey, String.Empty, StringComparison.Ordinal);
+                }
+
                 var specifier = "C";
                 var culture = CultureInfo.CreateSpecificCulture("en-US");
                 individualPayment = individualPayment.Replace(CreatorPaymentKey, (payment.Amount / 100).ToString(specifier, culture), StringComparison.Ordinal);
