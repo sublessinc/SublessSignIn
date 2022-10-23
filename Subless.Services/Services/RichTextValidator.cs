@@ -20,7 +20,7 @@ namespace Subless.Services.Services
             return Sanitize(message);
         }
 
-        private static string[] BannedCharacters = new[] { ";", "[", "]", "%", "&", "javascript", "\\\\", "-script", "(", ")", "\\" };
+        private static string[] BannedCharacters = new[] { ";", "[", "]", "%", "javascript", "\\\\", "-script", "(", ")", "\\" };
         private static string[] WhitelisedLinks = new[] {"https://www.patreon.com",
         "https://www.paypal.com",
         "https://www.subscribestar.com",
