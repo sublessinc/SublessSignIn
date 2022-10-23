@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Subless.Models;
 using Subless.Services.Services;
+using SublessSignIn.Models;
 
 namespace SublessSignIn.Controllers
 {
@@ -228,6 +229,51 @@ namespace SublessSignIn.Controllers
             catch (UnauthorizedAccessException e)
             {
                 _logger.LogWarning(e, "Unauthorized user attempted to get creator stats");
+
+                return Unauthorized();
+            }
+        }
+
+        [HttpGet("message")]
+        public ActionResult<CreatorMessage> CreatorMessage()
+        {
+            var cognitoId = userService.GetUserClaim(HttpContext.User);
+            if (cognitoId == null)
+            {
+                return Unauthorized();
+            }
+            try
+            {
+                var creator = _creatorService.GetCreatorByCognitoid(cognitoId);
+                var message = _creatorService.GetCreatorMessage(creator.Id);
+                return Ok(message);
+            }
+            catch (UnauthorizedAccessException e)
+            {
+                _logger.LogWarning(e, "Unauthorized user attempted to get message");
+
+                return Unauthorized();
+            }
+        }
+
+
+
+        [HttpPost("message")]
+        public ActionResult<CreatorMessage> SetCreatorMessage([FromBody] MessageViewModel message)
+        {
+            var cognitoId = userService.GetUserClaim(HttpContext.User);
+            if (cognitoId == null)
+            {
+                return Unauthorized();
+            }
+            try
+            {
+                var creator = _creatorService.GetCreatorByCognitoid(cognitoId);
+                return Ok(_creatorService.SetCreatorMessage(creator.Id, message.Message));
+            }
+            catch (UnauthorizedAccessException e)
+            {
+                _logger.LogWarning(e, "Unauthorized user attempted to set message");
 
                 return Unauthorized();
             }

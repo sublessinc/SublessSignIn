@@ -2,6 +2,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { CreatorMessage } from '../models/CreatorMessage';
 import { ICreator } from '../models/ICreator';
 import { ICreatorAnalytics } from '../models/ICreatorAnalytics';
 import { IHitCount } from '../models/IHitCount';
@@ -38,6 +39,17 @@ export class CreatorService {
 
   getTopFeed(): Observable<IHitCount[]> {
     return this.httpClient.get<IHitCount[]>("/api/Creator/TopFeed");
+  }
+
+  getCreatorMessage(): Observable<CreatorMessage> {
+    return this.httpClient.get<CreatorMessage>("/api/Creator/message");
+  }
+
+  setCreatorMessage(message: string): Observable<CreatorMessage> {
+    const headers = new HttpHeaders({
+      "Content-Type": "text/plain"
+    });
+    return this.httpClient.post<CreatorMessage>("/api/Creator/message", { message: message });
   }
 
   finalizeViaRedirect(uri: string, email: string, username: string) {

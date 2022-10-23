@@ -103,7 +103,7 @@ namespace Subless.Services.Services
                     var partnerVisits = GetVisitsPerPartner(hits);
                     // fraction each creator by the percentage of total visits
                     // multiply payment by that fraction
-                    _logger.LogInformation($"Found {0} creators visited and {1} partners visited for a payer.", creatorVisits.Count, partnerVisits.Count);
+                    _logger.LogInformation("Found {0} creators visited and {1} partners visited for a payer.", creatorVisits.Count, partnerVisits.Count);
                     payees.AddRange(GetCreatorPayees(payer.Payment, creatorVisits, hits.Count(), PartnerFraction, SublessFraction));
                     payees.AddRange(GetPartnerPayees(payer.Payment, creatorVisits, hits.Count(), PartnerFraction, SublessFraction));
                     // set aside 2% for us
@@ -255,7 +255,7 @@ namespace Subless.Services.Services
                 });
             }
 
-            _logger.LogInformation($"For a patron who visited {0} creators, we've found {1} creator payees.", creatorHits.Count, payees.Count);
+            _logger.LogInformation("For a patron who visited {0} creators, we've found {1} creator payees.", creatorHits.Count, payees.Count);
             return payees;
         }
 
@@ -287,13 +287,13 @@ namespace Subless.Services.Services
                 }
             }
 
-            _logger.LogInformation($"For a patron who visited {0} partners, we've found {1} partner payees.", creatorHits.Count, payees.Count);
+            _logger.LogInformation("For a patron who visited {0} partners, we've found {1} partner payees.", creatorHits.Count, payees.Count);
             return payees;
         }
 
         private List<Payment> CollectPaymentDetails(IEnumerable<Payee> payees, Payer payer, DateTimeOffset endDate)
         {
-            _logger.LogInformation($"Collecting payment details for one patron and {0} payees", payees.Count());
+            _logger.LogInformation("Collecting payment details for one patron and {0} payees", payees.Count());
             var logs = new List<Payment>();
             foreach (var payee in payees)
             {
@@ -333,7 +333,7 @@ namespace Subless.Services.Services
                 }
             }
 
-            _logger.LogInformation($"Updated payeeMasterList with {0} payees, {1} of which were newly added.",
+            _logger.LogInformation("Updated payeeMasterList with {0} payees, {1} of which were newly added.",
                 payees.Count(), newPayees);
         }
 

@@ -40,7 +40,10 @@ import { CookieModule } from 'ngx-cookie';
 import { UserTopContentComponent } from './user-top-content/user-top-content.component';
 import { UserRecentActivityComponent } from './user-recent-activity/user-recent-activity.component';
 import { LoggerModule, NgxLoggerLevel } from 'ngx-logger';
-
+import { CreatorMessageComponent } from './creator-message/creator-message.component';
+import { FroalaEditorModule, FroalaViewModule } from 'angular-froala-wysiwyg';
+import 'froala-editor/js/plugins/link.min.js';
+import 'froala-editor/js/plugins/char_counter.min.js';
 @NgModule({
   declarations: [
     AppComponent,
@@ -69,7 +72,8 @@ import { LoggerModule, NgxLoggerLevel } from 'ngx-logger';
     PartnerstatsComponent,
     SessionRenewComponent,
     UserTopContentComponent,
-    UserRecentActivityComponent
+    UserRecentActivityComponent,
+    CreatorMessageComponent
   ],
   imports: [
     ThemeModule,
@@ -84,6 +88,8 @@ import { LoggerModule, NgxLoggerLevel } from 'ngx-logger';
       level: NgxLoggerLevel.DEBUG,
       serverLogLevel: NgxLoggerLevel.ERROR
     }),
+    FroalaEditorModule.forRoot(),
+    FroalaViewModule.forRoot()
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: UnauthorizedInterceptor, multi: true },

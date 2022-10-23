@@ -1,0 +1,28 @@
+<mat-card class="card">
+    <form [formGroup]="form" (ngSubmit)="onMessageSubmit()" #messageForm="ngForm">
+        <mat-card-title class="title">Receipt Thank-You Message</mat-card-title>
+        <mat-card-content class="text">Leave a thank-you message for your patrons!
+        </mat-card-content>
+        <mat-card-content class="text">It'll show up on their monthly receipt, next to your name and how much they gave
+            you.
+        </mat-card-content>
+        <mat-card-content *ngIf="messageControl.errors?.['OneLink']" class="warn-text">Please only include one link
+        </mat-card-content>
+        <mat-card-content *ngIf="messageControl.errors?.['NoWhitelist']" class="warn-text">We currently only allow links
+            to
+            <li *ngFor="let item of validLinks"><a href={{item}}>{{item}}</a></li>
+            please contact <a href="contact@subless.com">contact@subless.com</a> to let us know what else you'd like to
+            use!
+        </mat-card-content>
+        <mat-card-content *ngIf="messageControl.errors?.['BannedCharacter']" class="warn-text">Please remove the
+            disallowed characters
+            <li *ngFor="let item of bannedCharacters">{{item}}</li>
+        </mat-card-content>
+        <mat-card-content>
+            <textarea [(froalaModel)]="message" [froalaEditor]="options" formControlName="messageControl"></textarea>
+        </mat-card-content>
+        <mat-card-content><button class="submit" [disabled]="!messageForm.form.valid" type="submit" mat-button>
+                Submit</button></mat-card-content>
+
+    </form>
+</mat-card>
