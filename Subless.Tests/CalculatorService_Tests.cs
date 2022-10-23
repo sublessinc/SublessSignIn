@@ -813,7 +813,6 @@ namespace Subless.Tests
             var mockLoggerFactory = new Mock<ILoggerFactory>();
             mockLoggerFactory.Setup(x => x.CreateLogger(It.IsAny<string>())).Returns(() => logger);
 
-
             //TODO split these tests, till then, both of these are the SUT
             var calculatorService = CalculatorServiceBuilder(stripe, hitService, creatorService, partnerService);
 
@@ -825,6 +824,7 @@ namespace Subless.Tests
                 new Mock<ITemplatedEmailService>().Object,
                 calculatorService,
                 new Mock<ICalculatorQueueRepository>().Object,
+                BaseUserService().Object,
                 mockLoggerFactory.Object
                 );
         }
@@ -849,8 +849,6 @@ namespace Subless.Tests
 
             var mockLoggerFactory = new Mock<ILoggerFactory>();
             mockLoggerFactory.Setup(x => x.CreateLogger(It.IsAny<string>())).Returns(() => logger);
-            var baseUserSerivce = new Mock<IUserService>();
-            baseUserSerivce.Setup(x => x.GetUser(It.IsAny<Guid>())).Returns(new User() { CognitoId = "cognito" });
 
             //TODO split these tests, till then, both of these are the SUT
             var calculatorService = new CalculatorService(
@@ -859,14 +857,19 @@ namespace Subless.Tests
                 creatorService?.Object ?? new Mock<ICreatorService>().Object,
                 partnerService?.Object ?? new Mock<IPartnerService>().Object,
                 new Mock<IPaymentLogsService>().Object,
-                userService?.Object ?? baseUserSerivce.Object,
+                userService?.Object ?? BaseUserService().Object,
                 new Mock<ICalculatorQueueRepository>().Object,
                 CreateOptions(),
-                mockLoggerFactory.Object
-                );
+                mockLoggerFactory.Object);
             return calculatorService;
         }
 
+        private Mock<IUserService> BaseUserService()
+        {
+            var baseUserSerivce = new Mock<IUserService>();
+            baseUserSerivce.Setup(x => x.GetUser(It.IsAny<Guid>())).Returns(new User() { CognitoId = "cognito" });
+            return baseUserSerivce;
+        }
 
         private IOptions<StripeConfig> CreateOptions()
         {

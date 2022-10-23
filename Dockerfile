@@ -41,6 +41,9 @@ COPY . .
 WORKDIR "/src/."
 RUN dotnet build "./SublessSignIn/SublessSignIn.csproj" -c Release -o /app/build
 
+FROM build AS test
+RUN dotnet test
+
 FROM build AS publish
 RUN dotnet publish "./SublessSignIn/SublessSignIn.csproj" -c Release -o /app/publish
 

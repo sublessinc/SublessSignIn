@@ -20,6 +20,13 @@ namespace SublessSignIn.Controllers
         public void Log(FrontEndLog log)
         {
             LogLevel level;
+            var downgrade = "";
+            // Downgrade frontend errors to warnings
+            if (log.Level > 4)
+            {
+                downgrade = $"Downgraded from {log.Level} - ";
+                log.Level = 4;
+            }
             switch (log.Level)
             {
                 case 0:
@@ -46,7 +53,7 @@ namespace SublessSignIn.Controllers
                     level = LogLevel.Information;
                     break;
             }
-            logger.Log(level, $"FrontEnd - {log.Message}");
+            logger.Log(level, $"FrontEnd - {downgrade}{log.Message}");
 
         }
     }

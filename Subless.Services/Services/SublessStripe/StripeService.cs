@@ -69,7 +69,7 @@ namespace Subless.Services.Services.SublessStripe
 
         private void UpgradeCustomer(string customer, string cognitoId, string priceId)
         {
-            var subs = GetSubscriptions(customer);
+            var subs = GetActiveSubscriptions(customer);
             var subscription = subs.Single();
 
             var items = new List<SubscriptionItemOptions> {
@@ -180,7 +180,7 @@ namespace Subless.Services.Services.SublessStripe
         public void RolloverPaymentForIdleCustomer(string customerId)
         {
             _logger.LogInformation($"Rolling over payment for idle customer {customerId}");
-            var activeSubs = GetSubscriptions(customerId);
+            var activeSubs = GetActiveSubscriptions(customerId);
             if (!activeSubs.Any())
             {
                 _logger.LogInformation("Customer {custId} cancelled their sub before we could rollover their payment", customerId);
@@ -222,22 +222,32 @@ namespace Subless.Services.Services.SublessStripe
 
         public bool CachePaymentStatus(string cognitoId)
         {
-            var user = _userService.GetUserByCognitoId(cognitoId);
-            if (user?.StripeCustomerId == null)
+            try
             {
+                var user = _userService.GetUserByCognitoId(cognitoId);
+                if (user?.StripeCustomerId == null)
+                {
+                    return false;
+                }
+
+                var subs = GetAllSubscriptions(user.StripeCustomerId);
+                if (!subs.Any())
+                {
+                    _userService.CachePaymentStatus(cognitoId, false, null, null);
+                    return false;
+                }
+                var activePrices = GetPricesFromSubscriptions(subs);
+                var allPrices = GetPrices();
+                var isPaying = allPrices.Any(x => activePrices.Any(y => x.Id == y.Id));
+                _userService.CachePaymentStatus(cognitoId, isPaying, activePrices.FirstOrDefault().UnitAmount, subs.First().Created.ToUniversalTime());
+                return isPaying;
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Could not sync stripe data for user {cognitoId}");
                 return false;
             }
-
-            var subs = GetSubscriptions(user.StripeCustomerId);
-            if (!subs.Any())
-            { 
-                return false; 
-            }
-            var activePrices = GetPricesFromSubscriptions(subs);
-            var allPrices = GetPrices();
-            var isPaying = allPrices.Any(x => activePrices.Any(y => x.Id == y.Id));
-            _userService.CachePaymentStatus(cognitoId, isPaying, activePrices.FirstOrDefault().UnitAmount, subs.First().Created.ToUniversalTime());
-            return isPaying;
         }
 
         private List<string> GetActiveSubscriptionPriceId(string cognitoId)
@@ -254,7 +264,7 @@ namespace Subless.Services.Services.SublessStripe
                 return prices;
             }
 
-            var subscriptions = GetSubscriptions(user.StripeCustomerId);
+            var subscriptions = GetActiveSubscriptions(user.StripeCustomerId);
             return GetPricesFromSubscriptions(subscriptions);
 
         }
@@ -274,7 +284,7 @@ namespace Subless.Services.Services.SublessStripe
             return prices;
         }
 
-        private IEnumerable<Subscription> GetSubscriptions(string stripeCustomerId)
+        private IEnumerable<Subscription> GetActiveSubscriptions(string stripeCustomerId)
         {
             return _stripeApiWrapperServiceFactory.Execute(api =>
             {
@@ -283,6 +293,20 @@ namespace Subless.Services.Services.SublessStripe
                 {
                     Customer = customer.Id
                 }).Where(sub => sub.Status == "active" && sub.CancelAtPeriodEnd == false);
+                return subscriptions;
+            });
+
+        }
+
+        private IEnumerable<Subscription> GetAllSubscriptions(string stripeCustomerId)
+        {
+            return _stripeApiWrapperServiceFactory.Execute(api =>
+            {
+                var customer = api.CustomerService.Get(stripeCustomerId);
+                var subscriptions = api.SubscriptionService.List(new SubscriptionListOptions()
+                {
+                    Customer = customer.Id
+                });
                 return subscriptions;
             });
 
@@ -443,6 +467,7 @@ namespace Subless.Services.Services.SublessStripe
         }
         public bool CancelSubscription(string cognitoId)
         {
+
             var user = _userService.GetUserByCognitoId(cognitoId);
             if (string.IsNullOrWhiteSpace(user?.StripeCustomerId))
             {
@@ -461,10 +486,23 @@ namespace Subless.Services.Services.SublessStripe
                 foreach (var sub in subs)
                 {
                     api.SubscriptionService.Update(sub.Id,
-                        new SubscriptionUpdateOptions() {CancelAtPeriodEnd = true});
+                        new SubscriptionUpdateOptions() { CancelAtPeriodEnd = true });
                 }
             });
             return true;
+        }
+
+        public bool TryCancelSubscription(string cognitoId)
+        {
+            try
+            {
+                return CancelSubscription(cognitoId);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, $"Failed to cancel for user {cognitoId}");
+                return false;
+            }
         }
     }
 }

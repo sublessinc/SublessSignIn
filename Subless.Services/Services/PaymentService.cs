@@ -68,6 +68,9 @@ namespace Subless.Services.Services
                 _stripeService.RolloverPaymentForIdleCustomer(idleCustomer.CustomerId);
                 emailService.SendPatronRolloverReceiptEmail(idleCustomer.CognitoId, idleCustomer.Payment, startDate, endDate);
             }
+
+            // save records for unvisited creators
+             
             // send emails
             foreach (var payer in calculatorResult.PaymentsPerPayer)
             {
@@ -86,8 +89,10 @@ namespace Subless.Services.Services
                     emailService.SendPartnerReceiptEmail(payee.TargetId, payee, startDate, endDate);
                 }
             }
-            // record to database
-            SaveMasterList(calculatorResult.AllPayouts);
+            // record payments to database
+            SaveMasterLogs(calculatorResult.AllPayouts);
+            // record unvisited to database
+            SaveMasterLogs(calculatorResult.UnvisitedCreators);
             // record to s3 bucket
             SavePayoutsToS3(calculatorResult.AllPayouts);
             if (calculatorResult.EmailSent)
@@ -164,11 +169,13 @@ namespace Subless.Services.Services
 
         }
 
-        private void SaveMasterList(List<PaymentAuditLog> masterPayoutList)
+        private void SaveMasterLogs(IEnumerable<PaymentAuditLog> masterPayoutList)
         {
             _logger.LogInformation("Saving our audit logs.");
             _paymentLogsService.SaveAuditLogs(masterPayoutList);
         }
+
+
 
         private void SavePayoutsToS3(List<PaymentAuditLog> masterPayoutList)
         {

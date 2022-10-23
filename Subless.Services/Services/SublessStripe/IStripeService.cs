@@ -13,6 +13,7 @@ namespace Subless.Services.Services.SublessStripe
         bool CancelSubscription(string cognitoId);
         Task<CreateCheckoutSessionResponse> CreateCheckoutSession(long userBudget, string cognitoId);
         bool CustomerHasPaid(string cognitoId);
+        bool TryCancelSubscription(string cognitoId);
         List<Price> GetActiveSubscriptionPrice(string cognitoId);
         Task<Stripe.BillingPortal.Session> GetCustomerPortalLink(string cognitoId);
         IEnumerable<Payer> GetPayersForRange(DateTimeOffset startDate, DateTimeOffset endDate);

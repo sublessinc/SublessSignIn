@@ -7,6 +7,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="StripeService_Tests.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="StripeService_Tests.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.1.0" />
     <PackageReference Include="Moq" Version="4.17.2" />
     <PackageReference Include="xunit" Version="2.4.1" />
@@ -22,6 +32,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Subless.PayoutCalculator\Subless.PayoutCalculator.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="xssTestData.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

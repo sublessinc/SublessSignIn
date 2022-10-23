@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { TermsComponent } from '../terms/terms.component';
 
 @Component({
-  selector: 'partner-terms',
+  selector: 'app-partner-terms',
   templateUrl: './../terms/terms.component.html',
   styleUrls: ['./../terms/terms.component.css']
 })
