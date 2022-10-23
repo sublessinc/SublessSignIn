@@ -22,14 +22,19 @@ namespace Subless.Data
             return CreatorMessages.FirstOrDefault(x => x.CreatorId == creatorId && x.IsActive == true);
         }
 
-        public CreatorMessage SetCreatorMessage(CreatorMessage message)
+        public void InvalidateCreatorMessages(Guid creatorId)
         {
-            var oldMessages = CreatorMessages.Where(x=> x.CreatorId == message.CreatorId);
+            var oldMessages = CreatorMessages.Where(x => x.CreatorId == creatorId);
             foreach (var oldMessage in oldMessages)
             {
                 oldMessage.IsActive = false;
             }
             CreatorMessages.UpdateRange(oldMessages);
+            SaveChanges();
+        }
+
+        public CreatorMessage SetCreatorMessage(CreatorMessage message)
+        {
             CreatorMessages.Add(message);
             SaveChanges();
             return message;
