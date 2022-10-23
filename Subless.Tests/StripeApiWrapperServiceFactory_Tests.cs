@@ -17,10 +17,10 @@ public class StripeApiWrapperServiceFactory_Tests
     {
         var options = Options.Create(new Models.StripeConfig());
         options.Value.SecretKey = "anything";
-        options.Value.MaxInstanceCount = 10;
+        options.Value.MaxInstanceCount = 20;
         
         var factory = new SingleInstanceStripeApiWrapperServiceFactory(options);
-        StripeApiWrapperServiceFactory.MaxCount = 10;
+        StripeApiWrapperServiceFactory.MaxCount = 20;
         
         (CancellationTokenSource, List<Task>) CreateNInstancesAndReturnToken(int count)
         {
@@ -38,7 +38,10 @@ public class StripeApiWrapperServiceFactory_Tests
                 }, cancellationToken.Token);
                 tasks.Add(task);
             }
-
+            while (tasks.Any(x => x.Status == TaskStatus.WaitingToRun))
+            {
+                Thread.Sleep(500);
+            }
             return (cancellationToken, tasks);
         }
 
@@ -47,9 +50,10 @@ public class StripeApiWrapperServiceFactory_Tests
         // No instances - count is max (no allocations)
         Assert.Equal(StripeApiWrapperServiceFactory.MaxCount, SingleInstanceStripeApiWrapperServiceFactory.GetCurrentCount());
         
+
         // Allocate 10 - count is 0 (empty)
         var (firstBatchToken, firstBatchTasks) = CreateNInstancesAndReturnToken(StripeApiWrapperServiceFactory.MaxCount);
-        Thread.Sleep(500);
+
         Assert.Equal(0, SingleInstanceStripeApiWrapperServiceFactory.GetCurrentCount());
 
         // Allocate 10 - count is 0 (empty) - nothing to allocate

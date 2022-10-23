@@ -20,5 +20,7 @@ namespace Subless.Services.Services
         void AcceptTerms(string cognitoId);
         Creator? GetCreatorOrDefaultByCognitoid(string cognitoId);
         IEnumerable<Creator> GetActiveCreators(IEnumerable<Guid> excludeCreators);
+        CreatorMessage SetCreatorMessage(Guid creatorId, string message);
+        CreatorMessage GetCreatorMessage(Guid creatorId);
     }
 }

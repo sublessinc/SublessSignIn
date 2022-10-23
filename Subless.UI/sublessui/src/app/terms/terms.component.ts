@@ -8,15 +8,13 @@ import { TermsService } from '../services/terms.service';
   templateUrl: './terms.component.html',
   styleUrls: ['./terms.component.css']
 })
-export class TermsComponent implements OnInit, OnDestroy {
+export class TermsComponent implements OnDestroy {
   protected subs: Subscription[] = [];
   public url: string = "https://www.subless.com/terms";
   constructor(
     protected termsService: TermsService,
     protected authService: AuthorizationService) { }
 
-  ngOnInit(): void {
-  }
   ngOnDestroy(): void {
     this.subs.forEach((item: Subscription) => { item.unsubscribe(); })
   }
