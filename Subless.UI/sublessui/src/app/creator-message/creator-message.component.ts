@@ -3,6 +3,8 @@ import { AbstractControl, FormControl, FormGroup, ValidationErrors, ValidatorFn 
 import { Subscription } from 'rxjs';
 import { ICreatorMessage } from '../models/ICreatorMessage';
 import { CreatorService } from '../services/creator.service';
+import { CKEditor4 } from 'ckeditor4-angular/ckeditor';
+
 
 @Component({
   selector: 'app-creator-message',
@@ -17,10 +19,16 @@ export class CreatorMessageComponent implements OnInit {
   form = new FormGroup({
     messageControl: this.messageControl
   });
-  options: Object = {
-    charCounterMax: 70,
-    toolbarButtons: ['undo', 'redo', 'bold', 'insertLink']
-  }
+  config: Object = {
+    removePlugins: "a11yhelp,about,basicstyles,bidi,blockquote,notification,clipboard,panelbutton,panel,floatpanel,colorbutton,colordialog,copyformatting,menu,contextmenu,dialogadvtab,div,editorplaceholder,elementspath,enterkey,entities,exportpdf,popup,filetools,filebrowser,find,floatingspace,listblock,richcombo,font,format,forms,horizontalrule,htmlwriter,iframe,image,indent,indentblock,indentlist,justify,menubutton,language,list,liststyle,magicline,maximize,newpage,pagebreak,xml,ajax,pastetools,pastefromgdocs,pastefromlibreoffice,pastefromword,pastetext,preview,print,removeformat,resize,save,scayt,selectall,showblocks,showborders,sourcearea,stylescombo,tab,table,tabletools,tableselection,templates,undo,lineutils,widgetselection,widget,notificationaggregator,uploadwidget,uploadimage",
+    removeButtons: "Anchor",
+    linkDefaultProtocol: "https://",
+    linkShowTargetTab: false,
+    linkShowAdvancedTab: false,
+  };
+
+
+
 
   constructor(private creatorService: CreatorService, private changeDetector: ChangeDetectorRef) { }
 
@@ -38,6 +46,10 @@ export class CreatorMessageComponent implements OnInit {
     }));
   }
 
+  public onChange(event: any) {
+    this.message = event;
+    this.checkMessage();
+  }
   onMessageSubmit(): void {
     if (this.checkMessage()) {
       this.subs.push(this.creatorService.setCreatorMessage(this.message).subscribe({
@@ -79,6 +91,7 @@ export class CreatorMessageComponent implements OnInit {
         const linkValid = this.validLinks.some(item => link.startsWith(item));
         if (!linkValid) {
           this.form.controls["messageControl"].setErrors({ 'NoWhitelist': true });
+          return false;
         }
       }
     }

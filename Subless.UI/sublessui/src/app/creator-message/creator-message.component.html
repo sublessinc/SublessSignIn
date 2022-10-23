@@ -19,7 +19,9 @@
             <li *ngFor="let item of bannedCharacters">{{item}}</li>
         </mat-card-content>
         <mat-card-content>
-            <textarea [(froalaModel)]="message" [froalaEditor]="options" formControlName="messageControl"></textarea>
+            <ckeditor formControlName="messageControl" [(ngModel)]="message" (dataChange)="onChange($event)"
+                [config]="config">
+            </ckeditor>
         </mat-card-content>
         <mat-card-content><button class="submit" [disabled]="!messageForm.form.valid" type="submit" mat-button>
                 Submit</button></mat-card-content>
