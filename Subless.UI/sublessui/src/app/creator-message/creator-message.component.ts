@@ -4,6 +4,7 @@ import { Subscription } from 'rxjs';
 import { ICreatorMessage } from '../models/ICreatorMessage';
 import { CreatorService } from '../services/creator.service';
 import { CKEditor4 } from 'ckeditor4-angular/ckeditor';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 
 @Component({
@@ -30,7 +31,9 @@ export class CreatorMessageComponent implements OnInit {
 
 
 
-  constructor(private creatorService: CreatorService, private changeDetector: ChangeDetectorRef) { }
+  constructor(private creatorService: CreatorService,
+    private _snackBar: MatSnackBar,
+    private changeDetector: ChangeDetectorRef) { }
 
   ngOnInit(): void {
     this.subs.push(this.creatorService.getCreatorMessage().subscribe({
@@ -61,6 +64,9 @@ export class CreatorMessageComponent implements OnInit {
             this.message = "";
           }
           this.changeDetector.detectChanges();
+          this._snackBar.open("Saved", "Ok", {
+            duration: 2000,
+          })
         }
       }));
     }

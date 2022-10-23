@@ -6,6 +6,11 @@
         <mat-card-content class="text">It'll show up on their monthly receipt, next to your name and how much they gave
             you.
         </mat-card-content>
+        <mat-card-content>
+            <ckeditor formControlName="messageControl" [(ngModel)]="message" (dataChange)="onChange($event)"
+                [config]="config">
+            </ckeditor>
+        </mat-card-content>
         <mat-card-content *ngIf="messageControl.errors?.['OneLink']" class="warn-text">Please only include one link
         </mat-card-content>
         <mat-card-content *ngIf="messageControl.errors?.['NoWhitelist']" class="warn-text">We currently only allow links
@@ -17,11 +22,6 @@
         <mat-card-content *ngIf="messageControl.errors?.['BannedCharacter']" class="warn-text">Please remove the
             disallowed characters
             <li *ngFor="let item of bannedCharacters">{{item}}</li>
-        </mat-card-content>
-        <mat-card-content>
-            <ckeditor formControlName="messageControl" [(ngModel)]="message" (dataChange)="onChange($event)"
-                [config]="config">
-            </ckeditor>
         </mat-card-content>
         <mat-card-content><button class="submit" [disabled]="!messageForm.form.valid" type="submit" mat-button>
                 Submit</button></mat-card-content>
