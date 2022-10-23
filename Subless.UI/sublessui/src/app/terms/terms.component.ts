@@ -15,7 +15,6 @@ export class TermsComponent implements OnDestroy {
     protected termsService: TermsService,
     protected authService: AuthorizationService) { }
 
-
   ngOnDestroy(): void {
     this.subs.forEach((item: Subscription) => { item.unsubscribe(); })
   }
