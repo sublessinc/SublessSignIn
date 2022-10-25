@@ -13,6 +13,9 @@
         </mat-card-content>
         <mat-card-content *ngIf="messageControl.errors?.['OneLink']" class="warn-text">Please only include one link
         </mat-card-content>
+        <mat-card-content *ngIf="messageControl.errors?.['TooLong']" class="warn-text">Please keep messages under 70
+            characters.
+        </mat-card-content>
         <mat-card-content *ngIf="messageControl.errors?.['NoWhitelist']" class="warn-text">We currently only allow links
             to
             <li *ngFor="let item of validLinks"><a href={{item}}>{{item}}</a></li>

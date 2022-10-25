@@ -98,6 +98,10 @@ export class CreatorMessageComponent implements OnInit {
       this.form.controls["messageControl"].setErrors({ 'BannedCharacter': true });
       return false;
     }
+    if (plaintext.length > 70) {
+      this.form.controls["messageControl"].setErrors({ 'TooLong': true });
+      return false;
+    }
     if (!this.message.includes("</a>")) {
       return true;
     }
