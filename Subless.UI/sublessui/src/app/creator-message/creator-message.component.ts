@@ -1,10 +1,10 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup, ValidationErrors, ValidatorFn } from '@angular/forms';
-import { Subscription } from 'rxjs';
+import { Observable, of, Subscription } from 'rxjs';
 import { ICreatorMessage } from '../models/ICreatorMessage';
 import { CreatorService } from '../services/creator.service';
-import { CKEditor4 } from 'ckeditor4-angular/ckeditor';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { HttpErrorResponse } from '@angular/common/http';
 
 
 @Component({
@@ -53,20 +53,24 @@ export class CreatorMessageComponent implements OnInit {
     this.message = event.replace("&nbsp;", " ");
     this.checkMessage();
   }
+
   onMessageSubmit(): void {
     if (this.checkMessage()) {
-      this.subs.push(this.creatorService.setCreatorMessage(this.message).subscribe({
+      this.subs.push(this.creatorService.setCreatorMessage(this.message, () => of(null)).subscribe({
         next: (message: ICreatorMessage) => {
           if (message) {
             this.message = message.message;
+            this._snackBar.open("Saved", "Ok", {
+              duration: 10000,
+            });
           }
           else {
             this.message = "";
+            this._snackBar.open("An issue was encountered with your message, please try again", "Ok", {
+              duration: 2000,
+            });
           }
           this.changeDetector.detectChanges();
-          this._snackBar.open("Saved", "Ok", {
-            duration: 2000,
-          })
         }
       }));
     }
@@ -80,10 +84,17 @@ export class CreatorMessageComponent implements OnInit {
     "https://www.hentai-foundry.com",
     "https://linktr.ee"];
 
-  public bannedCharacters = ['[', ']', '%', "(", ")", "\\"];
+  public bannedCharacters = ['&', '[', ']', '%', "(", ")", "\\"];
+
+  extractContent(htmlContent: string): string {
+    var span = document.createElement('span');
+    span.innerHTML = htmlContent;
+    return span.textContent || span.innerText;
+  };
 
   checkMessage(): boolean {
-    if (this.bannedCharacters.some(character => this.message.includes(character))) {
+    const plaintext = this.extractContent(this.message);
+    if (this.bannedCharacters.some(character => plaintext.includes(character))) {
       this.form.controls["messageControl"].setErrors({ 'BannedCharacter': true });
       return false;
     }

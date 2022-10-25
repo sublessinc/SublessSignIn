@@ -7,7 +7,8 @@
             you.
         </mat-card-content>
         <mat-card-content>
-            <ckeditor formControlName="messageControl" (dataChange)="onChange($event)" [config]="config">
+            <ckeditor [(ngModel)]="message" formControlName="messageControl" (dataChange)="onChange($event)"
+                [config]="config">
             </ckeditor>
         </mat-card-content>
         <mat-card-content *ngIf="messageControl.errors?.['OneLink']" class="warn-text">Please only include one link

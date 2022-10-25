@@ -73,6 +73,7 @@ namespace Subless.Services.Services
 
         public CreatorMessage SetCreatorMessage(Guid creatorId, string message)
         {
+            message = message.Replace("&nbsp;", " ");
             message = RichTextValidator.SanitizeInput(message);
             creatorRepository.InvalidateCreatorMessages(creatorId);
             return creatorRepository.SetCreatorMessage(new CreatorMessage { CreateDate = DateTimeOffset.UtcNow, CreatorId = creatorId, Message = message, IsActive = true });
