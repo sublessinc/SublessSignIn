@@ -45,6 +45,11 @@ export class CreatorService {
     return this.httpClient.get<CreatorMessage>("/api/Creator/message");
   }
 
+  getMessageUriWhitelist(): Observable<string[]> {
+    return this.httpClient.get<string[]>("/api/Creator/message/whitelist");
+  }
+
+
   setCreatorMessage(message: string, handleError: any): Observable<CreatorMessage> {
     const headers = new HttpHeaders({
       "Content-Type": "text/plain"

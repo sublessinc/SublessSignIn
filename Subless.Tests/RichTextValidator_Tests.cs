@@ -16,6 +16,13 @@ namespace Subless.Tests
 {
     public class RichTextValidator_Tests
     {
+        public static List<string> WhitelisedLinks = new List<string> {"https://www.patreon.com",
+        "https://www.paypal.com",
+        "https://www.subscribestar.com",
+        "https://ko-fi.com",
+        "https://twitter.com",
+        "https://www.hentai-foundry.com",
+        "https://linktr.ee"};
         [Theory]
         [FileData("xssTestData.txt")]
 
@@ -23,7 +30,7 @@ namespace Subless.Tests
         {
             try
             {
-                var result = RichTextValidator.SanitizeInput(input);
+                var result = RichTextValidator.SanitizeInput(input, WhitelisedLinks);
                 Assert.NotEqual(input, result);
             }
             catch (NotSupportedException ex)
@@ -47,7 +54,7 @@ namespace Subless.Tests
         [InlineData("Thanks for Donating to Jon!")]
         public void RichTextValidator_WithValidInput_PreservesInput(string input)
         {
-            var result = RichTextValidator.SanitizeInput(input);
+            var result = RichTextValidator.SanitizeInput(input, WhitelisedLinks);
             Assert.Equal(input, result);
         }
 
@@ -61,7 +68,7 @@ namespace Subless.Tests
         {
             try
             {
-                var result = RichTextValidator.SanitizeInput(input);
+                var result = RichTextValidator.SanitizeInput(input, WhitelisedLinks);
                 Assert.NotEqual(input, result);
             }
             catch (NotSupportedException ex)
