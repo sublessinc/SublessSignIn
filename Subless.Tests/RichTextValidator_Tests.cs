@@ -1,5 +1,6 @@
 ﻿using Moq;
 using Subless.Data;
+using Subless.Models;
 using Subless.Services.Services;
 using System;
 using System.Collections.Generic;
@@ -29,7 +30,7 @@ namespace Subless.Tests
             {
                 Assert.True(true, "Exception not thrown on xss input");
             }
-            catch (AccessViolationException ex)
+            catch (InputInvalidException ex)
             {
                 Assert.True(true, "Exception not thrown on xss input");
             }
@@ -67,7 +68,7 @@ namespace Subless.Tests
             {
                 Assert.True(true, "Exception not thrown on xss input");
             }
-            catch (AccessViolationException ex)
+            catch (InputInvalidException ex)
             {
                 Assert.True(true, "Exception not thrown on xss input");
             }

@@ -271,6 +271,16 @@ namespace SublessSignIn.Controllers
                 var creator = _creatorService.GetCreatorByCognitoid(cognitoId);
                 return Ok(_creatorService.SetCreatorMessage(creator.Id, message.Message));
             }
+            catch(InputInvalidException e)
+            {
+                _logger.LogError(e, "Invalid creator message input");
+                return new StatusCodeResult(406);
+            }
+            catch (NotSupportedException e)
+            {
+                _logger.LogError(e, "Invalid creator message input");
+                return new StatusCodeResult(406);
+            }
             catch (UnauthorizedAccessException e)
             {
                 _logger.LogWarning(e, "Unauthorized user attempted to set message");

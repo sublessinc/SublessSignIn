@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { catchError, map } from 'rxjs/operators';
 import { CreatorMessage } from '../models/CreatorMessage';
 import { ICreator } from '../models/ICreator';
 import { ICreatorAnalytics } from '../models/ICreatorAnalytics';
@@ -45,11 +45,12 @@ export class CreatorService {
     return this.httpClient.get<CreatorMessage>("/api/Creator/message");
   }
 
-  setCreatorMessage(message: string): Observable<CreatorMessage> {
+  setCreatorMessage(message: string, handleError: any): Observable<CreatorMessage> {
     const headers = new HttpHeaders({
       "Content-Type": "text/plain"
     });
-    return this.httpClient.post<CreatorMessage>("/api/Creator/message", { message: message });
+    return this.httpClient.post<CreatorMessage>("/api/Creator/message", { message: message }).pipe(
+      catchError(handleError));
   }
 
   finalizeViaRedirect(uri: string, email: string, username: string) {

@@ -30,6 +30,7 @@ const routes: Routes = [
   { path: 'integration', component: IntegrationtestComponent, canActivate: [AuthGuard] },
   { path: 'partner-profile', component: PartnerprofileComponent, canActivate: [AuthGuard] },
   { path: 'error/:code', component: ErrorPageComponent },
+  { path: 'error', component: ErrorPageComponent },
   { path: 'payout-setup', component: PayoutsettingsComponent, canActivate: [AuthGuard], canDeactivate: [StopNavGuard] },
   { path: 'id', component: IdComponent, canActivate: [AuthGuard] },
   { path: 'login', component: LoginComponent },

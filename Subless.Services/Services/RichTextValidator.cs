@@ -1,5 +1,6 @@
 ﻿using Ganss.Xss;
 using HtmlAgilityPack;
+using Subless.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,12 +16,12 @@ namespace Subless.Services.Services
         {
             if (!MessageValid(message))
             {
-                throw new AccessViolationException($"Problem with message {HttpUtility.UrlEncode(message)} ");
+                throw new InputInvalidException($"Problem with message {HttpUtility.UrlEncode(message)} ");
             }
             return Sanitize(message);
         }
 
-        private static string[] BannedCharacters = new[] { ";", "[", "]", "%", "javascript", "\\\\", "-script", "(", ")", "\\" };
+        private static string[] BannedCharacters = new[] { ";", "[", "]", "%", "&", "javascript", "\\\\", "-script", "(", ")", "\\" };
         private static string[] WhitelisedLinks = new[] {"https://www.patreon.com",
         "https://www.paypal.com",
         "https://www.subscribestar.com",
