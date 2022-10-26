@@ -16,7 +16,7 @@ namespace Subless.Configuration
             services.Configure<UriWhitelist>(options =>
             {
                 var unsplitList = Environment.GetEnvironmentVariable("UriWhitelist") ?? throw new ArgumentNullException("UriWhitelist");
-                options.WhitelistedUris = unsplitList.Split(';').ToList();
+                options.WhitelistedUris = unsplitList.Split(';').Select(x => x.Trim()).ToList();
             });
 
             return services;
