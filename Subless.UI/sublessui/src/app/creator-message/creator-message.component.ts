@@ -16,6 +16,7 @@ export class CreatorMessageComponent implements OnInit {
 
   public message: string = "";
   private subs: Subscription[] = [];
+  public validLinks: string[] = [];
   messageControl = new FormControl('');
   form = new FormGroup({
     messageControl: this.messageControl
@@ -47,6 +48,11 @@ export class CreatorMessageComponent implements OnInit {
         this.changeDetector.detectChanges();
       }
     }));
+    this.subs.push(this.creatorService.getMessageUriWhitelist().subscribe({
+      next: (whitelist: string[]) => {
+        this.validLinks = whitelist;
+      }
+    }));
   }
 
   public onChange(event: any) {
@@ -76,13 +82,7 @@ export class CreatorMessageComponent implements OnInit {
     }
   }
   re = new RegExp("href=[\"']([^'\"]*)");
-  public validLinks = ["https://www.patreon.com",
-    "https://www.paypal.com",
-    "https://www.subscribestar.com",
-    "https://ko-fi.com",
-    "https://twitter.com",
-    "https://www.hentai-foundry.com",
-    "https://linktr.ee"];
+
 
   public bannedCharacters = ['&', '[', ']', '%', "(", ")", "\\"];
 

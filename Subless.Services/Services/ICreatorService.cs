@@ -22,5 +22,6 @@ namespace Subless.Services.Services
         IEnumerable<Creator> GetActiveCreators(IEnumerable<Guid> excludeCreators);
         CreatorMessage SetCreatorMessage(Guid creatorId, string message);
         CreatorMessage GetCreatorMessage(Guid creatorId);
+        List<string> GetUriWhitelist();
     }
 }
