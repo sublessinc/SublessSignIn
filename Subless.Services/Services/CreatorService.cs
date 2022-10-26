@@ -7,6 +7,7 @@ using System.Web;
 using Ganss.Xss;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Subless.Data;
 using Subless.Models;
 using Subless.Services.Extensions;
@@ -22,6 +23,7 @@ namespace Subless.Services.Services
         private readonly ILogger<CreatorService> logger;
         private readonly IPaymentRepository paymentRepository;
         private readonly IEmailService _emailService;
+        private readonly UriWhitelist uriWhitelist;
 
         public CreatorService(
             IUserRepository userRepository,
@@ -30,6 +32,7 @@ namespace Subless.Services.Services
             IPaymentRepository paymentRepository,
             IPaymentLogsService logsService,
             IEmailService emailService,
+            IOptions<UriWhitelist> uriWhitelist,
             ICacheService cache,
             ILoggerFactory loggerFactory)
         {
@@ -42,6 +45,8 @@ namespace Subless.Services.Services
             this.creatorRepository = creatorRepository ?? throw new ArgumentNullException(nameof(creatorRepository));
             this.partnerService = partnerService ?? throw new ArgumentNullException(nameof(partnerService));
             this.paymentRepository = paymentRepository ?? throw new ArgumentNullException(nameof(paymentRepository));
+            _emailService = emailService ?? throw new ArgumentNullException(nameof(emailService));
+            this.uriWhitelist = uriWhitelist.Value;
             _emailService = emailService ?? throw new ArgumentNullException(nameof(emailService));
             this.cache = cache ?? throw new ArgumentNullException(nameof(cache));
             logger = loggerFactory?.CreateLogger<CreatorService>() ?? throw new ArgumentNullException(nameof(loggerFactory));
@@ -71,9 +76,15 @@ namespace Subless.Services.Services
             return creatorRepository.GetMessageForCreator(creatorId);
         }
 
+        public List<string> GetUriWhitelist()
+        {
+            return uriWhitelist.WhitelistedUris;
+        }
+
         public CreatorMessage SetCreatorMessage(Guid creatorId, string message)
         {
-            message = RichTextValidator.SanitizeInput(message);
+            message = message.Replace("&nbsp;", " ");
+            message = RichTextValidator.SanitizeInput(message, uriWhitelist.WhitelistedUris);
             creatorRepository.InvalidateCreatorMessages(creatorId);
             return creatorRepository.SetCreatorMessage(new CreatorMessage { CreateDate = DateTimeOffset.UtcNow, CreatorId = creatorId, Message = message, IsActive = true });
         }

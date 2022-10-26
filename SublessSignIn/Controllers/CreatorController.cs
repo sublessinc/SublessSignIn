@@ -256,6 +256,27 @@ namespace SublessSignIn.Controllers
             }
         }
 
+        [HttpGet("message/whitelist")]
+        public ActionResult<List<string>> MessageUriWhitelist()
+        {
+            var cognitoId = userService.GetUserClaim(HttpContext.User);
+            if (cognitoId == null)
+            {
+                return Unauthorized();
+            }
+            try
+            {
+                var creator = _creatorService.GetCreatorByCognitoid(cognitoId);
+                return Ok(_creatorService.GetUriWhitelist());
+            }
+            catch (UnauthorizedAccessException e)
+            {
+                _logger.LogWarning(e, "Unauthorized user attempted to get message");
+
+                return Unauthorized();
+            }
+        }
+
 
 
         [HttpPost("message")]
@@ -270,6 +291,16 @@ namespace SublessSignIn.Controllers
             {
                 var creator = _creatorService.GetCreatorByCognitoid(cognitoId);
                 return Ok(_creatorService.SetCreatorMessage(creator.Id, message.Message));
+            }
+            catch(InputInvalidException e)
+            {
+                _logger.LogError(e, "Invalid creator message input");
+                return new StatusCodeResult(406);
+            }
+            catch (NotSupportedException e)
+            {
+                _logger.LogError(e, "Invalid creator message input");
+                return new StatusCodeResult(406);
             }
             catch (UnauthorizedAccessException e)
             {

@@ -1,5 +1,6 @@
 ﻿using Ganss.Xss;
 using HtmlAgilityPack;
+using Subless.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,25 +12,19 @@ namespace Subless.Services.Services
 {
     public static class RichTextValidator
     {
-        public static string SanitizeInput(string message)
+        public static string SanitizeInput(string message, List<string> uriWhitelist)
         {
-            if (!MessageValid(message))
+            if (!MessageValid(message, uriWhitelist))
             {
-                throw new AccessViolationException($"Problem with message {HttpUtility.UrlEncode(message)} ");
+                throw new InputInvalidException($"Problem with message {HttpUtility.UrlEncode(message)} ");
             }
             return Sanitize(message);
         }
 
-        private static string[] BannedCharacters = new[] { ";", "[", "]", "%", "javascript", "\\\\", "-script", "(", ")", "\\" };
-        private static string[] WhitelisedLinks = new[] {"https://www.patreon.com",
-        "https://www.paypal.com",
-        "https://www.subscribestar.com",
-        "https://ko-fi.com",
-        "https://twitter.com",
-        "https://www.hentai-foundry.com",
-        "https://linktr.ee"};
+        private static string[] BannedCharacters = new[] { ";", "[", "]", "%", "&", "javascript", "\\\\", "-script", "(", ")", "\\" };
 
-        private static bool MessageValid(string message)
+
+        private static bool MessageValid(string message, List<string> WhitelistedLinks)
         {
             if (message.Length > 1000) { return false; }
             HtmlDocument doc = new HtmlAgilityPack.HtmlDocument();
@@ -40,7 +35,7 @@ namespace Subless.Services.Services
             {
                 return false;
             }
-            if (!LinksInWhiteList(doc))
+            if (!LinksInWhiteList(doc, WhitelistedLinks))
             {
                 return false;
             }
@@ -48,12 +43,12 @@ namespace Subless.Services.Services
             return true;
         }
 
-        private static bool LinksInWhiteList(HtmlDocument doc)
+        private static bool LinksInWhiteList(HtmlDocument doc, List<string> WhitelistedLinks)
         {
             var linkElements = doc.DocumentNode.Descendants().Where(x => x.Name == "a");
             foreach (var linkElement in linkElements)
             {
-                if (linkElement.Attributes.Where(x => x.Name == "href").Any(linkAttribute => !WhitelisedLinks.Any(whiteListed => linkAttribute.Value.StartsWith(whiteListed))))
+                if (linkElement.Attributes.Where(x => x.Name == "href").Any(linkAttribute => !WhitelistedLinks.Any(whiteListed => linkAttribute.Value.StartsWith(whiteListed))))
                 {
                     return false;
                 }
