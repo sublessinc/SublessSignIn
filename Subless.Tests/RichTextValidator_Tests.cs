@@ -55,6 +55,7 @@ namespace Subless.Tests
         [InlineData("<p>Thanks for Donating to Jon! <a href=\"https://ko-fi.com/user?u=3342350\">My patreon</a></p>")]
         [InlineData("<p>Thanks for donating! Check out <a href=\"https://www.patreon.com/user?u=3342350\">my patreon</a> for \" co</p>")]
         [InlineData("<p>Thanks for Donating to Jon! <a href=\"https://coolguy.fanbox.cc/user?u=3342350\">My patreon</a></p>")]
+        [InlineData("<p>Thanks for Donating to Jon! <a href=\"https://fanbox.cc/user?u=3342350\">My patreon</a></p>")]
         [InlineData("Thanks for Donating to Jon!")]
         public void RichTextValidator_WithValidInput_PreservesInput(string input)
         {
