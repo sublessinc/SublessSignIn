@@ -145,7 +145,7 @@ export class Subless implements SublessInterface {
      * @return {[string, string]}tuple of image and target URI
     */
     private getmessage(): [string, string] {
-        const message = Math.floor(Math.random() * 6) + 1;
+        const message = Math.floor(Math.random() * 7) + 1;
         const img = `${sublessUri}/dist/assets/message${message}.png`;
         if (message == 3) {
             return [img, `https://www.subless.com/hf-creator-instructions?utm_campaign=message${message}`];
