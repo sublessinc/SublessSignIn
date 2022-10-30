@@ -109,13 +109,27 @@ export class CreatorMessageComponent implements OnInit {
     const links = this.message.match(this.re)?.filter(link => !link.startsWith("href="));
     if (links) {
       for (const link of links) {
-        const linkValid = this.validLinks.some(item => link.startsWith(item));
-        if (!linkValid) {
+        if (!this.checkLinkDomain(link)) {
           this.form.controls["messageControl"].setErrors({ 'NoWhitelist': true });
           return false;
         }
       }
     }
     return true;
+  }
+
+  checkLinkDomain(uri: string): boolean {
+    const linkValid = this.validLinks.some(item => uri.startsWith(item));
+    if (linkValid) { return true; }
+    for (const link in this.validLinks) {
+      let regexedLink = this.validLinks[link].replace("*", "[A-Za-z0-9\\.-]*").replace("https://", "");
+      const cleanedUri = uri.replace("https://", "");
+      regexedLink += ".*";
+      const matches = cleanedUri.match(regexedLink);
+      if (matches?.some(x => x == cleanedUri)) {
+        return true;
+      }
+    }
+    return false;
   }
 }
