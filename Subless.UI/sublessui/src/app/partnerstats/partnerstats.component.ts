@@ -1,5 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import * as fileSaver from 'file-saver';
+import { NGXLogger } from 'ngx-logger';
 import { Subscription } from 'rxjs';
 import { StatsService } from '../services/stats.service';
 
@@ -11,7 +12,7 @@ import { StatsService } from '../services/stats.service';
 export class PartnerstatsComponent implements OnDestroy {
   private subs: Subscription[] = [];
 
-  constructor(private statsService: StatsService) { }
+  constructor(private statsService: StatsService, private logger: NGXLogger) { }
 
   ngOnDestroy(): void {
     this.subs.forEach((item: Subscription) => { item.unsubscribe(); })
@@ -24,7 +25,7 @@ export class PartnerstatsComponent implements OnDestroy {
         const url = window.URL.createObjectURL(blob);
         fileSaver.saveAs(blob, 'payout-history.csv');
       })),
-      (error: any) => console.log('Error downloading the file'),
-      () => console.info('File downloaded successfully');
+      (error: any) => this.logger.warn('Error downloading the file'),
+      () => this.logger.info('File downloaded successfully');
   }
 }

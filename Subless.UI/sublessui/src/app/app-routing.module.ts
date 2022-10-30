@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AccountSettingsComponent } from './account-settings/account-settings.component';
+import { CreatorMessageComponent } from './creator-message/creator-message.component';
 import { CreatorTermsComponent } from './creator-terms/creator-terms.component';
 import { CreatorprofileComponent } from './creatorprofile/creatorprofile.component';
 import { ErrorPageComponent } from './error-page/error-page.component';
@@ -36,6 +37,7 @@ const routes: Routes = [
   { path: 'terms', component: TermsComponent },
   { path: 'creator-terms', component: CreatorTermsComponent },
   { path: 'partner-terms', component: PartnerTermsComponent },
+  { path: 'creator-message', component: CreatorMessageComponent },
   { path: 'renew', component: SessionRenewComponent }
 ];
 

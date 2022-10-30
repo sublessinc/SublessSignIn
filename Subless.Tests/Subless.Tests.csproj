@@ -1,10 +1,20 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
 
     <IsPackable>false</IsPackable>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="StripeService_Tests.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="StripeService_Tests.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.1.0" />
@@ -22,6 +32,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Subless.PayoutCalculator\Subless.PayoutCalculator.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="xssTestData.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

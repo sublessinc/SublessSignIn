@@ -7,6 +7,7 @@ import { Observable, of, Subscription, throwError } from 'rxjs';
 
 import { catchError, map } from 'rxjs/operators';
 import { IUser } from '../models/IUser';
+import { NGXLogger } from 'ngx-logger';
 
 
 @Injectable({
@@ -21,6 +22,7 @@ export class AuthorizationService {
     private httpClient: HttpClient,
     private router: Router,
     private route: ActivatedRoute,
+    private logger: NGXLogger
   ) {
     this.subs.push(this.route.queryParams.subscribe(params => {
       this.activation = params['activation'];
@@ -70,6 +72,7 @@ export class AuthorizationService {
   }
 
   redirect() {
+    this.logger.debug("Starting login");
     const activation = sessionStorage.getItem('activation');
     var headers = new HttpHeaders();
 
@@ -85,6 +88,7 @@ export class AuthorizationService {
     }
     this.subs.push(this.httpClient.get<IRedirect>('/api/Authorization/redirect', { headers: headers }).subscribe({
       next: (redirectResponse: IRedirect) => {
+        this.logger.debug("Login redirect");
         switch (redirectResponse.redirectionPath) {
           case 1:
             this.router.navigate(['register-payment']);

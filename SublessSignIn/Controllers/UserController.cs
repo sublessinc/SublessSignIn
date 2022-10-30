@@ -10,6 +10,7 @@ using Subless.Models;
 using Subless.Services;
 using Subless.Services.Extensions;
 using Subless.Services.Services;
+using Subless.Services.Services.SublessStripe;
 using SublessSignIn.Models;
 
 
@@ -65,7 +66,7 @@ namespace SublessSignIn.Controllers
         [HttpDelete("{cognitoId}")]
         public async Task DeleteUser(string cognitoId)
         {
-            await Delete(cognitoId);
+            await Delete(cognitoId, force: true);
         }
 
         [TypeFilter(typeof(AdminAuthorizationFilter))]
@@ -73,12 +74,19 @@ namespace SublessSignIn.Controllers
         public async Task DeleteUserByEmail([FromQuery] string email)
         {
             var cognitoId = await cognitoService.GetCongitoUserByEmail(email);
-            await Delete(cognitoId);
+            await Delete(cognitoId, force: true);
         }
 
-        private async Task Delete(string cognitoId)
+        private async Task Delete(string cognitoId, bool force = false)
         {
-            stripeService.CancelSubscription(cognitoId);
+            if (force)
+            {
+                stripeService.TryCancelSubscription(cognitoId);
+            }
+            else
+            {
+                stripeService.CancelSubscription(cognitoId);
+            }
             var user = userService.GetUserByCognitoId(cognitoId);
             if (user.Creators.Any())
             {
@@ -216,7 +224,7 @@ namespace SublessSignIn.Controllers
             {
                 var paymentDate = paymentLogsService.GetLastPaymentDate();
                 return Ok(hitService.GetTopPatronContent(paymentDate, DateTimeOffset.UtcNow, cognitoId)
-                    .Select(x=> new CreatorHitCount { CreatorName= x.CreatorName, Hits= x.Hits}));
+                    .Select(x => new CreatorHitCount { CreatorName = x.CreatorName, Hits = x.Hits }));
             }
             catch (UnauthorizedAccessException e)
             {

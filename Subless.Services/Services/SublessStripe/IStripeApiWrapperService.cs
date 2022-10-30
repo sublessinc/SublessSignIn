@@ -1,6 +1,6 @@
 ﻿using Stripe;
 
-namespace Subless.Services.Services
+namespace Subless.Services.Services.SublessStripe
 {
     public interface IStripeApiWrapperService
     {

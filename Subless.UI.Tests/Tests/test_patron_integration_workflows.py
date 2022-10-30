@@ -41,7 +41,7 @@ def test_paying_user_can_logout_of_test_site(web_driver, paying_user, params):
     assert len(post_logout_handles) - len(handles) == 1 #should have opened a new tab
     web_driver.switch_to.window(post_logout_handles[1])
     # THEN: I should see a login page
-
+    time.sleep(1)
     assert "login" in web_driver.current_url
 
     web_driver.close()
