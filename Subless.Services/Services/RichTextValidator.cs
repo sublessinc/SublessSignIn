@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web;
 
@@ -48,12 +49,31 @@ namespace Subless.Services.Services
             var linkElements = doc.DocumentNode.Descendants().Where(x => x.Name == "a");
             foreach (var linkElement in linkElements)
             {
-                if (linkElement.Attributes.Where(x => x.Name == "href").Any(linkAttribute => !WhitelistedLinks.Any(whiteListed => linkAttribute.Value.StartsWith(whiteListed))))
+                if (linkElement.Attributes.Where(x => x.Name == "href")
+                    .Select(linkAttribute => linkAttribute.Value).All(x=> !RichTextValidator.LinkDomainValid(x, WhitelistedLinks)))
                 {
                     return false;
                 }
             }
             return true;
+        }
+
+        private static bool LinkDomainValid(string uri, List<string> WhitelistedLinks)
+        {
+            var wildcardRegex = "[A-Za-z0-9\\.-]*";
+            foreach (var whitelistedDomain in WhitelistedLinks) 
+            { 
+                if (uri.StartsWith(whitelistedDomain)) { return true; }
+                var regexedDomain = whitelistedDomain.Replace("*", wildcardRegex).Replace("https://", "");
+                regexedDomain += ".*";
+                var uriSubset = uri.Replace("https://", "");
+                var regexResult = Regex.Match(uriSubset, regexedDomain);
+                if (regexResult.Captures.Any(x=>x.Value == uriSubset))
+                {
+                    return true;    
+                }
+            }
+            return false;
         }
 
         private static string Sanitize(string message)
