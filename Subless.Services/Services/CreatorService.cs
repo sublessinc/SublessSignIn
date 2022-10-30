@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mail;
 using System.Threading.Tasks;
+using System.Web;
+using Ganss.Xss;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Subless.Data;
@@ -64,6 +66,18 @@ namespace Subless.Services.Services
             await FireCreatorActivationWebhook(creator, false);
         }
 
+        public CreatorMessage GetCreatorMessage(Guid creatorId)
+        {
+            return creatorRepository.GetMessageForCreator(creatorId);
+        }
+
+        public CreatorMessage SetCreatorMessage(Guid creatorId, string message)
+        {
+            message = RichTextValidator.SanitizeInput(message);
+            creatorRepository.InvalidateCreatorMessages(creatorId);
+            return creatorRepository.SetCreatorMessage(new CreatorMessage { CreateDate = DateTimeOffset.UtcNow, CreatorId = creatorId, Message = message, IsActive = true });
+        }
+
         public Creator GetCreatorByCognitoid(string cognitoId)
         {
             var creator = GetCreatorOrDefaultByCognitoid(cognitoId);
@@ -95,6 +109,10 @@ namespace Subless.Services.Services
             return creatorRepository.GetCreatorsByPartnerId(partnerId);
         }
 
+        public IEnumerable<Creator> GetActiveCreators(IEnumerable<Guid> excludeCreators)
+        {
+            return creatorRepository.GetActiveCreators(excludeCreators);
+        }
         public Creator GetCachedCreatorFromPartnerAndUsername(string username, Guid partnerId)
         {
             var key = username + partnerId;
