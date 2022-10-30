@@ -16,13 +16,16 @@ namespace Subless.Tests
 {
     public class RichTextValidator_Tests
     {
-        public static List<string> WhitelisedLinks = new List<string> {"https://www.patreon.com",
-        "https://www.paypal.com",
-        "https://www.subscribestar.com",
-        "https://ko-fi.com",
-        "https://twitter.com",
-        "https://www.hentai-foundry.com",
-        "https://linktr.ee"};
+        public static List<string> WhitelisedLinks = new List<string> {
+            "https://www.patreon.com",
+            "https://www.paypal.com",
+            "https://www.subscribestar.com",
+            "https://ko-fi.com",
+            "https://twitter.com",
+            "https://www.hentai-foundry.com",
+            "https://linktr.ee",
+            "https://*fanbox.cc"
+        };
         [Theory]
         [FileData("xssTestData.txt")]
 
@@ -51,6 +54,7 @@ namespace Subless.Tests
         [InlineData("<p>Thanks for Donating to Jon! <a href=\"https://www.subscribestar.com/user?u=3342350\">My patreon</a></p>")]
         [InlineData("<p>Thanks for Donating to Jon! <a href=\"https://ko-fi.com/user?u=3342350\">My patreon</a></p>")]
         [InlineData("<p>Thanks for donating! Check out <a href=\"https://www.patreon.com/user?u=3342350\">my patreon</a> for \" co</p>")]
+        [InlineData("<p>Thanks for Donating to Jon! <a href=\"https://coolguy.fanbox.cc/user?u=3342350\">My patreon</a></p>")]
         [InlineData("Thanks for Donating to Jon!")]
         public void RichTextValidator_WithValidInput_PreservesInput(string input)
         {
@@ -64,6 +68,7 @@ namespace Subless.Tests
         [InlineData("<p>Thanks for Donating to Jon! <a href=\"https://www.pareon.com/user?u=3342350\">My patreon</a></p>")]
         [InlineData("<p>Thanks for Donating to Jon! <a href=\"https://www.patreon.org/user?u=3342350\">My patreon</a></p>")]
         [InlineData("<p>Thanks for Donating to Jon! <a href=\"https://ww.patreon.com/user?u=3342350\">My patreon</a></p>")]
+        [InlineData("<p>Thanks for Donating to Jon! <a href=\"https://coolguy/fanbox.cc/user?u=3342350\">My patreon</a></p>")]
         public void RichTextValidator_WithInvalidLink_ThrowsError(string input)
         {
             try
