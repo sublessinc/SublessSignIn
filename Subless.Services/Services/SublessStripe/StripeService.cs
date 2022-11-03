@@ -135,11 +135,11 @@ namespace Subless.Services.Services.SublessStripe
             return customer;
         }
 
-        private StripeList<Price> GetPrices()
+        private IEnumerable<Price> GetPrices()
         {
             //TODO: productoptions should filter to only susbcription plans
             var productOptions = new PriceListOptions();
-            var prices = _stripeApiWrapperServiceFactory.Execute(api => api.PriceService.List(productOptions));
+            var prices = _stripeApiWrapperServiceFactory.Execute(api => api.PriceService.ListAutoPaging(productOptions));
             return prices;
         }
 
