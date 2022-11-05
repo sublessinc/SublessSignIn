@@ -36,6 +36,14 @@ def check_exists_by_id(id, driver):
         return False
     return True
 
+def check_exists_by_xpath(xpath, driver):
+    from selenium.common.exceptions import NoSuchElementException
+    try:
+        driver.find_element_by_xpath(xpath)
+    except NoSuchElementException:
+        return False
+    return True
+
 
 class BasePageLocators:
     logout_button_selector = '#logout, #logout2'

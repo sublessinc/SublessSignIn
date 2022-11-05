@@ -85,7 +85,7 @@ def create_paid_subless_account(web_driver):
     stripe_signup_page = plan_selection_page.select_plan_5()
 
     # THEN: I should be taken to the stripe page
-    dashboard = stripe_signup_page.SignUpForStripe()
+    dashboard = stripe_signup_page.sign_up_for_stripe()
     welcome_email = receive_email(inbox_id=mailbox.id)
     return id, cookie, mailbox
 
