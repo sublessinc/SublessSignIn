@@ -153,7 +153,7 @@ namespace Subless.Services.Services.SublessStripe
                 CreatePriceByDollarAmount(dollarAmount);
                 prices = GetPrices().ToList();
             }
-            var price = prices.Where(x => x.UnitAmount == dollarAmountInCents).Single();
+            var price = prices.Where(x => x.UnitAmount == dollarAmountInCents).First();
             return price?.Id;
         }
 

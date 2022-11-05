@@ -1,6 +1,5 @@
 import logging
 import os
-globals()['grequests'] = __import__('grequests')
 
 import pytest
 from selenium import webdriver
