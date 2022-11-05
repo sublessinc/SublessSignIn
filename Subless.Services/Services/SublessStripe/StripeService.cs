@@ -135,11 +135,11 @@ namespace Subless.Services.Services.SublessStripe
             return customer;
         }
 
-        private StripeList<Price> GetPrices()
+        private IEnumerable<Price> GetPrices()
         {
             //TODO: productoptions should filter to only susbcription plans
             var productOptions = new PriceListOptions();
-            var prices = _stripeApiWrapperServiceFactory.Execute(api => api.PriceService.List(productOptions));
+            var prices = _stripeApiWrapperServiceFactory.Execute(api => api.PriceService.ListAutoPaging(productOptions));
             return prices;
         }
 
@@ -153,7 +153,7 @@ namespace Subless.Services.Services.SublessStripe
                 CreatePriceByDollarAmount(dollarAmount);
                 prices = GetPrices().ToList();
             }
-            var price = prices.Where(x => x.UnitAmount == dollarAmountInCents).Single();
+            var price = prices.Where(x => x.UnitAmount == dollarAmountInCents).First();
             return price?.Id;
         }
 

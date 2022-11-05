@@ -63,7 +63,7 @@ def test_creator_cant_self_deal(web_driver, subless_activated_creator_user, para
     before_hit_count = creator_dashboard.get_hit_count()
     change_plan_page = creator_dashboard.navigate_to_change_plan()
     signup_page = change_plan_page.change_plan_10()
-    patron_dashboard = signup_page.SignUpForStripe()
+    patron_dashboard = signup_page.sign_up_for_stripe()
     assert "profile" in web_driver.current_url
     # get current hits
     from PageObjectModels.TestSite.TestSite_HomePage import TestSite_HomePage

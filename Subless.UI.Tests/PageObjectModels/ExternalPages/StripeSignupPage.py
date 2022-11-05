@@ -1,10 +1,9 @@
 # todo:  fill this out
-import time
 
 from selenium.webdriver.support.wait import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.common.by import By
-from PageObjectModels.BasePage import BasePage
+from PageObjectModels.BasePage import BasePage, check_exists_by_xpath
 
 
 class StripeSignupPage(BasePage):
@@ -34,11 +33,16 @@ class StripeSignupPage(BasePage):
 
     @property
     def subscribe_button(self):
-        return self.driver.find_element_by_xpath(StripeSignupLocators.subscribe_button_xpath)
+        if check_exists_by_xpath(StripeSignupLocators.subscribe_button_xpath, self.driver):
+            return self.driver.find_element_by_xpath(StripeSignupLocators.subscribe_button_xpath)
+        if check_exists_by_xpath(StripeSignupLocators.subscribe_button_xpath2, self.driver):
+            return self.driver.find_element_by_xpath(StripeSignupLocators.subscribe_button_xpath2)
+        raise Exception("Subscribe button not found, stipe probably changed the page again.")
 
-    def SignUpForStripe(self):
+    def sign_up_for_stripe(self):
         from PageObjectModels.PatronDashboardPage import PatronDashboardPage
-        WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.ID, StripeSignupLocators.email_text_id)))
+        WebDriverWait(self.driver, 10)\
+            .until(ec.presence_of_element_located((By.ID, StripeSignupLocators.email_text_id)))
         self.email_textbox.send_keys('424@foo.bar')
         self.cc_num_textbox.send_keys('4242424242424242')
         self.cc_expiry_textbox.send_keys('424')
@@ -58,3 +62,5 @@ class StripeSignupLocators:
     name_text_id = 'billingName'
     zip_text_id = 'billingPostalCode'
     subscribe_button_xpath = '/html/body/div[1]/div/div[2]/div[2]/div/div[2]/form/div[2]/div[2]/button'
+    subscribe_button_xpath2 = '/html/body/div[1]/div/div[2]/div[2]/div/div[2]/form/div[2]/div/div[2]/button'
+    

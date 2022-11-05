@@ -15,7 +15,7 @@ namespace Subless.Services.Services
     public class TemplatedEmailService : ITemplatedEmailService
     {
         public const string MonthKey = "{{month}}"; // March, 2022
-        public const string IndividualPaymentTemplate = "<tr style='padding: 10px;padding-bottom: 20px;'>                <td>{{creatorname}}</td>                <td>{{creatorMessage}}</td>                <td style='text-align: right;'>{{creatorpayment}}</td>            </tr>";
+        public const string IndividualPaymentTemplate = "<tr style='padding: 10px;padding-bottom: 20px; border-bottom: solid 1px #f2f2f2;'>                <td>{{creatorname}}</td>                <td>{{creatorMessage}}</td>                <td style='text-align: right;'>{{creatorpayment}}</td>            </tr>";
         public const string PaymentsKey = "{{payments}}"; // list of the above
         public const string CreatorNameKey = "{{creatorname}}"; // CreatorUserName
         public const string CreatorPaymentKey = "{{creatorpayment}}"; //$50.00
