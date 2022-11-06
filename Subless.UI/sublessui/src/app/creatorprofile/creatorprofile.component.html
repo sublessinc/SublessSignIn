@@ -5,8 +5,8 @@
                 <img class="icon" src="../../assets/img/views.svg">
             </div>
             <div class="statText"
-                title="This is the total number of times a subless patron has opened a link on a partner website containing something you've made. Only subless patron hits are counted, because only they have budgets from which you'll receive funds.">
-                <mat-card-content class="statHeader">Views From Patrons</mat-card-content>
+                title="This is the total number of times a subless supporter has opened a link on a partner website containing something you've made. Only subless supporter hits are counted, because only they have budgets from which you'll receive funds.">
+                <mat-card-content class="statHeader">Views From Supporters</mat-card-content>
                 <mat-card-content class="numberText">{{analytics.thisMonth.views}}</mat-card-content>
                 <mat-card-content matTooltip="{{this.dateFormatter.GetLastPeriodString(analytics.lastMonth)}}">
                     <b>{{analytics.lastMonth.views}}</b> Views last month
@@ -19,8 +19,8 @@
                 <img class="icon" src="../../assets/img/creators.svg">
             </div>
             <div class="statText"
-                title="This is the total number of individual subless patrons who've visited your content. You'll receive a cut of each of these patrons' monthly budgets.">
-                <mat-card-content class="statHeader">Unique Patrons Who Visited</mat-card-content>
+                title="This is the total number of individual subless supporters who've visited your content. You'll receive a cut of each of these supporters' monthly budgets.">
+                <mat-card-content class="statHeader">Unique Supporters Who Visited</mat-card-content>
                 <mat-card-content class="numberText">{{analytics.thisMonth.visitors}}</mat-card-content>
                 <mat-card-content matTooltip="{{this.dateFormatter.GetLastPeriodString(analytics.lastMonth)}}">
                     <b>{{analytics.lastMonth.visitors}}</b> Visitors last month
@@ -32,7 +32,7 @@
                 <img class="icon" src="../../assets/img/picture.svg">
             </div>
             <div class="statText"
-                title="These are the total number of different pieces of content you've created that patrons have viewed.">
+                title="These are the total number of different pieces of content you've created that Supporters have viewed.">
                 <mat-card-content class="statHeader">Unique content viewed</mat-card-content>
                 <mat-card-content class="numberText">{{analytics.thisMonth.piecesOfContent}}</mat-card-content>
                 <mat-card-content matTooltip="{{this.dateFormatter.GetLastPeriodString(analytics.lastMonth)}}">
