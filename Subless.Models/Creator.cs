@@ -18,6 +18,7 @@ namespace Subless.Models
         public string Email { get; set; }
         public bool AcceptedTerms { get; set; }
         public DateTimeOffset CreateDate { get; set; }
-
+        public bool Deleted { get; set; }
+        public DateTimeOffset DeleteDate { get; set; }
     }
 }
