@@ -16,15 +16,12 @@ jobs:
       - browser-tools/install-geckodriver
       - checkout
       - run:
-          name: Install dependencies
+          name: Install dependencies and run
           command: |
             cd ./Subless.UI.Tests
             python3 -m venv virtual_env --clear
             source virtual_env/bin/activate
             pip install --trusted-host https://pypi.python.org -r ./requirements.txt
-      - run:
-          name: Run tests
-          command: |
             python3 -m pytest Tests
 workflows:
   build_and_push_site:
