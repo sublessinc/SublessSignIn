@@ -10,7 +10,7 @@ jobs:
       - image: cimg/python:3.9-browsers
         environment:
           PIPENV_VENV_IN_PROJECT: true
-    working_directory: ~/Subless.UI.Tests
+    working_directory: ~/tests
     steps:
       - browser-tools/install-firefox
       - browser-tools/install-geckodriver
@@ -18,9 +18,9 @@ jobs:
       - run:
           name: Install dependencies
           command: |
+            cd ./Subless.UI.Tests
             python3 -m venv virtual_env --clear
             source virtual_env/bin/activate
-            ls ./
             pip install --trusted-host https://pypi.python.org -r ./requirements.txt
       - run:
           name: Run tests
