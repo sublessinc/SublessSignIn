@@ -23,6 +23,7 @@ jobs:
             source virtual_env/bin/activate
             pip install --trusted-host https://pypi.python.org -r ./requirements.txt
             python3 -m pytest Tests
+      
 workflows:
   build_and_push_site:
     jobs:
@@ -178,4 +179,4 @@ workflows:
       - selenium:
         filters:
           branches:
-            only: tests/selenium-circle
+            only: dev

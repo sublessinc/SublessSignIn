@@ -3,10 +3,16 @@ import os
 
 
 class Keys:
-
-    mailslurp_api_key = os.environ['mailslurp_api_key']
-    # I assume kyle is referring to us switching from jwt based authentication to cookies that exist for a session
-    # lifetime. That probably will require some re-vetting of assumptions whenever I find where this was used.
-    god_password = os.environ['god_password']
-    god_email = os.environ['god_email']
-    cognito_app_client_id = os.environ['cognito_app_client_id']
+    keyPath = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../keys.json')
+    if (os.path.isfile(keyPath)):
+        all_json = json.load(open(keyPath))
+        mailslurp_api_key = all_json['mailslurp_api_key']
+        god_token = all_json['god_token']  # ha ha this is no longer valid
+        god_password = all_json['god_password']
+        god_email = all_json['god_email']
+        cognito_app_client_id = all_json['cognito_app_client_id']
+    else:
+        mailslurp_api_key = os.environ['mailslurp_api_key']
+        god_password = os.environ['god_password']
+        god_email = os.environ['god_email']
+        cognito_app_client_id = os.environ['cognito_app_client_id']
