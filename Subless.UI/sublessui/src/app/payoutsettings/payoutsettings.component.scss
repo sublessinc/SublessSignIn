@@ -1,13 +1,14 @@
 @use 'sass:map';
 @use '@angular/material' as mat;
 @import "../theme/theme";
+
 .root {
     display: flex;
     flex-direction: column;
     align-content: flex-start;
     justify-content: center;
     height: 100%;
-     ;
+    ;
 }
 
 .logo {
@@ -20,19 +21,27 @@
 .paypalid {
     width: 90%;
 }
+
 .submit {
     width: 90%;
 }
+
 .title {
     @extend h3-font;
     font-weight: 700;
     font-size: 1.2em;
 }
+
 .text {
     @extend body-font;
-    color: map-get($md-subtitlegrey, 900 );
+    color: map-get($md-subtitlegrey, 900);
 }
+
 .card {
     border-radius: 15px;
     padding: 50px;
+}
+
+.alert {
+    color: red;
 }
