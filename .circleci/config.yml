@@ -181,4 +181,4 @@ workflows:
       - selenium:
         filters:
           branches:
-            only: tests/selenium-circle
+            only: dev
