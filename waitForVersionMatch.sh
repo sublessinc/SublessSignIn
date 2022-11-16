@@ -6,10 +6,11 @@ do
   if [[ $response == *$short* ]]
   then
     echo "version match"
-    exit 1
+    exit 0
   fi
   echo "deployed version"
   echo $response
   sleep 5s
 done
 echo "Environment version did not update to match current branch" >&2
+exit 1
