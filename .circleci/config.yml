@@ -181,4 +181,5 @@ workflows:
       - selenium:
         filters:
           branches:
-            only: dev
+            only: 
+              - dev
