@@ -19,7 +19,7 @@ jobs:
           name: Install dependencies and run
           command: |
             set -e
-            waitForVersionMatch.sh
+            bash waitForVersionMatch.sh
             cd ./Subless.UI.Tests
             python3 -m venv virtual_env --clear
             source virtual_env/bin/activate
