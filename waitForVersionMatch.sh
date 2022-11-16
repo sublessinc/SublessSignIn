@@ -10,7 +10,7 @@ do
   fi
   echo "deployed version"
   echo $response
-  sleep 5s
+  sleep 30s
 done
 echo "Environment version did not update to match current branch" >&2
 exit 1
