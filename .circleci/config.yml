@@ -179,6 +179,7 @@ workflows:
   test:
     jobs:
       - selenium:
-        filters:
-          branches:
-            only: dev
+          filters:
+            branches:
+              only: 
+                - dev

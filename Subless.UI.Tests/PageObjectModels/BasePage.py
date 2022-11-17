@@ -8,14 +8,15 @@ from selenium.webdriver.common.by import By
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger()
 
-
 class BasePage(object):
+
     @property
     def logout_button(self):
         return self.driver.find_element_by_css_selector(BasePageLocators.logout_button_selector)
 
     def __init__(self, driver):
         self.driver = driver
+        WebDriverWait(self.driver, 10).until(EC.invisibility_of_element_located((By.ID, BasePageLocators.loading_id)));
 
     def logout(self):
         logger.info(f'Logging Out')
@@ -47,3 +48,4 @@ def check_exists_by_xpath(xpath, driver):
 
 class BasePageLocators:
     logout_button_selector = '#logout, #logout2'
+    loading_id = "loadingContainer"
