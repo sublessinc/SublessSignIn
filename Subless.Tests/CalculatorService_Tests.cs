@@ -825,6 +825,7 @@ namespace Subless.Tests
                 calculatorService,
                 new Mock<ICalculatorQueueRepository>().Object,
                 BaseUserService().Object,
+                new Mock<ICognitoWrapper>().Object,
                 mockLoggerFactory.Object
                 );
         }
