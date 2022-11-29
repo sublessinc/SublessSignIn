@@ -123,16 +123,18 @@ export class AuthorizationService {
   }
 
   redirectToSurvey() {
-    this.getRoutes().subscribe(routes => {
-      var creator = routes.includes(3);
-      if (creator) {
-        window.open("https://docs.google.com/forms/d/e/1FAIpQLSe24AZPj1IZ-UAsf_cj5zqLfIci3YTmB7YmLZT1Sr5cTYpM0Q/viewform?usp=pp_url&entry.487372404=Creator", "_blank");
-      } else {
-        window.open("https://docs.google.com/forms/d/e/1FAIpQLSe24AZPj1IZ-UAsf_cj5zqLfIci3YTmB7YmLZT1Sr5cTYpM0Q/viewform?usp=pp_url&entry.487372404=Subscriber", "_blank");
-      }
+    this.subs.push(
+      this.getRoutes().subscribe(routes => {
+        var creator = routes.includes(3);
+        if (creator) {
+          window.open("https://docs.google.com/forms/d/e/1FAIpQLSe24AZPj1IZ-UAsf_cj5zqLfIci3YTmB7YmLZT1Sr5cTYpM0Q/viewform?usp=pp_url&entry.487372404=Creator", "_blank");
+        } else {
+          window.open("https://docs.google.com/forms/d/e/1FAIpQLSe24AZPj1IZ-UAsf_cj5zqLfIci3YTmB7YmLZT1Sr5cTYpM0Q/viewform?usp=pp_url&entry.487372404=Subscriber", "_blank");
+        }
 
-      window.location.href = "/bff/logout"
-    })
+        window.location.href = "/bff/logout"
+      })
+    )
   }
 
   redirectToLogout() {
