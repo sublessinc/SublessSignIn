@@ -15,28 +15,20 @@ namespace Subless.Services.Services
         private readonly IStripeService stripeService;
         private readonly ICreatorService creatorService;
         private readonly ITemplatedEmailService _templatedEmailService;
-        private readonly ICognitoWrapper cognitoWrapper;
 
-        public AuthService(
-            IUserRepository userRepository, 
-            IUserService userService, 
-            IStripeService stripeService, 
-            ICreatorService creatorService, 
-            ITemplatedEmailService templatedEmailService,
-            ICognitoWrapper cognitoWrapper)
+        public AuthService(IUserRepository userRepository, IUserService userService, IStripeService stripeService, ICreatorService creatorService, ITemplatedEmailService templatedEmailService)
         {
             _userRepo = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
             this.userService = userService ?? throw new ArgumentNullException(nameof(userService));
             this.stripeService = stripeService ?? throw new ArgumentNullException(nameof(stripeService));
             this.creatorService = creatorService ?? throw new ArgumentNullException(nameof(creatorService));
             _templatedEmailService = templatedEmailService ?? throw new ArgumentNullException(nameof(templatedEmailService));
-            this.cognitoWrapper = cognitoWrapper;
         }
 
         public async Task<Redirection> LoginWorkflow(string cognitoId, string activationCode, string email)
         {
             var hasPaid = stripeService.CachePaymentStatus(cognitoId);
-            cognitoWrapper.SetEmail(cognitoId);
+
             var user = _userRepo.GetUserByCognitoId(cognitoId);
             if (user == null)
             {

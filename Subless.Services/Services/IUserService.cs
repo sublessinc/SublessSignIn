@@ -24,6 +24,5 @@ namespace Subless.Services.Services
         void WelcomeSent(string cognitoId);
         void CachePaymentStatus(string cognitoId, bool isPaying, long? activeSubscriptionPrice, DateTimeOffset? subStartDate);
         IEnumerable<string> GetAllCognitoIds();
-        void UpdateUser(User user);
     }
 }

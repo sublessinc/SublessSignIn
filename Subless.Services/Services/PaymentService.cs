@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Subless.Data;
@@ -24,7 +23,6 @@ namespace Subless.Services.Services
         private readonly ICalculatorService _calculatorService;
         private readonly ICalculatorQueueRepository _calculationQueueRepository;
         private readonly IUserService _userService;
-        private readonly ICognitoWrapper cognitoWrapper;
         private readonly ILogger _logger;
 
         public PaymentService(
@@ -36,7 +34,6 @@ namespace Subless.Services.Services
             ICalculatorService calculatorService,
             ICalculatorQueueRepository calculationQueueRepository,
             IUserService userService,
-            ICognitoWrapper cognitoWrapper,
             ILoggerFactory loggerFactory)
         {
             if (stripeOptions is null)
@@ -52,7 +49,6 @@ namespace Subless.Services.Services
             _calculatorService = calculatorService ?? throw new ArgumentNullException(nameof(calculatorService));
             _calculationQueueRepository = calculationQueueRepository;
             this._userService = userService;
-            this.cognitoWrapper = cognitoWrapper;
             _logger = _loggerFactory.CreateLogger<PaymentService>();
             SublessPayPalId = stripeOptions.Value.SublessPayPalId ?? throw new ArgumentNullException(nameof(stripeOptions));
         }
@@ -166,7 +162,6 @@ namespace Subless.Services.Services
             {
                 foreach(var id in _userService.GetAllCognitoIds())
                 {
-                    cognitoWrapper.SetEmail(id);
                     _stripeService.CachePaymentStatus(id);
                 }
                 _calculationQueueRepository.CompletsStripeSync(sync);

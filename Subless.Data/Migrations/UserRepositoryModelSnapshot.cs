@@ -500,9 +500,6 @@ namespace Subless.Data.Migrations
                     b.Property<bool>("IsAdmin")
                         .HasColumnType("boolean");
 
-                    b.Property<string>("Replica_Email")
-                        .HasColumnType("text");
-
                     b.Property<bool>("Replica_IsPaying")
                         .HasColumnType("boolean");
 

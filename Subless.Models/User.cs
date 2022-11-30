@@ -15,7 +15,6 @@ namespace Subless.Models
         public string StripeCustomerId { get; set; }
         public DateTimeOffset? Replica_SubcriptionDate { get; set; }
         public bool Replica_IsPaying { get; set; }
-        public string Replica_Email { get; set; }
         public long? Replica_Subscription { get; set; }
         public bool AcceptedTerms { get; set; }
         public bool WelcomeEmailSent { get; set; }

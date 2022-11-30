@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks;
 using Subless.Data;
 using Subless.Models;
 
@@ -13,14 +12,17 @@ namespace Subless.Services.Services
         private readonly IUserRepository _userRepo;
         private readonly ICreatorRepository creatorRepo;
         private readonly IPartnerRepository partnerRepo;
+        private readonly ICreatorService _creatorService;
         public UserService(
             IUserRepository userRepo,
             ICreatorRepository creatorRepo,
-            IPartnerRepository partnerRepo)
+            IPartnerRepository partnerRepo,
+            ICreatorService creatorService)
         {
             _userRepo = userRepo ?? throw new ArgumentNullException(nameof(userRepo));
             this.creatorRepo = creatorRepo ?? throw new ArgumentNullException(nameof(creatorRepo));
             this.partnerRepo = partnerRepo ?? throw new ArgumentNullException(nameof(partnerRepo));
+            _creatorService = creatorService ?? throw new ArgumentNullException(nameof(creatorService));
         }
 
 
@@ -151,11 +153,6 @@ namespace Subless.Services.Services
         public void CachePaymentStatus(string cognitoId, bool isPaying, long? activeSubscriptionPrice, DateTimeOffset? subStartDate)
         {
             _userRepo.CachePaymentStatus(cognitoId, isPaying, activeSubscriptionPrice, subStartDate);
-        }
-
-        public void UpdateUser(User user)
-        {
-            _userRepo.UpdateUser(user);
         }
     }
 }

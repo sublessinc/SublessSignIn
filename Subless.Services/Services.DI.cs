@@ -41,7 +41,6 @@ namespace Subless.Services
             services.AddTransient<AwsCredWrapper, AwsCredWrapper>();
             services.AddTransient<ITemplatedEmailService, TemplatedEmailService>();
             services.AddTransient<IStripeApiWrapperServiceFactory, StripeApiWrapperServiceFactory>();
-            services.AddTransient<ICognitoWrapper, CognitoWrapper>();
             services.AddMemoryCache();
             services.AddHttpClient();
 
