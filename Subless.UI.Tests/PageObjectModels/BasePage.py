@@ -16,11 +16,13 @@ class BasePage(object):
 
     def __init__(self, driver):
         self.driver = driver
-        WebDriverWait(self.driver, 10).until(EC.invisibility_of_element_located((By.ID, BasePageLocators.loading_id)));
+        self.wait_for_load()
 
     def logout(self):
         logger.info(f'Logging Out')
+        self.wait_for_load()
         WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, BasePageLocators.logout_button_selector)))
+        WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable((By.CSS_SELECTOR, BasePageLocators.logout_button_selector)))
 
         logger.info(self.__class__.__name__)
         self.logout_button.click()
@@ -28,6 +30,8 @@ class BasePage(object):
         # wait for redirect
         WebDriverWait(self.driver, 10).until(lambda driver: 'login' in driver.current_url)
 
+    def wait_for_load(self):
+        WebDriverWait(self.driver, 10).until(EC.invisibility_of_element_located((By.ID, BasePageLocators.loading_id)));
 
 def check_exists_by_id(id, driver):
     from selenium.common.exceptions import NoSuchElementException
