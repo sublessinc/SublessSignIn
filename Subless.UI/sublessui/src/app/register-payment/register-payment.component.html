@@ -1,4 +1,4 @@
-<div #sublessbackground class="{{backgroundClass}}">
+<div #sublessbackground class="{{backgroundClass}} component">
     <div class='{{backgroundClass}}subtitle'>
         <h1>Support the creators you love</h1>
     </div>
@@ -6,8 +6,8 @@
         <div>This budget will be split between all the subless creators you visit.</div>
         <div>Find out more <a href="https://www.subless.com/faq">at our FAQ</a>.</div>
         <a href="https://www.subless.com/hf-creator-instructions">
-          <br />
-          Sign up as a creator instead?
+            <br />
+            Sign up as a creator instead?
         </a>
     </div>
 
@@ -30,7 +30,7 @@
                 <mat-button-toggle value="10">$10</mat-button-toggle>
                 <mat-button-toggle value="15">$15</mat-button-toggle>
             </mat-button-toggle-group>
-            </mat-card-content>
+        </mat-card-content>
         <mat-card-content>
             <div *ngIf="customPrice.invalid && (customPrice.dirty || customPrice.touched)" class="alert">
 
