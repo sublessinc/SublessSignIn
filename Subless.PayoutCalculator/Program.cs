@@ -32,7 +32,7 @@ namespace PayoutCalculator
                 }
                 catch (Exception e)
                 {
-                    logger.LogCritical(e, "Unable to find the version.txt file for printing our version.");
+                    logger.LogError(e, "Unable to find the version.txt file for printing our version.");
                 }
 
                 var logging_env_var = System.Environment.GetEnvironmentVariable("Logging__LogLevel__Default");
