@@ -39,7 +39,7 @@ export class CreatorAccountSettingsComponent implements OnInit, OnDestroy {
   unlink(): void {
     this.subs.push(this.creatorService.unlinkCreator(this.model).subscribe({
       next: (success: boolean) => {
-        this.authService.redirectToLogout();
+        this.authService.redirectToCreatorSurvey();
       }
     }));
   }
