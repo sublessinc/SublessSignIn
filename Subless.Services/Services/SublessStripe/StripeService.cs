@@ -135,11 +135,11 @@ namespace Subless.Services.Services.SublessStripe
             return customer;
         }
 
-        private StripeList<Price> GetPrices()
+        private IEnumerable<Price> GetPrices()
         {
             //TODO: productoptions should filter to only susbcription plans
             var productOptions = new PriceListOptions();
-            var prices = _stripeApiWrapperServiceFactory.Execute(api => api.PriceService.List(productOptions));
+            var prices = _stripeApiWrapperServiceFactory.Execute(api => api.PriceService.ListAutoPaging(productOptions));
             return prices;
         }
 
@@ -153,7 +153,7 @@ namespace Subless.Services.Services.SublessStripe
                 CreatePriceByDollarAmount(dollarAmount);
                 prices = GetPrices().ToList();
             }
-            var price = prices.Where(x => x.UnitAmount == dollarAmountInCents).Single();
+            var price = prices.Where(x => x.UnitAmount == dollarAmountInCents).First();
             return price?.Id;
         }
 
@@ -289,7 +289,7 @@ namespace Subless.Services.Services.SublessStripe
             return _stripeApiWrapperServiceFactory.Execute(api =>
             {
                 var customer = api.CustomerService.Get(stripeCustomerId);
-                var subscriptions = api.SubscriptionService.List(new SubscriptionListOptions()
+                var subscriptions = api.SubscriptionService.ListAutoPaging(new SubscriptionListOptions()
                 {
                     Customer = customer.Id
                 }).Where(sub => sub.Status == "active" && sub.CancelAtPeriodEnd == false);
@@ -303,7 +303,7 @@ namespace Subless.Services.Services.SublessStripe
             return _stripeApiWrapperServiceFactory.Execute(api =>
             {
                 var customer = api.CustomerService.Get(stripeCustomerId);
-                var subscriptions = api.SubscriptionService.List(new SubscriptionListOptions()
+                var subscriptions = api.SubscriptionService.ListAutoPaging(new SubscriptionListOptions()
                 {
                     Customer = customer.Id
                 });
@@ -386,7 +386,7 @@ namespace Subless.Services.Services.SublessStripe
                     long fees = 0;
                     Charge charge;
                     BalanceTransaction balanceTrans;
-                    StripeList<Refund> refunds;
+                    IEnumerable<Refund> refunds;
                     var taxes = invoice?.Tax ?? 0;
                     if (invoice.ChargeId != null) // Charges will not be present if the payment was made with a coupon
                     {
@@ -405,7 +405,7 @@ namespace Subless.Services.Services.SublessStripe
                         payment = balanceTrans.Net;
                         using (MiniProfiler.Current.Step("Get refunds"))
                         {
-                            refunds = api.RefundService.List(new RefundListOptions() {Charge = invoice.ChargeId});
+                            refunds = api.RefundService.ListAutoPaging(new RefundListOptions() {Charge = invoice.ChargeId});
                         }
 
                         // Check to see if it was a full refund. Set payment to 0 if it was.
@@ -477,7 +477,7 @@ namespace Subless.Services.Services.SublessStripe
 
             _stripeApiWrapperServiceFactory.Execute(api =>
             {
-                var subs = api.SubscriptionService.List(subOptions);
+                var subs = api.SubscriptionService.ListAutoPaging(subOptions);
                 if (subs.Count() > 1)
                 {
                     _logger.LogError("User had more than one subscription.... that doesn't seem right");

@@ -24,6 +24,7 @@ namespace Subless.Services.Services
         private readonly IPaymentRepository paymentRepository;
         private readonly IEmailService _emailService;
         private readonly UriWhitelist uriWhitelist;
+        private const string Redacted = "[REDACTED]";
 
         public CreatorService(
             IUserRepository userRepository,
@@ -74,6 +75,18 @@ namespace Subless.Services.Services
         public CreatorMessage GetCreatorMessage(Guid creatorId)
         {
             return creatorRepository.GetMessageForCreator(creatorId);
+        }
+
+        public void SoftDeleteCreator(Guid creatorId)
+        {
+            var creator = creatorRepository.GetCreator(creatorId);
+            creator.Email = Redacted;
+            creator.PayPalId = Redacted;
+            creator.Username = Redacted;
+            creator.Deleted = true;
+            creator.Active = false;
+            creator.UserId = null;
+            creatorRepository.UpdateCreator(creator);
         }
 
         public List<string> GetUriWhitelist()
@@ -230,7 +243,7 @@ namespace Subless.Services.Services
                 throw new UnauthorizedAccessException("User cannot modify this creator");
             }
             var creator = creators.Single(x => x.Id == id);
-            creatorRepository.DeleteCreator(creator);
+            SoftDeleteCreator(id);
             cache.InvalidateCache();
             await partnerService.CreatorChangeWebhook(creator.ToPartnerView(true));
         }

@@ -2,6 +2,30 @@ version: 2.1
 orbs:
   aws-ecr: circleci/aws-ecr@7.3.0
   aws-ecs: circleci/aws-ecs@2.2.1
+  browser-tools: circleci/browser-tools@1.2.1
+
+jobs:
+  selenium:
+    docker:
+      - image: cimg/python:3.9-browsers
+        environment:
+          PIPENV_VENV_IN_PROJECT: true
+    working_directory: ~/tests
+    steps:
+      - browser-tools/install-firefox
+      - browser-tools/install-geckodriver
+      - checkout
+      - run:
+          name: Install dependencies and run
+          command: |
+            set -e
+            bash waitForVersionMatch.sh
+            cd ./Subless.UI.Tests
+            python3 -m venv virtual_env --clear
+            source virtual_env/bin/activate
+            pip install --trusted-host https://pypi.python.org -r ./requirements.txt
+            python3 -m pytest Tests
+      
 workflows:
   build_and_push_site:
     jobs:
@@ -152,3 +176,10 @@ workflows:
           force-new-deployment: true
           requires:
             - build-push-calc-env-tag
+  test:
+    jobs:
+      - selenium:
+          filters:
+            branches:
+              only: 
+                - dev

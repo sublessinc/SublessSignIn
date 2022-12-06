@@ -122,11 +122,16 @@ export class AuthorizationService {
     }));
   }
 
-  redirectToSurvey() {
-    window.open("https://forms.gle/5pxP9gpM9AW83yHy9", "_blank");
-    window.location.href = "/bff/logout"
-  }
+  redirectToCreatorSurvey() {
+    window.open("https://docs.google.com/forms/d/e/1FAIpQLSe24AZPj1IZ-UAsf_cj5zqLfIci3YTmB7YmLZT1Sr5cTYpM0Q/viewform?usp=pp_url&entry.487372404=Creator", "_blank");
+    window.location.href = "/bff/logout";
 
+  }
+  redirectToSubscriberSurvey() {
+    window.open("https://docs.google.com/forms/d/e/1FAIpQLSe24AZPj1IZ-UAsf_cj5zqLfIci3YTmB7YmLZT1Sr5cTYpM0Q/viewform?usp=pp_url&entry.487372404=Subscriber", "_blank");
+    window.location.href = "/bff/logout";
+
+  }
   redirectToLogout() {
     window.location.href = "/bff/logout";
   }

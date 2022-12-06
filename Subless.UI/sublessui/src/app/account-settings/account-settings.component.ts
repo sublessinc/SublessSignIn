@@ -48,7 +48,12 @@ export class AccountSettingsComponent implements OnInit, OnDestroy {
   deleteAccount() {
     this.subs.push(this.userService.deleteUser().subscribe({
       next: (surveyUri: boolean) => {
-        this.authService.redirectToSurvey();
+        if (this.creator) {
+          this.authService.redirectToCreatorSurvey();
+        }
+        else {
+          this.authService.redirectToSubscriberSurvey();
+        }
       }
     }));
   }
