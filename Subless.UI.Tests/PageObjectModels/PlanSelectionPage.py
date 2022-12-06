@@ -54,22 +54,8 @@ class PlanSelectionPage(NavbarPage):
         time.sleep(3)
         return StripeSignupPage(self.driver)
 
-    @property
-    def logout_button(self):
-        return self.driver.find_element_by_id(PlanSelectionLocators.logout_button_id)
-
-    def logout(self):
-        logger.info(f'Logging Out')
-        WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.ID, PlanSelectionLocators.logout_button_id)))
-        logger.info(self.__class__.__name__)
-        self.logout_button.click()
-
-        # wait for redirect
-        WebDriverWait(self.driver, 10).until(lambda driver: 'login' in driver.current_url)
-
 class PlanSelectionLocators:
     plan_confirm_xpath = '/html/body/app-root/app-nav/mat-sidenav-container/mat-sidenav-content/app-register-payment/div/mat-card/button'
-    logout_button_id = 'logout2'
     plan_5_button_id = 'mat-button-toggle-1-button'
     plan_10_button_id = 'mat-button-toggle-2-button'
     plan_15_button_id = 'mat-button-toggle-3-button'

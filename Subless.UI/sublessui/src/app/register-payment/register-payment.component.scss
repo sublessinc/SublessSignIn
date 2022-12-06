@@ -2,16 +2,20 @@
 @use '@angular/material' as mat;
 @import "../theme/theme";
 
+.mat-card-content {
+    margin-bottom: 8px;
+}
+
 a:link {
-  color: map-get($md-pinkhighlight, 500);
-  background-color: transparent;
-  text-decoration: underline;
+    color: map-get($md-pinkhighlight, 500);
+    background-color: transparent;
+    text-decoration: underline;
 }
 
 a:visited {
-  color: map-get($md-subtitlegrey, 500);
-  background-color: transparent;
-  text-decoration: underline;
+    color: map-get($md-subtitlegrey, 500);
+    background-color: transparent;
+    text-decoration: underline;
 }
 
 .title {
@@ -90,6 +94,7 @@ a:visited {
     flex-direction: column;
     justify-content: center;
     border-top: solid map-get($md-pinkhighlight, 500) 10px;
+    margin: 10px;
 }
 
 .card-header {
@@ -103,7 +108,7 @@ a:visited {
     @extend h3-font;
     text-align: center;
     align-self: center;
-    color:map-get($map: $md-pinkhighlight, $key: 500)
+    color: map-get($map: $md-pinkhighlight, $key: 500)
 }
 
 .plan-details {
