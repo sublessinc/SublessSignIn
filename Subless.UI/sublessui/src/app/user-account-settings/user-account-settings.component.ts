@@ -40,7 +40,7 @@ export class UserAccountSettingsComponent implements OnDestroy {
   cancelSubscription() {
     this.subs.push(this.checkoutService.cancelSubscription().subscribe({
       next: (result: boolean) => {
-        this.authService.redirectToSurvey();
+        this.authService.redirectToSubscriberSurvey();
       }
     }));
   }
