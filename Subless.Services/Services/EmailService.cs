@@ -49,7 +49,7 @@ namespace Subless.Services.Services
                             },
                         }
                     },
-                    ConfigurationSetName = $"{fallbackEnvironment}_CfnConfigurationSet",
+                    ConfigurationSetName = $"{fallbackEnvironment}_EmailStatsTracking",
                     Tags = new List<MessageTag> { new MessageTag { Name = $"{_options.Value.Environment}SesMetrics", Value = tagvalue, } },
                 };
                 try
