@@ -53,14 +53,10 @@ class StripeSignupPage(BasePage):
         self.cvc_num_textbox.send_keys('424')
         self.name_textbox.send_keys('Foo Bar')
         self.zip_textbox.send_keys('42424')
-        if(self.save_info_checkbox.is_selected()):
+        if self.save_info_checkbox.is_selected():
             self.save_info_checkbox.click()
         self.subscribe_button.click()
-
-        try:
-            WebDriverWait(self.driver, 10).until(lambda driver: 'stripe' not in self.driver.current_url)
-        except:
-            raise
+        WebDriverWait(self.driver, 10).until(lambda driver: 'stripe' not in self.driver.current_url)
         return PatronDashboardPage(self.driver)
 
 
