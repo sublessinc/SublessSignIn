@@ -17,16 +17,16 @@ export class CreatorService {
   constructor(private httpClient: HttpClient,
     private dateFormatterService: DateFormatter) { }
 
-  getCreator(): Observable<ICreator> {
-    return this.httpClient.get<ICreator>('/api/Creator');
+  getCreators(): Observable<ICreator[]> {
+    return this.httpClient.get<ICreator[]>('/api/Creator');
   }
 
-  updateCreator(creator: ICreator): Observable<ICreator> {
-    return this.httpClient.put<ICreator>('/api/Creator', creator);
+  updateCreator(creator: ICreator): Observable<ICreator[]> {
+    return this.httpClient.put<ICreator[]>('/api/Creator', creator);
   }
 
-  unlinkCreator(creator: ICreator): Observable<boolean> {
-    return this.httpClient.delete<boolean>('/api/Creator/' + creator.id + "/unlink");
+  unlinkCreator(id: string): Observable<boolean> {
+    return this.httpClient.delete<boolean>('/api/Creator/' + id + "/unlink");
   }
 
   getAnalytics(): Observable<ICreatorAnalytics> {

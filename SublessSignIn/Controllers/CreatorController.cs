@@ -50,7 +50,7 @@ namespace SublessSignIn.Controllers
             }
             try
             {
-                return Ok(_creatorService.GetCreatorByCognitoid(cognitoId));
+                return Ok(_creatorService.GetCreatorsByCognitoid(cognitoId));
             }
             catch (UnauthorizedAccessException e)
             {
@@ -60,7 +60,7 @@ namespace SublessSignIn.Controllers
         }
 
         [HttpPut()]
-        public async Task<ActionResult<Creator>> UpdateCreator(Creator creator)
+        public async Task<ActionResult<IEnumerable<Creator>>> UpdateCreator(Creator creator)
         {
             var cognitoId = userService.GetUserClaim(HttpContext.User);
             if (cognitoId == null)
@@ -69,7 +69,8 @@ namespace SublessSignIn.Controllers
             }
             try
             {
-                return Ok(await _creatorService.UpdateCreator(cognitoId, creator));
+                await _creatorService.UpdateCreator(cognitoId, creator);
+                return Ok(_creatorService.GetCreatorsByCognitoid(cognitoId));
             }
             catch (UnauthorizedAccessException e)
             {
@@ -108,37 +109,41 @@ namespace SublessSignIn.Controllers
             }
             try
             {
-                var creator = _creatorService.GetCreatorByCognitoid(cognitoId);
-                var lastPayment = paymentLogsService.GetLastPayment(creator.Id);
-                CreatorStats hitsThisMonth;
-                CreatorStats hitsLastMonth;
-                if (lastPayment == null)
+                var creators = _creatorService.GetCreatorsByCognitoid(cognitoId);
+                foreach (var creator in creators)
                 {
-
-                    // DEPRECATED
-                    var paymentDate = paymentLogsService.GetLastPaymentDate();
-                    if (paymentDate == DateTimeOffset.MinValue)
+                    var lastPayment = paymentLogsService.GetLastPayment(creator.Id);
+                    CreatorStats hitsThisMonth;
+                    CreatorStats hitsLastMonth;
+                    if (lastPayment == null)
                     {
-                        paymentDate = DateTimeOffset.UtcNow.AddMonths(-1);
+
+                        // DEPRECATED
+                        var paymentDate = paymentLogsService.GetLastPaymentDate();
+                        if (paymentDate == DateTimeOffset.MinValue)
+                        {
+                            paymentDate = DateTimeOffset.UtcNow.AddMonths(-1);
+                        }
+                        hitsThisMonth = hitService.GetCreatorStats(paymentDate, DateTimeOffset.UtcNow, creator.Id, cognitoId);
+                        hitsLastMonth = hitService.GetCreatorStats(paymentDate.AddMonths(-1), paymentDate, creator.Id, cognitoId);
+                        // END DEPRECATED
                     }
-                    hitsThisMonth = hitService.GetCreatorStats(paymentDate, DateTimeOffset.UtcNow, creator.Id, cognitoId);
-                    hitsLastMonth = hitService.GetCreatorStats(paymentDate.AddMonths(-1), paymentDate, creator.Id, cognitoId);
-                    // END DEPRECATED
+                    else
+                    {
+                        hitsThisMonth = hitService.GetCreatorStats(lastPayment.PaymentPeriodEnd, DateTimeOffset.UtcNow, creator.Id, cognitoId);
+                        hitsLastMonth = hitService.GetCreatorStats(lastPayment.PaymentPeriodStart, lastPayment.PaymentPeriodEnd, creator.Id, cognitoId);
+                    }
+                    if (creator.UserId != null)
+                    {
+                        _usageService.SaveUsage(UsageType.CreatorStats, (Guid)creator.UserId);
+                    }
+                    return Ok(new HistoricalStats<CreatorStats>
+                    {
+                        LastMonth = hitsLastMonth,
+                        thisMonth = hitsThisMonth
+                    });
                 }
-                else
-                {
-                    hitsThisMonth = hitService.GetCreatorStats(lastPayment.PaymentPeriodEnd, DateTimeOffset.UtcNow, creator.Id, cognitoId);
-                    hitsLastMonth = hitService.GetCreatorStats(lastPayment.PaymentPeriodStart, lastPayment.PaymentPeriodEnd, creator.Id, cognitoId);
-                }
-                if (creator.UserId != null)
-                {
-                    _usageService.SaveUsage(UsageType.CreatorStats, (Guid)creator.UserId);
-                }
-                return Ok(new HistoricalStats<CreatorStats>
-                {
-                    LastMonth = hitsLastMonth,
-                    thisMonth = hitsThisMonth
-                });
+                return NotFound();
             }
             catch (UnauthorizedAccessException e)
             {
@@ -157,24 +162,25 @@ namespace SublessSignIn.Controllers
             }
             try
             {
-                var creator = _creatorService.GetCreatorByCognitoid(cognitoId);
-                var stats = _creatorService.GetStatsForCreator(creator);
-
-                var ms = new MemoryStream();
-                var sw = new StreamWriter(ms);
-                using (var csv = new CsvWriter(sw, CultureInfo.InvariantCulture))
+                var creators = _creatorService.GetCreatorsByCognitoid(cognitoId);
+                foreach (var creator in creators)
                 {
-                    csv.WriteHeader<MonthlyPaymentStats>();
-                    csv.NextRecord();
-                    csv.WriteRecords(stats);
-                    csv.Flush();
-                    ms.Seek(0, SeekOrigin.Begin);
-                    var reader = new StreamReader(ms);
-                    return reader.ReadToEnd();
+                    var stats = _creatorService.GetStatsForCreator(creator);
+
+                    var ms = new MemoryStream();
+                    var sw = new StreamWriter(ms);
+                    using (var csv = new CsvWriter(sw, CultureInfo.InvariantCulture))
+                    {
+                        csv.WriteHeader<MonthlyPaymentStats>();
+                        csv.NextRecord();
+                        csv.WriteRecords(stats);
+                        csv.Flush();
+                        ms.Seek(0, SeekOrigin.Begin);
+                        var reader = new StreamReader(ms);
+                        return reader.ReadToEnd();
+                    }
                 }
-
-
-
+                return NotFound();
             }
             catch (UnauthorizedAccessException e)
             {
@@ -202,8 +208,12 @@ namespace SublessSignIn.Controllers
             }
             try
             {
-                var creator = _creatorService.GetCreatorByCognitoid(cognitoId);
-                return Ok(hitService.GetRecentCreatorContent(creator.Id, cognitoId));
+                var creators = _creatorService.GetCreatorsByCognitoid(cognitoId);
+                foreach (var creator in creators)
+                {
+                    return Ok(hitService.GetRecentCreatorContent(creator.Id, cognitoId));
+                }
+                return NotFound();
             }
             catch (UnauthorizedAccessException e)
             {
@@ -223,8 +233,12 @@ namespace SublessSignIn.Controllers
             }
             try
             {
-                var creator = _creatorService.GetCreatorByCognitoid(cognitoId);
-                return Ok(hitService.GetTopCreatorContent(creator.Id, cognitoId));
+                var creators = _creatorService.GetCreatorsByCognitoid(cognitoId);
+                foreach (var creator in creators)
+                {
+                    return Ok(hitService.GetTopCreatorContent(creator.Id, cognitoId));
+                }
+                return NotFound();
             }
             catch (UnauthorizedAccessException e)
             {
@@ -244,9 +258,13 @@ namespace SublessSignIn.Controllers
             }
             try
             {
-                var creator = _creatorService.GetCreatorByCognitoid(cognitoId);
-                var message = _creatorService.GetCreatorMessage(creator.Id);
-                return Ok(message);
+                var creators = _creatorService.GetCreatorsByCognitoid(cognitoId);
+                foreach (var creator in creators)
+                {
+                    var message = _creatorService.GetCreatorMessage(creator.Id);
+                    return Ok(message);
+                }
+                return NotFound();
             }
             catch (UnauthorizedAccessException e)
             {
@@ -266,7 +284,7 @@ namespace SublessSignIn.Controllers
             }
             try
             {
-                var creator = _creatorService.GetCreatorByCognitoid(cognitoId);
+                var creator = _creatorService.GetCreatorsByCognitoid(cognitoId);
                 return Ok(_creatorService.GetUriWhitelist());
             }
             catch (UnauthorizedAccessException e)
@@ -276,8 +294,6 @@ namespace SublessSignIn.Controllers
                 return Unauthorized();
             }
         }
-
-
 
         [HttpPost("message")]
         public ActionResult<CreatorMessage> SetCreatorMessage([FromBody] MessageViewModel message)
@@ -289,10 +305,14 @@ namespace SublessSignIn.Controllers
             }
             try
             {
-                var creator = _creatorService.GetCreatorByCognitoid(cognitoId);
-                return Ok(_creatorService.SetCreatorMessage(creator.Id, message.Message));
+                var creators = _creatorService.GetCreatorsByCognitoid(cognitoId);
+                foreach (var creator in creators)
+                {
+                    return Ok(_creatorService.SetCreatorMessage(creator.Id, message.Message));
+                }
+                return NotFound();
             }
-            catch(InputInvalidException e)
+            catch (InputInvalidException e)
             {
                 _logger.LogError(e, "Invalid creator message input");
                 return new StatusCodeResult(406);

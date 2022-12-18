@@ -2,18 +2,18 @@
     <div class="root">
         <div class="spacer"></div>
         <div class="logo"></div>
-        <mat-card *ngIf="creator" class="card">
-            <form (ngSubmit)="onCreatorSubmit()" #paypalForm="ngForm">
+        <mat-card class="card" *ngFor="let model of creatorModels;">
+            <form (ngSubmit)="onCreatorSubmit(model)" #paypalForm="ngForm">
                 <mat-card-title class="title">Creator Payout Information</mat-card-title>
                 <mat-card-content class="text">Enter your paypal email for the creator
-                    <b>{{creatorModel.username}}</b>
+                    <b>{{model.username}}</b>
                 </mat-card-content>
                 <mat-card-content class="text">This will be used to payout monthly funds from views to your content
                 </mat-card-content>
                 <mat-card-content>
                     <mat-form-field class="paypalid">
                         <input matInput #payPalId="ngModel" required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$"
-                            type="email" name="payPalId" [(ngModel)]="creatorModel.payPalId" placeholder="PayPal Email">
+                            type="email" name="payPalId" [(ngModel)]="model.payPalId" placeholder="PayPal Email">
                         <div *ngIf="payPalId.errors &&(payPalId.touched || payPalId.dirty)" class="alert">
                             <div [hidden]="!payPalId.errors.pattern">
                                 Invalid Email

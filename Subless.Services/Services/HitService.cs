@@ -142,19 +142,27 @@ namespace Subless.Services.Services
 
         public IEnumerable<HitView> GetRecentPatronContent(string cognitoId)
         {
-            var creatorId = _creatorService.GetCreatorOrDefaultByCognitoid(cognitoId)?.Id;
-            return hitRepository.GetRecentPatronContent(cognitoId, creatorId);
+            var creators = _creatorService.GetCreatorOrDefaultByCognitoid(cognitoId);
+            foreach (var creator in creators)
+            {
+                return hitRepository.GetRecentPatronContent(cognitoId, creator.Id);
+            }
+            return new List<HitView>();
         }
 
         public IEnumerable<CreatorHitCount> GetTopPatronContent(DateTimeOffset startDate, DateTimeOffset endDate, string cognitoId)
         {
-            var creatorId = _creatorService.GetCreatorOrDefaultByCognitoid(cognitoId)?.Id;
-            var hits = hitRepository.GetTopPatronContent(startDate, endDate, cognitoId, creatorId);
-            return hits.Select(x =>
+            var creators = _creatorService.GetCreatorOrDefaultByCognitoid(cognitoId);
+            foreach (var creator in creators)
             {
-                x.CreatorName = _creatorService.GetCreator(x.CreatorId)?.Username ?? "Deleted Creator";
-                return x;
-            });
+                var hits = hitRepository.GetTopPatronContent(startDate, endDate, cognitoId, creator.Id);
+                return hits.Select(x =>
+                {
+                    x.CreatorName = _creatorService.GetCreator(x.CreatorId)?.Username ?? "Deleted Creator";
+                    return x;
+                });
+            }
+            return new List<CreatorHitCount>();
         }
 
         public Guid? GetCreatorFromPartnerAndUri(Uri uri, Partner partner)
