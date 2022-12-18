@@ -32,6 +32,10 @@ class StripeSignupPage(BasePage):
         return self.driver.find_element_by_id(StripeSignupLocators.zip_text_id)
 
     @property
+    def save_info_checkbox(self):
+        return self.driver.find_element_by_css_selector(StripeSignupLocators.save_info_css_selector)
+
+    @property
     def subscribe_button(self):
         if check_exists_by_xpath(StripeSignupLocators.subscribe_button_xpath, self.driver):
             return self.driver.find_element_by_xpath(StripeSignupLocators.subscribe_button_xpath)
@@ -41,7 +45,7 @@ class StripeSignupPage(BasePage):
 
     def sign_up_for_stripe(self):
         from PageObjectModels.PatronDashboardPage import PatronDashboardPage
-        WebDriverWait(self.driver, 10)\
+        WebDriverWait(self.driver, 10) \
             .until(ec.presence_of_element_located((By.ID, StripeSignupLocators.email_text_id)))
         self.email_textbox.send_keys('424@foo.bar')
         self.cc_num_textbox.send_keys('4242424242424242')
@@ -49,8 +53,14 @@ class StripeSignupPage(BasePage):
         self.cvc_num_textbox.send_keys('424')
         self.name_textbox.send_keys('Foo Bar')
         self.zip_textbox.send_keys('42424')
+        if(self.save_info_checkbox.is_selected()):
+            self.save_info_checkbox.click()
         self.subscribe_button.click()
-        WebDriverWait(self.driver, 10).until(lambda driver: 'stripe' not in self.driver.current_url)
+
+        try:
+            WebDriverWait(self.driver, 10).until(lambda driver: 'stripe' not in self.driver.current_url)
+        except:
+            raise
         return PatronDashboardPage(self.driver)
 
 
@@ -63,4 +73,4 @@ class StripeSignupLocators:
     zip_text_id = 'billingPostalCode'
     subscribe_button_xpath = '/html/body/div[1]/div/div[2]/div[2]/div/div[2]/form/div[2]/div[2]/button'
     subscribe_button_xpath2 = '/html/body/div[1]/div/div[2]/div[2]/div/div[2]/form/div[2]/div/div[2]/button'
-    
+    save_info_css_selector = '#enableStripePass'
