@@ -27,9 +27,9 @@ namespace Subless.Data
             return hits;
         }
 
-        public IQueryable<Hit> GetCreatorHitsByDate(DateTimeOffset startDate, DateTimeOffset endDate, Guid creatorId, string cognitoId)
+        public IQueryable<Hit> GetCreatorHitsByDate(DateTimeOffset startDate, DateTimeOffset endDate, IEnumerable<Guid> creatorIds, string cognitoId)
         {
-            var hits = Hits.Where(hit => hit.CreatorId == creatorId
+            var hits = Hits.Where(hit => creatorIds.Contains(hit.CreatorId)
             && hit.TimeStamp > startDate
             && hit.TimeStamp <= endDate
             && hit.CognitoId != cognitoId);
@@ -59,9 +59,9 @@ namespace Subless.Data
             };
         }
 
-        public CreatorStats GetCreatorStats(DateTimeOffset startDate, DateTimeOffset endDate, Guid creatorId, string cognitoId)
+        public CreatorStats GetCreatorStats(DateTimeOffset startDate, DateTimeOffset endDate, IEnumerable<Guid> creatorIds, string cognitoId)
         {
-            var hits = GetCreatorHitsByDate(startDate, endDate, creatorId, cognitoId);
+            var hits = GetCreatorHitsByDate(startDate, endDate, creatorIds, cognitoId);
 
             return new CreatorStats
             {

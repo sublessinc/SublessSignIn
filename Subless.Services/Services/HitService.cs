@@ -104,10 +104,10 @@ namespace Subless.Services.Services
             return hitRepository.GetUserStats(startDate, endDate, user.CognitoId, user.Creators.FirstOrDefault()?.Id);
         }
 
-        public CreatorStats GetCreatorStats(DateTimeOffset startDate, DateTimeOffset endDate, Guid creatorId, string cognitoId)
+        public CreatorStats GetCreatorStats(DateTimeOffset startDate, DateTimeOffset endDate, IEnumerable<Guid> creatorIds, string cognitoId)
         {
             _logger.LogDebug($"Getting hits for range {startDate} to {endDate}");
-            return hitRepository.GetCreatorStats(startDate, endDate, creatorId, cognitoId);
+            return hitRepository.GetCreatorStats(startDate, endDate, creatorIds, cognitoId);
         }
 
         public PartnerStats GetPartnerStats(

@@ -11,7 +11,10 @@ import { DateFormatter } from '../services/dateformatter.service';
 })
 export class CreatorprofileComponent implements OnInit, OnDestroy {
 
-  public analyticsArray: ICreatorAnalytics[] = [];
+  public analytics: ICreatorAnalytics = {
+    thisMonth: { views: 0, visitors: 0, piecesOfContent: 0, periodStart: new Date(), periodEnd: new Date() },
+    lastMonth: { views: 0, visitors: 0, piecesOfContent: 0, periodStart: new Date(), periodEnd: new Date() }
+  };
   private subs: Subscription[] = [];
 
   constructor(
@@ -30,8 +33,8 @@ export class CreatorprofileComponent implements OnInit, OnDestroy {
 
   getAnalytics() {
     this.subs.push(this.creatorService.getAnalytics().subscribe({
-      next: (analytics: ICreatorAnalytics[]) => {
-        this.analyticsArray = analytics;
+      next: (analytics: ICreatorAnalytics) => {
+        this.analytics = analytics;
         this.changeDetector.detectChanges();
       }
     }));

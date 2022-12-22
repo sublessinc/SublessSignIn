@@ -101,20 +101,20 @@ namespace SublessSignIn.Controllers
         }
 
         [HttpGet("Analytics")]
-        public ActionResult<IEnumerable<HistoricalStats<CreatorStats>>> GetUserAnalytics()
+        public ActionResult<HistoricalStats<CreatorStats>> GetUserAnalytics()
         {
             var cognitoId = userService.GetUserClaim(HttpContext.User);
             if (cognitoId == null)
             {
                 return Unauthorized();
             }
-            var stats = new List<HistoricalStats<CreatorStats>>();
             try
             {
                 var creators = _creatorService.GetCreatorsByCognitoid(cognitoId);
-                foreach (var creator in creators)
-                {
-                    var lastPayment = paymentLogsService.GetLastPayment(creator.Id);
+                var creatorIds = creators.Select(x => x.Id);
+
+                var payments = creatorIds.Select(paymentLogsService.GetLastPayment).Where(x=>x != null);
+                    var lastPayment = payments?.OrderByDescending(x=>x.PaymentPeriodEnd)?.FirstOrDefault();
                     CreatorStats hitsThisMonth;
                     CreatorStats hitsLastMonth;
                     if (lastPayment == null)
@@ -126,32 +126,32 @@ namespace SublessSignIn.Controllers
                         {
                             paymentDate = DateTimeOffset.UtcNow.AddMonths(-1);
                         }
-                        hitsThisMonth = hitService.GetCreatorStats(paymentDate, DateTimeOffset.UtcNow, creator.Id, cognitoId);
-                        hitsLastMonth = hitService.GetCreatorStats(paymentDate.AddMonths(-1), paymentDate, creator.Id, cognitoId);
+                        hitsThisMonth = hitService.GetCreatorStats(paymentDate, DateTimeOffset.UtcNow, creatorIds, cognitoId);
+                        hitsLastMonth = hitService.GetCreatorStats(paymentDate.AddMonths(-1), paymentDate, creatorIds, cognitoId);
                         // END DEPRECATED
                     }
                     else
                     {
-                        hitsThisMonth = hitService.GetCreatorStats(lastPayment.PaymentPeriodEnd, DateTimeOffset.UtcNow, creator.Id, cognitoId);
-                        hitsLastMonth = hitService.GetCreatorStats(lastPayment.PaymentPeriodStart, lastPayment.PaymentPeriodEnd, creator.Id, cognitoId);
+                        hitsThisMonth = hitService.GetCreatorStats(lastPayment.PaymentPeriodEnd, DateTimeOffset.UtcNow, creatorIds, cognitoId);
+                        hitsLastMonth = hitService.GetCreatorStats(lastPayment.PaymentPeriodStart, lastPayment.PaymentPeriodEnd, creatorIds, cognitoId);
                     }
-                    if (creator.UserId != null)
+                    if (creators.First().UserId != null)
                     {
-                        _usageService.SaveUsage(UsageType.CreatorStats, (Guid)creator.UserId);
+                        _usageService.SaveUsage(UsageType.CreatorStats, (Guid)creators.First().UserId);
                     }
-                    stats.Add(new HistoricalStats<CreatorStats>
+                    return Ok(new HistoricalStats<CreatorStats>
                     {
                         LastMonth = hitsLastMonth,
                         thisMonth = hitsThisMonth
                     });
-                }
             }
             catch (UnauthorizedAccessException e)
             {
                 _logger.LogWarning(e, "Unauthorized user attempted to get creator stats");
                 return Unauthorized();
             }
-            return Ok(stats);
+            return NotFound();
+
         }
 
         [HttpGet("statscsv")]
