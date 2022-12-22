@@ -29,8 +29,8 @@ export class CreatorService {
     return this.httpClient.delete<boolean>('/api/Creator/' + id + "/unlink");
   }
 
-  getAnalytics(): Observable<ICreatorAnalytics> {
-    return this.httpClient.get<ICreatorAnalytics>("/api/Creator/Analytics").pipe(map(this.dateFormatterService.ParseCreatorAnalytics));
+  getAnalytics(): Observable<ICreatorAnalytics[]> {
+    return this.httpClient.get<ICreatorAnalytics[]>("/api/Creator/Analytics").pipe(map(x => x.map(this.dateFormatterService.ParseCreatorAnalytics)));
   }
 
   getRecentFeed(): Observable<IHitView[]> {

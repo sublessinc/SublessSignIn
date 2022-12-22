@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using CsvHelper;
 using Microsoft.AspNetCore.Authorization;
@@ -100,13 +101,14 @@ namespace SublessSignIn.Controllers
         }
 
         [HttpGet("Analytics")]
-        public ActionResult<HistoricalStats<CreatorStats>> GetUserAnalytics()
+        public ActionResult<IEnumerable<HistoricalStats<CreatorStats>>> GetUserAnalytics()
         {
             var cognitoId = userService.GetUserClaim(HttpContext.User);
             if (cognitoId == null)
             {
                 return Unauthorized();
             }
+            var stats = new List<HistoricalStats<CreatorStats>>();
             try
             {
                 var creators = _creatorService.GetCreatorsByCognitoid(cognitoId);
@@ -137,19 +139,19 @@ namespace SublessSignIn.Controllers
                     {
                         _usageService.SaveUsage(UsageType.CreatorStats, (Guid)creator.UserId);
                     }
-                    return Ok(new HistoricalStats<CreatorStats>
+                    stats.Add(new HistoricalStats<CreatorStats>
                     {
                         LastMonth = hitsLastMonth,
                         thisMonth = hitsThisMonth
                     });
                 }
-                return NotFound();
             }
             catch (UnauthorizedAccessException e)
             {
                 _logger.LogWarning(e, "Unauthorized user attempted to get creator stats");
                 return Unauthorized();
             }
+            return Ok(stats);
         }
 
         [HttpGet("statscsv")]
@@ -206,14 +208,14 @@ namespace SublessSignIn.Controllers
             {
                 return Unauthorized();
             }
+            var views = new List<HitView>();
             try
             {
                 var creators = _creatorService.GetCreatorsByCognitoid(cognitoId);
                 foreach (var creator in creators)
                 {
-                    return Ok(hitService.GetRecentCreatorContent(creator.Id, cognitoId));
+                    views.AddRange(hitService.GetRecentCreatorContent(creator.Id, cognitoId));
                 }
-                return NotFound();
             }
             catch (UnauthorizedAccessException e)
             {
@@ -221,12 +223,14 @@ namespace SublessSignIn.Controllers
 
                 return Unauthorized();
             }
+            return Ok(views.OrderByDescending(x=>x.Timestamp));
         }
 
         [HttpGet("TopFeed")]
         public ActionResult<IEnumerable<ContentHitCount>> TopFeed()
         {
             var cognitoId = userService.GetUserClaim(HttpContext.User);
+            var views = new List<ContentHitCount>();
             if (cognitoId == null)
             {
                 return Unauthorized();
@@ -236,9 +240,8 @@ namespace SublessSignIn.Controllers
                 var creators = _creatorService.GetCreatorsByCognitoid(cognitoId);
                 foreach (var creator in creators)
                 {
-                    return Ok(hitService.GetTopCreatorContent(creator.Id, cognitoId));
+                    views.AddRange(hitService.GetTopCreatorContent(creator.Id, cognitoId));
                 }
-                return NotFound();
             }
             catch (UnauthorizedAccessException e)
             {
@@ -246,6 +249,7 @@ namespace SublessSignIn.Controllers
 
                 return Unauthorized();
             }
+            return Ok(views.OrderByDescending(x=>x.Hits));
         }
 
         [HttpGet("message")]

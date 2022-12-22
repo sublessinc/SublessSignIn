@@ -174,7 +174,7 @@ namespace Subless.Services.Services
                 throw new UnauthorizedAccessException();
             }
             // Set user modifiable properties
-            var currentCreator = creators.First();
+            var currentCreator = creators.Single(x => x.Id == creator.Id);
             var wasValid = CreatorValid(currentCreator);
             if (currentCreator.PayPalId != null && currentCreator.PayPalId != creator.PayPalId && PaypalAddressIsEmail(currentCreator.PayPalId))
             {
@@ -267,11 +267,13 @@ namespace Subless.Services.Services
 
         public void AcceptTerms(string cognitoId)
         {
-            todo fix this
-            var creators = _userRepository.GetCreatorsByCognitoId(cognitoId);
-            var creator = creators.Single();
-            creator.AcceptedTerms = true;
-            creatorRepository.UpdateCreator(creator);
+            var creators = _userRepository.GetCreatorsByCognitoId(cognitoId);            
+            var creator = creators.FirstOrDefault(x=>!x.AcceptedTerms);
+            if (creator != null)
+            {
+                creator.AcceptedTerms = true;
+                creatorRepository.UpdateCreator(creator);
+            }
         }
 
         private string GetPaymentSetEmail(string creatorName)
