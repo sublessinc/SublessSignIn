@@ -155,8 +155,9 @@ namespace SublessSignIn.Controllers
         }
 
         [HttpGet("statscsv")]
-        public ActionResult<string> GetStatsCsv()
+        public ActionResult<Dictionary<string,string>> GetStatsCsv()
         {
+            var results = new Dictionary<string, string>();
             var cognitoId = userService.GetUserClaim(HttpContext.User);
             if (cognitoId == null)
             {
@@ -179,10 +180,10 @@ namespace SublessSignIn.Controllers
                         csv.Flush();
                         ms.Seek(0, SeekOrigin.Begin);
                         var reader = new StreamReader(ms);
-                        return reader.ReadToEnd();
+                        results.Add(creator.Username, reader.ReadToEnd());
                     }
                 }
-                return NotFound();
+                return results;
             }
             catch (UnauthorizedAccessException e)
             {
