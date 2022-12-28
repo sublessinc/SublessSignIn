@@ -98,7 +98,7 @@ namespace Subless.Services.Services
         private void SoftDeleteCreator(Creator creator)
         {
             creator.Email = Redacted;
-            creator.PayPalId = Redacted;
+            creator.PayPalId = null;
             creator.Deleted = true;
             creator.Active = false;
             creator.UserId = null;
