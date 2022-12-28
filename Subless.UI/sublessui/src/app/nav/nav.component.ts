@@ -111,6 +111,7 @@ export class NavComponent implements OnInit, OnDestroy {
 
   promptRedirectIfCookiePresent() {
     const redirect = this.cookieService.get("returnUri");
+    this.cookieService.remove("returnUri");
     if (redirect && this.user) {
 
       const snackBarRef = this._snackBar.open(`Your account setup is complete, would you like to return to ${redirect}?`, "Take me back", {
@@ -118,7 +119,6 @@ export class NavComponent implements OnInit, OnDestroy {
       })
 
       snackBarRef.onAction().subscribe(() => {
-        this.cookieService.remove("returnUri");
         window.location.href = redirect;
       });
 
