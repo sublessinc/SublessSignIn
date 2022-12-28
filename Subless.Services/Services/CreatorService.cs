@@ -77,12 +77,10 @@ namespace Subless.Services.Services
             return creatorRepository.GetMessageForCreator(creatorId);
         }
 
-        public void SoftDeleteCreator(Guid creatorId)
+        private void SoftDeleteCreator(Creator creator)
         {
-            var creator = creatorRepository.GetCreator(creatorId);
             creator.Email = Redacted;
             creator.PayPalId = Redacted;
-            creator.Username = Redacted;
             creator.Deleted = true;
             creator.Active = false;
             creator.UserId = null;
@@ -243,7 +241,7 @@ namespace Subless.Services.Services
                 throw new UnauthorizedAccessException("User cannot modify this creator");
             }
             var creator = creators.Single(x => x.Id == id);
-            SoftDeleteCreator(id);
+            SoftDeleteCreator(creator);
             cache.InvalidateCache();
             await partnerService.CreatorChangeWebhook(creator.ToPartnerView(true));
         }
