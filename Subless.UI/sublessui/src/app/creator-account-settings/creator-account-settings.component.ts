@@ -13,9 +13,9 @@ import { IDialogData, WarnDialogComponent } from '../warn-dialog/warn-dialog.com
   styleUrls: ['./creator-account-settings.component.scss']
 })
 export class CreatorAccountSettingsComponent implements OnInit, OnDestroy {
-  private model$: Observable<ICreator> | undefined;
+  private model$: Observable<ICreator[]> | undefined;
   private formDirty = false;
-  public model: ICreator = new Creator("", "", "");
+  public models: ICreator[] = [new Creator("", "", "")];
   private subs: Subscription[] = [];
   constructor(
     private creatorService: CreatorService,
@@ -29,21 +29,21 @@ export class CreatorAccountSettingsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.model$ = this.creatorService.getCreator();
+    this.model$ = this.creatorService.getCreators();
     this.subs.push(this.model$.subscribe({
-      next: (creator: ICreator) => {
-        this.model = creator;
+      next: (creators: ICreator[]) => {
+        this.models = creators;
       }
     }));
   }
-  unlink(): void {
-    this.subs.push(this.creatorService.unlinkCreator(this.model).subscribe({
+  unlink(id: string): void {
+    this.subs.push(this.creatorService.unlinkCreator(id).subscribe({
       next: (success: boolean) => {
         this.authService.redirectToCreatorSurvey();
       }
     }));
   }
-  openDialog() {
+  openDialog(id: string) {
     const data: IDialogData = {
       title: 'Are you sure?',
       text: "<h3>Unlinking an account will result in the loss of ALL data related to this creator.</h3><h3>All views received this month will be discarded, you will not receive payments for them.</h3>",
@@ -56,7 +56,7 @@ export class CreatorAccountSettingsComponent implements OnInit, OnDestroy {
 
     this.subs.push(dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.unlink();
+        this.unlink(id);
       }
     }));
   }
