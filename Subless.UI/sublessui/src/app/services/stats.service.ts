@@ -11,8 +11,8 @@ export class StatsService {
 
   constructor(private httpClient: HttpClient) { }
 
-  downloadCreatorFile(): any {
-    return this.httpClient.get('/api/Creator/statscsv', { responseType: 'blob' });
+  downloadCreatorFile(): Observable<{ [key: string]: string }> {
+    return this.httpClient.get<{ [key: string]: string }>('/api/Creator/statscsv');
   }
 
   downloadPartnerFile(): any {

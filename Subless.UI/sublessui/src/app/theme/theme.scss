@@ -446,7 +446,9 @@ $subless-app-theme: mat.define-light-theme((color: (primary: $subless-app-primar
     background-color: map.get($md-backgroundpurple, 500);
     display: flex;
     justify-content: center;
-    align-items: center
+    align-items: center;
+    height: auto;
+    min-height: 100vh;
 }
 
 .lightBackground {
@@ -454,7 +456,9 @@ $subless-app-theme: mat.define-light-theme((color: (primary: $subless-app-primar
     background-color: map.get($md-backgroundwhite, 500);
     display: flex;
     justify-content: center;
-    align-items: center
+    align-items: center;
+    height: auto;
+    min-height: 100vh;
 }
 
 // @mixin mix-ripple-theme($subless-app-theme) {
