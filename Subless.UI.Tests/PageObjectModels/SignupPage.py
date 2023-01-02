@@ -2,8 +2,10 @@ import logging
 
 from selenium.webdriver.support.wait import WebDriverWait
 
+from ApiLib.User import delete_user_by_email
 from PageObjectModels.BasePage import BasePage
 from PageObjectModels.OTPConfirmationPage import OTPConfirmationPage
+from UsersLib.Users import login_as_god_user
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger()
@@ -37,9 +39,14 @@ class SignupPage(BasePage):
         self.sign_up_button.click()
         if 'An account with the given email already exists.' in self.driver.find_element_by_tag_name('body').text:
             logging.error("Attempted to create existing user")
+            self.clean_up_bad_user(un)
             raise Exception('Attempted to create existing user')
         return OTPConfirmationPage(self.driver)
 
+
+    def clean_up_bad_user(self, email):
+        id, cookie, login_page = login_as_god_user(self.driver)
+        delete_user_by_email(cookie, email)
 
 class SignupLocators:
     sign_in_link_xpath = '/html/body/div[1]/div/div[1]/div[2]/div[2]/div[2]/div/form/p/div/a'
