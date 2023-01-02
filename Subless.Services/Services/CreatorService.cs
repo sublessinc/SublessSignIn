@@ -164,7 +164,7 @@ namespace Subless.Services.Services
             return creator;
         }
 
-        public async Task<Creator> UpdateCreator(string cognitoId, Creator creator)
+        public async Task<Creator> UpdateCreatorPaymentInfo(string cognitoId, Creator creator)
         {
             var creators = _userRepository.GetCreatorsByCognitoId(cognitoId);
             if (creators == null || !creators.Any(x => x.Active))
