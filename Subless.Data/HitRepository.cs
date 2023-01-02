@@ -90,51 +90,38 @@ namespace Subless.Data
 
         public List<HitView> GetRecentCreatorContent(Guid creatorId, string cognitoId)
         {
-            var hits = Hits.Where(x => x.CreatorId == creatorId && x.CognitoId != cognitoId)
+            return Hits.Where(x => x.CreatorId == creatorId && x.CognitoId != cognitoId)
                 .OrderByDescending(x => x.TimeStamp)
                 .Select(x =>
                 new HitView
                 {
                     Content = x.Uri,
                     Title = x.Uri.Segments.Length > 1 ? x.Uri.Segments.Last() : x.Uri.Host,
-                    Timestamp = x.TimeStamp.DateTime,
-                    PartnerId = x.PartnerId
+                    Timestamp = x.TimeStamp.DateTime
                 })
                 .Take(5)
                 .ToList();
-            foreach (var hit in hits)
-            {
-                hit.Favicon = GetPartner(hit.PartnerId).Favicon;
-            }
-            return hits;
         }
 
         public List<ContentHitCount> GetTopCreatorContent(Guid creatorId, string cognitoId)
         {
-            var hits = Hits.Where(x => x.CreatorId == creatorId && x.CognitoId != cognitoId)
-                .GroupBy(x => new { x.Uri, x.PartnerId })
+            return Hits.Where(x => x.CreatorId == creatorId && x.CognitoId != cognitoId)
+                .GroupBy(x => x.Uri)
                 .Select(g =>
                 new ContentHitCount
                 {
-                    Content = g.Key.Uri,
-                    Title = g.Key.Uri.Segments.Length > 1 ? g.Key.Uri.Segments.Last() : g.Key.Uri.Host,
-                    Hits = g.Count(),
-                    PartnerId = g.Key.PartnerId
+                    Content = g.Key,
+                    Title = g.Key.Segments.Length > 1 ? g.Key.Segments.Last() : g.Key.Host,
+                    Hits = g.Count()
                 })
                 .OrderByDescending(x => x.Hits)
                 .Take(5)
                 .ToList();
-            foreach (var hit in hits)
-            {
-                hit.Favicon = GetPartner(hit.PartnerId).Favicon;
-            }
-            return hits;
         }
 
-
-        public List<HitView> GetRecentPatronContent(string cognitoId, Guid? creatorId = null)
+        public List<HitView> GetRecentPatronContent(string cognitoId, Guid? creatorId)
         {
-            var hits = Hits.Where(x =>
+            return Hits.Where(x =>
             x.CognitoId == cognitoId &&
             x.CreatorId != creatorId &&
             x.CreatorId != Guid.Empty)
@@ -144,19 +131,13 @@ namespace Subless.Data
                 {
                     Content = x.Uri,
                     Title = x.Uri.Segments.Length > 1 ? x.Uri.Segments.Last() : x.Uri.Host,
-                    Timestamp = x.TimeStamp.DateTime,
-                    PartnerId = x.PartnerId
+                    Timestamp = x.TimeStamp.DateTime
                 })
                 .Take(5)
                 .ToList();
-            foreach (var hit in hits)
-            {
-                hit.Favicon = GetPartner(hit.PartnerId).Favicon;
-            }
-            return hits;
         }
 
-        public List<CreatorHitCount> GetTopPatronContent(DateTimeOffset startDate, DateTimeOffset endDate, string cognitoId, Guid? creatorId = null)
+        public List<CreatorHitCount> GetTopPatronContent(DateTimeOffset startDate, DateTimeOffset endDate, string cognitoId, Guid? creatorId)
         {
             var totalHits = Hits.Where(x =>
             x.CognitoId == cognitoId &&
@@ -164,30 +145,22 @@ namespace Subless.Data
             x.CreatorId != Guid.Empty &&
             x.TimeStamp > startDate &&
             x.TimeStamp < endDate).Count();
-
-            var hits = Hits.Where(x =>
+            return Hits.Where(x =>
             x.CognitoId == cognitoId &&
             x.CreatorId != creatorId &&
             x.CreatorId != Guid.Empty &&
             x.TimeStamp > startDate &&
             x.TimeStamp < endDate)
-                .GroupBy(x => new { x.CreatorId, x.PartnerId } )
+                .GroupBy(x => x.CreatorId)
                 .Select(g =>
                 new CreatorHitCount
                 {
-                    CreatorId = g.Key.CreatorId,
+                    CreatorId = g.Key,
                     Hits = (int)Math.Floor(100 * (decimal)g.Count() / totalHits),
-                    PartnerId = g.Key.PartnerId,
                 })
                 .OrderByDescending(x => x.Hits)
                 .Take(5)
                 .ToList();
-
-            foreach (var hit in hits)
-            {
-                hit.Favicon = GetPartner(hit.PartnerId).Favicon;
-            }
-            return hits;
         }
     }
 }

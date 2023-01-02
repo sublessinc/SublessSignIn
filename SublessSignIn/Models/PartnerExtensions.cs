@@ -1,4 +1,4 @@
-﻿using Subless.Models;
+using Subless.Models;
 
 namespace SublessSignIn.Models
 {
@@ -12,7 +12,6 @@ namespace SublessSignIn.Models
                 Sites = partner.Sites,
                 UserPattern = partner.UserPattern,
                 CreatorWebhook = partner.CreatorWebhook?.ToString(),
-                Favicon = partner.Favicon?.ToString(),
                 Id = partner.Id
             };
         }

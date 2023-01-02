@@ -11,7 +11,7 @@ import { PartnerService } from '../services/partner.service';
 })
 export class IntegrationtestComponent implements OnInit, OnDestroy {
   private model$: Observable<IPartner> | undefined;
-  public model: IPartner = { payPalId: "", sites: [""], userPattern: "", creatorWebhook: "", id: "", favicon: "" };
+  public model: IPartner = { payPalId: "", sites: [""], userPattern: "", creatorWebhook: "", id: "" };
   private subs: Subscription[] = [];
 
   constructor(private partnerService: PartnerService) { }
@@ -28,7 +28,7 @@ export class IntegrationtestComponent implements OnInit, OnDestroy {
     this.subs.forEach((item: Subscription) => { item.unsubscribe(); })
   }
   onSubmit(): void {
-    var writeModel: IPartnerWrite = { id: this.model.id, payPalId: this.model.payPalId, creatorWebhook: this.model.creatorWebhook, favicon: this.model.favicon }
+    var writeModel: IPartnerWrite = { id: this.model.id, payPalId: this.model.payPalId, creatorWebhook: this.model.creatorWebhook }
     this.model$ = this.partnerService.updatePartner(writeModel);
     this.subs.push(this.model$.subscribe({
       next: (partner: IPartner) => {

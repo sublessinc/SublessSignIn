@@ -226,9 +226,6 @@ namespace Subless.Data.Migrations
                     b.Property<string>("CreatorWebhook")
                         .HasColumnType("text");
 
-                    b.Property<string>("Favicon")
-                        .HasColumnType("text");
-
                     b.Property<string>("PayPalId")
                         .HasColumnType("text");
 

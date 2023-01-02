@@ -17,7 +17,7 @@ namespace Subless.Data
         void SaveHit(Hit hit);
         List<ContentHitCount> GetTopCreatorContent(Guid creatorId, string cognitoId);
         List<HitView> GetRecentCreatorContent(Guid creatorId, string cognitoId);
-        List<HitView> GetRecentPatronContent(string cognitoId, Guid? creatorId = null);
-        List<CreatorHitCount> GetTopPatronContent(DateTimeOffset startDate, DateTimeOffset endDate, string cognitoId, Guid? creatorId = null);
+        List<HitView> GetRecentPatronContent(string cognitoId, Guid? creatorId);
+        List<CreatorHitCount> GetTopPatronContent(DateTimeOffset startDate, DateTimeOffset endDate, string cognitoId, Guid? creatorId);
     }
 }

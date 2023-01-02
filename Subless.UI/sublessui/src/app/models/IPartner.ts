@@ -4,5 +4,4 @@ export interface IPartner {
     userPattern: string;
     creatorWebhook: string;
     id: string;
-    favicon: string;
 }
