@@ -1,0 +1,24 @@
+@use 'sass:map';
+@use '@angular/material' as mat;
+@import "../theme/theme";
+
+.error {
+    text-align: center;
+    padding: 30px;
+
+    .error-content {
+        a {
+            color: map-get($md-pinkhighlight, 500);
+            background-color: transparent;
+            text-decoration: underline;
+        }
+    
+        margin-top: 20px;
+    }
+}
+
+a {
+    color: map-get($md-pinkhighlight, 500);
+    background-color: transparent;
+    text-decoration: underline;
+}
