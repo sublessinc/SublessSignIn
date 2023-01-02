@@ -65,6 +65,33 @@ namespace Subless.Services.Services
             return false;
         }
 
+        public bool SaveTagHit(string userId, Uri uri, string creatorname)
+        {
+            _logger.LogDebug("SaveHit hit.");
+            var partner = _partnerService.GetCachedPartnerByUri(new Uri(uri.GetLeftPart(UriPartial.Authority)));
+            if (partner == null)
+            {
+                _logger.LogError($"Unknown partner recieved hit from URL {uri}");
+                return false;
+            }
+            var creator = _creatorService.GetCachedCreatorFromPartnerAndUsername(creatorname, partner.Id);
+            var hit = new Hit()
+            {
+                CognitoId = userId,
+                Uri = uri,
+                TimeStamp = DateTimeOffset.UtcNow,
+                PartnerId = partner.Id,
+                CreatorId = creator?.Id ?? Guid.Empty
+            };
+            _logger.LogDebug($"Saving a hit for creator {creatorname} id:{creator?.Id} at time {hit.TimeStamp}.");
+            hitRepository.SaveHit(hit);
+            if (_featureConfig.HitPopupEnabled)
+            {
+                return creator?.Id != null;
+            }
+            return false;
+        }
+
         public Hit TestHit(string userId, Uri uri)
         {
             _logger.LogDebug($"TestHit hit with user {userId} and uri {uri}");

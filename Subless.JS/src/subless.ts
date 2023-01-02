@@ -19,6 +19,7 @@ interface SublessSettings {
     postLogoutRedirectUri: string;
     authority: string;
     clientId: string;
+    tagStrategy: boolean;
 }
 
 const sublessConfig: SublessSettings = {
@@ -26,6 +27,7 @@ const sublessConfig: SublessSettings = {
     postLogoutRedirectUri: clientBaseUri,
     authority: "",
     clientId: "",
+    tagStrategy: true,
 };
 
 
@@ -96,20 +98,53 @@ export class Subless implements SublessInterface {
     async subless_hit() { // eslint-disable-line camelcase
         const loggedIn = await this.subless_LoggedIn();
         if (loggedIn) {
+            if ((await this.sublessConfig).tagStrategy) {
+                await this.pushTagHit();
+            } else {
+                await this.pushUriHit();
+            }
+        }
+    }
+
+    /** Push hits based on tags */
+    async pushTagHit() {
+        const creators = await this.getSublessTags();
+        for (const creator of creators) {
             // The below rule is disabled to force evaluation.
             const body = // eslint-disable-line no-unused-vars
-                fetch(sublessUri + "/api/hit", {
+                fetch(sublessUri + "/api/hit/tag", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
                     },
-                    body: window.location.origin + window.location.pathname,
+                    body: JSON.stringify({
+                        uri: window.location.origin + window.location.pathname,
+                        creator: creator,
+                    }),
                     credentials: "include",
                 });
             const result = await body.then((response) => response.json());
             if (result === true) {
                 this.sublessShowLogo();
             }
+        }
+    }
+
+    /** Push hits based on uris */
+    async pushUriHit() {
+        // The below rule is disabled to force evaluation.
+        const body = // eslint-disable-line no-unused-vars
+            fetch(sublessUri + "/api/hit", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: window.location.origin + window.location.pathname,
+                credentials: "include",
+            });
+        const result = await body.then((response) => response.json());
+        if (result === true) {
+            this.sublessShowLogo();
         }
     }
 
@@ -182,6 +217,18 @@ export class Subless implements SublessInterface {
     /** A method that can be used to log a user out from Subless */
     async sublessLogout() {
         window.open(sublessUri + "/bff/logout?returnUrl=" + clientBaseUri, "_blank");
+    }
+
+    /** Get all subless tagged content */
+    async getSublessTags(): Promise<string[]> {
+        const creators: string[] = [];
+        const sublessTags = document.querySelectorAll("subless");
+        for (let i = 0; i < sublessTags.length; i++) {
+            if (sublessTags[i] instanceof HTMLElement) {
+                creators.push(sublessTags[i].getAttribute("creatorName"));
+            }
+        }
+        return creators;
     }
 }
 
