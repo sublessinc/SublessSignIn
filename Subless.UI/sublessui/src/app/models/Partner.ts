@@ -7,7 +7,8 @@ export class Partner implements IPartner {
         public id: string,
         public sites: string[],
         public userPattern: string,
-        public creatorWebhook: string
+        public creatorWebhook: string,
+        public favicon: string
     ) { }
 
 }
