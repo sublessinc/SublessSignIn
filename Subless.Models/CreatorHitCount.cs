@@ -2,7 +2,7 @@
 
 namespace Subless.Models
 {
-    public class CreatorHitCount
+    public class CreatorHitCount: IFaviconable
     {
         public string CreatorName { get; set; }
         public int Hits { get; set; }

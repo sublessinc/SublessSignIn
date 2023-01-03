@@ -102,10 +102,8 @@ namespace Subless.Data
                 })
                 .Take(5)
                 .ToList();
-            foreach (var hit in hits)
-            {
-                hit.Favicon = GetPartner(hit.PartnerId).Favicon;
-            }
+
+            hits = (List<HitView>)EnrichFavicons(hits);
             return hits;
         }
 
@@ -124,10 +122,8 @@ namespace Subless.Data
                 .OrderByDescending(x => x.Hits)
                 .Take(5)
                 .ToList();
-            foreach (var hit in hits)
-            {
-                hit.Favicon = GetPartner(hit.PartnerId).Favicon;
-            }
+
+            hits = (List<ContentHitCount>)EnrichFavicons(hits);
             return hits;
         }
 
@@ -149,10 +145,9 @@ namespace Subless.Data
                 })
                 .Take(5)
                 .ToList();
-            foreach (var hit in hits)
-            {
-                hit.Favicon = GetPartner(hit.PartnerId).Favicon;
-            }
+
+            hits = (List<HitView>)EnrichFavicons(hits);
+
             return hits;
         }
 
@@ -183,11 +178,18 @@ namespace Subless.Data
                 .Take(5)
                 .ToList();
 
-            foreach (var hit in hits)
+            hits = (List<CreatorHitCount>)EnrichFavicons(hits);
+
+            return hits;
+        }
+
+        private IEnumerable<IFaviconable> EnrichFavicons(IEnumerable<IFaviconable> items) 
+        {
+            foreach (var hit in items)
             {
                 hit.Favicon = GetPartner(hit.PartnerId).Favicon;
             }
-            return hits;
+            return items;
         }
     }
 }

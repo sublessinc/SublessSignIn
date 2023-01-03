@@ -2,7 +2,7 @@ using System;
 
 namespace Subless.Models
 {
-    public class HitView
+    public class HitView: IFaviconable
     {
         public Uri Content { get; set; }
         public string Title { get; set; }

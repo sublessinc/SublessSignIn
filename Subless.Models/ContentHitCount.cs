@@ -2,7 +2,7 @@ using System;
 
 namespace Subless.Models
 {
-    public class ContentHitCount
+    public class ContentHitCount: IFaviconable
     {
         public Uri Content { get; set; }
         public string Title { get; set; }
