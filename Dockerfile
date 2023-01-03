@@ -23,12 +23,12 @@ COPY ./Subless.JS/ /src
 RUN npm run build:$build_environment
 
 
-FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
+FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS base
 WORKDIR /app
 ENV ASPNETCORE_URLS=http://+:7070
 EXPOSE 7070
 
-FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 WORKDIR /src
 COPY ["./Subless.Data/Subless.Data.csproj", "./Subless.Data/"]
 RUN dotnet restore "./Subless.Data/Subless.Data.csproj"
@@ -48,7 +48,7 @@ FROM build AS publish
 RUN dotnet publish "./SublessSignIn/SublessSignIn.csproj" -c Release -o /app/publish
 
 FROM build AS version
-RUN dotnet tool install --global GitVersion.Tool --version 5.*
+RUN dotnet tool install --global GitVersion.Tool --version 7.*
 RUN ./version.sh
 
 FROM base AS final
