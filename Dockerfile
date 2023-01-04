@@ -48,7 +48,7 @@ FROM build AS publish
 RUN dotnet publish "./SublessSignIn/SublessSignIn.csproj" -c Release -o /app/publish
 
 FROM build AS version
-RUN dotnet tool install --global GitVersion.Tool --version 7.*
+RUN dotnet tool install --global GitVersion.Tool --version 5.*
 RUN ./version.sh
 
 FROM base AS final
