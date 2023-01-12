@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 
 namespace SublessSignIn.Models
 {
@@ -9,6 +9,7 @@ namespace SublessSignIn.Models
         public string UserPattern { get; set; }
         public string CreatorWebhook { get; set; }
         public Guid Id { get; set; }
+        public string Favicon { get; set; }
     }
 
 
