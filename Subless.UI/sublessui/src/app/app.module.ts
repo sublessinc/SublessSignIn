@@ -13,7 +13,7 @@ import { LoggedOutComponent } from './logged-out/logged-out.component';
 import { FormsModule } from '@angular/forms';
 import { CreatorstatsComponent } from './creatorstats/creatorstats.component';
 import { ReactiveFormsModule } from '@angular/forms';
-import { MatSelectModule } from '@angular/material/select';
+import { MatLegacySelectModule as MatSelectModule } from '@angular/material/legacy-select';
 import { IdComponent } from './id/id.component';
 import { PartnerprofileComponent } from './partnerprofile/partnerprofile.component';
 import { UnauthorizedInterceptor } from './services/auth.interceptor';

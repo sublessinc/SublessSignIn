@@ -1,6 +1,6 @@
 import { AfterViewInit, Component, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatLegacySnackBar as MatSnackBar } from '@angular/material/legacy-snack-bar';
 import { Router } from '@angular/router';
 import { Observable, Subscription } from 'rxjs';
 import { Creator } from '../models/Creator';
@@ -23,7 +23,7 @@ export class PayoutsettingsComponent implements OnInit, ComponentCanDeactivate, 
   private creatorModels$: Observable<ICreator[]> | undefined;
   public creatorModels: ICreator[] = [];
   private partnerModel$: Observable<IPartner> | undefined;
-  public partnerModel: IPartner = new Partner("", "", "", [""], "", "");
+  public partnerModel: IPartner = new Partner("", "", "", [""], "", "", "");
   public backgroundClass: string = "lightBackground";
   public isModal: boolean = false;
   public creator: boolean = false;

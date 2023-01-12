@@ -4,6 +4,7 @@ export class Creator implements ICreator {
     constructor(
         public username: string,
         public payPalId: string,
-        public id: string
+        public id: string,
+        public partnerUri: string = ""
     ) { }
 }

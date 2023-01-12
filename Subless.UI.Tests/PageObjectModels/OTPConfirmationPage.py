@@ -28,6 +28,12 @@ class OTPConfirmationPage(BasePage):
         self.submit_button.click()
 
         if ("error" in self.driver.current_url):
+            try:
+                errorMessage = self.driver.find_elements_by_id(OTPLocators.error_message_id)[0].text
+            except:
+                logging.info("Unknown OTP error")
+            if (errorMessage == "Application is busy, please try again in a few minutes."):
+                raise Exception("API Limit reached")
             raise Exception('A problem was encountered while sending OTP')
         # wait for redirect
         WebDriverWait(self.driver, 10).until(lambda driver: 'confirm' not in self.driver.current_url)
@@ -39,3 +45,4 @@ class OTPConfirmationPage(BasePage):
 class OTPLocators:
     code_textbox_id = 'verification_code'
     submit_button_xpath = '//*[@id="confirm"]/div[2]/button'
+    error_message_id='errorMessage';

@@ -23,6 +23,7 @@ namespace SublessSignIn.Controllers
         private readonly IUserService userService;
         private readonly IHitService hitService;
         private readonly IPaymentLogsService paymentLogsService;
+        private readonly IPartnerService _partnerService;
         private readonly IUsageService _usageService;
         private readonly ILogger _logger;
         public CreatorController(
@@ -31,18 +32,20 @@ namespace SublessSignIn.Controllers
             IUserService userService,
             IHitService hitService,
             IPaymentLogsService paymentLogsService,
+            IPartnerService partnerService,
             IUsageService usageService)
         {
             _creatorService = creatorService ?? throw new ArgumentNullException(nameof(creatorService));
             this.userService = userService ?? throw new ArgumentNullException(nameof(userService));
             this.hitService = hitService ?? throw new ArgumentNullException(nameof(hitService));
             this.paymentLogsService = paymentLogsService ?? throw new ArgumentNullException(nameof(paymentLogsService));
+            _partnerService = partnerService ?? throw new ArgumentNullException(nameof(partnerService));
             _usageService = usageService ?? throw new ArgumentNullException(nameof(usageService));
             _logger = loggerFactory?.CreateLogger<PartnerController>() ?? throw new ArgumentNullException(nameof(loggerFactory));
         }
 
         [HttpGet()]
-        public ActionResult<Creator> GetCreator()
+        public ActionResult<IEnumerable<CreatorViewModel>> GetCreator()
         {
             var cognitoId = userService.GetUserClaim(HttpContext.User);
             if (cognitoId == null)
@@ -51,7 +54,10 @@ namespace SublessSignIn.Controllers
             }
             try
             {
-                return Ok(_creatorService.GetCreatorsByCognitoid(cognitoId));
+                var creators = _creatorService.GetCreatorsByCognitoid(cognitoId);
+                var viewCreators = creators.Select(x =>
+                    x.GetViewModel(_partnerService.GetPartner(x.PartnerId).Sites.FirstOrDefault())).ToList();
+                return Ok(viewCreators);
             }
             catch (UnauthorizedAccessException e)
             {
@@ -70,7 +76,7 @@ namespace SublessSignIn.Controllers
             }
             try
             {
-                await _creatorService.UpdateCreator(cognitoId, creator);
+                await _creatorService.UpdateCreatorPaymentInfo(cognitoId, creator);
                 return Ok(_creatorService.GetCreatorsByCognitoid(cognitoId));
             }
             catch (UnauthorizedAccessException e)
