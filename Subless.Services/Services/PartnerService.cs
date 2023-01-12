@@ -57,6 +57,7 @@ namespace Subless.Services.Services
             var partner = partnerRepository.GetPartner(partnerModel.Id);
             partner.PayPalId = partnerModel.PayPalId;
             partner.CreatorWebhook = partnerModel.CreatorWebhook;
+            partner.Favicon = partnerModel.Favicon;
             partnerRepository.UpdatePartner(partner);
             return partner;
         }

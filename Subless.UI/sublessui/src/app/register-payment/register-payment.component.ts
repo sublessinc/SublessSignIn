@@ -6,7 +6,7 @@ import { Router } from '@angular/router';
 import { ICheckoutSettings } from '../models/ICheckoutSettings';
 import { ISessionResponse } from '../models/ISessionResponse';
 import { CheckoutService } from '../services/checkout.service';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatLegacySnackBar as MatSnackBar } from '@angular/material/legacy-snack-bar';
 import { Subscription } from 'rxjs';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 declare var Stripe: any;

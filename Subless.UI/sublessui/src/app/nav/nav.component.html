@@ -1,7 +1,7 @@
 <button *ngIf="!showHamburger" mat-icon-button (click)="hamburgerPress()" id="hamburger-btn">
   <img #btnImage width=42 height=42 class="hamburger-img" src="../../assets/img/hamburgerMenuWhite.svg">
 </button>
-<mat-sidenav-container color='primary' id='root'>
+<mat-sidenav-container color='primary' class='nav-root' id='root'>
   <mat-sidenav class="drawer" #drawer mode="side" *ngIf="showDrawer()" opened role="navigation">
     <div class="logo"></div>
 
