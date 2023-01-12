@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Amazon.SimpleEmail;
 using Amazon.SimpleEmail.Model;
@@ -26,7 +27,8 @@ namespace Subless.Services.Services
             }
             using (var client = new AmazonSimpleEmailServiceClient(region: Amazon.RegionEndpoint.USEast2))
             {
-
+                var fallbackEnvironment = _options.Value.Environment == "local" ? "dev" : _options.Value.Environment;
+                var tagvalue = Regex.Replace(subject, "[^a-zA-Z0-9]", String.Empty);
                 var sendRequest = new SendEmailRequest
                 {
                     Source = from,
@@ -47,9 +49,8 @@ namespace Subless.Services.Services
                             },
                         }
                     },
-                    // If you are not using a configuration set, comment
-                    // or remove the following line 
-                    //ConfigurationSetName = configSet
+                    ConfigurationSetName = $"{fallbackEnvironment}_EmailStatsTracking",
+                    Tags = new List<MessageTag> { new MessageTag { Name = $"{_options.Value.Environment}SesMetrics", Value = tagvalue, } },
                 };
                 try
                 {

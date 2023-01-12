@@ -72,17 +72,33 @@ namespace Subless.Services.Services
             await FireCreatorActivationWebhook(creator, false);
         }
 
+        public bool ActivationCodeValid(Guid activationCode)
+        {
+            var creator = creatorRepository.GetCreatorByActivationCode(activationCode);
+            if (creator== null)
+            {
+                return false;
+            }
+            if (creator.Active)
+            {
+                return false;
+            }
+            if (creator.ActivationExpiration < DateTimeOffset.UtcNow)
+            {
+                return false;
+            }
+            return true;
+        }
+
         public CreatorMessage GetCreatorMessage(Guid creatorId)
         {
             return creatorRepository.GetMessageForCreator(creatorId);
         }
 
-        public void SoftDeleteCreator(Guid creatorId)
+        private void SoftDeleteCreator(Creator creator)
         {
-            var creator = creatorRepository.GetCreator(creatorId);
             creator.Email = Redacted;
-            creator.PayPalId = Redacted;
-            creator.Username = Redacted;
+            creator.PayPalId = null;
             creator.Deleted = true;
             creator.Active = false;
             creator.UserId = null;
@@ -102,25 +118,24 @@ namespace Subless.Services.Services
             return creatorRepository.SetCreatorMessage(new CreatorMessage { CreateDate = DateTimeOffset.UtcNow, CreatorId = creatorId, Message = message, IsActive = true });
         }
 
-        public Creator GetCreatorByCognitoid(string cognitoId)
+        public IEnumerable<Creator> GetCreatorsByCognitoid(string cognitoId)
         {
-            var creator = GetCreatorOrDefaultByCognitoid(cognitoId);
-            if (creator == null)
+            var creators = GetCreatorOrDefaultByCognitoid(cognitoId);
+            if (creators == null)
             {
                 throw new UnauthorizedAccessException();
             }
-            // TODO: One creator for now.
-            return creator;
+            return creators;
         }
 
-        public Creator? GetCreatorOrDefaultByCognitoid(string cognitoId)
+        public IEnumerable<Creator>? GetCreatorOrDefaultByCognitoid(string cognitoId)
         {
             var creators = _userRepository.GetCreatorsByCognitoId(cognitoId);
             if (creators == null || !creators.Any(x => x.Active))
             {
                 return null;
             }
-            return creators.First();
+            return creators;
         }
 
         public Creator GetCreator(Guid id)
@@ -149,7 +164,7 @@ namespace Subless.Services.Services
             return creator;
         }
 
-        public async Task<Creator> UpdateCreator(string cognitoId, Creator creator)
+        public async Task<Creator> UpdateCreatorPaymentInfo(string cognitoId, Creator creator)
         {
             var creators = _userRepository.GetCreatorsByCognitoId(cognitoId);
             if (creators == null || !creators.Any(x => x.Active))
@@ -157,7 +172,7 @@ namespace Subless.Services.Services
                 throw new UnauthorizedAccessException();
             }
             // Set user modifiable properties
-            var currentCreator = creators.First();
+            var currentCreator = creators.Single(x => x.Id == creator.Id);
             var wasValid = CreatorValid(currentCreator);
             if (currentCreator.PayPalId != null && currentCreator.PayPalId != creator.PayPalId && PaypalAddressIsEmail(currentCreator.PayPalId))
             {
@@ -243,17 +258,20 @@ namespace Subless.Services.Services
                 throw new UnauthorizedAccessException("User cannot modify this creator");
             }
             var creator = creators.Single(x => x.Id == id);
-            SoftDeleteCreator(id);
+            SoftDeleteCreator(creator);
             cache.InvalidateCache();
             await partnerService.CreatorChangeWebhook(creator.ToPartnerView(true));
         }
 
         public void AcceptTerms(string cognitoId)
         {
-            var creators = _userRepository.GetCreatorsByCognitoId(cognitoId);
-            var creator = creators.Single();
-            creator.AcceptedTerms = true;
-            creatorRepository.UpdateCreator(creator);
+            var creators = _userRepository.GetCreatorsByCognitoId(cognitoId);            
+            var creator = creators.FirstOrDefault(x=>!x.AcceptedTerms);
+            if (creator != null)
+            {
+                creator.AcceptedTerms = true;
+                creatorRepository.UpdateCreator(creator);
+            }
         }
 
         private string GetPaymentSetEmail(string creatorName)

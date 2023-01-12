@@ -12,16 +12,17 @@ namespace Subless.Services.Services
         Task FireCreatorActivationWebhook(Creator creator, bool wasValid);
         Creator GetCachedCreatorFromPartnerAndUsername(string username, Guid partnerId);
         Creator GetCreator(Guid id);
-        Creator GetCreatorByCognitoid(string cognitoId);
+        IEnumerable<Creator> GetCreatorsByCognitoid(string cognitoId);
         IEnumerable<Creator> GetCreatorsByPartnerId(Guid partnerId);
         IEnumerable<MonthlyPaymentStats> GetStatsForCreator(Creator creator);
         Task UnlinkCreator(string cognitoId, Guid id);
-        Task<Creator> UpdateCreator(string cognitoId, Creator creator);
+        Task<Creator> UpdateCreatorPaymentInfo(string cognitoId, Creator creator);
         void AcceptTerms(string cognitoId);
-        Creator? GetCreatorOrDefaultByCognitoid(string cognitoId);
+        IEnumerable<Creator>? GetCreatorOrDefaultByCognitoid(string cognitoId);
         IEnumerable<Creator> GetActiveCreators(IEnumerable<Guid> excludeCreators);
         CreatorMessage SetCreatorMessage(Guid creatorId, string message);
         CreatorMessage GetCreatorMessage(Guid creatorId);
         List<string> GetUriWhitelist();
+        bool ActivationCodeValid(Guid activationCode);
     }
 }

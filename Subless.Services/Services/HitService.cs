@@ -104,10 +104,10 @@ namespace Subless.Services.Services
             return hitRepository.GetUserStats(startDate, endDate, user.CognitoId, user.Creators.FirstOrDefault()?.Id);
         }
 
-        public CreatorStats GetCreatorStats(DateTimeOffset startDate, DateTimeOffset endDate, Guid creatorId, string cognitoId)
+        public CreatorStats GetCreatorStats(DateTimeOffset startDate, DateTimeOffset endDate, IEnumerable<Guid> creatorIds, string cognitoId)
         {
             _logger.LogDebug($"Getting hits for range {startDate} to {endDate}");
-            return hitRepository.GetCreatorStats(startDate, endDate, creatorId, cognitoId);
+            return hitRepository.GetCreatorStats(startDate, endDate, creatorIds, cognitoId);
         }
 
         public PartnerStats GetPartnerStats(
@@ -142,19 +142,46 @@ namespace Subless.Services.Services
 
         public IEnumerable<HitView> GetRecentPatronContent(string cognitoId)
         {
-            var creatorId = _creatorService.GetCreatorOrDefaultByCognitoid(cognitoId)?.Id;
-            return hitRepository.GetRecentPatronContent(cognitoId, creatorId);
+            var creators = _creatorService.GetCreatorOrDefaultByCognitoid(cognitoId);
+            if (creators != null)
+            {
+                foreach (var creator in creators)
+                {
+                    return hitRepository.GetRecentPatronContent(cognitoId, creator.Id);
+                }
+            }
+            else
+            {
+                return hitRepository.GetRecentPatronContent(cognitoId);
+
+            }
+            return new List<HitView>();
         }
 
         public IEnumerable<CreatorHitCount> GetTopPatronContent(DateTimeOffset startDate, DateTimeOffset endDate, string cognitoId)
         {
-            var creatorId = _creatorService.GetCreatorOrDefaultByCognitoid(cognitoId)?.Id;
-            var hits = hitRepository.GetTopPatronContent(startDate, endDate, cognitoId, creatorId);
-            return hits.Select(x =>
+            var creators = _creatorService.GetCreatorOrDefaultByCognitoid(cognitoId);
+            if (creators != null) {
+                foreach (var creator in creators)
+                {
+                    var hits = hitRepository.GetTopPatronContent(startDate, endDate, cognitoId, creator.Id);
+                    return hits.Select(x =>
+                    {
+                        x.CreatorName = _creatorService.GetCreator(x.CreatorId)?.Username ?? "Deleted Creator";
+                        return x;
+                    });
+                }
+            }
+            else
             {
-                x.CreatorName = _creatorService.GetCreator(x.CreatorId)?.Username ?? "Deleted Creator";
-                return x;
-            });
+                var hits = hitRepository.GetTopPatronContent(startDate, endDate, cognitoId);
+                return hits.Select(x =>
+                {
+                    x.CreatorName = _creatorService.GetCreator(x.CreatorId)?.Username ?? "Deleted Creator";
+                    return x;
+                });
+            }
+            return new List<CreatorHitCount>();
         }
 
         public Guid? GetCreatorFromPartnerAndUri(Uri uri, Partner partner)

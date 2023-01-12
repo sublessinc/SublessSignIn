@@ -25,10 +25,12 @@ export class CreatorstatsComponent implements OnDestroy {
   }
   download() {
     this.subs.push(this.statsService.downloadCreatorFile().subscribe(
-      (response: any) => {
-        let blob: any = new Blob([response], { type: 'text/json; charset=utf-8' });
-        const url = window.URL.createObjectURL(blob);
-        fileSaver.saveAs(blob, 'payout-history.csv');
+      (response: { [key: string]: string }) => {
+        for (let creator in response) {
+          let blob: any = new Blob([response[creator]], { type: 'text/json; charset=utf-8' });
+          const url = window.URL.createObjectURL(blob);
+          fileSaver.saveAs(blob, creator + '-payout-history.csv');
+        }
       })),
       (error: any) => this.logger.info('Error downloading the file'),
       () => this.logger.info('File downloaded successfully');
