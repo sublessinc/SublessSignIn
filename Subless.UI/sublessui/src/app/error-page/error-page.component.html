@@ -1,14 +1,7 @@
-<h1 class="error-text" id="title" [innerText]="errorTitle"></h1>
-<h1 class="error-text" id="action" [innerText]="errorAction"></h1>
-<style>
-    .text {
-        text-align: center;
-        font-size: 20px;
-        margin-bottom: 40px;
-    }
-
-    .error-text {
-        text-align: center;
-        padding: 20px;
-    }
-</style>
+<div #sublessbackground>
+    <mat-card class="error">
+        <mat-card-title id="title" [innerText]="errorTitle"></mat-card-title>
+        <mat-card-content class="error-content" id="action" [innerHtml]="errorAction"></mat-card-content>
+        <button class="button" mat-button (click)='ok()'>Return home</button>
+    </mat-card>
+</div>

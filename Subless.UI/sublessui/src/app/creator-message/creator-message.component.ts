@@ -3,7 +3,7 @@ import { AbstractControl, FormControl, FormGroup, ValidationErrors, ValidatorFn 
 import { Observable, of, Subscription } from 'rxjs';
 import { ICreatorMessage } from '../models/ICreatorMessage';
 import { CreatorService } from '../services/creator.service';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatLegacySnackBar as MatSnackBar } from '@angular/material/legacy-snack-bar';
 import { HttpErrorResponse } from '@angular/common/http';
 
 
@@ -105,14 +105,15 @@ export class CreatorMessageComponent implements OnInit {
     if (!this.message.includes("</a>")) {
       return true;
     }
-
-    const links = this.message.match(this.re)?.filter(link => !link.startsWith("href="));
-    if (links) {
-      for (const link of links) {
-        if (!this.checkLinkDomain(link)) {
+    let linkGroup;
+    let trimmedMessage = this.message;
+    while ((linkGroup = this.re.exec(trimmedMessage)) !== null) {
+      for (const link of linkGroup) {
+        if (!link.startsWith("href=") && !this.checkLinkDomain(link)) {
           this.form.controls["messageControl"].setErrors({ 'NoWhitelist': true });
           return false;
         }
+        trimmedMessage = trimmedMessage.replace(link, "");
       }
     }
     return true;

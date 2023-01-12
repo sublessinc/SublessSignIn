@@ -31,7 +31,8 @@ class BasePage(object):
         WebDriverWait(self.driver, 10).until(lambda driver: 'login' in driver.current_url)
 
     def wait_for_load(self):
-        WebDriverWait(self.driver, 10).until(EC.invisibility_of_element_located((By.ID, BasePageLocators.loading_id)));
+        if check_exists_by_id(BasePageLocators.loading_id, self.driver):
+            WebDriverWait(self.driver, 10).until(EC.invisibility_of_element_located((By.ID, BasePageLocators.loading_id)))
 
 def check_exists_by_id(id, driver):
     from selenium.common.exceptions import NoSuchElementException
@@ -49,6 +50,13 @@ def check_exists_by_xpath(xpath, driver):
         return False
     return True
 
+def check_exists_by_id(id, driver):
+    from selenium.common.exceptions import NoSuchElementException
+    try:
+        driver.find_element_by_id(id)
+    except NoSuchElementException:
+        return False
+    return True
 
 class BasePageLocators:
     logout_button_selector = '#logout, #logout2'

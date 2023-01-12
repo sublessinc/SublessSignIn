@@ -1,6 +1,6 @@
 import { AfterViewInit, Component, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatLegacySnackBar as MatSnackBar } from '@angular/material/legacy-snack-bar';
 import { Router } from '@angular/router';
 import { Observable, Subscription } from 'rxjs';
 import { Creator } from '../models/Creator';
@@ -20,10 +20,10 @@ import { ComponentCanDeactivate } from '../stop-nav.guard';
 export class PayoutsettingsComponent implements OnInit, ComponentCanDeactivate, OnDestroy {
   public activationRedirectUrl: string | null = null;
   public email: string = '';
-  private creatorModel$: Observable<ICreator> | undefined;
-  public creatorModel: ICreator = new Creator("", "", "");
+  private creatorModels$: Observable<ICreator[]> | undefined;
+  public creatorModels: ICreator[] = [];
   private partnerModel$: Observable<IPartner> | undefined;
-  public partnerModel: IPartner = new Partner("", "", "", [""], "", "");
+  public partnerModel: IPartner = new Partner("", "", "", [""], "", "", "");
   public backgroundClass: string = "lightBackground";
   public isModal: boolean = false;
   public creator: boolean = false;
@@ -55,10 +55,10 @@ export class PayoutsettingsComponent implements OnInit, ComponentCanDeactivate, 
         this.creator = routes.includes(3);
         this.partner = routes.includes(4);
         if (this.creator) {
-          this.creatorModel$ = this.creatorService.getCreator();
-          this.subs.push(this.creatorModel$.subscribe({
-            next: (creator: ICreator) => {
-              this.creatorModel = creator;
+          this.creatorModels$ = this.creatorService.getCreators();
+          this.subs.push(this.creatorModels$.subscribe({
+            next: (creators: ICreator[]) => {
+              this.creatorModels = creators;
             }
           }));
         }
@@ -78,35 +78,21 @@ export class PayoutsettingsComponent implements OnInit, ComponentCanDeactivate, 
     this.authService.OnDestroy();
   }
 
-  finalize() {
+  finalize(username: string) {
     if (this.activationRedirectUrl) {
-      this.creatorService.finalizeViaRedirect(this.activationRedirectUrl, this.email, this.creatorModel.username);
+      this.creatorService.finalizeViaRedirect(this.activationRedirectUrl, this.email, username);
     }
     else {
       this.router.navigate(["payout-settings"]);
     }
   }
-  onCreatorSubmit(): void {
-    this.creatorModel$ = this.creatorService.updateCreator(this.creatorModel);
-    this.subs.push(this.creatorModel$.subscribe({
-      next: (creator: ICreator) => {
-        this.creatorModel = creator;
+  onCreatorSubmit(creator: ICreator): void {
+    this.creatorModels$ = this.creatorService.updateCreator(creator);
+    this.subs.push(this.creatorModels$.subscribe({
+      next: (creators: ICreator[]) => {
+        this.creatorModels = creators;
         if (this.isModal) {
-          this.finalize();
-        }
-        this._snackBar.open("Saved", "Ok", {
-          duration: 2000,
-        });
-      }
-    }));
-  }
-  onPartnerSubmit(): void {
-    this.partnerModel$ = this.partnerService.updatePartner(this.partnerModel);
-    this.subs.push(this.partnerModel$.subscribe({
-      next: (partner: IPartner) => {
-        this.partnerModel = partner;
-        if (this.isModal) {
-          this.finalize();
+          this.finalize(creator.username);
         }
         this._snackBar.open("Saved", "Ok", {
           duration: 2000,
@@ -115,13 +101,24 @@ export class PayoutsettingsComponent implements OnInit, ComponentCanDeactivate, 
     }));
   }
 
+  onPartnerSubmit(): void {
+    this.partnerModel$ = this.partnerService.updatePartner(this.partnerModel);
+    this.subs.push(this.partnerModel$.subscribe({
+      next: (partner: IPartner) => {
+        this.partnerModel = partner;
+        this._snackBar.open("Saved", "Ok", {
+          duration: 2000,
+        });
+      }
+    }));
+  }
 
   @HostListener('window:beforeunload')
   canDeactivate(): Observable<boolean> | boolean {
     // insert logic to check if there are pending changes here;
     // returning true will navigate without confirmation
     // returning false will show a confirm dialog before navigating away
-    return !((this.creatorModel.payPalId == null || this.creatorModel.payPalId == ""));
+    return !(this.creatorModels.some(model => model.payPalId == null || model.payPalId == ""));
   }
 
 }

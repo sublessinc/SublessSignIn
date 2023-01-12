@@ -2,10 +2,12 @@ using System;
 
 namespace Subless.Models
 {
-    public class ContentHitCount
+    public class ContentHitCount: IFaviconable
     {
         public Uri Content { get; set; }
         public string Title { get; set; }
         public int Hits { get; set; }
+        public Uri Favicon {get;set;}
+        public Guid PartnerId { get; set; }
     }
 }
