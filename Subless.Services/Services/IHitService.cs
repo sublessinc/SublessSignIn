@@ -11,7 +11,7 @@ namespace Subless.Services.Services
         bool SaveHit(string userId, Uri uri);
         Hit TestHit(string userId, Uri uri);
         UserStats GetUserStats(DateTimeOffset startDate, DateTimeOffset endDate, Guid userId);
-        CreatorStats GetCreatorStats(DateTimeOffset startDate, DateTimeOffset endDate, Guid creatorId, string cognitoId);
+        CreatorStats GetCreatorStats(DateTimeOffset startDate, DateTimeOffset endDate, IEnumerable<Guid> creatorId, string cognitoId);
         PartnerStats GetPartnerStats(DateTimeOffset startDate, DateTimeOffset endDate, Guid partnerId, string cognitoId);
         IEnumerable<ContentHitCount> GetTopCreatorContent(Guid creatorId, string cognitoId);
         IEnumerable<HitView> GetRecentCreatorContent(Guid creatorId, string cognitoId);

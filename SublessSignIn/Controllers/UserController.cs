@@ -88,15 +88,18 @@ namespace SublessSignIn.Controllers
                 stripeService.CancelSubscription(cognitoId);
             }
             var user = userService.GetUserByCognitoId(cognitoId);
-            if (user.Creators.Any())
+            if (user != null && user.Creators != null && user.Creators.Any())
             {
                 foreach (var creator in user.Creators)
                 {
                     await partnerService.CreatorChangeWebhook(creator.ToPartnerView());
                 }
             }
-            userService.DemoteUser(user.Id);
-            await cognitoService.DeleteCognitoUser(user.CognitoId);
+            if (user != null)
+            {
+                userService.DemoteUser(user.Id);
+            }
+            await cognitoService.DeleteCognitoUser(cognitoId);
         }
 
         [HttpGet()]
@@ -224,7 +227,7 @@ namespace SublessSignIn.Controllers
             {
                 var paymentDate = paymentLogsService.GetLastPaymentDate();
                 return Ok(hitService.GetTopPatronContent(paymentDate, DateTimeOffset.UtcNow, cognitoId)
-                    .Select(x => new CreatorHitCount { CreatorName = x.CreatorName, Hits = x.Hits }));
+                    .Select(x => new CreatorHitCount { CreatorName = x.CreatorName, Hits = x.Hits, Favicon = x.Favicon }));
             }
             catch (UnauthorizedAccessException e)
             {

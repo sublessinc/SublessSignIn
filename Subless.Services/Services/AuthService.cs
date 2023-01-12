@@ -35,7 +35,7 @@ namespace Subless.Services.Services
                 user = userService.CreateUserByCognitoId(cognitoId);
             }
 
-            if (activationCode != null && Guid.TryParse(activationCode, out var code) && (user.Creators == null || !user.Creators.Any() || user.Creators.Any(x => !x.Active)))
+            if (activationCode != null && Guid.TryParse(activationCode, out var code) && creatorService.ActivationCodeValid(code))
             {
                 await creatorService.ActivateCreator(user.Id, code, email);
                 user = userService.GetUserWithRelationships(user.Id);
