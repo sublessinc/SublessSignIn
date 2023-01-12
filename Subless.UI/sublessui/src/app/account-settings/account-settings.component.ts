@@ -6,7 +6,7 @@ import { AuthorizationService } from '../services/authorization.service';
 import { CheckoutService } from '../services/checkout.service';
 import { CreatorService } from '../services/creator.service';
 import { UserService } from '../services/user.service';
-import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
+import { MatLegacyDialog as MatDialog, MatLegacyDialogConfig as MatDialogConfig } from '@angular/material/legacy-dialog';
 import { IDialogData, WarnDialogComponent } from '../warn-dialog/warn-dialog.component';
 import { Observable, Subscription } from 'rxjs';
 

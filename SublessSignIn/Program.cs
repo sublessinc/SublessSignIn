@@ -17,7 +17,7 @@ namespace SublessSignIn
             Log.Logger = LoggerConfig.GetLogger();
             Log.Logger.Information("Subless bootstrapping...");
 
-            var host = CreateHostBuilder(args).Build();
+            var host = CreateHostBuilder(args, Log.Logger).Build();
             using (var scope = host.Services.CreateScope())
             {
                 var services = scope.ServiceProvider;
@@ -43,10 +43,10 @@ namespace SublessSignIn
             host.Run();
         }
 
-        public static IHostBuilder CreateHostBuilder(string[] args)
+        public static IHostBuilder CreateHostBuilder(string[] args, ILogger logger)
         {
             return Host.CreateDefaultBuilder(args)
-                .UseSerilog(LoggerConfig.GetLogger())
+                .UseSerilog(logger)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();

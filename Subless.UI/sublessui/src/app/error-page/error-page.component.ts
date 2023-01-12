@@ -1,15 +1,17 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-error-page',
   templateUrl: './error-page.component.html',
-  styleUrls: ['./error-page.component.css']
+  styleUrls: ['./error-page.component.scss'],
+  encapsulation: ViewEncapsulation.None
 })
 export class ErrorPageComponent implements OnInit {
   public errorTitle: string = "You broke subless!";
-  public errorAction: string = "Tell us how by emailing contact@subless.com";
-  constructor(private route: ActivatedRoute) { }
+  public errorAction: string = "Tell us how by emailing <a href='mailto:contact@subless.com?subject=I broke subless!'>contact@subless.com</a>";
+  constructor(private route: ActivatedRoute, private router: Router) { }
   ngOnInit() {
     // get URL parameters
     this.route.params.subscribe(params => {
@@ -20,4 +22,7 @@ export class ErrorPageComponent implements OnInit {
     });
   }
 
+  public ok(): void {
+    this.router.navigateByUrl('/');
+  }
 }
