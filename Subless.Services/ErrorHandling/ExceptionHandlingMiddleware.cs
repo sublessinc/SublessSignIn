@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
@@ -31,6 +33,37 @@ namespace Subless.Services.ErrorHandling
 
         private Task HandleException(HttpContext context, Exception ex)
         {
+            try
+            {
+                var requestUri = context?.Request?.GetEncodedPathAndQuery();
+                _logger.LogInformation($"Exception occurred on reuqest to {requestUri}");
+            }
+            catch(Exception e)
+            {
+                _logger.LogWarning(e, "Could not capture request details");
+            }
+            try
+            {
+                foreach (var claim in context.User.Claims)
+                {
+                    _logger.LogInformation($"Claim of user encountering exception: {claim.Type} = {claim.Value}");
+                }
+            }
+            catch(Exception e)
+            {
+                _logger.LogWarning(e, "Could not capture claim details");
+            }
+            try
+            {
+                foreach (var header in context.Request.Headers)
+                {
+                    _logger.LogInformation($"Header information of request encountering exception: {header.Key} = {header.Value}");
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.LogWarning(e, "Could not capture header details");
+            }
             if (ex is TaskCanceledException)
             {
                 _logger.LogWarning("Task cancelled error occurred. This is occurring on logout in some cases.");
