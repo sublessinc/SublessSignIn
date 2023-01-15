@@ -3,4 +3,5 @@ export interface ICreator {
     username: string;
     id: string;
     partnerUri: string;
+    partnerId: string;
 }
