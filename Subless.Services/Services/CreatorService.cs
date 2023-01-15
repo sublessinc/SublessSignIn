@@ -8,6 +8,7 @@ using Ganss.Xss;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using Subless.Data;
 using Subless.Models;
 using Subless.Services.Extensions;
@@ -180,6 +181,15 @@ namespace Subless.Services.Services
             }
             currentCreator.PayPalId = creator.PayPalId;
             creatorRepository.UpdateCreator(currentCreator);
+
+            // Grab some logging for known bug
+            if (currentCreator.PartnerId != creator.PartnerId)
+            {
+                logger.LogError(@$"Not sure what's goin on here, we should look into what we're throwing away. These objects should be pretty close
+                currentCreator: {JsonConvert.SerializeObject(currentCreator)}                    
+                (frontend) creator: {JsonConvert.SerializeObject(creator)}");
+
+            }
             if (PaypalAddressIsEmail(creator.PayPalId))
             {
                 await _emailService.SendEmail(GetPaymentSetEmail(creator.Username), creator.PayPalId, "Subless payout email set");
