@@ -184,7 +184,7 @@ namespace Subless.Services.Services
             {
                 await _emailService.SendEmail(GetPaymentSetEmail(creator.Username), creator.PayPalId, "Subless payout email set");
             }
-            await FireCreatorActivationWebhook(creator, wasValid);
+            await FireCreatorActivationWebhook(currentCreator, wasValid);
             return currentCreator;
         }
 
