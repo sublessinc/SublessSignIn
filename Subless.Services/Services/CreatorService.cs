@@ -165,7 +165,7 @@ namespace Subless.Services.Services
             return creator;
         }
 
-        public async Task<Creator> UpdateCreatorPaymentInfo(string cognitoId, Creator creator)
+        public async Task<Creator> UpdateCreatorPaymentInfo(string cognitoId, CreatorViewModel creator)
         {
             var creators = _userRepository.GetCreatorsByCognitoId(cognitoId);
             if (creators == null || !creators.Any(x => x.Active))
@@ -182,14 +182,6 @@ namespace Subless.Services.Services
             currentCreator.PayPalId = creator.PayPalId;
             creatorRepository.UpdateCreator(currentCreator);
 
-            // Grab some logging for known bug
-            if (currentCreator.PartnerId != creator.PartnerId)
-            {
-                logger.LogError(@$"Not sure what's goin on here, we should look into what we're throwing away. These objects should be pretty close
-                currentCreator: {JsonConvert.SerializeObject(currentCreator)}                    
-                (frontend) creator: {JsonConvert.SerializeObject(creator)}");
-
-            }
             if (PaypalAddressIsEmail(creator.PayPalId))
             {
                 await _emailService.SendEmail(GetPaymentSetEmail(creator.Username), creator.PayPalId, "Subless payout email set");

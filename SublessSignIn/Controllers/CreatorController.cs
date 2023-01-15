@@ -67,7 +67,7 @@ namespace SublessSignIn.Controllers
         }
 
         [HttpPut()]
-        public async Task<ActionResult<IEnumerable<Creator>>> UpdateCreator(Creator creator)
+        public async Task<ActionResult<IEnumerable<CreatorViewModel>>> UpdateCreator(CreatorViewModel creator)
         {
             var cognitoId = userService.GetUserClaim(HttpContext.User);
             if (cognitoId == null)
@@ -77,7 +77,7 @@ namespace SublessSignIn.Controllers
             try
             {
                 await _creatorService.UpdateCreatorPaymentInfo(cognitoId, creator);
-                return Ok(_creatorService.GetCreatorsByCognitoid(cognitoId));
+                return Ok(_creatorService.GetCreatorsByCognitoid(cognitoId).Select(x=>x.GetViewModel()));
             }
             catch (UnauthorizedAccessException e)
             {
