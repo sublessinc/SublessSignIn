@@ -19,5 +19,7 @@ namespace Subless.Services.Services.SublessStripe
         IEnumerable<Payer> GetPayersForRange(DateTimeOffset startDate, DateTimeOffset endDate);
         Task<Stripe.Checkout.Session> GetSession(string sessionId);
         void RolloverPaymentForIdleCustomer(string customerId);
+        bool CustomerHasCancelled(string customerId);
+        SubscriptionStatus CurrentSubscriptionStatus(string customerId);
     }
 }

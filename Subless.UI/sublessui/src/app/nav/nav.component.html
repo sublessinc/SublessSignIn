@@ -62,6 +62,7 @@
         <div>Log Out</div>
       </a>
     </div>
+    <app-cancellation-warning *ngIf="showCancelWarning()"></app-cancellation-warning>
     <router-outlet></router-outlet>
     <app-id></app-id>
   </mat-sidenav-content>
