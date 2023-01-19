@@ -102,12 +102,12 @@ namespace Subless.Services.Services
         {
             var paths = new List<RedirectionPath>();
             var user = _userRepo.GetUserByCognitoId(cognitoId);
-            var hasPaid = stripeService.CustomerHasPaid(cognitoId);
+            var subscriptionStatus = stripeService.CurrentSubscriptionStatus(user.StripeCustomerId);
+            var hasPaid = subscriptionStatus.IsActive;
             if (hasPaid && !user.WelcomeEmailSent)
             {
                 _templatedEmailService.SendWelcomeEmail(user.CognitoId);
             }
-
             if (user != null && hasPaid)
             {
                 paths.Add(RedirectionPath.Profile);
@@ -123,6 +123,10 @@ namespace Subless.Services.Services
             if (user != null && user.Partners.Any())
             {
                 paths.Add(RedirectionPath.Partner);
+            }
+            if (user != null && subscriptionStatus.IsCancelled)
+            {
+                paths.Add(RedirectionPath.Cancelled);
             }
             return paths;
         }

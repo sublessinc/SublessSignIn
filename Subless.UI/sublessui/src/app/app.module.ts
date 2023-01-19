@@ -42,6 +42,7 @@ import { UserRecentActivityComponent } from './user-recent-activity/user-recent-
 import { LoggerModule, NgxLoggerLevel } from 'ngx-logger';
 import { CreatorMessageComponent } from './creator-message/creator-message.component';
 import { CKEditorModule } from 'ckeditor4-angular';
+import { CancellationWarningComponent } from './cancellation-warning/cancellation-warning.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -71,7 +72,8 @@ import { CKEditorModule } from 'ckeditor4-angular';
     SessionRenewComponent,
     UserTopContentComponent,
     UserRecentActivityComponent,
-    CreatorMessageComponent
+    CreatorMessageComponent,
+    CancellationWarningComponent
   ],
   imports: [
     ThemeModule,
