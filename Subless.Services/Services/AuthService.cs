@@ -109,13 +109,9 @@ namespace Subless.Services.Services
             var user = _userRepo.GetUserByCognitoId(cognitoId);
             if (user == null)
             {
-                throw new UnauthorizedAccessException("User not found");
+                return paths;
             }
             var subscriptionStatus = stripeService.CurrentSubscriptionStatus(user.StripeCustomerId);
-            if (subscriptionStatus != null)
-            {
-                logger.LogInformation($"SubscriptionStatus {JsonConvert.SerializeObject(subscriptionStatus)}");
-            }
             var hasPaid = subscriptionStatus.IsActive;
             if (hasPaid && !user.WelcomeEmailSent)
             {
