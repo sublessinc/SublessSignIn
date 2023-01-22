@@ -21,6 +21,15 @@ class NavbarPage(BasePage):
     def billing_button(self):
         return self.driver.find_element_by_id(NavbarPageLocators.billing_id)
 
+    @property
+    def cancellation_message(self):
+        # switch to ID before merge
+        return self.driver.find_element_by_xpath(NavbarPageLocators.cancellation_message_xpath)
+
+    @property
+    def resubscribe_button(self):
+        # switch to ID before merge
+        return self.driver.find_element_by_xpath(NavbarPageLocators.resubscribe_button_xpath)
     def __init__(self, driver):
         self.driver = driver
 
@@ -57,3 +66,8 @@ class NavbarPageLocators:
     payout_id = "payout"
     change_plan_id = "plan"
     integration_settings_id = "integration"
+    cancellation_message_id = "cancellation-warning-message"
+    cancellation_message_xpath = "/html/body/app-root/app-nav/mat-sidenav-container/mat-sidenav-content/app-cancellation-warning/mat-card/mat-card-content/b"
+    resubscribe_button_id = "resubscribe"
+    resubscribe_button_xpath = "/html/body/app-root/app-nav/mat-sidenav-container/mat-sidenav-content/app-cancellation-warning/mat-card/button"
+
