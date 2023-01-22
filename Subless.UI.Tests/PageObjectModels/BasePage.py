@@ -72,8 +72,7 @@ class BasePage(object):
     def accept_alert_if_present(self):
         try:
             WebDriverWait(self.driver, 3).until(EC.alert_is_present(),
-                                           'Timed out waiting for PA creation ' +
-                                           'confirmation popup to appear.')
+                                           'Timed out waiting alert to appear.')
 
             alert = self.driver.switch_to.alert
             alert.accept()
