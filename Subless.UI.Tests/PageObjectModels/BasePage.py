@@ -13,8 +13,8 @@ logger = logging.getLogger()
 class BasePage(object):
 
     @property
-    def logout2_button(self):
-        return self.driver.find_element_by_id(BasePageLocators.logout2_button_id)
+    def minimal_nav_logout_button(self):
+        return self.driver.find_element_by_id(BasePageLocators.minimal_nav_logout_button_id)
 
     @property
     def logout_button(self):
@@ -40,11 +40,11 @@ class BasePage(object):
             logger.info("clicking logout")
             self.logout_button.click()
 
-        if check_exists_by_id(BasePageLocators.logout2_button_id, self.driver):
+        if check_exists_by_id(BasePageLocators.minimal_nav_logout_button_id, self.driver):
             WebDriverWait(self.driver, 10).until(
-                EC.element_to_be_clickable((By.CSS_SELECTOR, BasePageLocators.logout2_button_selector)))
+                EC.element_to_be_clickable((By.CSS_SELECTOR, BasePageLocators.minimal_nav_logout_button_selector)))
             logger.info("clicking logout2")
-            self.logout2_button.click()
+            self.minimal_nav_logout_button.click()
 
         logger.info("waiting for redirect to login page")
         # wait for redirect
@@ -98,8 +98,8 @@ def check_exists_by_xpath(xpath, driver):
 
 
 class BasePageLocators:
-    logout2_button_selector = '#logout2'
-    logout2_button_id = 'logout2'
+    minimal_nav_logout_button_selector = '#logout2'
+    minimal_nav_logout_button_id = 'logout2'
     logout_button_selector = '#logout'
     logout_button_id = 'logout'
     loading_id = "loadingContainer"
