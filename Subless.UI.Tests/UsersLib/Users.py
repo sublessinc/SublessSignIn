@@ -8,6 +8,8 @@ import simplejson
 
 from EmailLib import MailSlurp
 from EmailLib.MailSlurp import PatronInbox, receive_email
+from PageObjectModels import PayoutSetupPage
+from PageObjectModels.BasePage import BasePage
 from PageObjectModels.PatronDashboardPage import PatronDashboardPage
 
 logging.basicConfig(level=logging.INFO)
@@ -122,8 +124,10 @@ def attempt_to_delete_user(firefox_driver, mailbox):
         resultpage = login.sign_in(mailbox.email_address, DefaultPassword)
         if 'terms' in firefox_driver.current_url:
             plan_selection_page = resultpage.accept_terms()
-        dashboard = PatronDashboardPage(firefox_driver)
-        account_settings = dashboard.navigate_to_account_settings()
+        page = BasePage(firefox_driver)
+        account_settings = page.navigate_to_account_settings()
+
+
         # THEN: I should have the ability to cancel that plan
         login_page = account_settings.delete_account()
         # AND: I should be prompted to login
