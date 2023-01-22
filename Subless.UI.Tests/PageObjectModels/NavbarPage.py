@@ -23,13 +23,11 @@ class NavbarPage(BasePage):
 
     @property
     def cancellation_message(self):
-        # switch to ID before merge
-        return self.driver.find_element_by_xpath(NavbarPageLocators.cancellation_message_xpath)
+        return self.driver.find_element_by_xpath(NavbarPageLocators.cancellation_message_id)
 
     @property
     def resubscribe_button(self):
-        # switch to ID before merge
-        return self.driver.find_element_by_xpath(NavbarPageLocators.resubscribe_button_xpath)
+        return self.driver.find_element_by_xpath(NavbarPageLocators.resubscribe_button_id)
     def __init__(self, driver):
         self.driver = driver
 
