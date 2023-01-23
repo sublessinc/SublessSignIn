@@ -1,7 +1,9 @@
+import datetime
 import logging
 import time
 
 import pytest
+from dateutil.relativedelta import relativedelta
 from selenium.webdriver.remote.webelement import WebElement
 
 from EmailLib import MailSlurp
@@ -96,8 +98,32 @@ def test_paying_user_can_cancel_plan(web_driver, paying_user, params):
     account_settings = plan_select.navigate_to_account_settings()
     # THEN: I should have the ability to cancel that plan
     login_page = account_settings.cancel_subscription()
-    # AND: I should be prompted to login
-    assert "login" in web_driver.current_url
+    # AND: I should not be logged out
+    assert "account-settings" in web_driver.current_url
+
+
+def test_cancelled_user_sees_warning(web_driver, paying_user, params):
+    # WHEN: I sign up and pay for an account
+    dashboard = PatronDashboardPage(web_driver)
+    assert "subless" in web_driver.title
+    assert 'profile' in web_driver.current_url
+
+    plan_select = dashboard.navigate_to_change_plan()
+    assert "plan" in web_driver.current_url
+    time.sleep(3)
+    assert plan_select.is_5_plan_selected == "true"
+    account_settings = plan_select.navigate_to_account_settings()
+    # THEN: I should have the ability to cancel that plan
+    login_page = account_settings.cancel_subscription()
+    # AND: I should not be logged out
+    assert "account-settings" in web_driver.current_url
+    dashboard = PatronDashboardPage(web_driver).open()
+    web_driver.refresh()
+    dashboard.wait_for_load()
+    cancel_date = datetime.date.today() + relativedelta(months=1)
+    time.sleep(1) # wait for api call
+    assert str(cancel_date.day) in dashboard.cancellation_message.text
+    assert str(cancel_date.year) in dashboard.cancellation_message.text
 
 def test_paying_user_can_delete_account(web_driver, paying_user, params):
     # WHEN: I sign up and pay for an account

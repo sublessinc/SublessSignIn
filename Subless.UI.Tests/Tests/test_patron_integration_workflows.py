@@ -62,3 +62,36 @@ def test_paying_user_hit_pushed(web_driver, subless_activated_creator_user, payi
     dashboard = dashboard.open()
     hits_after = dashboard.get_hit_count()
     assert int(hits_after)-int(hits_before) == 1
+
+
+def test_cancelled_user_can_still_browse(web_driver, subless_activated_creator_user, paying_user, params):
+    # WHEN: I sign up and pay for an account
+    dashboard = PatronDashboardPage(web_driver)
+    assert "subless" in web_driver.title
+    assert 'profile' in web_driver.current_url
+
+    plan_select = dashboard.navigate_to_change_plan()
+    assert "plan" in web_driver.current_url
+    time.sleep(3)
+    assert plan_select.is_5_plan_selected == "true"
+    account_settings = plan_select.navigate_to_account_settings()
+    # THEN: I should have the ability to cancel that plan
+    login_page = account_settings.cancel_subscription()
+    # AND: I should not be logged out
+    assert "account-settings" in web_driver.current_url
+    dashboard = PatronDashboardPage(web_driver).open()
+    hits_before = dashboard.get_hit_count()
+    account_settings = dashboard.navigate_to_account_settings()
+    # THEN: I should have the ability to cancel that plan
+    login_page = account_settings.cancel_subscription()
+    homepage = TestSite_HomePage(web_driver)
+    homepage.open()
+    logging.info("Waiting test site to load, and login check to run")
+    time.sleep(3)
+    homepage.click_profile()
+    logging.info("Waiting test site to load, and login check to run")
+    time.sleep(3)
+    # THEN my hit count should go up by 1
+    dashboard = dashboard.open()
+    hits_after = dashboard.get_hit_count()
+    assert int(hits_after)-int(hits_before) == 1
