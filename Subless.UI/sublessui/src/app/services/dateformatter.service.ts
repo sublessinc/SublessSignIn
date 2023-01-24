@@ -36,10 +36,10 @@ export class DateFormatter {
     }
 
     public formatDatestamp(timestamp: Date): string {
-        if (formatDate(new Date(), 'dd-MM-yyyy', this.locale) === formatDate(timestamp, 'dd-MM-yyyy', this.locale)) {
+        if (formatDate(new Date(), 'yyyy-MMM-dd', this.locale) === formatDate(timestamp, 'yyyy-MMM-dd', this.locale)) {
             return "Today";
         }
-        return formatDate(timestamp, 'dd-MM-yyyy', this.locale);
+        return formatDate(timestamp, 'yyyy-MMM-dd', this.locale);
     }
 
     public formatTimestamp(timestamp: Date): string {
@@ -47,7 +47,7 @@ export class DateFormatter {
     }
 
     public GetLastPeriodString(stats: IStats): string {
-        return formatDate(stats.periodStart, 'dd-MM-yyyy', this.locale) + ' to ' + formatDate(stats.periodEnd, 'dd-MM-yyyy', this.locale);
+        return formatDate(stats.periodStart, 'yyyy-MMM-dd', this.locale) + ' to ' + formatDate(stats.periodEnd, 'yyyy-MMM-dd', this.locale);
     }
 }
 

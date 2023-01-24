@@ -1,5 +1,5 @@
 import { Component, OnDestroy } from '@angular/core';
-import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
+import { MatLegacyDialog as MatDialog, MatLegacyDialogConfig as MatDialogConfig } from '@angular/material/legacy-dialog';
 import { Subscription } from 'rxjs';
 import { IStripeRedirect } from '../models/IStripeRedirect';
 import { SessionId } from '../models/SessionId';
@@ -37,10 +37,13 @@ export class UserAccountSettingsComponent implements OnDestroy {
     }));
   }
 
-  cancelSubscription() {
+  async cancelSubscription() {
     this.subs.push(this.checkoutService.cancelSubscription().subscribe({
-      next: (result: boolean) => {
+      next: async (result: boolean) => {
         this.authService.redirectToSubscriberSurvey();
+        await new Promise(f => setTimeout(f, 1500));
+        location.reload();
+
       }
     }));
   }

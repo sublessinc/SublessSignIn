@@ -13,7 +13,7 @@ import { LoggedOutComponent } from './logged-out/logged-out.component';
 import { FormsModule } from '@angular/forms';
 import { CreatorstatsComponent } from './creatorstats/creatorstats.component';
 import { ReactiveFormsModule } from '@angular/forms';
-import { MatSelectModule } from '@angular/material/select';
+import { MatLegacySelectModule as MatSelectModule } from '@angular/material/legacy-select';
 import { IdComponent } from './id/id.component';
 import { PartnerprofileComponent } from './partnerprofile/partnerprofile.component';
 import { UnauthorizedInterceptor } from './services/auth.interceptor';
@@ -42,6 +42,7 @@ import { UserRecentActivityComponent } from './user-recent-activity/user-recent-
 import { LoggerModule, NgxLoggerLevel } from 'ngx-logger';
 import { CreatorMessageComponent } from './creator-message/creator-message.component';
 import { CKEditorModule } from 'ckeditor4-angular';
+import { CancellationWarningComponent } from './cancellation-warning/cancellation-warning.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -71,7 +72,8 @@ import { CKEditorModule } from 'ckeditor4-angular';
     SessionRenewComponent,
     UserTopContentComponent,
     UserRecentActivityComponent,
-    CreatorMessageComponent
+    CreatorMessageComponent,
+    CancellationWarningComponent
   ],
   imports: [
     ThemeModule,

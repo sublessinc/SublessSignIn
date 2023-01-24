@@ -177,6 +177,11 @@ namespace Subless.Services.Services
                     return hitRepository.GetRecentPatronContent(cognitoId, creator.Id);
                 }
             }
+            else
+            {
+                return hitRepository.GetRecentPatronContent(cognitoId);
+
+            }
             return new List<HitView>();
         }
 
@@ -193,6 +198,15 @@ namespace Subless.Services.Services
                         return x;
                     });
                 }
+            }
+            else
+            {
+                var hits = hitRepository.GetTopPatronContent(startDate, endDate, cognitoId);
+                return hits.Select(x =>
+                {
+                    x.CreatorName = _creatorService.GetCreator(x.CreatorId)?.Username ?? "Deleted Creator";
+                    return x;
+                });
             }
             return new List<CreatorHitCount>();
         }

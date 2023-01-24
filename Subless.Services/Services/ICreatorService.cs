@@ -16,7 +16,7 @@ namespace Subless.Services.Services
         IEnumerable<Creator> GetCreatorsByPartnerId(Guid partnerId);
         IEnumerable<MonthlyPaymentStats> GetStatsForCreator(Creator creator);
         Task UnlinkCreator(string cognitoId, Guid id);
-        Task<Creator> UpdateCreator(string cognitoId, Creator creator);
+        Task<Creator> UpdateCreatorPaymentInfo(string cognitoId, CreatorViewModel creator);
         void AcceptTerms(string cognitoId);
         IEnumerable<Creator>? GetCreatorOrDefaultByCognitoid(string cognitoId);
         IEnumerable<Creator> GetActiveCreators(IEnumerable<Guid> excludeCreators);

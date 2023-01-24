@@ -1,6 +1,6 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatDrawer } from '@angular/material/sidenav';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatLegacySnackBar as MatSnackBar } from '@angular/material/legacy-snack-bar';
 import { NavigationEnd, Router } from '@angular/router';
 import { CookieService } from 'ngx-cookie';
 import { Subscription } from 'rxjs';
@@ -23,13 +23,14 @@ export class NavComponent implements OnInit, OnDestroy {
   public creator: boolean = false;
   public partner: boolean = false;
   public showHamburger: boolean = false;
+  public cancelledSub: boolean = false;
   private isSmallScreen: boolean = window.innerWidth <= 700
   private subs: Subscription[] = [];
 
   constructor(
     private authService: AuthorizationService,
     private checkoutService: CheckoutService,
-    private router: Router,
+    protected router: Router,
     private cookieService: CookieService,
     private _snackBar: MatSnackBar,
 
@@ -42,6 +43,7 @@ export class NavComponent implements OnInit, OnDestroy {
         this.user = routes.includes(2);
         this.creator = routes.includes(3);
         this.partner = routes.includes(4);
+        this.cancelledSub = routes.includes(9);
         this.promptRedirectIfCookiePresent();
         this.hideLoader();
       }
@@ -123,6 +125,12 @@ export class NavComponent implements OnInit, OnDestroy {
       });
 
     }
+  }
+
+  showCancelWarning() {
+    return (this.cancelledSub
+      && !this.router.url.startsWith('/register-payment')
+      && !this.router.url.startsWith('/change-plan'));
   }
 
   logout() {

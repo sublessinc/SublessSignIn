@@ -3,7 +3,7 @@ import { AbstractControl, FormControl, FormGroup, ValidationErrors, ValidatorFn 
 import { Observable, of, Subscription } from 'rxjs';
 import { ICreatorMessage } from '../models/ICreatorMessage';
 import { CreatorService } from '../services/creator.service';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatLegacySnackBar as MatSnackBar } from '@angular/material/legacy-snack-bar';
 import { HttpErrorResponse } from '@angular/common/http';
 
 

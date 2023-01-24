@@ -8,6 +8,7 @@ using Ganss.Xss;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using Subless.Data;
 using Subless.Models;
 using Subless.Services.Extensions;
@@ -164,7 +165,7 @@ namespace Subless.Services.Services
             return creator;
         }
 
-        public async Task<Creator> UpdateCreator(string cognitoId, Creator creator)
+        public async Task<Creator> UpdateCreatorPaymentInfo(string cognitoId, CreatorViewModel creator)
         {
             var creators = _userRepository.GetCreatorsByCognitoId(cognitoId);
             if (creators == null || !creators.Any(x => x.Active))
@@ -180,11 +181,12 @@ namespace Subless.Services.Services
             }
             currentCreator.PayPalId = creator.PayPalId;
             creatorRepository.UpdateCreator(currentCreator);
+
             if (PaypalAddressIsEmail(creator.PayPalId))
             {
                 await _emailService.SendEmail(GetPaymentSetEmail(creator.Username), creator.PayPalId, "Subless payout email set");
             }
-            await FireCreatorActivationWebhook(creator, wasValid);
+            await FireCreatorActivationWebhook(currentCreator, wasValid);
             return currentCreator;
         }
 

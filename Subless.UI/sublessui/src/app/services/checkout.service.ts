@@ -5,6 +5,7 @@ import { ICheckoutSettings } from '../models/ICheckoutSettings';
 import { ISessionResponse } from '../models/ISessionResponse';
 import { IStripeRedirect } from '../models/IStripeRedirect';
 import { SessionId } from '../models/SessionId';
+import { SubscriptionStatus } from '../models/SubscriptionStatus';
 
 declare var Stripe: any;
 @Injectable({
@@ -46,6 +47,10 @@ export class CheckoutService {
 
   getCurrentPlan(): Observable<number | null> {
     return this.httpClient.get<number | null>("/api/Checkout/plan");
+  }
+
+  getSubscriptionStatus(): Observable<SubscriptionStatus> {
+    return this.httpClient.get<SubscriptionStatus>("/api/Checkout/status")
   }
 }
 

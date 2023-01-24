@@ -57,6 +57,7 @@ namespace Subless.Services.Services
             var partner = partnerRepository.GetPartner(partnerModel.Id);
             partner.PayPalId = partnerModel.PayPalId;
             partner.CreatorWebhook = partnerModel.CreatorWebhook;
+            partner.Favicon = partnerModel.Favicon;
             partnerRepository.UpdatePartner(partner);
             return partner;
         }
@@ -155,7 +156,7 @@ namespace Subless.Services.Services
 
         public async Task<bool> CreatorChangeWebhook(PartnerViewCreator creator)
         {
-            logger.LogInformation($"Creator {creator.Id} activated, firing webhook");
+            logger.LogInformation($"Creator {creator.Id} activated, firing webhook to {creator.PartnerId}");
             var partner = GetPartner(creator.PartnerId);
             if (partner.CreatorWebhook != null)
             {
