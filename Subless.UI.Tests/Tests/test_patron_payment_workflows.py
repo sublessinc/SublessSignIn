@@ -121,9 +121,9 @@ def test_cancelled_user_sees_warning(web_driver, paying_user, params):
     web_driver.refresh()
     dashboard.wait_for_load()
     cancel_date = datetime.date.today() + relativedelta(months=1)
-    time.sleep(1) # wait for api call
-    assert str(cancel_date.day) in dashboard.cancellation_message.text
-    assert str(cancel_date.year) in dashboard.cancellation_message.text
+    message = dashboard.get_cancellation_message()
+    assert str(cancel_date.day) in message.text
+    assert str(cancel_date.year) in message.text
 
 def test_paying_user_can_delete_account(web_driver, paying_user, params):
     # WHEN: I sign up and pay for an account

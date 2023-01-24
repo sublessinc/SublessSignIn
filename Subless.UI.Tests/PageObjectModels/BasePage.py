@@ -35,10 +35,13 @@ class BasePage(object):
         self.wait_for_load()
 
         if check_exists_by_id(BasePageLocators.logout_button_id, self.driver):
-            WebDriverWait(self.driver, 10).until(
-                EC.element_to_be_clickable((By.CSS_SELECTOR, BasePageLocators.logout_button_selector)))
-            logger.info("clicking logout")
-            self.logout_button.click()
+            try:
+                WebDriverWait(self.driver, 10).until(
+                    EC.element_to_be_clickable((By.CSS_SELECTOR, BasePageLocators.logout_button_selector)))
+                logger.info("clicking logout")
+                self.logout_button.click()
+            except Exception as e:
+                logger.info("this must be a minimal nav page, try the other logout button")
 
         if check_exists_by_id(BasePageLocators.minimal_nav_logout_button_id, self.driver):
             WebDriverWait(self.driver, 10).until(
