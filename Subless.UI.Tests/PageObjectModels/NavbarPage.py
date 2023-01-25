@@ -23,13 +23,18 @@ class NavbarPage(BasePage):
 
     @property
     def cancellation_message(self):
-        return self.driver.find_element_by_xpath(NavbarPageLocators.cancellation_message_id)
+        return self.driver.find_element_by_id(NavbarPageLocators.cancellation_message_id)
 
     @property
     def resubscribe_button(self):
-        return self.driver.find_element_by_xpath(NavbarPageLocators.resubscribe_button_id)
+        return self.driver.find_element_by_id(NavbarPageLocators.resubscribe_button_id)
     def __init__(self, driver):
         self.driver = driver
+
+    def get_cancellation_message(self):
+        WebDriverWait(self.driver, 10).until(
+            EC.visibility_of_element_located((By.ID, NavbarPageLocators.cancellation_message_id)))
+        return self.cancellation_message
 
     def navigate_to_change_plan(self):
         from .PlanSelectionPage import PlanSelectionPage
