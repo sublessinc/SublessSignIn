@@ -12,6 +12,7 @@ import { DateFormatter } from '../services/dateformatter.service';
 })
 
 export class CancellationWarningComponent implements OnInit, OnDestroy {
+  public shouldWarn: boolean = false;
   private subs: Subscription[] = [];
   private model$: Observable<SubscriptionStatus> | null = null;
   protected model: SubscriptionStatus = new SubscriptionStatus(false, false, new Date(), new Date(), new Date());
@@ -30,6 +31,8 @@ export class CancellationWarningComponent implements OnInit, OnDestroy {
     this.subs.push(this.model$.subscribe({
       next: (sub: SubscriptionStatus) => {
         this.model = sub;
+        this.shouldWarn = true;
+        this.changeDetector.detectChanges()
       }
     }));
   }
