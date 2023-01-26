@@ -5,6 +5,7 @@ const clientBaseUri = location.protocol + "//" + window.location.hostname + (loc
 
 interface SublessInterface {
     // camelcase is disabled for these so we don't conflict with customer namespaces
+    subless_GetConfig(hitStrategy: HitStrategy): Promise<SublessSettings>; // eslint-disable-line camelcase
     subless_GetConfig(): Promise<SublessSettings>; // eslint-disable-line camelcase
     sublessLogin(): Promise<void>;
     subless_LoggedIn(): Promise<boolean>; // eslint-disable-line camelcase
@@ -14,12 +15,17 @@ interface SublessInterface {
     sublessShowBanner(): Promise<void>;
 }
 
+enum HitStrategy {
+    uri,
+    tag
+}
+
 interface SublessSettings {
     redirectUri: string;
     postLogoutRedirectUri: string;
     authority: string;
     clientId: string;
-    tagStrategy: boolean;
+    hitStrategy: HitStrategy;
 }
 
 const sublessConfig: SublessSettings = {
@@ -27,7 +33,7 @@ const sublessConfig: SublessSettings = {
     postLogoutRedirectUri: clientBaseUri,
     authority: "",
     clientId: "",
-    tagStrategy: true,
+    hitStrategy: HitStrategy.uri,
 };
 
 
@@ -39,20 +45,25 @@ export class Subless implements SublessInterface {
     sublessConfig: Promise<SublessSettings>;
     /** Attempt to automatically authenticate with subless and record a hit on
      * initialization.
+     * @param {HitStrategy} hitStrategy strategy to use when detecting creator
      */
-    constructor() {
-        this.sublessConfig = this.subless_GetConfig();
+    constructor(hitStrategy: HitStrategy = HitStrategy.uri) {
+        this.sublessConfig = this.subless_GetConfig(hitStrategy=hitStrategy);
         this.subless_hit();
     }
 
-    /** Query Subless for the latest authorization details for the Subless server. */
-    async subless_GetConfig(): Promise<SublessSettings> { // eslint-disable-line camelcase
+    /** Query Subless for the latest authorization details for the Subless server.
+     * @param {HitStrategy} hitStrategy strategy to use when detecting creator
+    */
+    async subless_GetConfig(hitStrategy: HitStrategy = HitStrategy.uri): Promise<SublessSettings> {
         const resp = await fetch(sublessUri + "/api/Authorization/settings");
         const json = await resp.json();
         sublessConfig.authority = json.cognitoUrl;
         sublessConfig.clientId = json.appClientId;
+        sublessConfig.hitStrategy = hitStrategy;
         return sublessConfig;
     }
+
 
     /** A method that can be used to redirect a user to a Subless login. I.e., can be attached
      * to a "sign in to subless" button on a partner site.
@@ -75,6 +86,7 @@ export class Subless implements SublessInterface {
             await this.renewLogin();
             return true;
         }
+        return false;
     }
 
     /** Starts a redirect chain to renew your session cookie */
@@ -98,7 +110,7 @@ export class Subless implements SublessInterface {
     async subless_hit() { // eslint-disable-line camelcase
         const loggedIn = await this.subless_LoggedIn();
         if (loggedIn) {
-            if ((await this.sublessConfig).tagStrategy) {
+            if ((await this.sublessConfig).hitStrategy === HitStrategy.tag) {
                 await this.pushTagHit();
             } else {
                 await this.pushUriHit();
@@ -173,7 +185,9 @@ export class Subless implements SublessInterface {
         link.href = urls[1];
         link.id = "sublessMessageLink";
         link.appendChild(img);
-        messageDiv.appendChild(link);
+        if (messageDiv) {
+            messageDiv.appendChild(link);
+        }
     }
 
     /** Gets a random message ad and corresponding link
@@ -208,7 +222,7 @@ export class Subless implements SublessInterface {
                 fadeout = true;
             }
             if (fadeout || +el.style.opacity < 1) {
-                (window.requestAnimationFrame && requestAnimationFrame(tick)) || setTimeout(tick, 16);
+                (requestAnimationFrame(tick)) || setTimeout(tick, 16);
             }
         };
         tick();
@@ -225,12 +239,21 @@ export class Subless implements SublessInterface {
         const sublessTags = document.querySelectorAll("subless");
         for (let i = 0; i < sublessTags.length; i++) {
             if (sublessTags[i] instanceof HTMLElement) {
-                creators.push(sublessTags[i].getAttribute("creatorName"));
+                const tag = sublessTags[i].getAttribute("creatorName");
+                if (tag) {
+                    creators.push(tag);
+                }
             }
         }
         return creators;
     }
 }
 
-const subless = new Subless();
-export default subless;
+export function SublessUriTracking(){
+    return new Subless();
+}
+
+
+export function SublessTagTracking(){
+    return new Subless(HitStrategy.tag);
+}
