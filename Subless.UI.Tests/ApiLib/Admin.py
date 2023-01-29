@@ -95,7 +95,7 @@ def queue_and_wait_for_results(cookie, start, end):
     poll_count = 0
     while not result:
         poll_count = poll_count + 1
-        time.sleep()
+        time.sleep(sleep_time)
         response = get_queued_result(cookie, id)
         try:
             result = json.loads(response)
