@@ -46,6 +46,7 @@ class AccountSettingsPage(NavbarPage):
         self.driver.close()
         self.driver.switch_to.window(handles[0])
         # switch back to main window
+        logger.info("Current URI" + self.driver.current_url)
         WebDriverWait(self.driver, 10).until(lambda driver: 'login' in driver.current_url)
         return LoginPage(self.driver)
 
