@@ -27,6 +27,7 @@
   "description": "Subless Javascript Client API",
   "name": "sublessjs",
   "exports": {
-    ".": "./src/subless.ts"
+    ".": "./src/subless.ts",
+    "./subless2/subless2.0.js": "./src/subless2.0.ts"
   }
 }
