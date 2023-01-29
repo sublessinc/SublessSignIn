@@ -33,7 +33,7 @@ def get_user_capabilities(user_id, cookie):
     return json.loads(response.content)
 
 
-def get_payout_calculation( cookie, start, end):
+def get_payout_calculation(cookie, start, end):
     url = f'https://{os.environ["environment"]}.subless.com/api/Calculator?start={start}&end={end}'
 
     payload = {}
@@ -47,7 +47,8 @@ def get_payout_calculation( cookie, start, end):
 
     return json.loads(response.content)
 
-def execute_payout( cookie, start, end):
+
+def execute_payout(cookie, start, end):
     url = f'https://{os.environ["environment"]}.subless.com/api/Calculator?start={start}&end={end}'
 
     payload = {}
@@ -60,7 +61,7 @@ def execute_payout( cookie, start, end):
     print(f'Calculator returned code: {response.status_code} - {response.reason} - {response.text}')
 
 
-def queue_calculation( cookie, start, end):
+def queue_calculation(cookie, start, end):
     url = f'https://{os.environ["environment"]}.subless.com/api/Calculator/QueueCalculator?start={start}&end={end}'
 
     payload = {}
@@ -73,7 +74,7 @@ def queue_calculation( cookie, start, end):
     print(f'Calculator returned code: {response.status_code} - {response.reason} - {response.text}')
 
 
-def get_queued_result( cookie, id):
+def get_queued_result(cookie, id):
     url = f'https://{os.environ["environment"]}.subless.com/api/Calculator/GetQueuedCalculation?id={id}'
 
     payload = {}
@@ -85,19 +86,27 @@ def get_queued_result( cookie, id):
     print(f'Calculator returned code: {response.status_code} - {response.reason} - {response.text}')
     return response.content
 
-def queue_and_wait_for_results( cookie, start, end):
+
+def queue_and_wait_for_results(cookie, start, end):
     id = queue_calculation(cookie, start, end)
     result = None
+    sleep_time = 10
+    poll_timeout = 10 * 60
+    poll_count = 0
     while not result:
-        time.sleep(10)
+        poll_count = poll_count + 1
+        time.sleep()
         response = get_queued_result(cookie, id)
         try:
             result = json.loads(response)
         except:
             print("waiting...")
+        if poll_count * sleep_time > poll_timeout:
+            raise TimeoutError("Calculation never completed")
     return result
 
-def queue_payout( cookie, start, end):
+
+def queue_payout(cookie, start, end):
     url = f'https://{os.environ["environment"]}.subless.com/api/Calculator/QueuePayment?start={start}&end={end}'
 
     payload = {}
@@ -108,6 +117,7 @@ def queue_payout( cookie, start, end):
     response = requests.request("POST", url, headers=headers, data=payload)
 
     print(f'Calculator returned code: {response.status_code} - {response.reason} - {response.text}')
+
 
 def delete_user(cookie, email):
     url = f'https://{os.environ["environment"]}.subless.com//api/User/byemail?email={email}'
