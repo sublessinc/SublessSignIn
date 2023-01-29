@@ -54,6 +54,7 @@ export class AccountSettingsComponent implements OnInit, OnDestroy {
         else {
           this.authService.redirectToSubscriberSurvey();
         }
+        this.authService.redirectToLogout();
       }
     }));
   }
