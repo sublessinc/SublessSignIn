@@ -61,9 +61,9 @@ namespace PayoutCalculator
 
         private static void RunCalculator(CalculatorConfiguration configuration, IHost host)
         {
-            using (var scope = host.Services.CreateScope())
+            while (true)
             {
-                while (true)
+                using (var scope = host.Services.CreateScope())
                 {
                     logger.LogInformation("Checking if calculator should be run");
                     var calculatorService = scope.ServiceProvider.GetRequiredService<ICalculatorService>();
