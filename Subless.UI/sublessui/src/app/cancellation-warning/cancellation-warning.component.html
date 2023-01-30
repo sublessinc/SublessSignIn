@@ -1,0 +1,8 @@
+<mat-card *ngIf="shouldWarn" class="warningWrapper">
+    <mat-card-title>Your subscription has been cancelled.</mat-card-title>
+    <mat-card-content id="cancellation-warning-message"> Your browsing will continue supporting creators until<b>
+            {{cancellationDate()}}</b></mat-card-content>
+
+
+    <button mat-button id="resubscribe" (click)="redirectToPlan()">Resubscribe</button>
+</mat-card> 

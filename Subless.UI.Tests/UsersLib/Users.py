@@ -5,9 +5,14 @@ import time
 
 import pytest
 import simplejson
+from mailslurp_client import ApiException
 
+from ApiLib.User import delete_user_by_email
 from EmailLib import MailSlurp
 from EmailLib.MailSlurp import PatronInbox, receive_email
+from PageObjectModels import PayoutSetupPage
+from PageObjectModels.BasePage import BasePage
+from PageObjectModels.OTPConfirmationPage import ApiLimitException
 from PageObjectModels.PatronDashboardPage import PatronDashboardPage
 
 logging.basicConfig(level=logging.INFO)
@@ -27,10 +32,20 @@ def create_from_login_page(driver, inbox):
     sign_up_page = login_page.click_sign_up()
     assert "signup" in driver.current_url
     time.sleep(5)
-    otp_page = sign_up_page.sign_up(inbox.email_address,
+    try:
+        otp_page = sign_up_page.sign_up(inbox.email_address,
                                     DefaultPassword)
-    terms_page = otp_page.confirm_otp(
-        MailSlurp.get_newest_otp(inbox_id=inbox.id))
+    except ApiLimitException:
+        # We should clean up the user that just got hosed by a rate limit
+        delete_locked_user(driver, inbox.email_address)
+        raise Exception("Test failed due to API rate limit")
+    otp =  MailSlurp.get_newest_otp(inbox_id=inbox.id)
+    try:
+        terms_page = otp_page.confirm_otp(otp)
+    except ApiException:
+        # OTP never arrived, should probably nuke the account
+        delete_locked_user(driver, inbox.email_address)
+        raise Exception("Test failed due to never receiving OTP")
     plan_selection_page = terms_page.accept_terms()
     id, cookie = get_user_id_and_cookie(driver)
     return id, cookie
@@ -122,8 +137,10 @@ def attempt_to_delete_user(firefox_driver, mailbox):
         resultpage = login.sign_in(mailbox.email_address, DefaultPassword)
         if 'terms' in firefox_driver.current_url:
             plan_selection_page = resultpage.accept_terms()
-        dashboard = PatronDashboardPage(firefox_driver)
-        account_settings = dashboard.navigate_to_account_settings()
+        page = BasePage(firefox_driver)
+        account_settings = page.navigate_to_account_settings()
+
+
         # THEN: I should have the ability to cancel that plan
         login_page = account_settings.delete_account()
         # AND: I should be prompted to login
@@ -141,3 +158,7 @@ def login_as_god_user(firefox_driver):
 
     id, cookie = get_user_id_and_cookie(firefox_driver)
     return id, cookie, login_page
+
+def delete_locked_user(firefox_driver, email):
+    id,cookie,login_page = login_as_god_user(firefox_driver)
+    delete_user_by_email(cookie, email)

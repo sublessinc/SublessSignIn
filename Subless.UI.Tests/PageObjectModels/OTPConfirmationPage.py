@@ -33,7 +33,7 @@ class OTPConfirmationPage(BasePage):
             except:
                 logging.info("Unknown OTP error")
             if (errorMessage == "Application is busy, please try again in a few minutes."):
-                raise Exception("API Limit reached")
+                raise ApiLimitException("API Limit reached")
             raise Exception('A problem was encountered while sending OTP')
         # wait for redirect
         WebDriverWait(self.driver, 10).until(lambda driver: 'confirm' not in self.driver.current_url)
@@ -42,7 +42,12 @@ class OTPConfirmationPage(BasePage):
         return TermsPage(self.driver)
 
 
+
 class OTPLocators:
     code_textbox_id = 'verification_code'
     submit_button_xpath = '//*[@id="confirm"]/div[2]/button'
     error_message_id='errorMessage';
+
+
+class ApiLimitException(Exception):
+    """ Exception for when Amazon hits API limits """
