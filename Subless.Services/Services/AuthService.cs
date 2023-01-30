@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Amazon.Runtime.Internal.Util;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using Subless.Data;
 using Subless.Models;
 using Subless.Services.Services.SublessStripe;
@@ -15,14 +18,16 @@ namespace Subless.Services.Services
         private readonly IStripeService stripeService;
         private readonly ICreatorService creatorService;
         private readonly ITemplatedEmailService _templatedEmailService;
+        private readonly ILogger<AuthService> logger;
 
-        public AuthService(IUserRepository userRepository, IUserService userService, IStripeService stripeService, ICreatorService creatorService, ITemplatedEmailService templatedEmailService)
+        public AuthService(IUserRepository userRepository, IUserService userService, IStripeService stripeService, ICreatorService creatorService, ITemplatedEmailService templatedEmailService, ILoggerFactory loggerFactory)
         {
             _userRepo = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
             this.userService = userService ?? throw new ArgumentNullException(nameof(userService));
             this.stripeService = stripeService ?? throw new ArgumentNullException(nameof(stripeService));
             this.creatorService = creatorService ?? throw new ArgumentNullException(nameof(creatorService));
             _templatedEmailService = templatedEmailService ?? throw new ArgumentNullException(nameof(templatedEmailService));
+            logger = loggerFactory.CreateLogger<AuthService>();
         }
 
         public async Task<Redirection> LoginWorkflow(string cognitoId, string activationCode, string email)
@@ -102,27 +107,39 @@ namespace Subless.Services.Services
         {
             var paths = new List<RedirectionPath>();
             var user = _userRepo.GetUserByCognitoId(cognitoId);
-            var hasPaid = stripeService.CustomerHasPaid(cognitoId);
+            if (user == null)
+            {
+                return paths;
+            }
+            var subscriptionStatus = stripeService.CurrentSubscriptionStatus(user.StripeCustomerId);
+            var hasPaid = subscriptionStatus.IsActive;
             if (hasPaid && !user.WelcomeEmailSent)
             {
                 _templatedEmailService.SendWelcomeEmail(user.CognitoId);
             }
-
             if (user != null && hasPaid)
             {
+                logger.LogInformation("User is paying");
                 paths.Add(RedirectionPath.Profile);
             }
             if (user != null && !hasPaid)
             {
                 paths.Add(RedirectionPath.Payment);
             }
-            if (user != null && user.Creators.Any())
+            if (user != null && user.Creators!=null && user.Creators.Any())
             {
+                logger.LogInformation("User is creator");
                 paths.Add(RedirectionPath.ActivatedCreator);
             }
-            if (user != null && user.Partners.Any())
+            if (user != null && user.Partners != null && user.Partners.Any())
             {
+                logger.LogInformation("User is partner");
                 paths.Add(RedirectionPath.Partner);
+            }
+            if (user != null && subscriptionStatus.IsCancelled)
+            {
+                logger.LogInformation("User has cancelled");
+                paths.Add(RedirectionPath.Cancelled);
             }
             return paths;
         }

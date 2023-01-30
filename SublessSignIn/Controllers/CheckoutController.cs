@@ -141,6 +141,21 @@ namespace SublessSignIn.Controllers
             return Ok(plan.Single().UnitAmount / 100);
         }
 
+        /// <summary>
+        /// Retreives the session information from stripe after the user completed the payment
+        /// </summary>
+        [HttpGet("status")]
+        public ActionResult<SubscriptionStatus> GetStatus()
+        {
+            var cognitoId = _userService.GetUserClaim(HttpContext.User);
+            if (cognitoId == null)
+            {
+                return Unauthorized();
+            }
+            var user = _userService.GetUserByCognitoId(cognitoId);
+            return _stripeService.CurrentSubscriptionStatus(user.StripeCustomerId);
+        }
+
         [HttpDelete]
         public ActionResult<string> CancelSubscription()
         {

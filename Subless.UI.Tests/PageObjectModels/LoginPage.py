@@ -47,8 +47,11 @@ class LoginPage(BasePage):
             link = self.driver.find_element_by_css_selector(LoginLocators.signup_link_selector)
             return link
         except Exception as e:
-            raise
-
+            # sometimes amazon's page shows an error that fucks up the selector
+            WebDriverWait(self.driver, 10).until(
+                EC.element_to_be_clickable((By.CSS_SELECTOR, LoginLocators.error_page_signup_link_selector)))
+            link = self.driver.find_element_by_css_selector(LoginLocators.error_page_signup_link_selector)
+            return link
 
     def open(self):
         self.driver.get(f'https://{os.environ["environment"]}.subless.com')
@@ -130,3 +133,6 @@ class LoginLocators:
                            'div:nth-child(10) > p > a '
     # signup_link_xpath = '/html/body/div[1]/div/div[2]/div[2]/div[2]/div[2]/div[2]/div/form/div[3]/p/a'
     # signup_link_xpath = '/html/body/div[1]/div/div[2]/div[2]/div[2]/div[2]/div/div/form/div[3]/p/a'
+
+    error_page_signup_link_selector = "div.panel:nth-child(2) > div:nth-child(2) > div:nth-child(1) " \
+                                      "> form:nth-child(2) > div:nth-child(11) > p:nth-child(1) > a:nth-child(2)"

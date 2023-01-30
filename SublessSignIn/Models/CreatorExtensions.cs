@@ -11,7 +11,7 @@ namespace SublessSignIn.Models
                 PayPalId = creator.PayPalId,
                 Username = creator.Username,
                 PartnerUri = PartnerSite,
-                Id = creator.Id                
+                Id = creator.Id
             };
         }
     }
