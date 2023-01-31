@@ -6,12 +6,15 @@ const path = require("path");
 const isProduction = process.env.NODE_ENV != "local";
 
 const config = {
-  entry: "./src/subless.ts",
+  entry: {
+    subless: './src/subless.ts', 
+    "subless2.0": './src/subless2.0.ts'
+  },
   experiments: {
     outputModule: true,
   },
   output: {
-    filename: '../dist/subless.js',
+    filename: '../dist/[name].js',
     library: {
       type: "module"
     }
