@@ -6,7 +6,6 @@ const clientBaseUri = location.protocol + "//" + window.location.hostname + (loc
 interface SublessInterface {
     // camelcase is disabled for these so we don't conflict with customer namespaces
     subless_GetConfig(hitStrategy: HitStrategy): Promise<SublessSettings>; // eslint-disable-line camelcase
-    subless_GetConfig(): Promise<SublessSettings>; // eslint-disable-line camelcase
     sublessLogin(): Promise<void>;
     subless_LoggedIn(): Promise<boolean>; // eslint-disable-line camelcase
     subless_hit(): Promise<void>; // eslint-disable-line camelcase
@@ -15,7 +14,7 @@ interface SublessInterface {
     sublessShowBanner(): Promise<void>;
 }
 
-enum HitStrategy {
+export enum HitStrategy {
     uri,
     tag
 }
@@ -47,7 +46,7 @@ export class Subless implements SublessInterface {
      * initialization.
      * @param {HitStrategy} hitStrategy strategy to use when detecting creator
      */
-    constructor(hitStrategy: HitStrategy = HitStrategy.uri) {
+    constructor(hitStrategy: HitStrategy) {
         this.sublessConfig = this.subless_GetConfig(hitStrategy=hitStrategy);
         this.subless_hit();
     }
@@ -55,7 +54,7 @@ export class Subless implements SublessInterface {
     /** Query Subless for the latest authorization details for the Subless server.
      * @param {HitStrategy} hitStrategy strategy to use when detecting creator
     */
-    async subless_GetConfig(hitStrategy: HitStrategy = HitStrategy.uri): Promise<SublessSettings> {
+    async subless_GetConfig(hitStrategy: HitStrategy): Promise<SublessSettings> {
         const resp = await fetch(sublessUri + "/api/Authorization/settings");
         const json = await resp.json();
         sublessConfig.authority = json.cognitoUrl;
@@ -252,14 +251,14 @@ export class Subless implements SublessInterface {
 /** Returns a subess instance with URI hit tracking
  * @return {Subless} a subless instance
 */
-export function SublessUriTracking() {
-    return new Subless();
+export function SublessUsingUris() {
+    return new Subless(HitStrategy.uri);
 }
 
 
 /** Returns a subess instance with tag hit tracking
  * @return {Subless} a subless instance
 */
-export function SublessTagTracking() {
+export function SublessUsingTags() {
     return new Subless(HitStrategy.tag);
 }

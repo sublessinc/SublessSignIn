@@ -1,8 +1,8 @@
-import {Subless} from "./subless2.0";
+import {Subless, HitStrategy} from "./subless2.0";
 
-/** Prodvides a default subless instance with URI hit tracking enabled
+/** Provides a default subless instance with URI hit tracking enabled
  * @return {Subless} A subless instance
  */
 export default function SublessInstance(): Subless {
-    return new Subless();
+    return new Subless(HitStrategy.uri);
 }

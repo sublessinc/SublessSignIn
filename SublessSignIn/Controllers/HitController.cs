@@ -41,7 +41,7 @@ namespace SublessSignIn.Controllers
                     var body = await reader.ReadToEndAsync();
                     if (string.IsNullOrWhiteSpace(body))
                     {
-                        _logger.LogWarning("Invalid hit data recieved:{Environment.NewLine}" +
+                        _logger.LogWarning("Invalid hit data received:{Environment.NewLine}" +
                             $"Http Request Information:{Environment.NewLine}" +
                             $"Schema:{Request.Scheme} " +
                             $"Host: {Request.Host} " +
@@ -81,7 +81,7 @@ namespace SublessSignIn.Controllers
                     var body = await reader.ReadToEndAsync();
                     if (string.IsNullOrWhiteSpace(body))
                     {
-                        _logger.LogWarning("Invalid hit data recieved:{Environment.NewLine}" +
+                        _logger.LogWarning("Invalid hit data received:{Environment.NewLine}" +
                             $"Http Request Information:{Environment.NewLine}" +
                             $"Schema:{Request.Scheme} " +
                             $"Host: {Request.Host} " +
@@ -120,7 +120,7 @@ namespace SublessSignIn.Controllers
                 var body = await reader.ReadToEndAsync();
                 if (string.IsNullOrWhiteSpace(body))
                 {
-                    _logger.LogWarning("Invalid hit data recieved:{Environment.NewLine}" +
+                    _logger.LogWarning("Invalid hit data received:{Environment.NewLine}" +
                        $"Http Request Information:{Environment.NewLine}" +
                        $"Schema:{Request.Scheme} " +
                        $"Host: {Request.Host} " +

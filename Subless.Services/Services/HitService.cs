@@ -44,7 +44,7 @@ namespace Subless.Services.Services
             var partner = _partnerService.GetCachedPartnerByUri(new Uri(uri.GetLeftPart(UriPartial.Authority)));
             if (partner == null)
             {
-                _logger.LogError($"Unknown partner recieved hit from URL {uri}");
+                _logger.LogError($"Unknown partner received hit from URL {uri}");
                 return false;
             }
             var creatorId = GetCreatorFromPartnerAndUri(uri, partner);
@@ -67,11 +67,11 @@ namespace Subless.Services.Services
 
         public bool SaveTagHit(string userId, Uri uri, string creatorname)
         {
-            _logger.LogDebug("SaveHit hit.");
+            _logger.LogDebug("Save tag hit.");
             var partner = _partnerService.GetCachedPartnerByUri(new Uri(uri.GetLeftPart(UriPartial.Authority)));
             if (partner == null)
             {
-                _logger.LogError($"Unknown partner recieved hit from URL {uri}");
+                _logger.LogError($"Unknown partner received hit from URL {uri}");
                 return false;
             }
             var creator = _creatorService.GetCachedCreatorFromPartnerAndUsername(creatorname, partner.Id);
@@ -99,7 +99,7 @@ namespace Subless.Services.Services
             _logger.LogDebug($"Resolved partner {partner} for {uri}");
             if (partner == null)
             {
-                _logger.LogError($"Unknown partner recieved hit from URL {uri}");
+                _logger.LogError($"Unknown partner received hit from URL {uri}");
                 return null;
             }
             var creatorId = GetCreatorFromPartnerAndUri(uri, partner);
