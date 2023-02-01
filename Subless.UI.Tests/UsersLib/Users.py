@@ -106,13 +106,13 @@ def create_paid_subless_account(web_driver):
 
 def create_unactivated_creator_User(web_driver, mailbox):
     from UsersLib.Users import create_from_login_page
-    from PageObjectModels.TestSite.TestSite_HomePage import TestSite_HomePage
+    from PageObjectModels.TestSite.TestSite_LoginPage import TestSiteLoginPage
 
     # cleanup
     attempt_to_delete_user(web_driver, mailbox)
 
     # create
-    test_site = TestSite_HomePage(web_driver)
+    test_site = TestSiteLoginPage(web_driver)
     test_site.open()
     profile_page = test_site.click_profile()
     profile_page.click_activate()
