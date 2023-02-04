@@ -1,7 +1,7 @@
 import logging
 
 from PageObjectModels.PatronDashboardPage import PatronDashboardPage
-from PageObjectModels.TestSite.TestSite_HomePage import TestSite_HomePage
+from PageObjectModels.TestSite.TestSite_LoginPage import TestSiteLoginPage
 
 import time
 logging.basicConfig(level=logging.INFO)
@@ -9,7 +9,7 @@ logger = logging.getLogger()
 
 def test_no_user_login_button_on_test_site(web_driver, params):
     # WHEN: I visit a partner
-    test_site = TestSite_HomePage(web_driver)
+    test_site = TestSiteLoginPage(web_driver)
     test_site.open()
     logging.info("Waiting test site to load, and login check to run")
     time.sleep(3)
@@ -20,7 +20,7 @@ def test_no_user_login_button_on_test_site(web_driver, params):
 
 def test_paying_user_logged_in_to_test_site(web_driver, paying_user, params):
     # WHEN: I visit a partner
-    test_site = TestSite_HomePage(web_driver)
+    test_site = TestSiteLoginPage(web_driver)
     test_site.open()
     logging.info("Waiting test site to load, and login check to run")
     time.sleep(3)
@@ -33,7 +33,7 @@ def test_paying_user_logged_in_to_test_site(web_driver, paying_user, params):
 
 def test_paying_user_can_logout_of_test_site(web_driver, paying_user, params):
     # WHEN: I log out of a partner
-    test_site = TestSite_HomePage(web_driver)
+    test_site = TestSiteLoginPage(web_driver)
     test_site.open()
     handles = web_driver.window_handles
     test_site.click_logout()
@@ -51,11 +51,11 @@ def test_paying_user_hit_pushed(web_driver, subless_activated_creator_user, payi
     # WHEN: I visit creator
     dashboard = PatronDashboardPage(web_driver)
     hits_before = dashboard.get_hit_count()
-    homepage = TestSite_HomePage(web_driver)
+    homepage = TestSiteLoginPage(web_driver)
     homepage.open()
     logging.info("Waiting test site to load, and login check to run")
     time.sleep(3)
-    homepage.click_profile()
+    homepage.click_uri_content()
     logging.info("Waiting test site to load, and login check to run")
     time.sleep(3)
     # THEN my hit count should go up by 1
@@ -84,11 +84,11 @@ def test_cancelled_user_can_still_browse(web_driver, subless_activated_creator_u
     account_settings = dashboard.navigate_to_account_settings()
     # THEN: I should have the ability to cancel that plan
     login_page = account_settings.cancel_subscription()
-    homepage = TestSite_HomePage(web_driver)
+    homepage = TestSiteLoginPage(web_driver)
     homepage.open()
     logging.info("Waiting test site to load, and login check to run")
     time.sleep(3)
-    homepage.click_profile()
+    homepage.click_uri_content()
     logging.info("Waiting test site to load, and login check to run")
     time.sleep(3)
     # THEN my hit count should go up by 1
