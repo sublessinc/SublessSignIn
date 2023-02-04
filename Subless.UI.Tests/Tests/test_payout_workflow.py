@@ -17,7 +17,7 @@ def test_payout_calculation(web_driver, subless_activated_creator_user, paying_u
     patron_dashboard = login_page.sign_in(patron_mailbox.email_address, DefaultPassword)
     from PageObjectModels.TestSite.TestSite_LoginPage import TestSiteLoginPage
     test_site = TestSiteLoginPage(web_driver).open()
-    test_site.click_profile()
+    test_site.click_uri_content()
     # THEN the creator's hit count should increase by one
     logging.info("Waiting for hit to push")
     time.sleep(2)
