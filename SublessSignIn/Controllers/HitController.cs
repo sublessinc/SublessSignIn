@@ -98,7 +98,7 @@ namespace SublessSignIn.Controllers
                     {
                         return Unauthorized("User claim could not be found");
                     }
-                    validHit = _hitService.SaveHit(userService.GetUserClaim(HttpContext.User), hitSource);
+                    validHit = _hitService.SaveTagHit(userService.GetUserClaim(HttpContext.User), hitSource, tagHit.Creator);
                 }
                 return Ok(validHit);
             }
