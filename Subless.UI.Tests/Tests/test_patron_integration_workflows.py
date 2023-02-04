@@ -47,7 +47,7 @@ def test_paying_user_can_logout_of_test_site(web_driver, paying_user, params):
     web_driver.close()
     web_driver.switch_to.window(handles[0])
 
-def test_paying_user_hit_pushed(web_driver, subless_activated_creator_user, paying_user, params):
+def test_paying_user_uri_based_hit_pushed(web_driver, subless_activated_creator_user, paying_user, params):
     # WHEN: I visit creator
     dashboard = PatronDashboardPage(web_driver)
     hits_before = dashboard.get_hit_count()
@@ -56,6 +56,23 @@ def test_paying_user_hit_pushed(web_driver, subless_activated_creator_user, payi
     logging.info("Waiting test site to load, and login check to run")
     time.sleep(3)
     homepage.click_uri_content()
+    logging.info("Waiting test site to load, and login check to run")
+    time.sleep(3)
+    # THEN my hit count should go up by 1
+    dashboard = dashboard.open()
+    hits_after = dashboard.get_hit_count()
+    assert int(hits_after)-int(hits_before) == 1
+
+
+def test_paying_user_tag_based_hit_pushed(web_driver, subless_activated_creator_user, paying_user, params):
+    # WHEN: I visit creator
+    dashboard = PatronDashboardPage(web_driver)
+    hits_before = dashboard.get_hit_count()
+    homepage = TestSiteLoginPage(web_driver)
+    homepage.open()
+    logging.info("Waiting test site to load, and login check to run")
+    time.sleep(3)
+    homepage.click_tag_content()
     logging.info("Waiting test site to load, and login check to run")
     time.sleep(3)
     # THEN my hit count should go up by 1
