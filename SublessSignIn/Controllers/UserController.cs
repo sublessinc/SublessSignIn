@@ -74,6 +74,7 @@ namespace SublessSignIn.Controllers
         public async Task DeleteUserByEmail([FromQuery] string email)
         {
             var cognitoId = await cognitoService.GetCongitoUserByEmail(email);
+            if (cognitoId == null) { return; }
             await Delete(cognitoId, force: true);
         }
 
