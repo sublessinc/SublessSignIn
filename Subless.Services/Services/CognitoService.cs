@@ -53,7 +53,11 @@ namespace Subless.Services.Services
                 Filter = $"email=\"{email}\"",
                 UserPoolId = PoolId
             });
-            return response.Users.Single().Username;
+            if (response.Users.Any())
+            {
+                return response.Users.Single().Username;
+            }
+            return null;
         }
 
         public async Task<string?> GetCognitoUserEmail(string cognitoUserId)
