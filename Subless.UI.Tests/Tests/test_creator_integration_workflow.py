@@ -39,9 +39,9 @@ def test_creator_hit(web_driver, subless_activated_creator_user, paying_user, pa
     creator_dashboard.logout()
     login_page = LoginPage(web_driver).open()
     patron_dashboard = login_page.sign_in(patron_mailbox.email_address, DefaultPassword)
-    from PageObjectModels.TestSite.TestSite_HomePage import TestSite_HomePage
-    test_site = TestSite_HomePage(web_driver).open()
-    test_site.click_profile()
+    from PageObjectModels.TestSite.TestSite_LoginPage import TestSiteLoginPage
+    test_site = TestSiteLoginPage(web_driver).open()
+    test_site.click_uri_content()
     # Wait for hit to process
     time.sleep(2)
     # THEN the creator's hit count should increase by one
@@ -66,9 +66,9 @@ def test_creator_cant_self_deal(web_driver, subless_activated_creator_user, para
     patron_dashboard = signup_page.sign_up_for_stripe()
     assert "profile" in web_driver.current_url
     # get current hits
-    from PageObjectModels.TestSite.TestSite_HomePage import TestSite_HomePage
-    test_site = TestSite_HomePage(web_driver).open()
-    test_site.click_profile()
+    from PageObjectModels.TestSite.TestSite_LoginPage import TestSiteLoginPage
+    test_site = TestSiteLoginPage(web_driver).open()
+    test_site.click_uri_content()
     # Wait for hit to process
     time.sleep(2)
     # THEN the creator's hit count should not by one, because that would be self dealing

@@ -8,6 +8,7 @@
     "moduleResolution": "node"
   },
   "files": [
-    "src/subless.ts"
+    "src/subless.ts",
+    "src/subless2.0.ts"
   ]
 }

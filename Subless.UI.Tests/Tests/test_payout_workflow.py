@@ -15,9 +15,9 @@ def test_payout_calculation(web_driver, subless_activated_creator_user, paying_u
     from PageObjectModels.LoginPage import LoginPage
     login_page = LoginPage(web_driver).open()
     patron_dashboard = login_page.sign_in(patron_mailbox.email_address, DefaultPassword)
-    from PageObjectModels.TestSite.TestSite_HomePage import TestSite_HomePage
-    test_site = TestSite_HomePage(web_driver).open()
-    test_site.click_profile()
+    from PageObjectModels.TestSite.TestSite_LoginPage import TestSiteLoginPage
+    test_site = TestSiteLoginPage(web_driver).open()
+    test_site.click_uri_content()
     # THEN the creator's hit count should increase by one
     logging.info("Waiting for hit to push")
     time.sleep(2)
@@ -45,9 +45,9 @@ def test_payout_emails(web_driver, subless_activated_creator_user, paying_user, 
     from PageObjectModels.LoginPage import LoginPage
     login_page = LoginPage(web_driver).open()
     patron_dashboard = login_page.sign_in(patron_mailbox.email_address, DefaultPassword)
-    from PageObjectModels.TestSite.TestSite_HomePage import TestSite_HomePage
-    test_site = TestSite_HomePage(web_driver).open()
-    test_site.click_profile()
+    from PageObjectModels.TestSite.TestSite_LoginPage import TestSiteLoginPage
+    test_site = TestSiteLoginPage(web_driver).open()
+    test_site.click_uri_content()
     # THEN the creator's hit count should increase by one
     logging.info("Waiting for hit to push")
     time.sleep(2)
@@ -69,9 +69,9 @@ def test_payout_calculation_via_queue(web_driver, subless_activated_creator_user
     from PageObjectModels.LoginPage import LoginPage
     login_page = LoginPage(web_driver).open()
     patron_dashboard = login_page.sign_in(patron_mailbox.email_address, DefaultPassword)
-    from PageObjectModels.TestSite.TestSite_HomePage import TestSite_HomePage
-    test_site = TestSite_HomePage(web_driver).open()
-    test_site.click_profile()
+    from PageObjectModels.TestSite.TestSite_LoginPage import TestSiteLoginPage
+    test_site = TestSiteLoginPage(web_driver).open()
+    test_site.click_uri_content()
     # THEN the creator's hit count should increase by one
     logging.info("Waiting for hit to push")
     time.sleep(2)
@@ -101,9 +101,9 @@ def test_queued_payout_emails(web_driver, subless_activated_creator_user, paying
     from PageObjectModels.LoginPage import LoginPage
     login_page = LoginPage(web_driver).open()
     patron_dashboard = login_page.sign_in(patron_mailbox.email_address, DefaultPassword)
-    from PageObjectModels.TestSite.TestSite_HomePage import TestSite_HomePage
-    test_site = TestSite_HomePage(web_driver).open()
-    test_site.click_profile()
+    from PageObjectModels.TestSite.TestSite_LoginPage import TestSiteLoginPage
+    test_site = TestSiteLoginPage(web_driver).open()
+    test_site.click_uri_content()
     # THEN the creator's hit count should increase by one
     logging.info("Waiting for hit to push")
     time.sleep(2)

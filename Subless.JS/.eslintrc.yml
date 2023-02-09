@@ -14,4 +14,7 @@ rules: {
   indent: ["error", 4],
   quotes: ["error", "double"],
   space-before-function-paren: ["error", {"anonymous": "always", "named": "never", "asyncArrow": "always"}],
+  no-unused-vars: "off",
+  camelcase: "off",
+  "@typescript-eslint/no-unused-vars": "error"
 }
