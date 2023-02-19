@@ -1,6 +1,7 @@
 const sublessHeaders = new Headers();
 sublessHeaders.set("Cache-Control", "no-store");
 const sublessUri = process.env.SUBLESS_URL;
+const sublessCdn = process.env.SUBLESS_CDN;
 const clientBaseUri = location.protocol + "//" + window.location.hostname + (location.port ? ":" + location.port : "") + "/";
 
 interface SublessInterface {
@@ -194,7 +195,7 @@ export class Subless implements SublessInterface {
     */
     private getmessage(): [string, string] {
         const message = Math.floor(Math.random() * 8) + 1;
-        const img = `${sublessUri}/dist/assets/message${message}.png`;
+        const img = `${sublessCdn}/message${message}.png`;
         if (message == 3) {
             return [img, `https://www.subless.com/hf-creator-instructions?utm_campaign=message${message}`];
         }
