@@ -198,70 +198,6 @@ $md-subtitlegrey: (
     )
 );
 
-$md-hoverpink: (
-    50 : #fffcfe,
-    100 : #fff8fb,
-    200 : #fff4f9,
-    300 : #fef0f7,
-    400 : #feecf5,
-    500 : #fee9f3,
-    600 : #fee6f1,
-    700 : #fee3ef,
-    800 : #fedfed,
-    900 : #fdd9ea,
-    A100 : #ffffff,
-    A200 : #ffffff,
-    A400 : #ffffff,
-    A700 : #ffffff,
-    contrast: (50 : #000000,
-        100 : #000000,
-        200 : #000000,
-        300 : #000000,
-        400 : #000000,
-        500 : #000000,
-        600 : #000000,
-        700 : #000000,
-        800 : #000000,
-        900 : #000000,
-        A100 : #000000,
-        A200 : #000000,
-        A400 : #000000,
-        A700 : #000000,
-    )
-);
-
-$md-pressedpink: (
-    50 : #fef9fc,
-    100 : #fdf0f7,
-    200 : #fbe6f2,
-    300 : #f9dced,
-    400 : #f8d5e9,
-    500 : #f7cde5,
-    600 : #f6c8e2,
-    700 : #f5c1de,
-    800 : #f3bada,
-    900 : #f1aed3,
-    A100 : #ffffff,
-    A200 : #ffffff,
-    A400 : #ffffff,
-    A700 : #ffffff,
-    contrast: (50 : #000000,
-        100 : #000000,
-        200 : #000000,
-        300 : #000000,
-        400 : #000000,
-        500 : #000000,
-        600 : #000000,
-        700 : #000000,
-        800 : #000000,
-        900 : #000000,
-        A100 : #000000,
-        A200 : #000000,
-        A400 : #000000,
-        A700 : #000000,
-    )
-);
-
 $md-selectedpurple: (
     50 : #f2e5ee,
     100 : #e0bed5,
@@ -293,48 +229,6 @@ $md-selectedpurple: (
         A700 : #ffffff,
     )
 );
-
-$md-hoverpurple: (
-    50 : #ece5ed,
-    100 : #cebdd1,
-    200 : #ae92b3,
-    300 : #8e6695,
-    400 : #75457e,
-    500 : #5d2467,
-    600 : #55205f,
-    700 : #4b1b54,
-    800 : #41164a,
-    900 : #300d39,
-    A100 : #e074ff,
-    A200 : #d541ff,
-    A400 : #c90eff,
-    A700 : #bd00f3,
-    contrast: (50 : #000000,
-        100 : #000000,
-        200 : #000000,
-        300 : #ffffff,
-        400 : #ffffff,
-        500 : #ffffff,
-        600 : #ffffff,
-        700 : #ffffff,
-        800 : #ffffff,
-        900 : #ffffff,
-        A100 : #000000,
-        A200 : #000000,
-        A400 : #ffffff,
-        A700 : #ffffff,
-    )
-);
-
-.analysicsCard-font {
-    font-family: DM Sans;
-    font-size: 64px;
-    font-style: normal;
-    font-weight: 500;
-    line-height: 83px;
-    letter-spacing: 0em;
-    text-align: center;
-}
 
 h1-font {
     font-family: DM Sans;
@@ -470,13 +364,6 @@ $subless-app-theme: mat.define-light-theme((color: (primary: $subless-app-primar
     min-height: 100vh;
 }
 
-// @mixin mix-ripple-theme($subless-app-theme) {
-//     .mat-ripple-element {
-//       color: map-get($md-pinkhighlight, 500);
-//     }
-//   }
-// @include mix-ripple-theme($subless-app-theme);
-
 purple-background {
     background-color: map.get($md-backgroundpurple, 500);
     display: flex;
@@ -484,8 +371,6 @@ purple-background {
 
 html,
 body {
-    //min-height: 100vh;
-    //height: auto;
     margin: 0;
 }
 
