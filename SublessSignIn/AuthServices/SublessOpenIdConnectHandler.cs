@@ -20,7 +20,7 @@ public class SublessOpenIdConnectHandler : OpenIdConnectHandler
     {
         try
         {
-            return await GetUserInformationAsync(message,jwt, principal, properties);
+            return await base.GetUserInformationAsync(message,jwt, principal, properties);
         }
         catch (TaskCanceledException e)
         {
