@@ -1,4 +1,5 @@
-using Duende.Bff;
+﻿using Duende.Bff;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.Extensions.DependencyInjection;
 using Subless.Models;
 
@@ -24,6 +25,7 @@ namespace SublessSignIn.AuthServices
             services.AddTransient<ILoginService, SublessLoginService>();
             services.AddTransient<ILogoutService, SublessLogoutService>();
             services.AddTransient<ICorsPolicyAccessor, CorsPolicyAccessor>();
+            services.AddTransient<OpenIdConnectHandler, SublessOpenIdConnectHandler>();
             return services;
         }
     }

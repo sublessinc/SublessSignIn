@@ -35,7 +35,6 @@ import { MatLegacyTooltipModule as MatTooltipModule } from '@angular/material/le
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatLegacyDialogModule as MatDialogModule } from '@angular/material/legacy-dialog';
 
-
 const materialModules = [
   BrowserAnimationsModule,
   CdkTreeModule,
@@ -48,6 +47,7 @@ const materialModules = [
   MatDialogModule,
   MatExpansionModule,
   MatIconModule,
+  MatFormFieldModule,
   MatInputModule,
   MatListModule,
   MatMenuModule,
@@ -64,6 +64,7 @@ const materialModules = [
   MatFormFieldModule,
   MatButtonToggleModule,
   MatTreeModule,
+  MatTooltipModule,
   OverlayModule,
   PortalModule,
   MatBadgeModule,
