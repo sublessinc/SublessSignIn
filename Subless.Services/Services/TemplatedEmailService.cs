@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -263,8 +264,15 @@ namespace Subless.Services.Services
         {
             var email = template.Replace(SiteLinkKey, authSettings.Domain, StringComparison.Ordinal);
             email.Replace(LogoUrl, authSettings.Domain + "/dist/assets/SublessLogo.png", StringComparison.Ordinal);
-            
-            email.Replace(IdleEmailHistoryListKey, "");
+
+            // Select one hit for each creatorId ordered by the number of hits for the creatorId descending
+            var orderedHits = previousHits.GroupBy(g => g.CreatorId).OrderByDescending(g => g.Count()).Select(g => g.First()).Take(5);
+            var builder = new StringBuilder();
+            foreach (var hit in orderedHits) {
+                builder.AppendLine($"<li><a href={hit.Uri}>placeholder name</a></li>");
+            }
+
+            email.Replace(IdleEmailHistoryListKey, builder.ToString());
             return email;
         }
 
