@@ -13,6 +13,7 @@ RUN npm install
 COPY  /Subless.UI/sublessui ./
 RUN ng build --configuration $build_environment
 
+# https://github.com/sublessinc/subless.js
 FROM 548668861663.dkr.ecr.us-east-2.amazonaws.com/subless-js:$build_environment as jsbuild
 
 
