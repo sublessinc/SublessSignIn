@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Subless.Data;
@@ -55,7 +56,7 @@ namespace Subless.Services.Services
 
         public void ExecutePayments(DateTimeOffset startDate, DateTimeOffset endDate, List<Guid> selectedUserIds = null)
         {
-            var calculatorResult = _calculatorService.CaculatePayoutsOverRange(startDate, endDate, selectedUserIds);
+            var calculatorResult = _calculatorService.CalculatePayoutsOverRange(startDate, endDate, selectedUserIds);
             if (calculatorResult == null)
             {
                 _logger.LogWarning("No Payments found in payment period, distribution skipped.");
@@ -146,10 +147,14 @@ namespace Subless.Services.Services
             var emails = _calculationQueueRepository.DequeueIdleEmails();
             if (emails != null)
             {
-                var calculatorResult = _calculatorService.CaculatePayoutsOverRange(emails.PeriodStart, emails.PeriodEnd);
+                var calculatorResult = _calculatorService.CalculatePayoutsOverRange(emails.PeriodStart, emails.PeriodEnd);
                 foreach (var idle in calculatorResult.IdleCustomerRollovers)
                 {
-                    emailService.SendIdleEmail(idle.CognitoId);
+                    if (idle.PreviousHits.Any()) {
+                        emailService.SendIdleWithHistoryEmail(idle.CognitoId, idle.PreviousHits);
+                    } else {
+                        emailService.SendIdleEmail(idle.CognitoId);
+                    }
                 }
                 _calculationQueueRepository.CompleteIdleEmails(emails);
             }

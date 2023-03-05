@@ -26,6 +26,7 @@ namespace Subless.Services.Services
         public const string LogoUrl = "{{logourl}}"; //https://pay.subless.com/SublessLogo.svg
         public const string CreatorMessageKey = "{{creatorMessage}}";
         public const string PayPalFeesKey = "{{paypalfees}}";
+        public const string IdleEmailHistoryListKey = "{{idleEmailHistoryList}}";
 
         public readonly CalculatorConfiguration authSettings;
         private readonly ICognitoService cognitoService;
@@ -153,6 +154,20 @@ namespace Subless.Services.Services
             var emailTask = Task.Run(() => _emailSerivce.SendEmail(body, usertask.Result, "Your subless budget isn't going to any creators this month!"));
             emailTask.Wait();
         }
+        
+        public void SendIdleWithHistoryEmail(string cognitoId, IEnumerable<Hit> previousHits)
+        {
+            var usertask = Task.Run(() => cognitoService.GetCognitoUserEmail(cognitoId));
+            usertask.Wait();
+            if (usertask.Result == null)
+            {
+                logger.LogInformation($"No email present for cognitoid {cognitoId}");
+                return;
+            }
+            var body = GenerateEmailBodyForIdleWithHistoryEmail(this.GetIdleWithHistoryEmail(), previousHits);
+            var emailTask = Task.Run(() => _emailSerivce.SendEmail(body, usertask.Result, "Your subless budget isn't going to any creators this month!"));
+            emailTask.Wait();
+        }
 
         private string GetEmailFromUserId(Guid userId)
         {
@@ -204,6 +219,12 @@ namespace Subless.Services.Services
         {
             return ReadTemplate("Subless.Services.Assets.Idle.html");
         }
+
+        public string GetIdleWithHistoryEmail()
+        {
+            return ReadTemplate("Subless.Services.Assets.IdleWithHistory.html");
+        }
+
         private string GetEmailTemplate()
         {
             return ReadTemplate("Subless.Services.Assets.Receipt.html");
@@ -236,7 +257,15 @@ namespace Subless.Services.Services
         {
             var email = template.Replace(SiteLinkKey, authSettings.Domain, StringComparison.Ordinal);
             return email.Replace(LogoUrl, authSettings.Domain + "/dist/assets/SublessLogo.png", StringComparison.Ordinal);
-
+        }
+        
+        private string GenerateEmailBodyForIdleWithHistoryEmail(string template, IEnumerable<Hit> previousHits)
+        {
+            var email = template.Replace(SiteLinkKey, authSettings.Domain, StringComparison.Ordinal);
+            email.Replace(LogoUrl, authSettings.Domain + "/dist/assets/SublessLogo.png", StringComparison.Ordinal);
+            
+            email.Replace(IdleEmailHistoryListKey, "");
+            return email;
         }
 
         private string GenerateEmailBodyForUser(string template, List<Payment> payments, DateTimeOffset PaymentPeriodStart, DateTimeOffset PaymentPeriodEnd)
