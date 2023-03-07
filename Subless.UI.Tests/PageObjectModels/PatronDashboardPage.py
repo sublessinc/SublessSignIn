@@ -4,6 +4,7 @@ import time
 
 from selenium.webdriver.support.wait import WebDriverWait
 
+from Keys.Keys import Keys
 from .NavbarPage import NavbarPage
 
 logging.basicConfig(level=logging.INFO)
@@ -35,7 +36,7 @@ class PatronDashboardPage(NavbarPage):
         return hit_count.text
 
     def open(self):
-        self.driver.get(f'https://{os.environ["environment"]}.subless.com/user-profile')
+        self.driver.get(f'https://{Keys.subless_uri}/user-profile')
         WebDriverWait(self.driver, 10).until(lambda driver: 'subless' in driver.title)
         return self
 

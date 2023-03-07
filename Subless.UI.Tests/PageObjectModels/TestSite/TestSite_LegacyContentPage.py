@@ -16,5 +16,5 @@ class TestSite_UriContentPage(object):
         self.driver = driver
 
     def open(self, username="TestUser"):
-        self.driver.get(f'https://pythonclient{os.environ["environment"]}.subless.com/legacyContent/'+username)
+        self.driver.get(f'https://{Keys.test_client_uri}/legacyContent/'+username)
         return self
