@@ -36,7 +36,7 @@ class TestSiteLoginPage(object):
         return self.driver.find_element_by_css_selector(TestSite_HomePage_Locators.uri_content_selector)
 
     def open(self):
-        self.driver.get(f'https://pythonclient{os.environ["environment"]}.subless.com')
+        self.driver.get(f'https://{Keys.test_client_uri}')
         return self
 
     def click_login(self):

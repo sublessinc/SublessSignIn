@@ -5,6 +5,8 @@ import os
 import time
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+
+from Keys.Keys import Keys
 from PageObjectModels.BasePage import BasePage, BasePageLocators
 from PageObjectModels.CreatorDashboardPage import CreatorDashboardPage
 from PageObjectModels.PatronDashboardPage import PatronDashboardPage
@@ -54,7 +56,7 @@ class LoginPage(BasePage):
             return link
 
     def open(self):
-        self.driver.get(f'https://{os.environ["environment"]}.subless.com')
+        self.driver.get(f'https://{Keys.subless_uri}')
         logging.info("Waiting for login page redirect to complete")
         time.sleep(5)
         # WebDriverWait(self.driver, 10).until(
