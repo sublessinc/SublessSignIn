@@ -1,12 +1,12 @@
 import json
 import os
 import time
-
+from Keys.Keys import Keys
 import requests
 
 
 def set_admin(user_id, cookie):
-    url = f'https://{os.environ["environment"]}.subless.com/api/Admin/setadmin?userId={user_id}'
+    url = f'https://{Keys.subless_uri}/api/Admin/setadmin?userId={user_id}'
 
     payload = {}
     headers = {
@@ -19,7 +19,7 @@ def set_admin(user_id, cookie):
 
 
 def get_user_capabilities(user_id, cookie):
-    url = f'https://{os.environ["environment"]}.subless.com/api/Admin/userCapabilties?userId={user_id}'
+    url = f'https://{Keys.subless_uri}/api/Admin/userCapabilties?userId={user_id}'
 
     payload = {}
     headers = {
@@ -34,7 +34,7 @@ def get_user_capabilities(user_id, cookie):
 
 
 def get_payout_calculation(cookie, start, end):
-    url = f'https://{os.environ["environment"]}.subless.com/api/Calculator?start={start}&end={end}'
+    url = f'https://{Keys.subless_uri}/api/Calculator?start={start}&end={end}'
 
     payload = {}
     headers = {
@@ -49,7 +49,7 @@ def get_payout_calculation(cookie, start, end):
 
 
 def execute_payout(cookie, start, end):
-    url = f'https://{os.environ["environment"]}.subless.com/api/Calculator?start={start}&end={end}'
+    url = f'https://{Keys.subless_uri}/api/Calculator?start={start}&end={end}'
 
     payload = {}
     headers = {
@@ -62,7 +62,7 @@ def execute_payout(cookie, start, end):
 
 
 def queue_calculation(cookie, start, end):
-    url = f'https://{os.environ["environment"]}.subless.com/api/Calculator/QueueCalculator?start={start}&end={end}'
+    url = f'https://{Keys.subless_uri}/api/Calculator/QueueCalculator?start={start}&end={end}'
 
     payload = {}
     headers = {
@@ -75,7 +75,7 @@ def queue_calculation(cookie, start, end):
 
 
 def get_queued_result(cookie, id):
-    url = f'https://{os.environ["environment"]}.subless.com/api/Calculator/GetQueuedCalculation?id={id}'
+    url = f'https://{Keys.subless_uri}/api/Calculator/GetQueuedCalculation?id={id}'
 
     payload = {}
     headers = {
@@ -107,7 +107,7 @@ def queue_and_wait_for_results(cookie, start, end):
 
 
 def queue_payout(cookie, start, end):
-    url = f'https://{os.environ["environment"]}.subless.com/api/Calculator/QueuePayment?start={start}&end={end}'
+    url = f'https://{Keys.subless_uri}/api/Calculator/QueuePayment?start={start}&end={end}'
 
     payload = {}
     headers = {
@@ -120,7 +120,7 @@ def queue_payout(cookie, start, end):
 
 
 def delete_user(cookie, email):
-    url = f'https://{os.environ["environment"]}.subless.com//api/User/byemail?email={email}'
+    url = f'https://{Keys.subless_uri}/api/User/byemail?email={email}'
 
     payload = {}
     headers = {

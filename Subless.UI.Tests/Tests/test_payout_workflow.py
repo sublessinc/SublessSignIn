@@ -4,6 +4,7 @@ import time
 
 from ApiLib.Admin import get_payout_calculation, execute_payout, queue_and_wait_for_results, queue_payout
 from EmailLib.MailSlurp import get_or_create_inbox, CreatorInbox, PatronInbox, receive_email
+from Keys.Keys import Keys
 from UsersLib.Users import DefaultPassword, login_as_god_user
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger()
@@ -57,7 +58,7 @@ def test_payout_emails(web_driver, subless_activated_creator_user, paying_user, 
     patron_receipt = receive_email(inbox_id=patron_mailbox.id)
     assert "Your subless receipt" in patron_receipt.subject
     assert "TestUser" in patron_receipt.body
-    assert "pythonclientdev.subless.com" in patron_receipt.body
+    assert f"{Keys.test_client_uri}" in patron_receipt.body
     assert "$3.57" in patron_receipt.body
     assert "$0.89" in patron_receipt.body
 
@@ -113,6 +114,6 @@ def test_queued_payout_emails(web_driver, subless_activated_creator_user, paying
     patron_receipt = receive_email(inbox_id=patron_mailbox.id)
     assert "Your subless receipt" in patron_receipt.subject
     assert "TestUser" in patron_receipt.body
-    assert "pythonclientdev.subless.com" in patron_receipt.body
+    assert f"{Keys.test_client_uri}" in patron_receipt.body
     assert "$3.57" in patron_receipt.body
     assert "$0.89" in patron_receipt.body
