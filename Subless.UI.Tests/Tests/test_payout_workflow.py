@@ -58,7 +58,7 @@ def test_payout_emails(web_driver, subless_activated_creator_user, paying_user, 
     patron_receipt = receive_email(inbox_id=patron_mailbox.id)
     assert "Your subless receipt" in patron_receipt.subject
     assert "TestUser" in patron_receipt.body
-    assert f"{Keys.test_client_uri}" in patron_receipt.body
+    assert f"{Keys.subless_uri}" in patron_receipt.body
     assert "$3.57" in patron_receipt.body
     assert "$0.89" in patron_receipt.body
 

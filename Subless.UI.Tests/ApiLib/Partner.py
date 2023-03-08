@@ -7,8 +7,8 @@ from Keys.Keys import Keys
 
 def register_partner(user_id, cookie,
                      paypal_id='testPayoneer',
-                     site=f'https://{Keys.test_client_uri}',
-                     user_pattern=f'https://{Keys.test_client_uri}/profile/creator'):
+                     site=f'{Keys.test_client_uri}',
+                     user_pattern=f'{Keys.test_client_uri}/profile/creator'):
     url = f'https://{Keys.subless_uri}/api/Partner'
 
     payload = json.dumps({
@@ -23,6 +23,6 @@ def register_partner(user_id, cookie,
         'Cookie': f'subless={cookie}'
     }
 
-    response = requests.request("POST", url, headers=headers, data=payload)
+    response = requests.request("POST", url, headers=headers, data=payload, verify=False)
 
     print(f'RegisterPartner returned code: {response.status_code} - {response.reason} - {response.text}')

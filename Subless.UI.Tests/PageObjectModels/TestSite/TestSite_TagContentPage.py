@@ -17,5 +17,5 @@ class TestSite_TagContentPage(object):
         self.driver = driver
 
     def open(self, username="TestUser"):
-        self.driver.get(f'https://{Keys.test_client_uri}/tagContent/'+username)
+        self.driver.get(f'{Keys.test_client_uri}/tagContent/'+username)
         return self
