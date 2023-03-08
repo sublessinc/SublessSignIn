@@ -30,32 +30,6 @@ def test_admin_un_pass_login(web_driver, params):
     plan_selection_page.logout()
     assert 'login' in web_driver.current_url
 
-
-@pytest.mark.skip("not yet implemented")
-def test_new_google_login(web_driver, params):
-    # GIVEN: I am on the Subless login page, as a new user
-
-    # WHEN: I sign in through my google account
-
-    # THEN: I should be taken to the plan selection page
-
-    # AND: I should be able to successfully log out
-
-    pass
-
-
-@pytest.mark.skip("not yet implemented")
-def test_incomplete_payment_processing(web_driver, params):
-    # GIVEN: I am on the Subless login page, as a user who did not complete billing set up
-
-    # WHEN: I sign in with my username and password
-
-    # THEN: I should be taken to the plan selection page
-
-    # AND: I should be able to successfully log out
-    pass
-
-
 def test_user_creation(web_driver, subless_account, params):
     # WHEN a new user is created
     # THEN the plan selection page should be shown
@@ -64,9 +38,3 @@ def test_user_creation(web_driver, subless_account, params):
     # AND: I should be able to successfully log out
     plan_selection_page.logout()
     assert 'login' in web_driver.current_url
-
-
-# todo: figure out this workflow
-@pytest.mark.skip
-def test_forgot_password(web_driver, params):
-    pass
