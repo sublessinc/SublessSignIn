@@ -15,7 +15,7 @@ def delete_user(cookie):
     print(payload)
     print(headers)
 
-    response = requests.request("DELETE", url, headers=headers, data=payload)
+    response = requests.request("DELETE", url, headers=headers, data=payload, verify=False)
 
     print(f'Delete returned code: {response.status_code} - {response.reason} - {response.text}')
 
@@ -30,6 +30,6 @@ def delete_user_by_email(cookie, email):
     print(payload)
     print(headers)
 
-    response = requests.request("DELETE", url, headers=headers, data=payload)
+    response = requests.request("DELETE", url, headers=headers, data=payload, verify=False)
 
     print(f'Delete returned code: {response.status_code} - {response.reason} - {response.text}')

@@ -23,6 +23,6 @@ def register_partner(user_id, cookie,
         'Cookie': f'subless={cookie}'
     }
 
-    response = requests.request("POST", url, headers=headers, data=payload)
+    response = requests.request("POST", url, headers=headers, data=payload, verify=False)
 
     print(f'RegisterPartner returned code: {response.status_code} - {response.reason} - {response.text}')
