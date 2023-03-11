@@ -13,7 +13,7 @@ def set_admin(user_id, cookie):
         'subless': f'{cookie}'
     }
 
-    response = requests.request("POST", url, headers=headers, data=payload)
+    response = requests.request("POST", url, headers=headers, data=payload, verify=False)
 
     print(f'SetAdmin returned code: {response.status_code} - {response.reason} - {response.text}')
 
@@ -26,7 +26,7 @@ def get_user_capabilities(user_id, cookie):
         'subless': f'{cookie}'
     }
 
-    response = requests.request("GET", url, headers=headers, data=payload)
+    response = requests.request("GET", url, headers=headers, data=payload, verify=False)
 
     print(f'GetUserCapabilities returned code: {response.status_code} - {response.reason} - {response.text}')
 
@@ -41,7 +41,7 @@ def get_payout_calculation(cookie, start, end):
         'Cookie': f'subless={cookie}'
     }
 
-    response = requests.request("GET", url, headers=headers, data=payload)
+    response = requests.request("GET", url, headers=headers, data=payload, verify=False)
 
     print(f'Calculator returned code: {response.status_code} - {response.reason} - {response.text}')
 
@@ -56,7 +56,7 @@ def execute_payout(cookie, start, end):
         'Cookie': f'subless={cookie}'
     }
 
-    response = requests.request("POST", url, headers=headers, data=payload)
+    response = requests.request("POST", url, headers=headers, data=payload, verify=False)
 
     print(f'Calculator returned code: {response.status_code} - {response.reason} - {response.text}')
 
@@ -69,7 +69,7 @@ def queue_calculation(cookie, start, end):
         'Cookie': f'subless={cookie}'
     }
 
-    response = requests.request("POST", url, headers=headers, data=payload)
+    response = requests.request("POST", url, headers=headers, data=payload, verify=False)
     return json.loads(response.content)
     print(f'Calculator returned code: {response.status_code} - {response.reason} - {response.text}')
 
@@ -82,7 +82,7 @@ def get_queued_result(cookie, id):
         'Cookie': f'subless={cookie}'
     }
 
-    response = requests.request("GET", url, headers=headers, data=payload)
+    response = requests.request("GET", url, headers=headers, data=payload, verify=False)
     print(f'Calculator returned code: {response.status_code} - {response.reason} - {response.text}')
     return response.content
 
@@ -114,7 +114,7 @@ def queue_payout(cookie, start, end):
         'Cookie': f'subless={cookie}'
     }
 
-    response = requests.request("POST", url, headers=headers, data=payload)
+    response = requests.request("POST", url, headers=headers, data=payload, verify=False)
 
     print(f'Calculator returned code: {response.status_code} - {response.reason} - {response.text}')
 
@@ -127,6 +127,6 @@ def delete_user(cookie, email):
         'Cookie': f'subless={cookie}'
     }
 
-    response = requests.request("DELETE", url, headers=headers)
+    response = requests.request("DELETE", url, headers=headers, verify=False)
 
     print(f'Deletion returned code: {response.status_code} - {response.reason} - {response.text}')

@@ -5,6 +5,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
+from Keys.Keys import Keys
 from PageObjectModels.LoginPage import LoginPage
 from PageObjectModels.TestSite.TestSite_LegacyContentPage import TestSite_UriContentPage
 from PageObjectModels.TestSite.TestSite_ProfilePage import TestSite_ProfilePage
@@ -36,12 +37,12 @@ class TestSiteLoginPage(object):
         return self.driver.find_element_by_css_selector(TestSite_HomePage_Locators.uri_content_selector)
 
     def open(self):
-        self.driver.get(f'https://{Keys.test_client_uri}')
+        self.driver.get(f'{Keys.test_client_uri}')
         return self
 
     def click_login(self):
         logger.info(f'Navigating to subless login')
-        WebDriverWait(self.driver, 10).until(lambda driver: 'pythonclient' in driver.current_url)
+        WebDriverWait(self.driver, 10).until(lambda driver: Keys.test_client_uri in driver.current_url)
         WebDriverWait(self.driver, 10).until(
             EC.presence_of_element_located((By.ID, TestSite_HomePage_Locators.login_id)))
         logger.info(self.__class__.__name__)
@@ -50,7 +51,7 @@ class TestSiteLoginPage(object):
 
     def click_logout(self):
         logger.info(f'Logging out')
-        WebDriverWait(self.driver, 10).until(lambda driver: 'pythonclient' in driver.current_url)
+        WebDriverWait(self.driver, 10).until(lambda driver: Keys.test_client_uri in driver.current_url)
         WebDriverWait(self.driver, 10).until(
             EC.presence_of_element_located((By.ID, TestSite_HomePage_Locators.logout_id)))
         logger.info(self.__class__.__name__)
@@ -59,7 +60,7 @@ class TestSiteLoginPage(object):
 
     def click_profile(self):
         logger.info(f'Navigating to profile page')
-        WebDriverWait(self.driver, 10).until(lambda driver: 'pythonclient' in driver.current_url)
+        WebDriverWait(self.driver, 10).until(lambda driver: Keys.test_client_uri in driver.current_url)
         WebDriverWait(self.driver, 10).until(
             EC.presence_of_element_located((By.CSS_SELECTOR, TestSite_HomePage_Locators.profile_selector)))
         logger.info(self.__class__.__name__)
@@ -68,7 +69,7 @@ class TestSiteLoginPage(object):
 
     def click_uri_content(self):
         logger.info(f'Navigating to profile page')
-        WebDriverWait(self.driver, 10).until(lambda driver: 'pythonclient' in driver.current_url)
+        WebDriverWait(self.driver, 10).until(lambda driver: Keys.test_client_uri in driver.current_url)
         WebDriverWait(self.driver, 10).until(
             EC.presence_of_element_located((By.CSS_SELECTOR, TestSite_HomePage_Locators.uri_content_selector)))
         logger.info(self.__class__.__name__)
@@ -77,7 +78,7 @@ class TestSiteLoginPage(object):
 
     def click_tag_content(self):
         logger.info(f'Navigating to profile page')
-        WebDriverWait(self.driver, 10).until(lambda driver: 'pythonclient' in driver.current_url)
+        WebDriverWait(self.driver, 10).until(lambda driver: Keys.test_client_uri in driver.current_url)
         WebDriverWait(self.driver, 10).until(
             EC.presence_of_element_located((By.CSS_SELECTOR, TestSite_HomePage_Locators.uri_content_selector)))
         logger.info(self.__class__.__name__)
