@@ -166,7 +166,7 @@ namespace Subless.Services.Services
                 return;
             }
             var body = GenerateEmailBodyForIdleWithHistoryEmail(this.GetIdleWithHistoryEmail(), previousHits);
-            var emailTask = Task.Run(() => _emailSerivce.SendEmail(body, usertask.Result, "Your subless budget isn't going to any creators this month!"));
+            var emailTask = Task.Run(() => _emailSerivce.SendEmail(body, usertask.Result, "You've got one week left to support creators this month! Here's a few you've enjoyed"));
             emailTask.Wait();
         }
 
@@ -272,7 +272,7 @@ namespace Subless.Services.Services
                 var partner = _partnerService.GetPartner(hit.PartnerId);
                 var creator = _creatorService.GetCreator(hit.CreatorId);
                 var uri = partner.UserPattern.Split(";").First().Replace(Constants.CreatorPlaceholderKey, creator.Username);
-                builder.AppendLine($"<li><a href={uri}>{creator.Username}</a></li>");
+                builder.AppendLine($"<li><a href={uri}><i>{partner.Favicon}</i>{creator.Username}</a></li>");
             }
 
             email = email.Replace(IdleEmailHistoryListKey, builder.ToString());
