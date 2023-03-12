@@ -5,6 +5,7 @@ import os
 import time
 from selenium.webdriver.support.wait import WebDriverWait
 
+from Exceptions.Exceptions import ApiLimitException
 from PageObjectModels.BasePage import BasePage
 from PageObjectModels.PatronDashboardPage import PatronDashboardPage
 from PageObjectModels.PlanSelectionPage import PlanSelectionPage
@@ -47,7 +48,3 @@ class OTPLocators:
     code_textbox_id = 'verification_code'
     submit_button_xpath = '//*[@id="confirm"]/div[2]/button'
     error_message_id='errorMessage';
-
-
-class ApiLimitException(Exception):
-    """ Exception for when Amazon hits API limits """
