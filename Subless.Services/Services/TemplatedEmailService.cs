@@ -272,7 +272,7 @@ namespace Subless.Services.Services
                 var partner = _partnerService.GetPartner(hit.PartnerId);
                 var creator = _creatorService.GetCreator(hit.CreatorId);
                 var uri = partner.UserPattern.Split(";").First().Replace(Constants.CreatorPlaceholderKey, creator.Username);
-                builder.AppendLine($"<li><a href={uri}><i>{partner.Favicon}</i>{creator.Username}</a></li>");
+                builder.AppendLine($"<li><a href={uri}><img src=\"{partner.Favicon}\" alt=\"\" width=16 height=16 style=\"margin:0 0 16px 30px;padding:0;\"> {creator.Username}</a></li>");
             }
 
             email = email.Replace(IdleEmailHistoryListKey, builder.ToString());
