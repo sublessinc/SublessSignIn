@@ -148,6 +148,10 @@ namespace Subless.Services.Services
             if (emails != null)
             {
                 var calculatorResult = _calculatorService.CalculatePayoutsOverRange(emails.PeriodStart, emails.PeriodEnd);
+                if (calculatorResult == null) {
+                    return;
+                }
+
                 foreach (var idle in calculatorResult.IdleCustomerRollovers)
                 {
                     if (idle.PreviousHits.Any()) {

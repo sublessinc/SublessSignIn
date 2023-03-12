@@ -89,7 +89,7 @@ namespace Subless.Services.Services
                     if (!hits.Any())
                     {
                         // Get hits in the previous 30 days before the current timme span
-                        var previous30DaysHits = RetrieveUsersMonthlyHits(payer.UserId, startDate.DateTime.AddDays(-30), startDate);
+                        var previous30DaysHits = RetrieveUsersMonthlyHits(payer.UserId, startDate.AddDays(-30), startDate);
                         calculatorResult.IdleCustomerRollovers.Add(
                             new IdleCustomerRollover()
                             {

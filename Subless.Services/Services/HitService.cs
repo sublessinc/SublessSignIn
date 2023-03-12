@@ -213,8 +213,6 @@ namespace Subless.Services.Services
 
         public Guid? GetCreatorFromPartnerAndUri(Uri uri, Partner partner)
         {
-            const string creatorPlaceholder = "{creator}";
-
             //TODO, what do with this user
             ///www.partner.com/stories
 
@@ -231,7 +229,7 @@ namespace Subless.Services.Services
                 {
                     continue;
                 }
-                var regexPattern = "(?:" + pattern.Replace(creatorPlaceholder, ")([^/]*)(?:", StringComparison.Ordinal) + ")";
+                var regexPattern = "(?:" + pattern.Replace(Constants.CreatorPlaceholderKey, ")([^/]*)(?:", StringComparison.Ordinal) + ")";
                 var matches = Regex.Matches(uri.ToString(), regexPattern);
                 if (!matches.Any())
                 {

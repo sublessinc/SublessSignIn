@@ -269,10 +269,13 @@ namespace Subless.Services.Services
             var orderedHits = previousHits.GroupBy(g => g.CreatorId).OrderByDescending(g => g.Count()).Select(g => g.First()).Take(5);
             var builder = new StringBuilder();
             foreach (var hit in orderedHits) {
-                builder.AppendLine($"<li><a href={hit.Uri}>placeholder name</a></li>");
+                var partner = _partnerService.GetPartner(hit.PartnerId);
+                var creator = _creatorService.GetCreator(hit.CreatorId);
+                var uri = partner.UserPattern.Split(";").First().Replace(Constants.CreatorPlaceholderKey, creator.Username);
+                builder.AppendLine($"<li><a href={uri}>{creator.Username}</a></li>");
             }
 
-            email.Replace(IdleEmailHistoryListKey, builder.ToString());
+            email = email.Replace(IdleEmailHistoryListKey, builder.ToString());
             return email;
         }
 
