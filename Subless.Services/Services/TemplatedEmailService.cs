@@ -174,7 +174,7 @@ namespace Subless.Services.Services
                 return;
             }
             var body = GenerateEmailBodyForIdleWithHistoryEmail(this.GetIdleWithHistoryEmail(), previousHits);
-            var emailTask = Task.Run(() => _emailSerivce.SendEmail(body, usertask.Result, "You've got one week left to support creators this month! Here's a few you've enjoyed"));
+            var emailTask = Task.Run(() => _emailSerivce.SendEmail(body, usertask.Result, "There's one week left to support creators this month! Here's a few you've enjoyed"));
             emailTask.Wait();
         }
 
@@ -288,9 +288,14 @@ namespace Subless.Services.Services
             var partner = _partnerService.GetPartner(hit.PartnerId);
             var creator = _creatorService.GetCreator(hit.CreatorId);
             var creatorUri = partner.UserPattern.Split(";").First().Replace(Constants.CreatorPlaceholderKey, creator.Username);
-            var uriWithLoginRedirect = new Uri(new Uri(_authOptions.Value.Domain), new Uri($"/bff/login?returnUrl={creatorUri}", UriKind.Absolute));
+            var uriWithLoginRedirect = new Uri(new Uri(_authOptions.Value.Domain, UriKind.Absolute), new Uri($"/bff/login?returnUrl={creatorUri}", UriKind.Relative));
 
-            return $"<li style=\"float:left;\"><a href={uriWithLoginRedirect} style=\"text-decoration:none;\"><img src=\"{partner.Favicon}\" alt=\"\" width=16 height=16 style=\"vertical-align: middle;\"> {creator.Username}</a></li>";
+            return $"<li>"
+                + $"<a href={uriWithLoginRedirect} style=\"text-decoration:none;\">"
+                + $"<img src=\"{partner.Favicon}\" alt=\"\" width=14 height=14 style=\"vertical-align: middle;\">"
+                + $"<span style=\"vertical-align:middle;margin-left:4px;\">{creator.Username}</span>"
+                + $"</a>"
+                + $"</li>";
         }
 
         private string GenerateEmailBodyForUser(string template, List<Payment> payments, DateTimeOffset PaymentPeriodStart, DateTimeOffset PaymentPeriodEnd)
