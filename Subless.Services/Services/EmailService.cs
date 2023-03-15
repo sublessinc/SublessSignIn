@@ -20,7 +20,6 @@ namespace Subless.Services.Services
             _options = options ?? throw new ArgumentNullException(nameof(options));
         }
         public async Task SendEmail(string body, string to, string subject, string from = "contact@subless.com") {
-            to = "matthew.d.schechtman@gmail.com";
             if (_options.Value.Environment != null && _options.Value.Environment != "prod")
             {
                 subject = $"[{_options.Value.Environment}] {subject}";
