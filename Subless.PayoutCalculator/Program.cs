@@ -87,6 +87,7 @@ namespace PayoutCalculator
                 CalculatorSettingsConfiguration.RegisterCalculatorConfig(services);
                 GeneralConfiguration.RegisterGeneralConfig(services);
                 var authSettings = AuthSettingsConfiguration.GetAuthSettings();
+                AuthSettingsConfiguration.RegisterAuthSettingsConfig(services, authSettings);
                 BffDi.AddBffDi(services, authSettings);
                 DataDi.RegisterDataDi(services);
                 ServicesDi.AddServicesDi(services);

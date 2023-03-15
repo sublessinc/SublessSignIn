@@ -52,7 +52,7 @@ namespace Subless.Services.Services
         }
 
 
-        public CalculatorResult CaculatePayoutsOverRange(DateTimeOffset startDate, DateTimeOffset endDate, List<Guid> selectedUserIds = null)
+        public CalculatorResult CalculatePayoutsOverRange(DateTimeOffset startDate, DateTimeOffset endDate, List<Guid> selectedUserIds = null)
         {
             var calculatorResult = new CalculatorResult();
             calculatorResult.EmailSent = false;
@@ -88,12 +88,15 @@ namespace Subless.Services.Services
                     var user = userService.GetUser(payer.UserId);
                     if (!hits.Any())
                     {
+                        // Get hits in the previous 30 days before the current timme span
+                        var previous30DaysHits = RetrieveUsersMonthlyHits(payer.UserId, startDate.AddDays(-30), startDate);
                         calculatorResult.IdleCustomerRollovers.Add(
                             new IdleCustomerRollover()
                             {
                                 CognitoId = user.CognitoId,
                                 CustomerId = user.StripeCustomerId,
-                                Payment = Math.Round(payer.Payment / 100, CurrencyPrecision, MidpointRounding.ToZero)
+                                Payment = Math.Round(payer.Payment / 100, CurrencyPrecision, MidpointRounding.ToZero),
+                                PreviousHits = previous30DaysHits,
                             });
                         continue;
                     }
@@ -367,7 +370,7 @@ namespace Subless.Services.Services
             if (calculation != null)
             {
                 _logger.LogInformation($"Executing queued calculation {calculation.Id}");
-                var result = CaculatePayoutsOverRange(calculation.PeriodStart, calculation.PeriodEnd);
+                var result = this.CalculatePayoutsOverRange(calculation.PeriodStart, calculation.PeriodEnd);
                 calculation.Result = JsonConvert.SerializeObject(result);
                 _calculatorQueueRepository.CompleteCalculation(calculation);
                 _logger.LogInformation($"Completed queued calculation {calculation.Id}");
