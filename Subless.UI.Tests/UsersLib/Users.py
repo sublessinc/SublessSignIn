@@ -104,6 +104,18 @@ def create_paid_subless_account(web_driver):
     welcome_email = receive_email(inbox_id=mailbox.id)
     return id, cookie, mailbox
 
+def select_plan_for_subless_account(web_driver, mailbox):
+    from PageObjectModels.PlanSelectionPage import PlanSelectionPage
+    plan_selection_page = PlanSelectionPage(web_driver).open()
+
+    # WHEN: I select a plan
+    stripe_signup_page = plan_selection_page.select_plan_5()
+
+    # THEN: I should be taken to the stripe page
+    dashboard = stripe_signup_page.sign_up_for_stripe()
+    welcome_email = receive_email(inbox_id=mailbox.id)
+
+
 def create_unactivated_creator_User(web_driver, mailbox):
     from UsersLib.Users import create_from_login_page
     from PageObjectModels.TestSite.TestSite_LoginPage import TestSiteLoginPage

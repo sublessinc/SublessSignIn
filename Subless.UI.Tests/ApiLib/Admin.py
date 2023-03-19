@@ -60,6 +60,18 @@ def execute_payout(cookie, start, end):
 
     print(f'Calculator returned code: {response.status_code} - {response.reason} - {response.text}')
 
+def execute_idle_email(cookie, start, end):
+    url = f'https://{Keys.subless_uri}/api/Calculator/EmailIdlePatrons?start={start}&end={end}'
+
+    payload = {}
+    headers = {
+        'Cookie': f'subless={cookie}'
+    }
+
+    response = requests.request("POST", url, headers=headers, data=payload, verify=False)
+
+    print(f'Calculator/EmailIdlePatrons returned code: {response.status_code} - {response.reason} - {response.text}')
+
 
 def queue_calculation(cookie, start, end):
     url = f'https://{Keys.subless_uri}/api/Calculator/QueueCalculator?start={start}&end={end}'
