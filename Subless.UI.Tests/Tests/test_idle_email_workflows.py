@@ -9,7 +9,27 @@ from UsersLib.Users import DefaultPassword, login_as_god_user, select_plan_for_s
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger()
 
-def test_user_with_no_hits_in_payout_range_recieves_idle_email_with_history(web_driver, subless_activated_creator_user, subless_account, params):
+def test_user_with_no_hits_in_payout_range_recieves_idle_email(web_driver, subless_activated_creator_user, subless_account, params):
+    # signin as a non-paying subless user
+    patron_mailbox = get_or_create_inbox(PatronInbox)
+    from PageObjectModels.LoginPage import LoginPage
+    login_page = LoginPage(web_driver).open()
+    patron_dashboard = login_page.sign_in(patron_mailbox.email_address, DefaultPassword)
+
+    # register payment method for the user
+    period_start = datetime.utcnow();
+    select_plan_for_subless_account(web_driver, patron_mailbox)
+    period_end = datetime.utcnow() + timedelta(seconds=30)
+
+    # execute the idle email
+    id, cookie, page = login_as_god_user(web_driver)
+    execute_idle_email(cookie, period_start, period_end)
+
+    # assert the email - we only care that the email got sent and recieved
+    idle_email = receive_email(inbox_id=patron_mailbox.id)
+    assert "Your subless budget isn't going to any creators this month!" in idle_email.subject
+
+def test_user_with_no_hits_in_payout_range_but_previous_hits_recieves_idle_email_with_history(web_driver, subless_activated_creator_user, subless_account, params):
     # signin as a non-paying subless user
     patron_mailbox = get_or_create_inbox(PatronInbox)
     from PageObjectModels.LoginPage import LoginPage
@@ -20,7 +40,6 @@ def test_user_with_no_hits_in_payout_range_recieves_idle_email_with_history(web_
     from PageObjectModels.TestSite.TestSite_LoginPage import TestSiteLoginPage
     test_site = TestSiteLoginPage(web_driver).open()
     test_site.click_uri_content()
-    hit_time = datetime.utcnow()
     time.sleep(5)
 
     # register payment method for the user
