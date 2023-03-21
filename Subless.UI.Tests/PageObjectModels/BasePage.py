@@ -7,6 +7,8 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 
+from Keys.Keys import Keys
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger()
 
@@ -62,7 +64,7 @@ class BasePage(object):
         from .AccountSettingsPage import AccountSettingsPage
         logger.info(f'Navigating to change plan')
         time.sleep(1)
-        WebDriverWait(self.driver, 10).until(lambda driver: 'subless' in driver.current_url)
+        WebDriverWait(self.driver, 10).until(lambda driver: Keys.subless_uri in driver.current_url)
         WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, BasePageLocators.account_settings_selector)))
         WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable((By.CSS_SELECTOR, BasePageLocators.account_settings_selector)))
         logger.info(self.__class__.__name__)

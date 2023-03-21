@@ -6,6 +6,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 
+from Keys.Keys import Keys
 from .BasePage import BasePage
 
 logging.basicConfig(level=logging.INFO)
@@ -39,7 +40,7 @@ class NavbarPage(BasePage):
     def navigate_to_change_plan(self):
         from .PlanSelectionPage import PlanSelectionPage
         logger.info(f'Navigating to change plan')
-        WebDriverWait(self.driver, 10).until(lambda driver: 'subless' in driver.current_url)
+        WebDriverWait(self.driver, 10).until(lambda driver: Keys.subless_uri in driver.current_url)
         WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.ID, NavbarPageLocators.change_plan_id)))
         logger.info(self.__class__.__name__)
         self.change_plan_button.click()
@@ -51,7 +52,7 @@ class NavbarPage(BasePage):
     def navigate_to_billing(self):
         from .ExternalPages.StripeManagePage import StripeManagementPage
         logger.info(f'Navigating to change plan')
-        WebDriverWait(self.driver, 10).until(lambda driver: 'subless' in driver.current_url)
+        WebDriverWait(self.driver, 10).until(lambda driver: Keys.subless_uri in driver.current_url)
         WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.ID, NavbarPageLocators.billing_id)))
         logger.info(self.__class__.__name__)
         self.billing_button.click()

@@ -33,6 +33,10 @@
     <EmbeddedResource Include="Assets\Receipt.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
+    <None Remove="Assets\IdleWithHistory.html" />
+    <EmbeddedResource Include="Assets\IdleWithHistory.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
   </ItemGroup>
 
   <ItemGroup>

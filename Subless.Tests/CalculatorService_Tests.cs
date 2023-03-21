@@ -303,7 +303,7 @@ namespace Subless.Tests
                 partnerService: partnerService
                 );
             //Act
-            var result = sut.CaculatePayoutsOverRange(DateTimeOffset.UtcNow.AddMonths(-1), DateTimeOffset.UtcNow);
+            var result = sut.CalculatePayoutsOverRange(DateTimeOffset.UtcNow.AddMonths(-1), DateTimeOffset.UtcNow);
 
             //Assert
             Assert.NotEmpty(result.AllPayouts); // We should have a payment directed at subless
@@ -698,7 +698,7 @@ namespace Subless.Tests
                 partnerService: partnerService
                 );
             //Act
-            var result = sut.CaculatePayoutsOverRange(DateTimeOffset.UtcNow.AddMonths(-1), DateTimeOffset.UtcNow);
+            var result = sut.CalculatePayoutsOverRange(DateTimeOffset.UtcNow.AddMonths(-1), DateTimeOffset.UtcNow);
 
             //Assert
             Assert.Equal(3, result.AllPayouts.Count);
@@ -782,7 +782,7 @@ namespace Subless.Tests
                 userService: userService
                 );
             //Act
-            var result = sut.CaculatePayoutsOverRange(DateTimeOffset.UtcNow.AddMonths(-1), DateTimeOffset.UtcNow, new List<Guid> { payer2.Id });
+            var result = sut.CalculatePayoutsOverRange(DateTimeOffset.UtcNow.AddMonths(-1), DateTimeOffset.UtcNow, new List<Guid> { payer2.Id });
 
             //Assert
             Assert.Equal(3, result.AllPayouts.Count);

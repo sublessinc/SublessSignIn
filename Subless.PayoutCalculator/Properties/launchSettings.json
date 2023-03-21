@@ -1,16 +1,16 @@
 {
   "profiles": {
-    "Subless.PayoutCalculator": {
+    "SublessPayoutCalculator": {
       "commandName": "Project",
       "environmentVariables": {
         "STRIPE_PUBLISHABLE_KEY": "pk_test_51IbDVcLjAfLYGCbHdKfBBpQvmMwsj3ck4Pc53kSIcivS2XgZ066ecY5gOmRz4J2Uj2UTnViqy4CO0cuseeefQ0zc00Khce595M",
         "CONNECTION_STRING": "Host=localhost;Database=sublessusers;Username=postgres;Password=zkleRY0BHaU8gI4Jsx3RXOX3",
-        "DOMAIN": "http://localhost:4200/",
+        "DOMAIN": "https://localhost:4200/",
         "STRIPE_SECRET_KEY": "sk_test_51IbDVcLjAfLYGCbHH59aXXR8DBgiAj9CiPIRnNZ0GrNvQM3RyorNnz4mdTrGUvu6ha5NCszmOpt2r6S1kyhJzA5D00Pe10OVxI",
         "ASPNETCORE_ENVIRONMENT": "Development",
         "STRIPE_WEBHOOK_SECRET": "whsec_BKwYJh9HjCYQEgUSYIu9A1RE7ciQ26Ho",
         "region": "us-east-2",
-        "appClientId": "4a8epi5e1hh6bp8cr761i24um5",
+        "appClientId": "758lumgq8epkk6449ogjj6b9v7",
         "userPoolId": "us-east-2_7wJbjFqDB",
         "AccessKey": "AKIAX7PZWNTP5WPGBOUK",
         "SecretKey": "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",
@@ -19,7 +19,6 @@
         "PayPalId": "contact@subless.com",
         "dbCreds": "{  'password': 'zkleRY0BHaU8gI4Jsx3RXOX3',  'engine': 'postgres',  'port': 5432,  'dbInstanceIdentifier': 'sublessusers',  'host': 'localhost',  'username': 'postgres'}",
         "Logging__LogLevel__Default": "Debug",
-        "appClientId": "3pfcge04qtbqj11h32tr09ndu2",
         "issuerUrl": "https://devpayidp.auth.us-east-2.amazoncognito.com",
         "EnvironmentName": "local",
         "MaxInstanceCount": "10"

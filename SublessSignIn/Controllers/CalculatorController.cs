@@ -35,7 +35,7 @@ namespace SublessSignIn.Controllers
 
                 start = start.ToUniversalTime();
                 end = end.ToUniversalTime();
-                return Ok(_calculatorService.CaculatePayoutsOverRange(start, end));
+                return Ok(_calculatorService.CalculatePayoutsOverRange(start, end));
             }
         }
 
@@ -48,7 +48,7 @@ namespace SublessSignIn.Controllers
         {
             start = start.ToUniversalTime();
             end = end.ToUniversalTime();
-            return Ok(_calculatorService.CaculatePayoutsOverRange(start, end, selectedUserIds));
+            return Ok(_calculatorService.CalculatePayoutsOverRange(start, end, selectedUserIds));
         }
 
 

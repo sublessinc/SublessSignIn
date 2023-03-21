@@ -1,32 +1,32 @@
 import json
 import os
 import time
-
+from Keys.Keys import Keys
 import requests
 
 
 def set_admin(user_id, cookie):
-    url = f'https://{os.environ["environment"]}.subless.com/api/Admin/setadmin?userId={user_id}'
+    url = f'https://{Keys.subless_uri}/api/Admin/setadmin?userId={user_id}'
 
     payload = {}
     headers = {
         'subless': f'{cookie}'
     }
 
-    response = requests.request("POST", url, headers=headers, data=payload)
+    response = requests.request("POST", url, headers=headers, data=payload, verify=False)
 
     print(f'SetAdmin returned code: {response.status_code} - {response.reason} - {response.text}')
 
 
 def get_user_capabilities(user_id, cookie):
-    url = f'https://{os.environ["environment"]}.subless.com/api/Admin/userCapabilties?userId={user_id}'
+    url = f'https://{Keys.subless_uri}/api/Admin/userCapabilties?userId={user_id}'
 
     payload = {}
     headers = {
         'subless': f'{cookie}'
     }
 
-    response = requests.request("GET", url, headers=headers, data=payload)
+    response = requests.request("GET", url, headers=headers, data=payload, verify=False)
 
     print(f'GetUserCapabilities returned code: {response.status_code} - {response.reason} - {response.text}')
 
@@ -34,14 +34,14 @@ def get_user_capabilities(user_id, cookie):
 
 
 def get_payout_calculation(cookie, start, end):
-    url = f'https://{os.environ["environment"]}.subless.com/api/Calculator?start={start}&end={end}'
+    url = f'https://{Keys.subless_uri}/api/Calculator?start={start}&end={end}'
 
     payload = {}
     headers = {
         'Cookie': f'subless={cookie}'
     }
 
-    response = requests.request("GET", url, headers=headers, data=payload)
+    response = requests.request("GET", url, headers=headers, data=payload, verify=False)
 
     print(f'Calculator returned code: {response.status_code} - {response.reason} - {response.text}')
 
@@ -49,40 +49,52 @@ def get_payout_calculation(cookie, start, end):
 
 
 def execute_payout(cookie, start, end):
-    url = f'https://{os.environ["environment"]}.subless.com/api/Calculator?start={start}&end={end}'
+    url = f'https://{Keys.subless_uri}/api/Calculator?start={start}&end={end}'
 
     payload = {}
     headers = {
         'Cookie': f'subless={cookie}'
     }
 
-    response = requests.request("POST", url, headers=headers, data=payload)
+    response = requests.request("POST", url, headers=headers, data=payload, verify=False)
 
     print(f'Calculator returned code: {response.status_code} - {response.reason} - {response.text}')
 
-
-def queue_calculation(cookie, start, end):
-    url = f'https://{os.environ["environment"]}.subless.com/api/Calculator/QueueCalculator?start={start}&end={end}'
+def execute_idle_email(cookie, start, end):
+    url = f'https://{Keys.subless_uri}/api/Calculator/EmailIdlePatrons?start={start}&end={end}'
 
     payload = {}
     headers = {
         'Cookie': f'subless={cookie}'
     }
 
-    response = requests.request("POST", url, headers=headers, data=payload)
+    response = requests.request("POST", url, headers=headers, data=payload, verify=False)
+
+    print(f'Calculator/EmailIdlePatrons returned code: {response.status_code} - {response.reason} - {response.text}')
+
+
+def queue_calculation(cookie, start, end):
+    url = f'https://{Keys.subless_uri}/api/Calculator/QueueCalculator?start={start}&end={end}'
+
+    payload = {}
+    headers = {
+        'Cookie': f'subless={cookie}'
+    }
+
+    response = requests.request("POST", url, headers=headers, data=payload, verify=False)
     return json.loads(response.content)
     print(f'Calculator returned code: {response.status_code} - {response.reason} - {response.text}')
 
 
 def get_queued_result(cookie, id):
-    url = f'https://{os.environ["environment"]}.subless.com/api/Calculator/GetQueuedCalculation?id={id}'
+    url = f'https://{Keys.subless_uri}/api/Calculator/GetQueuedCalculation?id={id}'
 
     payload = {}
     headers = {
         'Cookie': f'subless={cookie}'
     }
 
-    response = requests.request("GET", url, headers=headers, data=payload)
+    response = requests.request("GET", url, headers=headers, data=payload, verify=False)
     print(f'Calculator returned code: {response.status_code} - {response.reason} - {response.text}')
     return response.content
 
@@ -107,26 +119,26 @@ def queue_and_wait_for_results(cookie, start, end):
 
 
 def queue_payout(cookie, start, end):
-    url = f'https://{os.environ["environment"]}.subless.com/api/Calculator/QueuePayment?start={start}&end={end}'
+    url = f'https://{Keys.subless_uri}/api/Calculator/QueuePayment?start={start}&end={end}'
 
     payload = {}
     headers = {
         'Cookie': f'subless={cookie}'
     }
 
-    response = requests.request("POST", url, headers=headers, data=payload)
+    response = requests.request("POST", url, headers=headers, data=payload, verify=False)
 
     print(f'Calculator returned code: {response.status_code} - {response.reason} - {response.text}')
 
 
 def delete_user(cookie, email):
-    url = f'https://{os.environ["environment"]}.subless.com//api/User/byemail?email={email}'
+    url = f'https://{Keys.subless_uri}/api/User/byemail?email={email}'
 
     payload = {}
     headers = {
         'Cookie': f'subless={cookie}'
     }
 
-    response = requests.request("DELETE", url, headers=headers)
+    response = requests.request("DELETE", url, headers=headers, verify=False)
 
     print(f'Deletion returned code: {response.status_code} - {response.reason} - {response.text}')
