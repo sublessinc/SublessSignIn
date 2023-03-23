@@ -3,6 +3,7 @@ import logging
 import time
 
 from PageObjectModels.ExternalPages.StripeSignupPage import StripeSignupPage
+from Keys.Keys import Keys
 from .BasePage import BasePage
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -37,6 +38,12 @@ class PlanSelectionPage(NavbarPage):
     @property
     def plan_confirm_button(self):
         return self.driver.find_element_by_xpath(PlanSelectionLocators.plan_confirm_xpath)
+
+    def open(self):
+        self.driver.get(f'https://{Keys.subless_uri}/register-payment')
+        logging.info("Waiting for register payment page load to complete")
+        time.sleep(3)
+        return self
 
     def select_plan_5(self):  # there's only one tier now, will need to overhaul this a lot in the future
         logger.info(f'Selecting plan')

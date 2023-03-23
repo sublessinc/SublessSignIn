@@ -4,6 +4,7 @@ import time
 
 from selenium.webdriver.support.wait import WebDriverWait
 
+from Keys.Keys import Keys
 from .NavbarPage import NavbarPage
 
 logging.basicConfig(level=logging.INFO)
@@ -13,7 +14,7 @@ logger = logging.getLogger()
 class CreatorDashboardPage(NavbarPage):
 
     def open(self):
-        self.driver.get(f'https://{os.environ["environment"]}.subless.com/creator-profile')
+        self.driver.get(f'https://{Keys.subless_uri}/creator-profile')
         logging.info("Waiting for creator page load to complete")
         time.sleep(3)
         return self

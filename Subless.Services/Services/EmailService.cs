@@ -19,8 +19,7 @@ namespace Subless.Services.Services
             logger = loggerFactory?.CreateLogger<EmailService>() ?? throw new ArgumentNullException(nameof(loggerFactory));
             _options = options ?? throw new ArgumentNullException(nameof(options));
         }
-        public async Task SendEmail(string body, string to, string subject, string from = "contact@subless.com")
-        {
+        public async Task SendEmail(string body, string to, string subject, string from = "contact@subless.com") {
             if (_options.Value.Environment != null && _options.Value.Environment != "prod")
             {
                 subject = $"[{_options.Value.Environment}] {subject}";

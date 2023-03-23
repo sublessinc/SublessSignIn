@@ -4,6 +4,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
+from Keys.Keys import Keys
 from PageObjectModels.LoginPage import LoginPage
 
 logging.basicConfig(level=logging.INFO)
@@ -18,7 +19,7 @@ class TestSite_ProfilePage(object):
 
     def click_activate(self):
         logger.info(f'Navigating to profile page')
-        WebDriverWait(self.driver, 10).until(lambda driver: 'pythonclient' in driver.current_url)
+        WebDriverWait(self.driver, 10).until(lambda driver: Keys.test_client_uri in driver.current_url)
         WebDriverWait(self.driver, 10).until(
             EC.presence_of_element_located((By.CSS_SELECTOR, TestSite_ProfilePage_Locators.activate_selector)))
         logger.info(self.__class__.__name__)

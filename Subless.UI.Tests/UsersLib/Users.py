@@ -10,10 +10,8 @@ from mailslurp_client import ApiException
 from ApiLib.User import delete_user_by_email
 from EmailLib import MailSlurp
 from EmailLib.MailSlurp import PatronInbox, receive_email
-from PageObjectModels import PayoutSetupPage
+from Exceptions.Exceptions import ApiLimitException, ExistingUserException
 from PageObjectModels.BasePage import BasePage
-from PageObjectModels.OTPConfirmationPage import ApiLimitException
-from PageObjectModels.PatronDashboardPage import PatronDashboardPage
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger()
@@ -35,6 +33,9 @@ def create_from_login_page(driver, inbox):
     try:
         otp_page = sign_up_page.sign_up(inbox.email_address,
                                     DefaultPassword)
+    except ExistingUserException:
+        attempt_to_delete_user(inbox.email_address, DefaultPassword)
+        raise Exception("Test failed due to existing user, possible cleanup failure")
     except ApiLimitException:
         # We should clean up the user that just got hosed by a rate limit
         delete_locked_user(driver, inbox.email_address)
@@ -83,7 +84,6 @@ def create_subless_account(web_driver):
     from EmailLib.MailSlurp import get_or_create_inbox
 
     mailbox = get_or_create_inbox(PatronInbox)
-    attempt_to_delete_user(web_driver, mailbox)
 
     # create
     id, cookie = create_user(web_driver, mailbox)
@@ -103,6 +103,18 @@ def create_paid_subless_account(web_driver):
     dashboard = stripe_signup_page.sign_up_for_stripe()
     welcome_email = receive_email(inbox_id=mailbox.id)
     return id, cookie, mailbox
+
+def select_plan_for_subless_account(web_driver, mailbox):
+    from PageObjectModels.PlanSelectionPage import PlanSelectionPage
+    plan_selection_page = PlanSelectionPage(web_driver).open()
+
+    # WHEN: I select a plan
+    stripe_signup_page = plan_selection_page.select_plan_5()
+
+    # THEN: I should be taken to the stripe page
+    dashboard = stripe_signup_page.sign_up_for_stripe()
+    welcome_email = receive_email(inbox_id=mailbox.id)
+
 
 def create_unactivated_creator_User(web_driver, mailbox):
     from UsersLib.Users import create_from_login_page
@@ -162,3 +174,4 @@ def login_as_god_user(firefox_driver):
 def delete_locked_user(firefox_driver, email):
     id,cookie,login_page = login_as_god_user(firefox_driver)
     delete_user_by_email(cookie, email)
+

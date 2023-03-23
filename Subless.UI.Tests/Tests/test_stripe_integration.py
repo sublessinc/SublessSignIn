@@ -1,10 +1,12 @@
 import logging
 import json
 
+from Keys.Keys import Keys
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger()
 
-test_url = "https://dev.subless.com/api/Checkout/create-checkout-session"
+test_url = f"https://{Keys.subless_uri}/api/Checkout/create-checkout-session"
 
 
 def test_concurrent_api_calls_do_not_error(subless_god_account):
