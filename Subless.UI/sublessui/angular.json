@@ -56,7 +56,6 @@
               "outputHashing": "all"
             },
             "test": {
-              "optimization": false,
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
@@ -65,7 +64,6 @@
               ]
             },
             "dev": {
-              "optimization": false,
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
@@ -74,7 +72,6 @@
               ]
             },
             "stage": {
-              "optimization": false,
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
@@ -83,7 +80,6 @@
               ]
             },
             "prod": {
-              "optimization": false,
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
