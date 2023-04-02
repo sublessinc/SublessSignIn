@@ -1,9 +1,12 @@
 # todo:  fill this out
+import time
 
+from selenium.common.exceptions import ElementNotInteractableException
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.common.by import By
-from PageObjectModels.BasePage import BasePage, check_exists_by_xpath
+from PageObjectModels.BasePage import BasePage, check_exists_by_xpath, check_exists_by_selector
+from selenium.webdriver.common.action_chains import ActionChains
 
 
 class StripeSignupPage(BasePage):
@@ -37,10 +40,12 @@ class StripeSignupPage(BasePage):
 
     @property
     def subscribe_button(self):
-        if check_exists_by_xpath(StripeSignupLocators.subscribe_button_xpath, self.driver):
-            return self.driver.find_element_by_xpath(StripeSignupLocators.subscribe_button_xpath)
-        if check_exists_by_xpath(StripeSignupLocators.subscribe_button_xpath2, self.driver):
-            return self.driver.find_element_by_xpath(StripeSignupLocators.subscribe_button_xpath2)
+        if check_exists_by_selector(StripeSignupLocators.submit_button_selector, self.driver):
+            return self.driver.find_element_by_css_selector(StripeSignupLocators.submit_button_selector)
+        # if check_exists_by_xpath(StripeSignupLocators.subscribe_button_xpath, self.driver):
+        #     return self.driver.find_element_by_xpath(StripeSignupLocators.subscribe_button_xpath)
+        # if check_exists_by_xpath(StripeSignupLocators.subscribe_button_xpath2, self.driver):
+        #     return self.driver.find_element_by_xpath(StripeSignupLocators.subscribe_button_xpath2)
         raise Exception("Subscribe button not found, stipe probably changed the page again.")
 
     def sign_up_for_stripe(self):
@@ -55,7 +60,14 @@ class StripeSignupPage(BasePage):
         self.zip_textbox.send_keys('42424')
         if self.save_info_checkbox.is_selected():
             self.save_info_checkbox.click()
-        self.subscribe_button.click()
+        WebDriverWait(self.driver, 10).until(
+            ec.element_to_be_clickable((By.CSS_SELECTOR, StripeSignupLocators.submit_button_selector)))
+        # this page is a jerk so we have to click into the button and let it change state
+        try:
+            self.subscribe_button.click()
+        except ElementNotInteractableException:
+            time.sleep(3)
+            self.subscribe_button.click()
         WebDriverWait(self.driver, 10).until(lambda driver: 'stripe' not in self.driver.current_url)
         return PatronDashboardPage(self.driver)
 
@@ -70,3 +82,4 @@ class StripeSignupLocators:
     subscribe_button_xpath = '/html/body/div[1]/div/div[2]/div[2]/div/div[2]/form/div[2]/div[2]/button'
     subscribe_button_xpath2 = '/html/body/div[1]/div/div[2]/div[2]/div/div[2]/form/div[2]/div/div[2]/button'
     save_info_css_selector = '#enableStripePass'
+    submit_button_selector = '.SubmitButton'
