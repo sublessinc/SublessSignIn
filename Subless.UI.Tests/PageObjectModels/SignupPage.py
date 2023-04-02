@@ -54,6 +54,6 @@ class SignupLocators:
     sign_up_button_xpath = '/html/body/div[1]/div/div[1]/div[2]/div[2]/div[2]/div/form/button'
     google_login_name = 'googleSignUpButton'
     # email_textbox_xpath = '/html/body/div[1]/div/div[2]/div[2]/div[3]/div[2]/div/form/div[1]/input'
-    email_textbox_xpath = '/html/body/div[1]/div/div[1]/div[2]/div[2]/div[2]/div/form/div[1]/input'
+    email_textbox_xpath = '//input[@placeholder="name@host.com"]'
     pass_textbox_id = 'signInFormPassword'
-    pass_textbox_xpath = '/html/body/div[1]/div/div[1]/div[2]/div[2]/div[2]/div/form/input[2]'
+    pass_textbox_xpath = '//input[@placeholder="Password"]'
