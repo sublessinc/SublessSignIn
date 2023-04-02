@@ -42,10 +42,6 @@ class StripeSignupPage(BasePage):
     def subscribe_button(self):
         if check_exists_by_selector(StripeSignupLocators.submit_button_selector, self.driver):
             return self.driver.find_element_by_css_selector(StripeSignupLocators.submit_button_selector)
-        # if check_exists_by_xpath(StripeSignupLocators.subscribe_button_xpath, self.driver):
-        #     return self.driver.find_element_by_xpath(StripeSignupLocators.subscribe_button_xpath)
-        # if check_exists_by_xpath(StripeSignupLocators.subscribe_button_xpath2, self.driver):
-        #     return self.driver.find_element_by_xpath(StripeSignupLocators.subscribe_button_xpath2)
         raise Exception("Subscribe button not found, stipe probably changed the page again.")
 
     def sign_up_for_stripe(self):
