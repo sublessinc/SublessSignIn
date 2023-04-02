@@ -52,11 +52,6 @@ class LoginPage(BasePage):
         self.driver.get(f'https://{Keys.subless_uri}')
         logging.info("Waiting for login page redirect to complete")
         time.sleep(5)
-        # WebDriverWait(self.driver, 10).until(
-        #     EC.presence_of_element_located((By.NAME, LoginLocators.sign_in_button_name))
-        #     or
-        #     EC.presence_of_element_located((By.ID, BasePageLocators.logout_button_id))
-        # )
         if ('login' not in self.driver.current_url):
             BasePage(self.driver).logout()
         WebDriverWait(self.driver, 10).until(lambda driver: 'login' in self.driver.current_url)
@@ -126,9 +121,6 @@ class LoginLocators:
                            '-desktop.visible-md.visible-lg > div.modal-body > div:nth-child(2) > ' \
                            'div.panel.panel-left-border.col-md-6.col-lg-6 > div:nth-child(2) > div > form > ' \
                            'div:nth-child(10) > p > a '
-    # signup_link_xpath = '/html/body/div[1]/div/div[2]/div[2]/div[2]/div[2]/div[2]/div/form/div[3]/p/a'
-    # signup_link_xpath = '/html/body/div[1]/div/div[2]/div[2]/div[2]/div[2]/div/div/form/div[3]/p/a'
-    # signup_link_xpath = '/html/body/div[1]/div/div[2]/div[2]/div[2]/div[2]/div/div/form/div[4]/p/a'
     signup_link_text = "Sign up"
     error_page_signup_link_selector = "div.panel:nth-child(2) > div:nth-child(2) > div:nth-child(1) " \
                                       "> form:nth-child(2) > div:nth-child(11) > p:nth-child(1) > a:nth-child(2)"
