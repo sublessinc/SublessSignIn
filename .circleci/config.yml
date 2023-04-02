@@ -178,8 +178,17 @@ workflows:
             - build-push-calc-env-tag
   test:
     jobs:
-      - selenium:
+      - selenium-dev:
+          context:
+            dev-context
           filters:
             branches:
               only: 
                 - dev
+      - selenium-stage:
+          context:
+            stage-context
+          filters:
+            branches:
+              only: 
+                - stage
