@@ -1,6 +1,7 @@
 @use 'sass:map';
 @use '@angular/material' as mat;
-@use "../theme/theme";
+@use "../theme/theme" as *;
+
 
 .root {
     display: flex;
