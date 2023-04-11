@@ -1,6 +1,7 @@
 @use 'sass:map';
 @use '@angular/material' as mat;
-@import "../theme/theme";
+@use "../theme/theme" as *;
+
 
 .logo {
     content: url("../../assets/img/SublessLogo.svg");
