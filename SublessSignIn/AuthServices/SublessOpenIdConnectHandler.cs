@@ -29,4 +29,18 @@ public class SublessOpenIdConnectHandler : OpenIdConnectHandler
             return HandleRequestResult.Fail(e.Message);
         }
     }
+
+    protected async override Task<OpenIdConnectMessage> RedeemAuthorizationCodeAsync(OpenIdConnectMessage tokenEndpointRequest)
+    {
+        try
+        {
+            return await base.RedeemAuthorizationCodeAsync(tokenEndpointRequest);
+        }
+        catch (TaskCanceledException e)
+        {
+            _logger.LogWarning(e, "Task cancelled error occurred. This is occurring on login in some cases.");
+            _logger.LogWarning(e, $"If the user logged in after this, we can probs ignore this error");
+            return null;
+        }
+    }
 }

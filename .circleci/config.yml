@@ -176,10 +176,22 @@ workflows:
           force-new-deployment: true
           requires:
             - build-push-calc-env-tag
-  test:
+  test-dev:
     jobs:
       - selenium:
+          context:
+            dev-context
           filters:
             branches:
               only: 
                 - dev
+
+  test-stage:
+    jobs:
+      - selenium:
+          context:
+            stage-context
+          filters:
+            branches:
+              only: 
+                - stage

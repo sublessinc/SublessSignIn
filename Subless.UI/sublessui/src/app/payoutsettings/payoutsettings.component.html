@@ -35,7 +35,7 @@
                 <mat-card-content>
                     <mat-form-field class="paypalid">
                         <input matInput #payPalId="ngModel" required type="email"
-                            pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$" name="payPalId"
+                            pattern="[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,3}$" name="payPalId"
                             [(ngModel)]="partnerModel.payPalId" placeholder="PayPal Email">
                         <div *ngIf="payPalId.errors &&(payPalId.touched || payPalId.dirty)" class="alert">
                             <div [hidden]="!payPalId.errors.pattern">
