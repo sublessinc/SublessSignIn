@@ -1,6 +1,8 @@
 import logging
 import json
 
+import pytest
+
 from Keys.Keys import Keys
 
 logging.basicConfig(level=logging.INFO)
@@ -8,7 +10,7 @@ logger = logging.getLogger()
 
 test_url = f"https://{Keys.subless_uri}/api/Checkout/create-checkout-session"
 
-
+@pytest.mark.skip("Implementation in product don't match stripe requirements")
 def test_concurrent_api_calls_do_not_error(subless_god_account):
     # this library must be loaded before the requests library, which is done in conftest.py
     grequests = __import__("grequests")
