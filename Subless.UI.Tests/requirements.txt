@@ -24,3 +24,4 @@ typing_extensions==4.0.1
 urllib3==1.26.8
 webdriver-manager==3.5.2
 zipp==3.6.0
+setuptools>=65.5.1 # not directly required, pinned by Snyk to avoid a vulnerability
