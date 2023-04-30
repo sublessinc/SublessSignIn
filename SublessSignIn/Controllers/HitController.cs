@@ -6,8 +6,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using Subless.Models;
 using Subless.Services.Services;
+using SublessSignIn.Models;
 
 namespace SublessSignIn.Controllers
 {
@@ -39,7 +41,7 @@ namespace SublessSignIn.Controllers
                     var body = await reader.ReadToEndAsync();
                     if (string.IsNullOrWhiteSpace(body))
                     {
-                        _logger.LogWarning("Invalid hit data recieved:{Environment.NewLine}" +
+                        _logger.LogWarning("Invalid hit data received:{Environment.NewLine}" +
                             $"Http Request Information:{Environment.NewLine}" +
                             $"Schema:{Request.Scheme} " +
                             $"Host: {Request.Host} " +
@@ -66,6 +68,47 @@ namespace SublessSignIn.Controllers
             return Ok(false);
         }
 
+        [HttpPost("tag")]
+        [EnableCors("Unrestricted")]
+        [Authorize]
+        public async Task<ActionResult<bool>> TagHit()
+        {
+            try
+            {
+                var validHit = false;
+                using (var reader = new StreamReader(Request.Body))
+                {
+                    var body = await reader.ReadToEndAsync();
+                    if (string.IsNullOrWhiteSpace(body))
+                    {
+                        _logger.LogWarning("Invalid hit data received:{Environment.NewLine}" +
+                            $"Http Request Information:{Environment.NewLine}" +
+                            $"Schema:{Request.Scheme} " +
+                            $"Host: {Request.Host} " +
+                            $"Path: {Request.Path} " +
+                            $"QueryString: {HttpUtility.UrlEncode(Request.QueryString.Value)}");
+                        return BadRequest("No tag body included in hit");
+                    }
+                    var tagHit = JsonConvert.DeserializeObject<TagHitViewModel>(body);
+                    if (!Uri.TryCreate(tagHit.Uri, UriKind.RelativeOrAbsolute, out var hitSource))
+                    {
+                        return BadRequest("Could not read source url");
+                    }
+                    if (userService.GetUserClaim(HttpContext.User) == null)
+                    {
+                        return Unauthorized("User claim could not be found");
+                    }
+                    validHit = _hitService.SaveTagHit(userService.GetUserClaim(HttpContext.User), hitSource, tagHit.Creator);
+                }
+                return Ok(validHit);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Failed to record hit");
+            }
+            return Ok(false);
+        }
+
         [HttpPost("Test")]
         [EnableCors("Unrestricted")]
         [Authorize]
@@ -77,7 +120,7 @@ namespace SublessSignIn.Controllers
                 var body = await reader.ReadToEndAsync();
                 if (string.IsNullOrWhiteSpace(body))
                 {
-                    _logger.LogWarning("Invalid hit data recieved:{Environment.NewLine}" +
+                    _logger.LogWarning("Invalid hit data received:{Environment.NewLine}" +
                        $"Http Request Information:{Environment.NewLine}" +
                        $"Schema:{Request.Scheme} " +
                        $"Host: {Request.Host} " +

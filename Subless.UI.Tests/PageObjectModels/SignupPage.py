@@ -3,6 +3,7 @@ import logging
 from selenium.webdriver.support.wait import WebDriverWait
 
 from ApiLib.User import delete_user_by_email
+from Exceptions.Exceptions import ExistingUserException
 from PageObjectModels.BasePage import BasePage
 from PageObjectModels.OTPConfirmationPage import OTPConfirmationPage
 from UsersLib.Users import login_as_god_user
@@ -39,7 +40,7 @@ class SignupPage(BasePage):
         self.sign_up_button.click()
         if 'An account with the given email already exists.' in self.driver.find_element_by_tag_name('body').text:
             logging.error("Attempted to create existing user")
-            raise Exception('Attempted to create existing user')
+            raise ExistingUserException('Attempted to create existing user')
         return OTPConfirmationPage(self.driver)
 
 
@@ -53,6 +54,6 @@ class SignupLocators:
     sign_up_button_xpath = '/html/body/div[1]/div/div[1]/div[2]/div[2]/div[2]/div/form/button'
     google_login_name = 'googleSignUpButton'
     # email_textbox_xpath = '/html/body/div[1]/div/div[2]/div[2]/div[3]/div[2]/div/form/div[1]/input'
-    email_textbox_xpath = '/html/body/div[1]/div/div[1]/div[2]/div[2]/div[2]/div/form/div[1]/input'
+    email_textbox_xpath = '//input[@placeholder="name@host.com"]'
     pass_textbox_id = 'signInFormPassword'
-    pass_textbox_xpath = '/html/body/div[1]/div/div[1]/div[2]/div[2]/div[2]/div/form/input[2]'
+    pass_textbox_xpath = '//input[@placeholder="Password"]'

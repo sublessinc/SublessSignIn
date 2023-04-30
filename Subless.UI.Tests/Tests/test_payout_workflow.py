@@ -4,6 +4,7 @@ import time
 
 from ApiLib.Admin import get_payout_calculation, execute_payout, queue_and_wait_for_results, queue_payout
 from EmailLib.MailSlurp import get_or_create_inbox, CreatorInbox, PatronInbox, receive_email
+from Keys.Keys import Keys
 from UsersLib.Users import DefaultPassword, login_as_god_user
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger()
@@ -15,9 +16,9 @@ def test_payout_calculation(web_driver, subless_activated_creator_user, paying_u
     from PageObjectModels.LoginPage import LoginPage
     login_page = LoginPage(web_driver).open()
     patron_dashboard = login_page.sign_in(patron_mailbox.email_address, DefaultPassword)
-    from PageObjectModels.TestSite.TestSite_HomePage import TestSite_HomePage
-    test_site = TestSite_HomePage(web_driver).open()
-    test_site.click_profile()
+    from PageObjectModels.TestSite.TestSite_LoginPage import TestSiteLoginPage
+    test_site = TestSiteLoginPage(web_driver).open()
+    test_site.click_uri_content()
     # THEN the creator's hit count should increase by one
     logging.info("Waiting for hit to push")
     time.sleep(2)
@@ -45,9 +46,9 @@ def test_payout_emails(web_driver, subless_activated_creator_user, paying_user, 
     from PageObjectModels.LoginPage import LoginPage
     login_page = LoginPage(web_driver).open()
     patron_dashboard = login_page.sign_in(patron_mailbox.email_address, DefaultPassword)
-    from PageObjectModels.TestSite.TestSite_HomePage import TestSite_HomePage
-    test_site = TestSite_HomePage(web_driver).open()
-    test_site.click_profile()
+    from PageObjectModels.TestSite.TestSite_LoginPage import TestSiteLoginPage
+    test_site = TestSiteLoginPage(web_driver).open()
+    test_site.click_uri_content()
     # THEN the creator's hit count should increase by one
     logging.info("Waiting for hit to push")
     time.sleep(2)
@@ -57,7 +58,7 @@ def test_payout_emails(web_driver, subless_activated_creator_user, paying_user, 
     patron_receipt = receive_email(inbox_id=patron_mailbox.id)
     assert "Your subless receipt" in patron_receipt.subject
     assert "TestUser" in patron_receipt.body
-    assert "pythonclientdev.subless.com" in patron_receipt.body
+    assert f"{Keys.subless_uri}" in patron_receipt.body
     assert "$3.57" in patron_receipt.body
     assert "$0.89" in patron_receipt.body
 
@@ -69,9 +70,9 @@ def test_payout_calculation_via_queue(web_driver, subless_activated_creator_user
     from PageObjectModels.LoginPage import LoginPage
     login_page = LoginPage(web_driver).open()
     patron_dashboard = login_page.sign_in(patron_mailbox.email_address, DefaultPassword)
-    from PageObjectModels.TestSite.TestSite_HomePage import TestSite_HomePage
-    test_site = TestSite_HomePage(web_driver).open()
-    test_site.click_profile()
+    from PageObjectModels.TestSite.TestSite_LoginPage import TestSiteLoginPage
+    test_site = TestSiteLoginPage(web_driver).open()
+    test_site.click_uri_content()
     # THEN the creator's hit count should increase by one
     logging.info("Waiting for hit to push")
     time.sleep(2)
@@ -101,9 +102,9 @@ def test_queued_payout_emails(web_driver, subless_activated_creator_user, paying
     from PageObjectModels.LoginPage import LoginPage
     login_page = LoginPage(web_driver).open()
     patron_dashboard = login_page.sign_in(patron_mailbox.email_address, DefaultPassword)
-    from PageObjectModels.TestSite.TestSite_HomePage import TestSite_HomePage
-    test_site = TestSite_HomePage(web_driver).open()
-    test_site.click_profile()
+    from PageObjectModels.TestSite.TestSite_LoginPage import TestSiteLoginPage
+    test_site = TestSiteLoginPage(web_driver).open()
+    test_site.click_uri_content()
     # THEN the creator's hit count should increase by one
     logging.info("Waiting for hit to push")
     time.sleep(2)
@@ -113,6 +114,6 @@ def test_queued_payout_emails(web_driver, subless_activated_creator_user, paying
     patron_receipt = receive_email(inbox_id=patron_mailbox.id)
     assert "Your subless receipt" in patron_receipt.subject
     assert "TestUser" in patron_receipt.body
-    assert "pythonclientdev.subless.com" in patron_receipt.body
+    assert f"{Keys.test_client_uri}".replace("https://", "").replace("http://", "") in patron_receipt.body
     assert "$3.57" in patron_receipt.body
     assert "$0.89" in patron_receipt.body

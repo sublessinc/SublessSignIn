@@ -18,5 +18,6 @@ namespace Subless.Services.Services
         IEnumerable<Hit> FilterOutCreator(IEnumerable<Hit> hits, Guid creatorId);
         IEnumerable<CreatorHitCount> GetTopPatronContent(DateTimeOffset startDate, DateTimeOffset endDate, string cognitoId);
         IEnumerable<HitView> GetRecentPatronContent(string cognitoId);
+        bool SaveTagHit(string userId, Uri uri, string creatorname);
     }
 }

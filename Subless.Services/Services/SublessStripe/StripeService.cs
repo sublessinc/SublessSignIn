@@ -213,6 +213,55 @@ namespace Subless.Services.Services.SublessStripe
             return _stripeApiWrapperServiceFactory.Execute(api => api.SubscriptionService.Update(sub.Id, updateOptions));
         }
 
+        public bool CustomerHasCancelled(string customerId)
+        {
+            return CurrentSubscriptionStatus(customerId).IsCancelled;
+        }
+
+        public SubscriptionStatus CurrentSubscriptionStatus(string customerId)
+        {
+            var status = new SubscriptionStatus()
+            {
+                SubscriptionEndDate = null,
+                BillingDate = null,
+                CancellationDate = null,
+                IsActive = false,
+                IsCancelled = false
+            };
+            if (customerId == null)
+            {
+                return status;
+            }
+            var subs = _stripeApiWrapperServiceFactory.Execute(api =>
+            {
+                var subscriptions = api.SubscriptionService.ListAutoPaging(new SubscriptionListOptions()
+                {
+                    Customer = customerId
+                });
+                return subscriptions;
+            });
+            var foo = subs.ToList();
+            if (!subs.Any()) {
+                return status;
+            }
+            status.BillingDate = subs.First().StartDate;
+            var active = subs.Where(x => x.Status == "active" && x.CancelAtPeriodEnd == false);
+            if (active.Any()) 
+            {
+                status.IsActive = true;
+                return status;
+            }
+            var cancelled = subs.Where(x => x.CancelAtPeriodEnd);
+            if (cancelled.Any())
+            {
+                status.CancellationDate = subs.First().CurrentPeriodEnd;
+                status.IsCancelled = true;
+                status.IsActive = true;
+                return status;
+            }
+            return status;
+        }
+
         public bool CustomerHasPaid(string cognitoId)
         {
             var activePrices = GetActiveSubscriptionPriceId(cognitoId);

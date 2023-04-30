@@ -61,9 +61,9 @@ namespace PayoutCalculator
 
         private static void RunCalculator(CalculatorConfiguration configuration, IHost host)
         {
-            using (var scope = host.Services.CreateScope())
+            while (true)
             {
-                while (true)
+                using (var scope = host.Services.CreateScope())
                 {
                     logger.LogInformation("Checking if calculator should be run");
                     var calculatorService = scope.ServiceProvider.GetRequiredService<ICalculatorService>();
@@ -87,6 +87,7 @@ namespace PayoutCalculator
                 CalculatorSettingsConfiguration.RegisterCalculatorConfig(services);
                 GeneralConfiguration.RegisterGeneralConfig(services);
                 var authSettings = AuthSettingsConfiguration.GetAuthSettings();
+                AuthSettingsConfiguration.RegisterAuthSettingsConfig(services, authSettings);
                 BffDi.AddBffDi(services, authSettings);
                 DataDi.RegisterDataDi(services);
                 ServicesDi.AddServicesDi(services);

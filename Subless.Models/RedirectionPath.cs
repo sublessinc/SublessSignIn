@@ -10,6 +10,7 @@ namespace Subless.Models
         CreatorWithoutPayment = 5,
         Terms = 6,
         CreatorTerms = 7,
-        PartnerTerms = 8
+        PartnerTerms = 8,
+        Cancelled = 9
     }
 }

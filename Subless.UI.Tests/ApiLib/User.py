@@ -2,9 +2,10 @@ import os
 
 import requests
 
+from Keys.Keys import Keys
 
 def delete_user(cookie):
-    url = f'https://{os.environ["environment"]}.subless.com/api/User'
+    url = f'https://{Keys.subless_uri}/api/User'
 
     payload = {}
     headers = {
@@ -14,12 +15,12 @@ def delete_user(cookie):
     print(payload)
     print(headers)
 
-    response = requests.request("DELETE", url, headers=headers, data=payload)
+    response = requests.request("DELETE", url, headers=headers, data=payload, verify=False)
 
     print(f'Delete returned code: {response.status_code} - {response.reason} - {response.text}')
 
 def delete_user_by_email(cookie, email):
-    url = f'https://{os.environ["environment"]}.subless.com/api/User/byemail?email={email}'
+    url = f'https://{Keys.subless_uri}/api/User/byemail?email={email}'
 
     payload = {}
     headers = {
@@ -29,6 +30,6 @@ def delete_user_by_email(cookie, email):
     print(payload)
     print(headers)
 
-    response = requests.request("DELETE", url, headers=headers, data=payload)
+    response = requests.request("DELETE", url, headers=headers, data=payload, verify=False)
 
     print(f'Delete returned code: {response.status_code} - {response.reason} - {response.text}')

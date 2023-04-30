@@ -13,14 +13,8 @@ RUN npm install
 COPY  /Subless.UI/sublessui ./
 RUN ng build --configuration $build_environment
 
-FROM node:16-alpine as jsbuild
-ARG build_environment
-RUN echo "building for $build_environment"
-WORKDIR /src
-COPY ./Subless.JS/package*.json ./
-RUN npm install
-COPY ./Subless.JS/ /src
-RUN npm run build:$build_environment
+# https://github.com/sublessinc/subless.js
+FROM 548668861663.dkr.ecr.us-east-2.amazonaws.com/subless-js:$build_environment as jsbuild
 
 
 FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS base
