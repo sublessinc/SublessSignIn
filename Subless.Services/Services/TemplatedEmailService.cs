@@ -94,7 +94,7 @@ namespace Subless.Services.Services
             }
             else
             {
-                var emailTask = Task.Run(() => _emailSerivce.SendEmail(body, usertask.Result, "Subless subscriber: Here's who you supported this month!"));
+                var emailTask = Task.Run(() => _emailSerivce.SendEmail(body, usertask.Result, "Here's who you supported with subless this month!"));
                 emailTask.Wait();
             }
         }
