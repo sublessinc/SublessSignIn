@@ -5,26 +5,26 @@ Subless sign in manages user data for subless
 [Architecture](https://app.diagrams.net/#G1cJIMwMpMkj7GtDjS6SLBZVKdjGs1rUSZ)
 ## Build
 ### Requirements
-Docker
 
-dotnet core
-
-npm
-
-powershell
-
-dotnet tool install --global dotnet-ef
-
-python 3+
+- Docker
+- dotnet core
+- npm
+- powershell
+- To have run `dotnet tool install --global dotnet-ef`
+- python 3+
 
 ### Debug
+
+You'll need to sign into aws cli. You can use the installer [here](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html).
+This will set up your environment with a ~/.aws/credentials file with the
+necessary credentials.
 
 Start postgresql
 ```bash
 # password used can be found or set in the launchsettings.json file
 docker run -e POSTGRES_PASSWORD=[password] -p 5432:5432 postgres
 ```
-Define environment variables (this can be done in the CLI as below, or using the `launchsettings.json` file)
+Define environment variables (this can be done in the CLI as below, or using the `launchSettings.json` file)
 ```bash
 STRIPE_PUBLISHABLE_KEY=
 STRIPE_SECRET_KEY=
