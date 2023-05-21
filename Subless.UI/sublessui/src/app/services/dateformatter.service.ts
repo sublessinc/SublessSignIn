@@ -43,7 +43,7 @@ export class DateFormatter {
     }
 
     public formatTimestamp(timestamp: Date): string {
-        return formatDate(timestamp, 'HH:MM', this.locale);
+        return formatDate(timestamp, 'HH:mm', this.locale);
     }
 
     public GetLastPeriodString(stats: IStats): string {
