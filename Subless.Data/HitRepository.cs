@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging.Abstractions;
 using Subless.Models;
 
 namespace Subless.Data
@@ -185,6 +186,10 @@ namespace Subless.Data
 
         private IEnumerable<IFaviconable> EnrichFavicons(IEnumerable<IFaviconable> items) 
         {
+            if (items == null)
+            {
+                return null;
+            }
             foreach (var hit in items)
             {
                 hit.Favicon = GetPartner(hit.PartnerId).Favicon;
