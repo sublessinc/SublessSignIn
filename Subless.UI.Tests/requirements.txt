@@ -15,7 +15,7 @@ py==1.11.0
 pyparsing==3.0.7
 pytest==6.2.5
 python-dateutil==2.8.2
-requests==2.27.1
+requests==2.31.0
 selenium==3.141.0
 simplejson==3.17.6
 six==1.16.0
