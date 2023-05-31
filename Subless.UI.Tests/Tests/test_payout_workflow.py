@@ -56,7 +56,7 @@ def test_payout_emails(web_driver, subless_activated_creator_user, paying_user, 
     endTime = datetime.utcnow()
     execute_payout(cookie, startTime, endTime)
     patron_receipt = receive_email(inbox_id=patron_mailbox.id)
-    assert "Your subless receipt" in patron_receipt.subject
+    assert (("Your subless receipt" in patron_receipt.subject) or ("Here's who you supported with subless this month!" in patron_receipt.subject))
     assert "TestUser" in patron_receipt.body
     assert f"{Keys.subless_uri}" in patron_receipt.body
     assert "$3.57" in patron_receipt.body
@@ -112,7 +112,7 @@ def test_queued_payout_emails(web_driver, subless_activated_creator_user, paying
     endTime = datetime.utcnow()
     queue_payout(cookie, startTime, endTime)
     patron_receipt = receive_email(inbox_id=patron_mailbox.id)
-    assert "Your subless receipt" in patron_receipt.subject
+    assert (("Your subless receipt" in patron_receipt.subject) or ("Here's who you supported with subless this month!" in patron_receipt.subject))
     assert "TestUser" in patron_receipt.body
     assert f"{Keys.test_client_uri}".replace("https://", "").replace("http://", "") in patron_receipt.body
     assert "$3.57" in patron_receipt.body

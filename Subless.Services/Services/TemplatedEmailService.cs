@@ -87,8 +87,16 @@ namespace Subless.Services.Services
                 return;
             }
             var body = GetEmailBody(payments, PaymentPeriodStart, PaymentPeriodEnd);
-            var emailTask = Task.Run(() => _emailSerivce.SendEmail(body, usertask.Result, "Your subless receipt"));
-            emailTask.Wait();
+            if (new Random().NextDouble() > .5) // A/B testing the subject line
+            {
+                var emailTask = Task.Run(() => _emailSerivce.SendEmail(body, usertask.Result, "Your subless receipt"));
+                emailTask.Wait();
+            }
+            else
+            {
+                var emailTask = Task.Run(() => _emailSerivce.SendEmail(body, usertask.Result, "Here's who you supported with subless this month!"));
+                emailTask.Wait();
+            }
         }
 
 
