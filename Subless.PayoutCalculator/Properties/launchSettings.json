@@ -21,7 +21,8 @@
         "Logging__LogLevel__Default": "Debug",
         "issuerUrl": "https://devpayidp.auth.us-east-2.amazoncognito.com",
         "EnvironmentName": "local",
-        "MaxInstanceCount": "10"
+        "MaxInstanceCount": "10",
+        "ReminderEmailSchedule": "* * * * *"
       }
     }
   }

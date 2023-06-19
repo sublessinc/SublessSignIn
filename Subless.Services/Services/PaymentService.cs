@@ -147,6 +147,7 @@ namespace Subless.Services.Services
             var emails = _calculationQueueRepository.DequeueIdleEmails();
             if (emails != null)
             {
+                _logger.LogInformation("Sending idle emails");
                 var calculatorResult = _calculatorService.CalculatePayoutsOverRange(emails.PeriodStart, emails.PeriodEnd);
                 if (calculatorResult == null) {
                     _logger.LogWarning($"No payments over specified range, skipping sending of idle emails. Start: {emails.PeriodStart} End: {emails.PeriodEnd}");
