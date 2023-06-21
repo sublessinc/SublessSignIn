@@ -8,5 +8,6 @@ namespace Subless.PayoutCalculator
         public string BucketName;
         public string Domain;
         public string PoolId;
+        public string ReminderEmailSchedule;
     }
 }

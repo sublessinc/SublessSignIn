@@ -11,7 +11,8 @@ namespace Subless.Configuration
             {
                 options.BucketName = Environment.GetEnvironmentVariable("BucketName") ?? throw new ArgumentNullException("BucketName");
                 options.Domain = Environment.GetEnvironmentVariable("DOMAIN");
-                options.PoolId = Environment.GetEnvironmentVariable("DOMAIN");
+                options.PoolId = Environment.GetEnvironmentVariable("PoolId");
+                options.ReminderEmailSchedule = Environment.GetEnvironmentVariable("ReminderEmailSchedule") ?? throw new ArgumentNullException("ReminderEmailSchedule"); ;
             });
             return services;
         }
