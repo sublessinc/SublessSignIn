@@ -25,7 +25,7 @@
     "@angular/platform-browser": "^15.x",
     "@angular/platform-browser-dynamic": "^15.x",
     "@angular/router": "^15.x",
-    "@material/ripple": "^0.24.0",
+    "@material/ripple": "^0.44.1",
     "@types/ckeditor": "^4.9.10",
     "angular-froala-wysiwyg": "^4.0.15",
     "ckeditor4-angular": "^3.2.0",
