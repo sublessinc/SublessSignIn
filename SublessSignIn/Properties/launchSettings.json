@@ -43,7 +43,8 @@
         "CustomBudgetId": "prod_M1NGEYYi1ipii6",
         "MaxInstanceCount": "10",
         "FeatureManagement__OpenLogger": "true",
-        "UriWhitelist": "https://www.patreon.com;https://www.paypal.com;https://www.subscribestar.com;https://ko-fi.com;https://twitter.com;https://www.hentai-foundry.com;https://linktr.ee;https://*.fanbox.cc"
+        "UriWhitelist": "https://www.patreon.com;https://www.paypal.com;https://www.subscribestar.com;https://ko-fi.com;https://twitter.com;https://www.hentai-foundry.com;https://linktr.ee;https://*.fanbox.cc",
+        "ReminderEmailSchedule": "* * * * *"
       },
       "dotnetRunMessages": "true",
       "applicationUrl": "https://localhost:5001;http://localhost:5000"
